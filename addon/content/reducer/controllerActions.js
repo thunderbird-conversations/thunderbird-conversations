@@ -317,7 +317,10 @@ export const controllerActions = {
             // Note: if two or more in different threads are selected, then
             // the conversation UI is not used. Hence why this is ok to do here.
             if (state.summary.prefs.loggingEnabled) {
-              console.debug("Marking the whole conversation as read");
+              console.debug(
+                "Conversations:",
+                "Marking the whole conversation as read"
+              );
             }
             for (let msg of state.messages.msgData) {
               if (!msg.read) {
@@ -327,7 +330,10 @@ export const controllerActions = {
           } else {
             // We only have a single message selected, mark that as read.
             if (state.summary.prefs.loggingEnabled) {
-              console.debug("Marking selected message as read");
+              console.debug(
+                "Conversations:",
+                "Marking selected message as read"
+              );
             }
             // We use the selection from the initial set, just in case something
             // changed before we hit the timer.
