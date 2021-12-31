@@ -13,7 +13,13 @@ import { ConversationWrapper } from "./components/conversation/conversationWrapp
 document.addEventListener(
   "DOMContentLoaded",
   async () => {
-    globalThis.browser = await BrowserSim.getBrowserAsync();
+    if (globalThis.conversationStore) {
+      globalThis.browser = await BrowserSim.getBrowserAsync();
+    } else {
+      globalThis.conversationStore = {
+        pendingActions: [],
+      };
+    }
 
     let earlyActions = conversationStore.pendingActions;
     conversationStore = RTK.configureStore({

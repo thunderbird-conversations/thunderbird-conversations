@@ -53,6 +53,12 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       hash: false,
+      template: "./addon/content/standalone.html",
+      chunks: ["stub"],
+      filename: "standalone.html",
+    }),
+    new HtmlWebpackPlugin({
+      hash: false,
       template: "./addon/background/background.html",
       chunks: ["background"],
       filename: "../background/background.html",

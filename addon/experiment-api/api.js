@@ -741,6 +741,10 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
               );
             }
             if (tabObject.nativeTab.mode.type == "contentTab") {
+              if (tabObject.browser.getAttribute("remote")) {
+                console.error("Can't stream into a remote browser yet.");
+                return;
+              }
               messageIframe =
                 tabObject.browser.contentDocument.getElementsByClassName(
                   iframeClass

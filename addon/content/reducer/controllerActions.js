@@ -95,17 +95,27 @@ export const controllerActions = {
 
       const isInTab = params.has("urls");
       const isStandalone = params.has("standalone");
-      const topWin = window.browsingContext.topChromeWindow;
 
       // Note: Moving this to after the check for started below is dangerous,
       // since it introduces races where `Conversation` doesn't wait for the
       // page to startup, and hence tab id isn't set.
-      let windowId = BrowserSim.getWindowId(topWin);
+      console.log(isInTab);
+      let windowId;
+      let tabId;
+      if (isInTab) {
+        windowId = (await browser.windows.getCurrent()).id;
+        tabId = (await browser.tabs.getCurrent()).id;
+      } else {
+        const topWin = window.browsingContext.topChromeWindow;
+        windowId = BrowserSim.getWindowId(topWin);
+        tabId = isStandalone ? -1 : BrowserSim.getTabId(topWin, window);
+      }
+      console.log({ isInTab, isStandalone, windowId });
       await dispatch(
         summaryActions.setConversationState({
           isInTab,
           isStandalone,
-          tabId: isStandalone ? -1 : BrowserSim.getTabId(topWin, window),
+          tabId,
           windowId,
         })
       );
@@ -153,33 +163,35 @@ export const controllerActions = {
       //   return;
       // }
 
-      let mainWindow = isStandalone
-        ? window.browsingContext.topChromeWindow.opener
-        : window.browsingContext.topChromeWindow;
-      if (!mainWindow.Conversations?.finishedStartup) {
-        await new Promise((resolve, reject) => {
-          let tries = 0;
-          function checkStarted() {
-            if (
-              mainWindow.Conversations &&
-              mainWindow.Conversations.finishedStartup
-            ) {
-              resolve();
-            } else {
-              // Wait up to 10 seconds, if it is that slow we're in trouble.
-              if (tries >= 100) {
-                console.error(
-                  "Failed waiting for monkeypatch to finish startup"
-                );
-                reject();
-                return;
+      if (!isInTab) {
+        let mainWindow = isStandalone
+          ? window.browsingContext.topChromeWindow.opener
+          : window.browsingContext.topChromeWindow;
+        if (!mainWindow.Conversations?.finishedStartup) {
+          await new Promise((resolve, reject) => {
+            let tries = 0;
+            function checkStarted() {
+              if (
+                mainWindow.Conversations &&
+                mainWindow.Conversations.finishedStartup
+              ) {
+                resolve();
+              } else {
+                // Wait up to 10 seconds, if it is that slow we're in trouble.
+                if (tries >= 100) {
+                  console.error(
+                    "Failed waiting for monkeypatch to finish startup"
+                  );
+                  reject();
+                  return;
+                }
+                tries++;
+                setTimeout(checkStarted, 100);
               }
-              tries++;
-              setTimeout(checkStarted, 100);
             }
-          }
-          checkStarted();
-        });
+            checkStarted();
+          });
+        }
       }
       await dispatch(
         controllerActions.initializeMessageThread({ isInTab: true, params })

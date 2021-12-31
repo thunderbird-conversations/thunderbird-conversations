@@ -114,12 +114,15 @@ export class Window {
         break;
       }
       case 2: {
-        await browser.conversations.createTab({
-          url: `chrome://conversations/content/stub.html${this.getQueryString(
-            urls
-          )}`,
-          type: "contentTab",
+        await browser.tabs.create({
+          url: `/content/standalone.html${this.getQueryString(urls)}`,
         });
+        // await browser.conversations.createTab({
+        //   url: `chrome://conversations/content/stub.html${this.getQueryString(
+        //     urls
+        //   )}`,
+        //   type: "contentTab",
+        // });
         break;
       }
     }

@@ -105,7 +105,8 @@
         "name": "onSelectedMessagesChanged",
         "type": "function",
         "description": "Temporary. Listens for selection changes on the thread pane.",
-        "parameters": [
+        "parameters": [],
+        "extraParameters": [
           {
             "name": "window",
             "type": "integer",
