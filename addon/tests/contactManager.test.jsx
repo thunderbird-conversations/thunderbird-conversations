@@ -2,10 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-// This defines fetch() which is needed for thunderbird-compat import.
-// eslint-disable-next-line no-unused-vars
-import { waitForComponentToPaint } from "./utils.js";
-import { browser } from "../content/esmodules/thunderbirdCompat.js";
 import { ContactManager, freshColor } from "../background/contactManager.js";
 
 // From https://gist.github.com/olmokramer/82ccce673f86db7cda5e

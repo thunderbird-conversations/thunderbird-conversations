@@ -5,7 +5,6 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { SvgIcon } from "../svgIcon.jsx";
-import { browser } from "../../esmodules/thunderbirdCompat.js";
 
 const ActionsToInfoMap = {
   draft: {

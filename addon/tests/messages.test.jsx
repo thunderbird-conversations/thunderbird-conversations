@@ -2,17 +2,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-// Need to import utils.js to set up the fetch stub.
 import { createFakeData, createFakeSummaryData } from "./utils.js";
 import { jest } from "@jest/globals";
-import { browser } from "../content/esmodules/thunderbirdCompat.js";
-import { messageEnricher } from "../content/reducer/messageEnricher.js";
+import { MessageEnricher } from "../content/reducer/messageEnricher.js";
 
 describe("messageEnricher", () => {
   let fakeMessageHeaderData;
   let isInViewSpy;
+  let messageEnricher;
 
   beforeEach(() => {
+    messageEnricher = new MessageEnricher();
     fakeMessageHeaderData = new Map();
     jest
       .spyOn(browser.messages, "get")

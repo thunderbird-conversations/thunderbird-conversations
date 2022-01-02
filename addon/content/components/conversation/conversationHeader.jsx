@@ -8,7 +8,6 @@ import PropTypes from "prop-types";
 import { messageActions } from "../../reducer/reducerMessages.js";
 import { summaryActions } from "../../reducer/reducerSummary.js";
 import { SvgIcon } from "../svgIcon.jsx";
-import { browser } from "../../esmodules/thunderbirdCompat.js";
 
 const LINKS_REGEX = /((\w+):\/\/[^<>()'"\s]+|www(\.[-\w]+){2,})/;
 

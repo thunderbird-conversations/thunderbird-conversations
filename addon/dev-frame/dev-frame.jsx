@@ -15,6 +15,8 @@ import {
 import { ConversationWrapper } from "../content/components/conversation/conversationWrapper.jsx";
 import { store } from "./reducer.js";
 
+globalThis.browser = browser;
+
 /**
  * Widget to select the active locale to be used by `browser.i18n.getMessage()`
  *

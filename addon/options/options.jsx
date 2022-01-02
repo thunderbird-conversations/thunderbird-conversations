@@ -450,6 +450,7 @@ export function Main() {
       // nothing here
       return;
     }
+    i18n.initialize();
     i18n.isLoaded
       .then(() => {
         setLocalizedName(localize("extensionName", i18n));

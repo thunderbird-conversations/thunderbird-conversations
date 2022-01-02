@@ -19,6 +19,9 @@
     "moduleFileExtensions": [
       "js",
       "jsx"
+    ],
+    "setupFiles": [
+      "addon/tests/setup.js"
     ]
   },
   "private": true,

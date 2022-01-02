@@ -18,6 +18,10 @@ import {
   quickReplySlice,
 } from "../content/reducer/reducerQuickReply.js";
 import { mockThreads } from "./mock-data/threads.js";
+import { browser } from "../content/esmodules/thunderbirdCompat.js";
+
+globalThis.browser = browser;
+browser.i18n.initialize();
 
 /**
  * Make function access to attributes of `obj` logged.

@@ -7,7 +7,6 @@ import PropTypes from "prop-types";
 import { ActionButton } from "./messageActionButton.jsx";
 import { messageActions } from "../../reducer/reducerMessages.js";
 import { SvgIcon } from "../svgIcon.jsx";
-import { browser } from "../../esmodules/thunderbirdCompat.js";
 
 /**
  * Handles display of the options menu.
