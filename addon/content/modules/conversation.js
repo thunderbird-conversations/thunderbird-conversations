@@ -208,7 +208,7 @@ Conversation.prototype = {
   dispatch(action) {
     // If we don't have a htmlPane, we've probably been cleaned up.
     if (this._htmlPane) {
-      this._htmlPane.conversationDispatch(action);
+      this._htmlPane.conversationStore.dispatch(action);
     }
   },
 
