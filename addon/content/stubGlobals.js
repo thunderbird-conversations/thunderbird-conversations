@@ -23,8 +23,3 @@ globalThis.conversationStore = {
 };
 
 globalThis.conversationSummaryActions = {};
-
-/* exported conversationDispatch */
-function conversationDispatch(...args) {
-  globalThis.conversationStore.dispatch(...args);
-}

@@ -34,7 +34,7 @@ function imipOptions(
       onOperationComplete(aCalendar, aStatus, aOperationType, aId, aDetail) {
         let label = cal.itip.getCompleteText(aStatus, aOperationType);
 
-        browser.contentWindow.conversationDispatch(
+        browser.contentWindow.conversationStore.dispatch(
           messageActions.msgShowNotification({
             msgData: {
               id: msgId,
@@ -102,7 +102,7 @@ function imipOptions(
   }
 
   // Update the Conversation UI
-  browser.contentWindow.conversationDispatch(
+  browser.contentWindow.conversationStore.dispatch(
     messageActions.msgShowNotification({
       msgData: {
         id: msgId,
@@ -153,7 +153,7 @@ var convCalendar = class extends ExtensionCommon.ExtensionAPI {
             let browser = win.document
               .getElementById("tabmail")
               .getBrowserForTab(tabObject.nativeTab);
-            browser.contentWindow.conversationDispatch(
+            browser.contentWindow.conversationStore.dispatch(
               messageActions.msgShowNotification({
                 msgData: {
                   id: msgId,
