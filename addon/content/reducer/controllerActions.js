@@ -99,7 +99,6 @@ export const controllerActions = {
       // Note: Moving this to after the check for started below is dangerous,
       // since it introduces races where `Conversation` doesn't wait for the
       // page to startup, and hence tab id isn't set.
-      console.log(isInTab);
       let windowId;
       let tabId;
       if (isInTab) {
@@ -110,7 +109,7 @@ export const controllerActions = {
         windowId = BrowserSim.getWindowId(topWin);
         tabId = isStandalone ? -1 : BrowserSim.getTabId(topWin, window);
       }
-      console.log({ isInTab, isStandalone, windowId });
+
       await dispatch(
         summaryActions.setConversationState({
           isInTab,
@@ -158,10 +157,6 @@ export const controllerActions = {
         loggingEnabled = true;
         console.debug(`Initializing ${isInTab ? "tab" : "message pane"} view.`);
       }
-
-      // if (!isInTab) {
-      //   return;
-      // }
 
       if (!isInTab) {
         let mainWindow = isStandalone

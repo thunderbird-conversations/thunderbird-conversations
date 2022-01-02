@@ -103,12 +103,11 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
           for (const win of Services.wm.getEnumerator("mail:3pane")) {
             let multimessage = win.document.getElementById("multimessage");
             if (
-              !multimessage ||
-              !multimessage.contentWindow?.Conversations?.currentConversation
+              !multimessage?.contentWindow?.conversationStore
             ) {
               continue;
             }
-            multimessage.contentWindow.Conversations.currentConversation.dispatch(
+            multimessage.contentWindow.conversationStore.dispatch(
               messageActions.msgAddSpecialTag({
                 tagDetails: {
                   classNames,

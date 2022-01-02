@@ -524,6 +524,11 @@ export class MessageEnricher {
         ? await browser.conversations.parseMimeLine(contactData.from)
         : [],
     };
+
+    // The from can be overridden, e.g. in the case of bugzilla, so this field
+    // is always the email address this was originally from.
+    msg.realFrom = msg.parsedLines.from[0]?.email;
+
     for (let line of ["to", "cc", "bcc"]) {
       msg.parsedLines[line] = [];
       let item = contactData[line];

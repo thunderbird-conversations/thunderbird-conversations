@@ -38,6 +38,7 @@ export const conversationActions = {
           glodaMessageId: null,
           detailsShowing: false,
           recipientsIncludeLists: false,
+          snippet: "",
         };
       });
 
