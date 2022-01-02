@@ -62,6 +62,21 @@ export async function mergeContactDetails(msgData) {
     "mail.showCondensedAddresses"
   );
 
+  let port = browser.runtime.connect({ name: "contacts" });
+
+  let expectedContacts = new Map();
+
+  function receiveContact(msg) {
+    if (msg.type != "contactDetails") {
+      return;
+    }
+    let resolve = expectedContacts.get(msg.for);
+    if (resolve) {
+      resolve(msg.contact);
+    }
+  }
+  port.onMessage.addListener(receiveContact);
+
   // Build a map of all the contacts in the thread and de-dupe to avoid
   // hitting the cross-process messaging more than necessary.
   let contactMap = new Map();
@@ -75,6 +90,13 @@ export async function mergeContactDetails(msgData) {
         if (contactMap.has(contact.email)) {
           continue;
         }
+        let promise = new Promise((resolve, reject) => {
+          expectedContacts.set(contact.email, resolve);
+          port.postMessage({
+            type: "contactDetails",
+            payload: contact,
+          });
+        });
         contactMap.set(
           contact.email,
           // This is designed to not await on the request. However, in the
@@ -85,14 +107,14 @@ export async function mergeContactDetails(msgData) {
           // Once that is fixed, we should investigate making these happen
           // in parallel again. The performance impact probably isn't massive,
           // but did seem to be more stable.
-          await browser._background.request({
-            type: "contactDetails",
-            payload: contact,
-          })
+          await promise
         );
       }
     }
   }
+
+  port.onMessage.removeListener(receiveContact);
+  port.disconnect();
 
   for (const message of msgData) {
     if (!("parsedLines" in message)) {
