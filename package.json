@@ -21,8 +21,9 @@
       "jsx"
     ],
     "setupFiles": [
-      "addon/tests/setup.js"
-    ]
+      "./addon/tests/setup.js"
+    ],
+    "testEnvironment": "jsdom"
   },
   "private": true,
   "type": "module",
