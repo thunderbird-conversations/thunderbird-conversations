@@ -452,7 +452,29 @@ if (!browser.runtime) {
       };
     },
     connect() {
-      return {};
+      return {
+        disconnect() {
+          this.listener = null;
+        },
+        onMessage: {
+          listener: null,
+          addListener(l) {
+            this.listener = l;
+          },
+          removeListener() {
+            this.listener = null;
+          },
+        },
+        async postMessage(msg) {
+          if (this.onMessage.listener) {
+            this.onMessage.listener({
+              type: "contactDetails",
+              for: msg.payload.email,
+              contact: {},
+            });
+          }
+        },
+      };
     },
   };
 }

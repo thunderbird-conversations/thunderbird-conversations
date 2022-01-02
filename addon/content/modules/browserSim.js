@@ -22,7 +22,6 @@ const SUPPORTED_APIS_NO_EVENTS = [
   // MUST be tested very carefully. Last time this was tried, it would end up
   // clearing the starred flag when marking a message as read.
   "messages",
-  "runtime",
   "tabs",
   "windows",
   // This is a temporary workaround so that we can "message" the background script.
@@ -37,6 +36,7 @@ const SUPPORTED_BASE_APIS = [
   "conversations",
   "i18n",
   "messageDisplay",
+  "runtime",
   "storage",
 ];
 
@@ -147,6 +147,34 @@ class _BrowserSim {
         browser[apiName] = this._implementation(extension, asyncAPI, apiName);
       }
     }
+    // Fake port connections.
+    browser.runtime.connect = () => {
+      return {
+        disconnect() {
+          this.listener = null;
+        },
+        onMessage: {
+          listener: null,
+          addListener(l) {
+            this.listener = l;
+          },
+          removeListener() {
+            this.listener = null;
+          },
+        },
+        async postMessage(msg) {
+          let contact = await browser._background.request(msg);
+          if (this.onMessage.listener) {
+            this.onMessage.listener({
+              type: "contactDetails",
+              for: msg.payload.email,
+              contact,
+            });
+          }
+        },
+      };
+    };
+
     this._asyncBrowser = browser;
     return browser;
   }
