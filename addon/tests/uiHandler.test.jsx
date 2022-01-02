@@ -3,9 +3,6 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import { jest } from "@jest/globals";
-// This is so that utils.js defines fetch onto the global scope.
-// eslint-disable-next-line no-unused-vars
-import { enzyme } from "./utils.js";
 import { UIHandler } from "../background/uiHandler.js";
 
 describe("getDefaultIdentity", () => {

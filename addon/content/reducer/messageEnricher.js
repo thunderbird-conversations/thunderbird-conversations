@@ -2,7 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import { browser } from "../esmodules/thunderbirdCompat.js";
 import { messageUtils } from "./messageUtils.js";
 
 const RE_BZ_BUG_LINK = /^https:\/\/.*?\/show_bug.cgi\?id=[0-9]*/;
@@ -23,7 +22,7 @@ const kSnippetLength = 700;
  * Some of these actions happen async, or are potentially expensive, which
  * is why there are here, rather than in the individual message display functions.
  */
-export let messageEnricher = new (class {
+export class MessageEnricher {
   constructor() {
     this.pluralForm = browser.i18n.getMessage("pluralForm");
     this.numAttachmentsString = browser.i18n.getMessage(
@@ -76,7 +75,7 @@ export let messageEnricher = new (class {
             );
           }
           this._adjustSnippetForBugzilla(message, msg);
-          await messageEnricher._setDates(msg, summary);
+          await this._setDates(msg, summary);
         } catch (ex) {
           console.error("Could not process message:", ex);
           msg.invalid = true;
@@ -655,4 +654,4 @@ export let messageEnricher = new (class {
       msg.fullDate = this.dateAsInMessageList(date);
     }
   }
-})();
+}

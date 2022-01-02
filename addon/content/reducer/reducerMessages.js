@@ -5,11 +5,7 @@
 /* global BrowserSim */
 
 import * as RTK from "@reduxjs/toolkit";
-import { browser as _browser } from "../esmodules/thunderbirdCompat.js";
 import { messageUtils } from "./messageUtils.js";
-
-// Prefer the global browser object to the imported one.
-window.browser = window.browser || _browser;
 
 export const initialMessages = {
   msgData: [],

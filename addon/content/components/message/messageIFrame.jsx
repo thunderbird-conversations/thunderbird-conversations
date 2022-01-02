@@ -7,7 +7,6 @@ import PropTypes from "prop-types";
 import { messageActions } from "../../reducer/reducerMessages.js";
 import { summaryActions } from "../../reducer/reducerSummary.js";
 import { Quoting } from "../../utils/quoting.js";
-import { isWebextension } from "../../esmodules/thunderbirdCompat.js";
 
 let index = 0;
 
@@ -225,7 +224,7 @@ export class MessageIFrame extends React.Component {
       }
       this.iframe.classList.add("hidden");
     }
-    if (startLoad && isWebextension) {
+    if (startLoad) {
       this.loading = true;
       this.currentId = this.props.id;
       this.props.dispatch(

@@ -6,7 +6,6 @@ import React from "react";
 import * as ReactRedux from "react-redux";
 import PropTypes from "prop-types";
 import { summaryActions } from "../../reducer/reducerSummary.js";
-import { browser } from "../../esmodules/thunderbirdCompat.js";
 
 /**
  * Handles display for the footer of the conversation.

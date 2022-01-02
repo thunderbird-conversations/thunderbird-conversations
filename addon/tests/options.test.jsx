@@ -2,11 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-// Standard imports for all tests
 import { enzyme, waitForComponentToPaint } from "./utils.js";
 import React from "react";
 import { jest } from "@jest/globals";
-import { browser } from "../content/esmodules/thunderbirdCompat.js";
 
 // Import the components we want to test
 import {

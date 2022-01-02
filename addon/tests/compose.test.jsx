@@ -5,7 +5,6 @@
 import { enzyme, waitForComponentToPaint } from "./utils.js";
 import React from "react";
 import { jest } from "@jest/globals";
-import { browser } from "../content/esmodules/thunderbirdCompat.js";
 
 // Import the components we want to test
 import { Main, store } from "../compose/compose.jsx";

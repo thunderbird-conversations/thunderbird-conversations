@@ -7,7 +7,6 @@ import * as ReactRedux from "react-redux";
 import PropTypes from "prop-types";
 import { summaryActions } from "../reducer/reducerSummary.js";
 import { SvgIcon } from "./svgIcon.jsx";
-import { browser } from "../esmodules/thunderbirdCompat.js";
 
 function _ContactDetail({
   name,

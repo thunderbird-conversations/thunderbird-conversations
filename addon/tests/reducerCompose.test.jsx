@@ -2,9 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-// Need to import utils.js to set up the fetch stub.
-// eslint-disable-next-line no-unused-vars
-import { enzyme } from "./utils.js";
 import { jest } from "@jest/globals";
 import * as RTK from "@reduxjs/toolkit";
 import * as Redux from "redux";

@@ -7,18 +7,6 @@
 
 import { kPrefDefaults } from "../../prefs.js";
 
-// Make sure the browser object exists
-if (window.BrowserSim && !window.browser) {
-  // BrowserSim is a workaround until Conversations is converted to a webextension
-  // and has a native `browser` object available.
-  window.browser = window.BrowserSim.getBrowser();
-}
-
-// If we have a `window.browser` object, we are running as a webextension as opposed to
-// running in the browser or in test mode. We suppress certain expected errors when we
-// know that we're not a webextension.
-export const isWebextension = !!window.browser;
-
 const browser = window.browser || {};
 
 // `i18n` is a replacement for `browser.i18n`.  `getMessage` defaults
@@ -115,7 +103,9 @@ if (browser.i18n) {
   i18n.isLoaded = new Promise((resolve, reject) => {
     // initializeI18n modifies the global i18n object and calls
     // `resolve(true)` when finished.
-    initializeI18n(resolve).catch(reject);
+    i18n.initialize = () => {
+      initializeI18n(resolve).catch(reject);
+    };
   });
 
   browser.i18n = i18n;
@@ -251,6 +241,7 @@ if (!browser.conversations) {
     async getReplyOnTop() {
       return 1;
     },
+    async streamMessage() {},
   };
 }
 
@@ -578,6 +569,19 @@ if (!browser.contacts) {
     onDeleted: {
       addListener() {},
     },
+  };
+}
+
+if (!browser.convCalendar) {
+  browser.convCalendar = {
+    onMessageStreamed() {},
+  };
+}
+
+if (!browser.convOpenPgp) {
+  browser.convOpenPgp = {
+    beforeStreamingMessage() {},
+    handleMessageStreamed() {},
   };
 }
 

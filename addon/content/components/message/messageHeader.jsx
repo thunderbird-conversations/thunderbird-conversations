@@ -10,7 +10,6 @@ import { messageActions } from "../../reducer/reducerMessages.js";
 import { MessageHeaderOptions } from "./messageHeaderOptions.jsx";
 import { MessageTags, SpecialMessageTags } from "./messageTags.jsx";
 import { SvgIcon } from "../svgIcon.jsx";
-import { browser } from "../../esmodules/thunderbirdCompat.js";
 
 /**
  * Normalize a contact into a string (used for i18n formatting).

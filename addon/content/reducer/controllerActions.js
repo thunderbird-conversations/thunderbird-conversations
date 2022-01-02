@@ -10,7 +10,7 @@
 
 /* global Conversation, BrowserSim */
 import { mergeContactDetails } from "./contacts.js";
-import { messageEnricher } from "./messageEnricher.js";
+import { MessageEnricher } from "./messageEnricher.js";
 import { messageActions } from "./reducerMessages.js";
 import { composeSlice } from "./reducerCompose.js";
 import { summaryActions, summarySlice } from "./reducerSummary.js";
@@ -18,6 +18,7 @@ import { quickReplySlice } from "./reducerQuickReply.js";
 
 let loggingEnabled = false;
 let markAsReadTimer;
+let messageEnricher;
 
 async function handleShowDetails(messages, state, dispatch, updateFn) {
   let defaultShowing = state.summary.defaultDetailsShowing;
@@ -202,6 +203,12 @@ export const controllerActions = {
   updateConversation({ summary, messages, mode }) {
     return async (dispatch, getState) => {
       const state = getState();
+
+      if (!messageEnricher) {
+        // Delayed init to make sure browser has time to be defined.
+        messageEnricher = new MessageEnricher();
+      }
+
       await handleShowDetails(messages, state, dispatch, async () => {
         // The messages need some more filling out and tweaking.
         let enrichedMsgs = await messageEnricher.enrich(

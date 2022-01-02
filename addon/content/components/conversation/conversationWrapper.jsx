@@ -9,7 +9,6 @@ import { ConversationFooter } from "./conversationFooter.jsx";
 import { ConversationHeader } from "./conversationHeader.jsx";
 import { controllerActions } from "../../reducer/controllerActions.js";
 import { MessageList } from "../message/messageList.jsx";
-import { browser } from "../../esmodules/thunderbirdCompat.js";
 
 /**
  * This is a wrapper class around the whole conversation. It also kicks off
