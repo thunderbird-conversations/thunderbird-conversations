@@ -31,9 +31,7 @@ class LinkifiedSubject extends React.PureComponent {
       subject = browser.i18n.getMessage("message.loading");
     } else if (!subject) {
       subject = browser.i18n.getMessage("message.noSubject");
-    }
-
-    if (LINKS_REGEX.test(this.props.subject)) {
+    } else if (LINKS_REGEX.test(subject)) {
       let contents = [];
       let text = subject;
       let i = 0;
@@ -62,15 +60,15 @@ class LinkifiedSubject extends React.PureComponent {
       }
 
       return (
-        <div className="subject" title={this.props.subject}>
+        <div className="subject" title={subject}>
           <span>{contents}</span>
         </div>
       );
     }
 
     return (
-      <div className="subject" title={this.props.subject}>
-        {this.props.subject}
+      <div className="subject" title={subject}>
+        {subject}
       </div>
     );
   }

@@ -35,6 +35,8 @@ export const conversationActions = {
           initialPosition: 0,
           type: "",
           messageHeaderId: id,
+          // TODO: only turn this on for non-gloda.
+          getFullRequired: true,
           glodaMessageId: null,
           detailsShowing: false,
           recipientsIncludeLists: false,
@@ -61,12 +63,14 @@ export const conversationActions = {
       // We need to fill them in ourselves.
       await mergeContactDetails(enrichedMsgs);
 
-      summary.subject = enrichedMsgs[enrichedMsgs.length - 1]?.subject;
-
       await dispatch(composeSlice.actions.resetStore());
       await dispatch(
         quickReplySlice.actions.setExpandedState({ expanded: false })
       );
+
+      summary.loading = false;
+      summary.subject = enrichedMsgs[enrichedMsgs.length - 1]?.subject;
+
       await dispatch(summaryActions.replaceSummaryDetails(summary));
 
       await dispatch(
