@@ -36,8 +36,6 @@ const conversationModules = [
   // providers. Unloading these will break gloda when someone updates.
   // "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
   "chrome://conversations/content/modules/browserSim.js",
-  // "chrome://conversations/content/modules/conversation.js",
-  // "chrome://conversations/content/modules/message.js",
   "chrome://conversations/content/modules/misc.js",
 ];
 
@@ -743,7 +741,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             if (tabObject.nativeTab.mode.type == "contentTab") {
               if (tabObject.browser.getAttribute("remote")) {
                 console.error("Can't stream into a remote browser yet.");
-                return;
+                return false;
               }
               messageIframe =
                 tabObject.browser.contentDocument.getElementsByClassName(
@@ -771,6 +769,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             undefined,
             {}
           );
+          return true;
         },
         /**
          * Wraps the low-level header parser stuff.
@@ -833,6 +832,9 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
         async getReplyOnTop(identityId) {
           let identity = MailServices.accounts.getIdentity(identityId);
           return identity.replyOnTop;
+        },
+        async postMessageViaBrowserSim(msg) {
+          BrowserSim.sendMessage(msg);
         },
         onCallAPI: new ExtensionCommon.EventManager({
           context,

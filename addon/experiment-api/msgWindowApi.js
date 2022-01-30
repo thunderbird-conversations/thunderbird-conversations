@@ -7,9 +7,7 @@ var { XPCOMUtils } = ChromeUtils.import(
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
-  // Conversation: "chrome://conversations/content/modules/conversation.js",
   ExtensionCommon: "resource://gre/modules/ExtensionCommon.jsm",
-  messageActions: "chrome://conversations/content/modules/misc.js",
   msgHdrGetUri: "chrome://conversations/content/modules/misc.js",
   Services: "resource://gre/modules/Services.jsm",
   setupLogging: "chrome://conversations/content/modules/misc.js",
@@ -98,29 +96,6 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
           win.PrintUtils.startPrintWindow(messageIframe.browsingContext, {
             printFrameOnly: true,
           });
-        },
-        async addSpecialTag({ id, classNames, icon, message, tooltip }) {
-          for (const win of Services.wm.getEnumerator("mail:3pane")) {
-            let multimessage = win.document.getElementById("multimessage");
-            if (
-              !multimessage?.contentWindow?.conversationStore
-            ) {
-              continue;
-            }
-            multimessage.contentWindow.conversationStore.dispatch(
-              messageActions.msgAddSpecialTag({
-                tagDetails: {
-                  classNames,
-                  icon,
-                  name: message,
-                  tooltip: {
-                    strings: tooltip,
-                  },
-                },
-                id,
-              })
-            );
-          }
         },
         onSelectedMessagesChanged: new ExtensionCommon.EventManager({
           context,

@@ -6,7 +6,6 @@ var EXPORTED_SYMBOLS = [
   "setupLogging",
   "msgUriToMsgHdr",
   "msgHdrGetUri",
-  "messageActions",
   "setLogState",
 ];
 
@@ -61,16 +60,3 @@ function msgUriToMsgHdr(aUri) {
 function msgHdrGetUri(aMsg) {
   return aMsg.folder.getUriForMsg(aMsg);
 }
-
-/**
- * We cannot import `messageActions` directly, so we fake the actions object
- * until all non-web extension code is removed
- */
-var messageActions = new Proxy(
-  {},
-  {
-    get(target, prop) {
-      return (payload) => ({ type: `messages/${prop}`, payload });
-    },
-  }
-);

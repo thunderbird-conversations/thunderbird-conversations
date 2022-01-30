@@ -84,8 +84,9 @@ browser.runtime.onInstalled.addListener((details) => {
 // Request handler for getting contact details.
 // Accessible through browser._background.request({ type: "contactDetails", payload: contact })
 requestHandlers.push(async (msg) => {
-  if (msg.type !== "contactDetails") {
-    return null;
+  switch (msg.type) {
+    case "contactDetails":
+      return contactManager.get(msg.payload.email);
   }
-  return contactManager.get(msg.payload.email);
+  return null;
 });

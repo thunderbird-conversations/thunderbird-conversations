@@ -231,6 +231,9 @@ export class MessageIFrame extends React.Component {
         summaryActions.msgStreamMsg({
           dueToExpansion: this.dueToExpansion,
           id: this.props.id,
+          // This supports early load completion if we're in a WebExtension context
+          // and we don't actually load the message currently.
+          iframe: this.iframe,
           dueToReload,
         })
       );
@@ -253,6 +256,9 @@ export class MessageIFrame extends React.Component {
       this.props.dispatch(
         summaryActions.msgStreamMsg({
           id: this.props.id,
+          // This supports early load completion if we're in a WebExtension context
+          // and we don't actually load the message currently.
+          iframe: this.iframe,
         })
       );
     } else {

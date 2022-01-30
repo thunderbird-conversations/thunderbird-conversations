@@ -48,6 +48,10 @@ const SUPPORTED_BASE_APIS = [
  * privileged scope.
  */
 class _BrowserSim {
+  constructor() {
+    this.connectionListeners = new Set();
+  }
+
   setBrowserListener(listener, context) {
     if (!listener) {
       delete this._browser;
@@ -151,14 +155,17 @@ class _BrowserSim {
     browser.runtime.connect = () => {
       return {
         disconnect() {
-          this.listener = null;
+          self.connectionListeners.delete(this.onMessagelistener);
+          this.onMessage.listener = null;
         },
         onMessage: {
           listener: null,
           addListener(l) {
+            self.connectionListeners.add(l);
             this.listener = l;
           },
-          removeListener() {
+          removeListener(l) {
+            self.connectionListeners.delete(l);
             this.listener = null;
           },
         },
@@ -177,6 +184,12 @@ class _BrowserSim {
 
     this._asyncBrowser = browser;
     return browser;
+  }
+
+  sendMessage(msg) {
+    for (let l of BrowserSim.connectionListeners) {
+      l(msg);
+    }
   }
 
   // This is provided so that we can call background scripts from stub.html.

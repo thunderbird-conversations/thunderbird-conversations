@@ -507,7 +507,11 @@
               }
             }
           }
-        ]
+        ],
+        "returns": {
+          "type": "boolean",
+          "description": "true if the stream can be done, false otherwise."
+        }
       },
       {
         "name": "setAccountOfflineDownload",
@@ -614,6 +618,19 @@
             "name": "identityId",
             "type": "string",
             "description": "The identity to get the preference from."
+          }
+        ]
+      },
+      {
+        "name": "postMessageViaBrowserSim",
+        "type": "function",
+        "Description": "Temporary. Allows posting a message to stub.xhtml",
+        "async": true,
+        "parameters": [
+          {
+            "name": "msg",
+            "type": "any",
+            "description": "The message to pass."
           }
         ]
       }

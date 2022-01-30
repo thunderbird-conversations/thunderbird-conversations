@@ -45,8 +45,7 @@ async function handleShowDetails(messages, state, dispatch, updateFn) {
 // determine if this is worth sharing via a shared module with the background
 // scripts, or if it doesn't need it.
 
-// TODO: remove isInTab?
-async function setupConversationInTab(params, isInTab, dispatch) {
+async function setupConversationInTab(params, dispatch) {
   if (window.frameElement) {
     window.frameElement.setAttribute("tooltip", "aHTMLTooltip");
   }
@@ -66,25 +65,12 @@ async function setupConversationInTab(params, isInTab, dispatch) {
       browser.i18n.getMessage("message.movedOrDeletedConversation");
   } else {
     dispatch(conversationActions.showConversation({ msgIds }));
-    // window.Conversations = {
-    //   currentConversation: null,
-    //   counter: 0,
-    // };
-    //
-    // let freshConversation = new Conversation(
-    //   window,
-    //   msgUrls,
-    //   ++window.Conversations.counter,
-    //   isInTab
-    // );
+
     let browserFrame = window.frameElement;
     // Because Thunderbird still hasn't fixed that...
     if (browserFrame) {
       browserFrame.setAttribute("context", "mailContext");
     }
-    //
-    // window.Conversations.currentConversation = freshConversation;
-    // freshConversation.outputInto(window);
   }
 }
 
@@ -188,43 +174,20 @@ export const controllerActions = {
           });
         }
       }
-      await dispatch(
-        controllerActions.initializeMessageThread({ isInTab: true, params })
-      );
+      await dispatch(controllerActions.initializeMessageThread({ params }));
     };
   },
 
-  initializeMessageThread({ isInTab, params }) {
+  initializeMessageThread({ params }) {
     return async (dispatch, getState) => {
       if (getState().summary.isInTab) {
-        console.log("conversation in tab");
-        setupConversationInTab(params, isInTab, dispatch).catch(console.error);
+        setupConversationInTab(params, dispatch).catch(console.error);
       } else {
         let msgIds = await browser.convMsgWindow.getSelectedMessages(
           getState().summary.tabId
         );
-        // let selectedMessages = [];
-        // for (let id of initialMessages) {
-        //   selectedMessages.push(await browser.conversations.getMessageUriForId(id));
-        // }
 
         dispatch(conversationActions.showConversation({ msgIds }));
-        // TODO: window should be mainWindow?
-        // let freshConversation = new Conversation(
-        //   window,
-        //   selectedMessages,
-        //   ++window.Conversations.counter
-        // );
-        // // TODO: log-only
-        // console.debug(
-        //   "New conversation:",
-        //   freshConversation.counter,
-        //   "Old conversation:",
-        //   window.Conversations.currentConversation?.counter
-        // );
-        // window.Conversations.currentConversation?.cleanup();
-        // window.Conversations.currentConversation = freshConversation;
-        // freshConversation.outputInto(window);
       }
     };
   },
@@ -461,6 +424,34 @@ function onSmimeReload(dispatch, id) {
   );
 }
 
+function onExternalMessages(dispatch, msg) {
+  switch (msg.type) {
+    case "addSpecialTag": {
+      dispatch(
+        messageActions.msgAddSpecialTag({
+          tagDetails: {
+            classNames: msg.classNames,
+            icon: msg.icon,
+            name: msg.message,
+            tooltip: {
+              strings: msg.tooltip,
+            },
+          },
+          id: msg.id,
+        })
+      );
+      break;
+    }
+    case "showNotification": {
+      dispatch(
+        messageActions.msgShowNotification({
+          msgData: msg.msgData,
+        })
+      );
+    }
+  }
+}
+
 /**
  * Sets up any listeners required.
  *
@@ -524,6 +515,9 @@ function setupListeners(dispatch, getState) {
   );
   browser.convOpenPgp.onSMIMEStatus.addListener(updateSecurityStatusListener);
   browser.convOpenPgp.onSMIMEReload.addListener(smimeReloadListener);
+  let port = browser.runtime.connect({ name: "externalMessages" });
+  let externalMessagesListener = onExternalMessages.bind(this, dispatch);
+  port.onMessage.addListener(externalMessagesListener);
 
   window.addEventListener(
     "unload",
@@ -547,6 +541,8 @@ function setupListeners(dispatch, getState) {
       );
       browser.convOpenPgp.onSMIMEReload.removeListener(smimeReloadListener);
       window.Conversations?.currentConversation?.cleanup();
+      port.onMessage.removeListener(externalMessagesListener);
+      port.disconnect();
     },
     { once: true }
   );
