@@ -494,7 +494,7 @@ function setupListeners(dispatch, getState) {
 
   browser.convMsgWindow.onSelectedMessagesChanged.addListener(
     msgSelectionChanged,
-    windowId
+    getState().summary.tabId
   );
   browser.messageDisplay.onMessagesDisplayed.addListener(
     selectionChangedListener
@@ -524,7 +524,7 @@ function setupListeners(dispatch, getState) {
     () => {
       browser.convMsgWindow.onSelectedMessagesChanged.removeListener(
         msgSelectionChanged,
-        windowId
+        getState().summary.tabId
       );
       browser.messageDisplay.onMessagesDisplayed.removeListener(
         selectionChangedListener

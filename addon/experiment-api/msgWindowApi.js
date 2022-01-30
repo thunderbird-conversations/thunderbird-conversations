@@ -62,7 +62,7 @@ class WindowObserver {
 }
 
 let selectedMessages = [];
-let msgsChangedListeners = new WeakMap();
+let msgsChangedListeners = new Map();
 
 /* exported convMsgWindow */
 var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
@@ -71,6 +71,7 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
     const { messageManager, windowManager } = extension;
     return {
       convMsgWindow: {
+        // TODO: Add tabid
         async getSelectedMessages() {
           let result = [];
           for (let m of selectedMessages) {
@@ -100,11 +101,10 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
         onSelectedMessagesChanged: new ExtensionCommon.EventManager({
           context,
           name: "convMsgWindow.onSelectedMessagesChanged",
-          register(fire, winId) {
-            const win = getWindowFromId(winId);
-            msgsChangedListeners.set(win, fire);
+          register(fire, tabId) {
+            msgsChangedListeners.set(tabId, fire);
             return function () {
-              msgsChangedListeners.delete(win);
+              msgsChangedListeners.delete(tabId);
             };
           },
         }).api(),
@@ -247,7 +247,11 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
               windowManager,
               summarizeThreadHandler
             );
-            monkeyPatchAllWindows(windowManager, summarizeThreadHandler);
+            monkeyPatchAllWindows(
+              windowManager,
+              summarizeThreadHandler,
+              context
+            );
             Services.ww.registerNotification(windowObserver);
 
             return function () {
@@ -553,7 +557,7 @@ function determineIfSelectionIsThreaded(win) {
   return !isSelectionExpanded(win);
 }
 
-function summarizeThreadHandler(win, id) {
+function summarizeThreadHandler(win, id, context) {
   let previouslySelectedUris = [];
   let previousIsSelectionThreaded = null;
 
@@ -665,7 +669,11 @@ function summarizeThreadHandler(win, id) {
         previouslySelectedUris = newlySelectedUris;
         previousIsSelectionThreaded = isSelectionThreaded;
 
-        msgsChangedListeners.get(win)?.async();
+        let tabmail = win.document.getElementById("tabmail");
+        let tabId = context.extension.tabManager.convert(
+          tabmail.selectedTab
+        ).id;
+        msgsChangedListeners.get(tabId)?.async();
 
         // let freshConversation = new Conversation(
         //   win,
