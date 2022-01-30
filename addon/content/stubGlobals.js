@@ -9,12 +9,3 @@ ChromeUtils.defineModuleGetter(
   "BrowserSim",
   "chrome://conversations/content/modules/browserSim.js"
 );
-
-globalThis.conversationStore = {
-  pendingActions: [],
-
-  dispatch(action) {
-    console.log("old dispatch");
-    this.pendingActions.push(action);
-  },
-};

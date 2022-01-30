@@ -87,7 +87,7 @@ export const controllerActions = {
       // page to startup, and hence tab id isn't set.
       let windowId;
       let tabId;
-      if (isInTab) {
+      if (!BrowserSim && isInTab) {
         windowId = (await browser.windows.getCurrent()).id;
         tabId = (await browser.tabs.getCurrent()).id;
       } else {
