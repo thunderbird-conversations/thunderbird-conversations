@@ -241,6 +241,7 @@ export class MessageIFrame extends React.Component {
     this.iframe = this.div.ownerDocument.createElement("iframe");
     this.iframe.setAttribute("style", "height: 20px; overflow-y: hidden");
     this.iframe.setAttribute("type", "content");
+    this.iframe.setAttribute("sandbox", "");
     this.iframe.classList.add(`convIframe${this.props.id}`);
     this.div.appendChild(this.iframe);
 
