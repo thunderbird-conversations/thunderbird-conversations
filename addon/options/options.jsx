@@ -2,10 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-// TODO: Some of this preference code should be in the background script prefs.js,
-// however we currently aren't able to use sendMessage to send to both the
-// background script and to bootstrap.js.
-
 import { browser, i18n } from "../content/esmodules/thunderbirdCompat.js";
 import React from "react";
 import * as RTK from "@reduxjs/toolkit";
@@ -117,6 +113,14 @@ const PREFS_INFO = [
       title: "options.hide_quick_reply_title",
       desc: "options.hide_quick_reply_desc",
       name: "hide_quick_reply",
+    },
+    component: BinaryOption,
+  },
+  {
+    props: {
+      title: "options.disable_between_column_title",
+      desc: "options.disable_between_column_desc",
+      name: "disableBetweenColumn",
     },
     component: BinaryOption,
   },
