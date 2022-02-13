@@ -7,17 +7,21 @@
  * columns, handling key presses etc.
  */
 export class UIHandler {
-  init() {
+  async init() {
     browser.commands.onCommand.addListener(this.onKeyCommand.bind(this));
-    browser.convContacts.onColumnHandler.addListener(
-      () => {},
-      browser.i18n.getMessage("between.columnName"),
-      browser.i18n.getMessage("between.columnTooltip"),
-      browser.i18n.getMessage("message.meBetweenMeAndSomeone"),
-      browser.i18n.getMessage("message.meBetweenSomeoneAndMe"),
-      browser.i18n.getMessage("header.commaSeparator"),
-      browser.i18n.getMessage("header.andSeparator")
-    );
+
+    const result = await browser.storage.local.get("preferences");
+    if (!result.preferences.disableBetweenColumn) {
+      browser.convContacts.onColumnHandler.addListener(
+        () => {},
+        browser.i18n.getMessage("between.columnName"),
+        browser.i18n.getMessage("between.columnTooltip"),
+        browser.i18n.getMessage("message.meBetweenMeAndSomeone"),
+        browser.i18n.getMessage("message.meBetweenSomeoneAndMe"),
+        browser.i18n.getMessage("header.commaSeparator"),
+        browser.i18n.getMessage("header.andSeparator")
+      );
+    }
   }
 
   onKeyCommand(command) {

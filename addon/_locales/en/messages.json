@@ -114,6 +114,16 @@
     "description": "Options - description for hiding the quick reply display."
   },
 
+  "options.disable_between_column_title": {
+    "message": "Disable Between Column (Requires restart)",
+    "description": "Options - title for disabling the between column."
+  },
+
+  "options.disable_between_column_desc": {
+    "message": "Disables the between column. This may be helpful to set if you don't use the between column, but find Thunderbird still attempts to display it every time.",
+    "description": "Options - description for disabling the between column."
+  },
+
   "options.compose_in_tab2_title": {
     "message": "Enable composition tab",
     "description": "Options - title for enabling the hidden compose in a tab option."
