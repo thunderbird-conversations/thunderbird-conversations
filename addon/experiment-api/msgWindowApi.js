@@ -587,6 +587,7 @@ function summarizeThreadHandler(win, id, context) {
     win.gSummaryFrameManager.loadAndCallback(
       "chrome://conversations/content/stub.html",
       function (isRefresh) {
+        console.trace();
         // See issue #673
         if (htmlpane.contentDocument?.body) {
           htmlpane.contentDocument.body.hidden = false;
@@ -673,6 +674,7 @@ function summarizeThreadHandler(win, id, context) {
         let tabId = context.extension.tabManager.convert(
           tabmail.selectedTab
         ).id;
+        // console.trace(tabId);
         msgsChangedListeners.get(tabId)?.async();
 
         // let freshConversation = new Conversation(

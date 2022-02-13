@@ -20,13 +20,47 @@ export const initialConversation = {
   currentId: 0,
 };
 
+let currentQueryListener;
+let currentQueryListenerArgs;
+
+function removeListeners() {
+  if (currentQueryListener) {
+    browser.convGloda.queryConversationMessages.removeListener(
+      currentQueryListener,
+      currentQueryListenerArgs
+    );
+    currentQueryListener = null;
+    currentQueryListenerArgs = null;
+  }
+}
+
+window.addEventListener("unload", () => {
+  console.log("unload!");
+  removeListeners();
+}, { once : true });
+
 export const conversationActions = {
   showConversation({ msgIds }) {
+    console.trace();
     return async (dispatch, getState) => {
       let loadingStartedTime = Date.now();
 
+      console.log("remove");
+      removeListeners();
+
       let currentId = getState().conversation.currentId + 1;
       await dispatch(conversationActions.setConversationId({ currentId }));
+
+      currentQueryListener = (event) => {
+        console.log(event);
+      };
+      currentQueryListenerArgs = msgIds;
+
+      console.log("add");
+      browser.convGloda.queryConversationMessages.addListener(
+        currentQueryListener,
+        currentQueryListenerArgs
+      );
 
       let messages = msgIds.map((id) => {
         return {

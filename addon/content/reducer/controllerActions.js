@@ -467,6 +467,7 @@ function setupListeners(dispatch, getState) {
     let msgIds = await browser.convMsgWindow.getSelectedMessages(
       getState().summary.tabId
     );
+    console.log("selection changed");
     dispatch(conversationActions.showConversation({ msgIds }));
   }
 
@@ -522,6 +523,7 @@ function setupListeners(dispatch, getState) {
   window.addEventListener(
     "unload",
     () => {
+      console.trace("unload");
       browser.convMsgWindow.onSelectedMessagesChanged.removeListener(
         msgSelectionChanged,
         getState().summary.tabId
