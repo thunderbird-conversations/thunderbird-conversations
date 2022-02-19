@@ -35,8 +35,8 @@
     "redux": "4.1.2"
   },
   "devDependencies": {
-    "@babel/cli": "7.17.0",
-    "@babel/core": "7.17.2",
+    "@babel/cli": "7.17.3",
+    "@babel/core": "7.17.5",
     "@babel/preset-env": "7.16.11",
     "@babel/preset-react": "7.16.7",
     "@wojtekmaj/enzyme-adapter-react-17": "0.6.6",
@@ -44,10 +44,10 @@
     "babel-loader": "8.2.3",
     "enzyme": "3.11.0",
     "eslint": "8.9.0",
-    "eslint-config-prettier": "8.3.0",
+    "eslint-config-prettier": "8.4.0",
     "eslint-plugin-fetch-options": "0.0.5",
     "eslint-plugin-html": "6.2.0",
-    "eslint-plugin-jsdoc": "37.9.1",
+    "eslint-plugin-jsdoc": "37.9.4",
     "eslint-plugin-json": "3.1.0",
     "eslint-plugin-mozilla": "2.11.3",
     "eslint-plugin-no-unsanitized": "4.0.1",
@@ -62,7 +62,7 @@
     "react-test-renderer": "17.0.2",
     "serve": "13.0.2",
     "web-ext": "6.7.0",
-    "webpack": "5.68.0",
+    "webpack": "5.69.1",
     "webpack-cli": "4.9.2"
   },
   "scripts": {
