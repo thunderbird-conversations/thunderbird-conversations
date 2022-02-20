@@ -73,14 +73,13 @@ class MyComponent extends React.Component {
     const header = await browser.messages.get(id);
     document.title = browser.i18n.getMessage("gallery.title", [header.subject]);
 
-    let messageParts = await browser.messages.getFull(id);
-    messageParts = messageParts.parts[0].parts;
+    let attachments = await browser.messages.listAttachments(id);
 
-    messageParts = messageParts.filter(
+    attachments = attachments.filter(
       (p) => p.contentType.indexOf("image/") == 0
     );
 
-    await this.output(messageParts, id, scrollToPartName);
+    await this.output(attachments, id, scrollToPartName);
   }
 
   /**
@@ -94,29 +93,42 @@ class MyComponent extends React.Component {
    * @param {string} scrollToPartName
    */
   async output(attachments, id, scrollToPartName) {
-    let i = 1;
+    // Get the initial data first.
     for (const attachment of attachments) {
-      let file = await browser.messages.getAttachmentFile(
-        id,
-        attachment.partName
-      );
-      attachment.url = URL.createObjectURL(file);
       attachment.size = await browser.conversations.formatFileSize(
         attachment.size
       );
     }
     this.setState({
-      images: attachments.map((attachment) => {
+      images: attachments.map((attachment, i) => {
         return {
-          index: i++,
+          index: i + 1,
           name: attachment.name,
           partName: attachment.partName,
           size: attachment.size,
-          src: attachment.url,
+          src: null,
         };
       }),
-      scrollToPartName,
+      scrollToPartName: null,
     });
+    for (const [i, attachment] of attachments.entries()) {
+      let file = await browser.messages.getAttachmentFile(
+        id,
+        attachment.partName
+      );
+      let newState = {
+        images: [...this.state.images],
+        scrollToPartName: this.state.scrollToPartName,
+      };
+      newState.images[i] = {
+        ...newState.images[i],
+        src: URL.createObjectURL(file),
+      };
+      if (scrollToPartName == newState.images[i].partName) {
+        newState.scrollToPartName = scrollToPartName;
+      }
+      this.setState(newState);
+    }
   }
 
   render() {
