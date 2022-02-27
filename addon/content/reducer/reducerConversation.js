@@ -34,10 +34,14 @@ function removeListeners() {
   }
 }
 
-window.addEventListener("unload", () => {
-  console.log("unload!");
-  removeListeners();
-}, { once : true });
+window.addEventListener(
+  "unload",
+  () => {
+    console.log("unload!");
+    removeListeners();
+  },
+  { once: true }
+);
 
 export const conversationActions = {
   showConversation({ msgIds }) {
@@ -50,9 +54,21 @@ export const conversationActions = {
 
       let currentId = getState().conversation.currentId + 1;
       await dispatch(conversationActions.setConversationId({ currentId }));
+      await dispatch(composeSlice.actions.resetStore());
+      await dispatch(
+        quickReplySlice.actions.setExpandedState({ expanded: false })
+      );
 
       currentQueryListener = (event) => {
         console.log(event);
+        if (event.initial) {
+          dispatch(
+            conversationActions.showConversation2({
+              msgIds: event.initial,
+              loadingStartedTime,
+            })
+          );
+        }
       };
       currentQueryListenerArgs = msgIds;
 
@@ -61,7 +77,11 @@ export const conversationActions = {
         currentQueryListener,
         currentQueryListenerArgs
       );
-
+    };
+  },
+  showConversation2({ msgIds, loadingStartedTime }) {
+    return async (dispatch, getState) => {
+      let phase2StartTime = new Date();
       let messages = msgIds.map((id) => {
         return {
           id,
@@ -97,11 +117,6 @@ export const conversationActions = {
       // We need to fill them in ourselves.
       await mergeContactDetails(enrichedMsgs);
 
-      await dispatch(composeSlice.actions.resetStore());
-      await dispatch(
-        quickReplySlice.actions.setExpandedState({ expanded: false })
-      );
-
       summary.loading = false;
       summary.subject = enrichedMsgs[enrichedMsgs.length - 1]?.subject;
 
@@ -117,6 +132,11 @@ export const conversationActions = {
             "Conversations:",
             "Load took (ms):",
             Date.now() - loadingStartedTime
+          );
+          console.debug(
+            "Conversations:",
+            "Second phase took (ms):",
+            Date.now() - phase2StartTime
           );
         }
         // TODO: Fix this for the standalone message view, so that we send
