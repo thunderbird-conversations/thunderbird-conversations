@@ -103,18 +103,38 @@
     "message": "V nekaterih primerih bo Thunderbirdu spodletelo prepoznati nekatere priponke. Ta možnosti omogoča zaobiti Thunderbirdovega hrošča in zagotovi, da se prikaže čim več priponk. Uporabite v kombinaciji z dodatkom Show All Body Parts.",
     "description": "Options - description for attachment settings."
   },
-
-  "options.compose_in_tab_title": {
-    "message": "Skrito okno za sestavljanje",
-    "description": "Options - title for hidden compose window enabling."
+  
+    "options.hide_quick_reply_title": {
+    "message": "Skrij hitri odgovor",
+    "description": "Options - title for hiding quick reply display."
   },
 
-  "options.compose_in_tab_desc": {
-    "message": "Ctrl-Shift-N odpre skrito, nepodprto okno za sestavljanje v novem zavihku",
-    "description": "Options - description for hidden compose window enabling."
+  "options.hide_quick_reply_desc": {
+    "message": "V pogovorih skrij polje za hitri odgovor.",
+    "description": "Options - description for hiding the quick reply display."
   },
 
-  "options.debugging_title": {
+  "options.disable_between_column_title": {
+    "message": "Onemogoči stolpec Med (zahteva ponovni zagon)",
+    "description": "Options - title for disabling the between column."
+  },
+
+  "options.disable_between_column_desc": {
+    "message": "Onemogoči stolpec Med. To je lahko v pomoč, če ne uporabljate stolpca Med, Thunderbird ga pa še vedno poizkuša vsakič prikazati.",
+    "description": "Options - description for disabling the between column."
+  },
+
+  "options.compose_in_tab2_title": {
+    "message": "Omogoči zavihek za sestavljanje",
+    "description": "Options - title for enabling the hidden compose in a tab option."
+  },
+
+  "options.compose_in_tab2_desc": {
+    "message": "Ctrl-Shift-N odpre skrito okno za sestavljanje v novem zavihku (preizkusno).",
+    "description": "Options - description for enabling the hidden compose in a tab option."
+  },
+
+    "options.debugging_title": {
     "message": "Razhroščevanje",
     "description": "Options - title for debugging setting."
   },
@@ -129,9 +149,44 @@
     "description": "The document title of the assistant page."
   },
 
+  "assistant.intro2": {
+    "message": "Ta pomočnik bo prilagodil nastavitev Thunderbirda, da zagotovi vašo optimalno izkušnjo.",
+    "description": "Introduction paragraph for the assistant."
+  },
+
+  "assistant.settingsBetweenTitle": {
+    "message": "Ali bi radi privzeto prikazali stgolpec Med?",
+    "description": "Title for the section for enabling the between column."
+  },
+
+  "assistant.settingsBetweenDetail": {
+    "message": "To na seznam sporočil doda stolpec za prikaz vseh udeležencev v pogovoru.",
+    "description": "Details for the section for enabling the between column."
+  },
+
+  "assistant.actionEnableBetween": {
+    "message": "Omogoči stolpec Med",
+    "description": "Label for the checkbox for enabling the between column."
+  },
+
+  "assistant.settingsColumnInfo": {
+    "message": "Še vedno lahko stolpce z desnim klikom na njihovo ime omogočite ali onemogočite.",
+    "description": "Information after the between column about how to enable and disable columns."
+  },
+
+  "assistant.otherSettingsTitle": {
+    "message": "Druge nastavitve",
+    "description": "Title for the other settings."
+  },
+
   "assistant.working": {
     "message": "Obdelovanje …",
     "description": "An indication that the assistant is working."
+  },
+
+  "assistant.workingText": {
+    "message": "To lahko traja nekaj časa. Lahko počakate, da se ta zavihek zapre ali pa ga sami zaprete in v meniju Orodja > Upravitelj dejavnosti preverite napredek.",
+    "description": "Third detail paragraph for the assistant."
   },
 
   "assistant.apply": {
@@ -147,6 +202,11 @@
   "assistant.actionOfflineDownload": {
     "message": "Mapi \"Prejeto\" in \"Poslano\" sta usklajeni za hrambo v nepovezanem načinu (zelo priporočeno).",
     "description": "Option text for allowing offline download."
+  },
+
+  "assistant.actionSetupMessageViews": {
+    "message": "Prikaži seznam sporočil v nitih in ga razvrsti po datumu. Uveljavi za vse mape (zelo priporočljivo).",
+    "description": "Option text for how the view is set."
   },
 
   "assistant.actionEnsureMessagePaneVisible": {
@@ -199,6 +259,11 @@
     "description": "Tooltip shown on the edit contact button"
   },
 
+  "contact.viewContactTooltip": {
+    "message": "Pokaži stik v imeniku",
+    "description": "Tooltip shown on the view contact button for read-only contacts"
+  },
+
   "contact.sendEmailTooltip": {
     "message": "pošlji pošto",
     "description": "Tooltip shown on the send email button"
@@ -209,34 +274,9 @@
     "description": "Tooltip shown on the recent conversations button"
   },
 
-  "message.archive.tooltip": {
-    "message": "Arhiviraj ta pogovor",
-    "description": "Tooltip for the archive button in the conversation header"
-  },
-
-  "message.detach.tooltip": {
-    "message": "Prikaži ta pogovor v novem zavihku",
-    "description": "Tooltip for the detach to new tab button in the conversation header"
-  },
-
-  "message.expand.tooltip": {
-    "message": "Razširi/Strni vsa sporočila",
-    "description": "Tooltip for the expand button in the conversation header"
-  },
-
   "message.forwardConversation": {
     "message": "Posreduj ta pogovor",
     "description": "The link text for forwarding a conversation"
-  },
-
-  "message.junk.tooltip": {
-    "message": "Označi to sporočilo kot neželeno",
-    "description": "Tooltip for the junk button in the conversation header"
-  },
-
-  "message.loading": {
-    "message": "Nalaganje …",
-    "description": "Displayed when the message is loading"
   },
 
   "message.printConversation": {
@@ -244,14 +284,39 @@
     "description": "The link text for printing a conversation"
   },
 
+  "message.trash.tooltip": {
+    "message": "Izbriši ta pogovor",
+    "description": "Tooltip for the trash button in the conversation header"
+  },
+
+  "message.archive.tooltip": {
+    "message": "Arhiviraj ta pogovor",
+    "description": "Tooltip for the archive button in the conversation header"
+  },
+
+  "message.junk.tooltip": {
+    "message": "Označi to sporočilo kot neželeno",
+    "description": "Tooltip for the junk button in the conversation header"
+  },
+
+  "message.expand.tooltip": {
+    "message": "Razširi/Strni vsa sporočila",
+    "description": "Tooltip for the expand button in the conversation header"
+  },
+
   "message.read.tooltip": {
     "message": "Preklopi vsa sporočila med prebrano/neprebrano",
     "description": "Tooltip for the mark as read button in the conversation header"
   },
 
-  "message.trash.tooltip": {
-    "message": "Izbriši ta pogovor",
-    "description": "Tooltip for the trash button in the conversation header"
+  "message.detach.tooltip": {
+    "message": "Prikaži ta pogovor v novem zavihku",
+    "description": "Tooltip for the detach to new tab button in the conversation header"
+  },
+
+  "message.loading": {
+    "message": "Nalaganje …",
+    "description": "Displayed when the message is loading"
   },
 
   "message.noSubject": {
@@ -638,6 +703,16 @@
     "message": "To sporočilo je bilo podpisano",
     "description": "Tooltip displayed when a signature is good and verified."
   },
+  
+  "enigmail.messageBadSignature": {
+    "message": "slab podpis",
+    "description": "Tag description displayed when a message is signed but has a bad signature"
+  },
+
+  "enigmail.messageBadSignatureLong": {
+    "message": "To sporočilo je bilo podpisano, vendar je podpis slab.",
+    "description": "Tooltip displayed when a signature is bad."
+  },
 
   "enigmail.messageDecrypted": {
     "message": "odšifrirano",
@@ -647,6 +722,21 @@
   "enigmail.messageDecryptedLong": {
     "message": "To sporočilo je bilo pred prikazom odšifrirano",
     "description": "Tooltip displayed when a message has been decrypted."
+  },
+  
+  "openpgp.signedByLabel": {
+    "message": "Podpisal:",
+    "description": "Label displayed for a SMIME certificate to label who it was signed by."
+  },
+
+  "openpgp.signedByEmailLabel": {
+    "message": "E-poštni naslov:",
+    "description": "Label displayed for a SMIME certificate to label who it was signed by."
+  },
+
+  "openpgp.certificateIssuedByLabel": {
+    "message": "Potrdilo izdal:",
+    "description": "Label displayed for a SMIME certificate to label who it was signed by."
   },
 
   "compose.addCc": {
@@ -713,9 +803,53 @@
     "message": "prikaži več …",
     "description": "Show more link for showing more contacts."
   },
+  
+  "enigmail.encrypt": {
+    "message": "šifriraj",
+    "description": "Checkbox label for specifying encryption of a message to be sent."
+  },
+
+  "enigmail.sign": {
+    "message": "podpiši",
+    "description": "Checkbox label for specifying signing of a message to be sent."
+  },
 
   "enigmail.unknownGood": {
     "message": "neznan dober podpis",
     "description": "Tooltip displayed when a signature is good but unverified."
+  }
+
+  "options.undoCustomizations": {
+    "message": "Razveljavi prilagoditve",
+    "description": "Description for the undo customizations button."
+  },
+
+  "options.undoCustomizations.tooltip": {
+    "message": "Razveljavi prilagoditve ob izvirni namestitvi.",
+    "description": "Tooltip for the undo customizations button."
+  },
+
+  "options.undoCustomizations.finished": {
+    "message": "Razveljavitev prilagoditev je končana.",
+    "description": "Message displayed once the customizations have been uninstalled."
+  },
+
+  "compose.reply_header_citation": {
+    "message": "$date$ $time$ je $author$ napisal:",
+    "description": "Citation header when replying to a message.",
+    "placeholders": {
+      "author": {
+        "content": "$1",
+        "example": "John Smith"
+      },
+      "date": {
+        "content": "$2",
+        "example": "12/01/21"
+      },
+      "time": {
+        "content": "$3",
+        "example": "12:14"
+      }
+    }
   }
 }
