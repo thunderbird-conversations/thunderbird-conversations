@@ -23,7 +23,7 @@ function imipOptions(
   actionFunc,
   foundItems
 ) {
-  let data = cal.itip.getOptionsText(itipItem, rc, actionFunc);
+  let data = cal.itip.getOptionsText(itipItem, rc, actionFunc, foundItems);
 
   // Set the right globals so that actionFunc works properly.
   win.calImipBar.itipItem = itipItem;
@@ -68,6 +68,9 @@ function imipOptions(
     imipTentativeButton: "TENTATIVE",
     imipDeclineButton: "DECLINED",
     imipGoToCalendarButton: "GOTO",
+    imipDetailsButton: "X-SHOWDETAILS",
+    imipDeclineCounterButton: "X-DECLINECOUNTER",
+    imipRescheduleButton: "X-RESCHEDULE",
   };
 
   const buttons = [];
@@ -81,7 +84,7 @@ function imipOptions(
       id: c,
       actionParams: {
         extraData: {
-          execute: idToActionMap[c],
+          execute: idToActionMap[c] ?? "",
         },
       },
       classNames: `imip-button calendarImipButton msgHeaderView-button ${c}`,
