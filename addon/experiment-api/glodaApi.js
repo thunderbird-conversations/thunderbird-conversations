@@ -11,6 +11,16 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   Gloda: "resource:///modules/gloda/GlodaPublic.jsm",
 });
 
+/**
+ * @typedef nsIMsgDBHdr
+ * @see https://searchfox.org/comm-central/rev/9d9fac50cddfd9606a51c4ec3059728c33d58028/mailnews/base/public/nsIMsgHdr.idl#14
+ */
+
+/**
+ * @typedef GlodaMessage
+ * @see https://searchfox.org/comm-central/rev/6355da49d4d258b049f63ffa1c945fa467fb2adf/mailnews/db/gloda/modules/GlodaDataModel.jsm#549
+ */
+
 /* exported convGloda */
 var convGloda = class extends ExtensionCommon.ExtensionAPI {
   getAPI(context) {
@@ -20,8 +30,6 @@ var convGloda = class extends ExtensionCommon.ExtensionAPI {
           context,
           name: "convContacts.queryConversationMessages",
           register(fire, msgIds) {
-            console.log(msgIds);
-
             let status = { stopQuery: false };
 
             let msgHdrs = msgIds.map((id) =>
@@ -44,6 +52,10 @@ var convGloda = class extends ExtensionCommon.ExtensionAPI {
   }
 };
 
+// This is high because we want enough snippet to extract relevant data from
+// bugzilla snippets.
+const kSnippetLength = 700;
+
 async function startQuery(msgHdrs, status, fire, context) {
   // This is a "classic query", i.e. the one we use all the time: just obtain
   //  a GlodaMessage for the selected message headers, and then pick the
@@ -56,10 +68,17 @@ async function startQuery(msgHdrs, status, fire, context) {
   }
 
   if (!intermediateResults.length) {
-    fire.async({ inital: [] });
+    // Gloda has nothing, so return the list of message headers selected.
+    let initial = [];
+    for (let hdr of msgHdrs) {
+      let msg = await GlodaListener.translateStandardMessage(context, hdr);
+      if (msg) {
+        initial.push(msg);
+      }
+    }
+    fire.async({ initial });
     return;
   }
-  console.log("got", intermediateResults);
 
   getAndObserveConversationThread(
     msgHdrs,
@@ -108,8 +127,7 @@ class GlodaListener {
   onItemsRemoved(items) {
     console.log("onItemsRemoved", items);
   }
-  async onQueryCompleted(collection) {
-    console.log("onQueryCompleted", collection);
+  onQueryCompleted(collection) {
     if (this.initialQueryComplete) {
       console.error("was not expecting initial query complete a second time!");
       return;
@@ -136,47 +154,101 @@ class GlodaListener {
       }
     }
 
-    console.log([...messageIdMap.values()]);
-
     let messages = [];
     for (let msg of messageIdMap.values()) {
-      let id = await this.translateMessage(msg);
-      if (id != undefined) {
-        messages.push(id);
+      let newMsg =
+        "headerMessageID" in msg
+          ? this.translateGlodaMessage(msg)
+          : GlodaListener.translateStandardMessage(this.context, msg);
+      if (newMsg) {
+        messages.push(newMsg);
       }
     }
 
-    // TODO: Sort results on date.
-    // TODO: Return what we can initally without translating the message.
-    // e.g. read status, date, subject, snippet - anything without async calls
-    // - enough to build skelton display.
-    console.log(messages);
+    // TODO: We can probably return the pre-translated Gloda messages with
+    // some combination of the message headers we already have.
+    // For threads with a large set of messages in alternate folders this should
+    // help a lot with reducing the time to load.
+    // It probably won't help if all the messages are the selected ones,
+    // since we would still need to load the headers to inject into the gloda
+    // query and for the basic details.
+
+    messages.sort((m1, m2) => m1.date - m2.date);
     this.fire.async({ initial: messages });
-
-    // Then, fill out full message details from conversion with ids & return
-    // those. Can we do the important ones first? aka expanded? Then the
-    // not so important ones? Might need to move the expansion logic into here...
-    // Maybe try perf first? Suspect expansion logic will need to move though :(
-    // this.fire.async({ full: messages });
   }
 
-  translateMessage(msg) {
-    if ("headerMessageID" in msg) {
-      return this.translateGlodaMessage(msg);
-    }
-    return this.translateStandardMessage(msg);
-  }
-
-  async translateGlodaMessage(msg) {
-    let message = await this.context.extension.messageManager.convert(
+  /**
+   * Translates a gloda message into a format returnable by the API.
+   *
+   * @param {GlodaMessage} msg
+   *   The message from Gloda to convert.
+   */
+  translateGlodaMessage(msg) {
+    let message = this.context.extension.messageManager.convert(
       msg.folderMessage
     );
-    return message?.id;
+    if (!message) {
+      return null;
+    }
+    message.glodaMessageId = msg.headerMessageID;
+    message.snippet =
+      msg.indexedBodyText?.substring(0, kSnippetLength - 1) || "...";
+
+    let msgHdr = msg.folderMessage;
+    message.needsLateAttachments =
+      (!(msgHdr.folder instanceof Ci.nsIMsgLocalMailFolder) &&
+        !(msgHdr.folder.flags & Ci.nsMsgFolderFlags.Offline)) || // online IMAP
+      msg.isEncrypted || // encrypted message
+      (msg.contentType + "").search(/^multipart\/encrypted(;|$)/i) == 0; // encrypted message
+
+    if (msg.alternativeSender?.length) {
+      message.alternativeSender = msg.alternativeSender;
+      message.type = "bugzilla";
+    } else {
+      message.type = "normal";
+    }
+
+    if ("attachmentInfos" in msg) {
+      message.attachments = msg.attachmentInfos.map(this.simplifyAttachment);
+    }
+
+    message.recipientsIncludeLists = !!msg.mailingLists?.length;
+
+    return message;
   }
 
-  async translateStandardMessage(msg) {
-    let message = await this.context.extension.messageManager.convert(msg);
-    return message?.id;
+  /**
+   * Translates a standard msgHdr into a format returnable by the API.
+   *
+   * @param {object} context
+   *   The extension context.
+   * @param {nsIMsgDBHdr} msg
+   *   The msgHdr for the message.
+   */
+  static translateStandardMessage(context, msg) {
+    let message = context.extension.messageManager.convert(msg);
+    message.getFullRequired = true;
+    message.type = "normal";
+    message.attachments = [];
+    message.recipientsIncludeLists = false;
+    return message;
+  }
+
+  /**
+   * Simple function to extra just the parts of the attachment information
+   * that we need into their own object. This simplifies managing the data.
+   *
+   * @param {object} attachment
+   */
+  simplifyAttachment(attachment) {
+    return {
+      contentType: attachment.contentType,
+      name: attachment.name,
+      // Fall back to _part for gloda attachments.
+      partName: attachment.partName ?? attachment._part,
+      size: attachment.size,
+      url: attachment.url,
+    };
   }
 }
 

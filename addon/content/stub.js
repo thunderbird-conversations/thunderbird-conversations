@@ -11,12 +11,9 @@ import { conversationApp } from "./reducer/reducer.js";
 import { ConversationWrapper } from "./components/conversation/conversationWrapper.jsx";
 import { controllerActions } from "./reducer/controllerActions.js";
 
-let foo = 0;
-
 document.addEventListener(
   "DOMContentLoaded",
   async () => {
-    console.trace(foo++);
     if (BrowserSim) {
       globalThis.browser = await BrowserSim.getBrowserAsync();
     }

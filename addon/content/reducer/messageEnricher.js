@@ -131,7 +131,7 @@ export class MessageEnricher {
       if (message.invalid) {
         continue;
       }
-      let id = message.glodaMessageId ?? message.messageHeaderId;
+      let id = message.glodaMessageId ?? message.headerMessageId;
       let items = groupedMessages.get(id);
       if (!items) {
         groupedMessages.set(id, [message]);
@@ -156,7 +156,7 @@ export class MessageEnricher {
       if (this.loggingEnabled) {
         console.log(
           "Filtering out duplicates:",
-          group.map((m) => m.glodaMessageId ?? m.messageHeaderId)
+          group.map((m) => m.glodaMessageId ?? m.headerMessageId)
         );
       }
 
@@ -332,28 +332,26 @@ export class MessageEnricher {
     userTags,
     selectedMessages
   ) {
+    // TODO: Maybe only clone msg & start using more fields directly.
     let msg = {
       id: message.id,
       initialPosition: message.initialPosition,
       type: message.type,
       // Needed to avoid de-duplicating at the wrong times.
-      messageHeaderId: message.messageHeaderId,
+      headerMessageId: message.headerMessageId,
       glodaMessageId: message.glodaMessageId,
       detailsShowing: message.detailsShowing,
       recipientsIncludeLists: message.recipientsIncludeLists,
     };
-    const messageHeader = await browser.messages.get(message.id);
-    if (!messageHeader) {
-      throw new Error("Message no longer exists");
-    }
-    const messageFolderType = messageHeader.folder.type;
+    const messageFolderType = message.folder.type;
 
     await this._parseContactLines(
       {
-        from: messageHeader.author,
-        to: messageHeader.recipients,
-        cc: messageHeader.ccList,
-        bcc: messageHeader.bccList,
+        from: message.author,
+        to: message.recipients,
+        cc: message.ccList,
+        bcc: message.bccList,
+        alternativeSender: message.alternativeSender,
       },
       msg
     );
@@ -362,7 +360,7 @@ export class MessageEnricher {
       msg.realFrom = real?.[0].email;
     }
 
-    msg.rawDate = messageHeader.date.getTime();
+    msg.rawDate = message.date.getTime();
     // Only set hasRemoteContent for new messages, otherwise we cause a reload
     // of content each time when a message already has remote content.
     if (mode != "replaceMsg") {
@@ -373,20 +371,20 @@ export class MessageEnricher {
     msg.smimeReload = false;
     msg.isPhishing = false;
 
-    msg.folderAccountId = messageHeader.folder.accountId;
-    msg.folderPath = messageHeader.folder.path;
+    msg.folderAccountId = message.folder.accountId;
+    msg.folderPath = message.folder.path;
     msg.isArchives = messageFolderType == "archives";
     msg.isDraft = messageFolderType == "drafts";
     msg.isInbox = messageFolderType == "inbox";
-    msg.isJunk = messageHeader.junk;
+    msg.isJunk = message.junk;
     msg.isSent = messageFolderType == "sent";
     msg.isTemplate = messageFolderType == "templates";
     msg.isOutbox = messageFolderType == "outbox";
-    msg.read = messageHeader.read;
-    msg.subject = messageHeader.subject;
-    msg.starred = messageHeader.flagged;
+    msg.read = message.read;
+    msg.subject = message.subject;
+    msg.starred = message.flagged;
 
-    msg.tags = messageHeader.tags.map((tagKey) => {
+    msg.tags = message.tags.map((tagKey) => {
       // The fallback here shouldn't ever happen, but just in case...
       const tagDetails = userTags.find((t) => t.key == tagKey) || {
         color: "#FFFFFF",
@@ -405,14 +403,14 @@ export class MessageEnricher {
       (await browser.conversations.isInView(tabId, message.id));
     if (!isInView) {
       let parentFolders = await browser.folders.getParentFolders(
-        messageHeader.folder
+        message.folder
       );
-      let folderName = messageHeader.folder.name;
+      let folderName = message.folder.name;
       for (let folder of parentFolders) {
         folderName = folder.name + "/" + folderName;
       }
       msg.folderName = folderName;
-      msg.shortFolderName = messageHeader.folder.name;
+      msg.shortFolderName = message.folder.name;
     }
     return msg;
   }
@@ -525,20 +523,26 @@ export class MessageEnricher {
         : [],
     };
 
+    // TODO: Drop realFrom, and use alternativeSender in the UI where
+    // we need to differentiate.
     // The from can be overridden, e.g. in the case of bugzilla, so this field
     // is always the email address this was originally from.
     msg.realFrom = msg.parsedLines.from[0]?.email;
 
-    for (let line of ["to", "cc", "bcc"]) {
+    for (let line of ["to", "cc", "bcc", "alternativeSender"]) {
       msg.parsedLines[line] = [];
       let item = contactData[line];
-      if (!item.length) {
+      if (!item?.length) {
         continue;
       }
       for (let i of item) {
         let data = i ? await browser.conversations.parseMimeLine(i) : [];
         msg.parsedLines[line] = msg.parsedLines[line].concat(data);
       }
+    }
+
+    if (msg.parsedLines.alternativeSender?.length) {
+      msg.parsedLines.from = msg.parsedLines.alternativeSender;
     }
   }
 

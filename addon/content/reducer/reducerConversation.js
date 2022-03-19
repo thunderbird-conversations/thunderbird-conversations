@@ -37,7 +37,6 @@ function removeListeners() {
 window.addEventListener(
   "unload",
   () => {
-    console.log("unload!");
     removeListeners();
   },
   { once: true }
@@ -45,11 +44,9 @@ window.addEventListener(
 
 export const conversationActions = {
   showConversation({ msgIds }) {
-    console.trace();
     return async (dispatch, getState) => {
       let loadingStartedTime = Date.now();
 
-      console.log("remove");
       removeListeners();
 
       let currentId = getState().conversation.currentId + 1;
@@ -60,11 +57,10 @@ export const conversationActions = {
       );
 
       currentQueryListener = (event) => {
-        console.log(event);
         if (event.initial) {
           dispatch(
             conversationActions.showConversation2({
-              msgIds: event.initial,
+              msgs: event.initial,
               loadingStartedTime,
             })
           );
@@ -72,35 +68,26 @@ export const conversationActions = {
       };
       currentQueryListenerArgs = msgIds;
 
-      console.log("add");
       browser.convGloda.queryConversationMessages.addListener(
         currentQueryListener,
         currentQueryListenerArgs
       );
     };
   },
-  showConversation2({ msgIds, loadingStartedTime }) {
+  showConversation2({ msgs, loadingStartedTime }) {
     return async (dispatch, getState) => {
       let phase2StartTime = new Date();
-      let messages = msgIds.map((id) => {
+      let messages = msgs.map((msg, i) => {
         return {
-          id,
-          attachments: {},
-          initialPosition: 0,
-          type: "",
-          messageHeaderId: id,
-          // TODO: only turn this on for non-gloda.
-          getFullRequired: true,
-          glodaMessageId: null,
+          ...msg,
+          initialPosition: i,
           detailsShowing: false,
-          recipientsIncludeLists: false,
-          snippet: "",
         };
       });
 
       // TODO: eliminate the need?
       let mode = "replaceAll";
-      let summary = { initialSet: msgIds };
+      let summary = { initialSet: msgs.map((msg) => msg.id) };
       let currentState = getState();
       // The messages need some more filling out and tweaking.
       let messageEnricher = new MessageEnricher();
