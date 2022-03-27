@@ -65,26 +65,33 @@ export let conversationUtils = new (class {
     if (!(body.indexOf("<pre wrap>") === 0)) {
       body = "<br>" + body;
     }
-    return [
-      '<div style="overflow: auto">',
-      '<img src="',
-      msg.from.avatar,
-      '" style="float: left; height: 48px; margin-right: 5px" />',
-      '<b><span><a style="color: ',
-      msg.from.colorStyle.backgroundColor,
-      ' !important; text-decoration: none !important; font-weight: bold" href="mailto:',
-      msg.from.email,
-      '">',
-      this._escapeHtml(msg.from.name),
-      "</a></span></b><br />",
-      '<span style="color: #666">',
-      msg.fullDate,
-      "</span>",
-      "</div>",
-      '<div style="color: #666">',
-      body,
-      "</div>",
-    ].join("");
+    return ['<div style="overflow: auto">']
+      .concat(
+        msg.from
+          ? [
+              '<img src="',
+              msg.from.avatar,
+              '" style="float: left; height: 48px; margin-right: 5px" />',
+              '<b><span><a style="color: ',
+              msg.from.colorStyle.backgroundColor,
+              ' !important; text-decoration: none !important; font-weight: bold" href="mailto:',
+              msg.from.email,
+              '">',
+              this._escapeHtml(msg.from.name),
+            ]
+          : [],
+        [
+          "</a></span></b><br />",
+          '<span style="color: #666">',
+          msg.fullDate,
+          "</span>",
+          "</div>",
+          '<div style="color: #666">',
+          body,
+          "</div>",
+        ]
+      )
+      .join("");
   }
 
   /**
