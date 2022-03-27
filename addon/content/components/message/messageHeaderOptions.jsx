@@ -124,9 +124,10 @@ export class MessageHeaderOptions extends React.PureComponent {
     if (this.clickListener) {
       document.removeEventListener("click", this.clickListener);
       document.removeEventListener("keypress", this.keyListener);
-      document.removeEventListener("blur", this.keyListener);
+      document.removeEventListener("blur", this.onBlur);
       this.clickListener = null;
       this.keyListener = null;
+      this.onBlur = null;
     }
   }
 
@@ -214,9 +215,10 @@ export class MessageHeaderOptions extends React.PureComponent {
     if (this.clickListener) {
       document.removeEventListener("click", this.clickListener);
       document.removeEventListener("keypress", this.keyListener);
-      document.removeEventListener("blur", this.keyListener);
+      document.removeEventListener("blur", this.onBlur);
       this.clickListener = null;
       this.keyListener = null;
+      this.onBlur = null;
     }
   }
 
