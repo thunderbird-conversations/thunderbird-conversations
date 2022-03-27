@@ -59,8 +59,9 @@ export const conversationActions = {
       currentQueryListener = (event) => {
         if (event.initial) {
           dispatch(
-            conversationActions.showConversation2({
+            conversationActions.displayConversationMsgs({
               msgs: event.initial,
+              initialSet: msgIds,
               loadingStartedTime,
             })
           );
@@ -74,7 +75,7 @@ export const conversationActions = {
       );
     };
   },
-  showConversation2({ msgs, loadingStartedTime }) {
+  displayConversationMsgs({ msgs, initialSet, loadingStartedTime }) {
     return async (dispatch, getState) => {
       let phase2StartTime = new Date();
       let messages = msgs.map((msg, i) => {
@@ -87,7 +88,7 @@ export const conversationActions = {
 
       // TODO: eliminate the need?
       let mode = "replaceAll";
-      let summary = { initialSet: msgs.map((msg) => msg.id) };
+      let summary = { initialSet };
       let currentState = getState();
       // The messages need some more filling out and tweaking.
       let messageEnricher = new MessageEnricher();
@@ -95,9 +96,7 @@ export const conversationActions = {
         mode,
         messages,
         currentState.summary,
-        mode == "replaceAll"
-          ? summary.initialSet
-          : currentState.summary.initialSet
+        initialSet
       );
 
       // The messages inside `msgData` don't come with filled in `to`/`from`/ect. fields.
