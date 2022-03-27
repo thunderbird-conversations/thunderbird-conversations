@@ -67,6 +67,11 @@ export const conversationActions = {
           );
         } else if (event.added) {
           console.log("Added", event.added);
+          dispatch(
+            conversationActions.addConversationMsgs({
+              msgs: event.added,
+            })
+          );
         } else if (event.removed) {
           dispatch(
             messageActions.removeMessages({
@@ -94,16 +99,23 @@ export const conversationActions = {
         };
       });
 
-      // TODO: eliminate the need?
-      let mode = "replaceAll";
       let summary = { initialSet };
       let currentState = getState();
       // The messages need some more filling out and tweaking.
       let messageEnricher = new MessageEnricher();
       let enrichedMsgs = await messageEnricher.enrich(
-        mode,
+        // TODO: eliminate the need? - depends on remote content for modifying messages.
+        "replaceAll",
         messages,
         currentState.summary,
+        initialSet
+      );
+
+      // Do expansion and scrolling after gathering the message data
+      // as this relies on the message read information.
+      messageEnricher.determineExpansion(
+        enrichedMsgs,
+        currentState.summary.prefs.expandWho,
         initialSet
       );
 
@@ -117,29 +129,68 @@ export const conversationActions = {
       await dispatch(summaryActions.replaceSummaryDetails(summary));
 
       await dispatch(
-        messageActions.updateConversation({ messages: enrichedMsgs, mode })
+        messageActions.replaceConversation({ messages: enrichedMsgs })
       );
 
-      if (mode == "replaceAll") {
-        if (currentState.summary.prefs.loggingEnabled) {
-          console.debug(
-            "Conversations:",
-            "Load took (ms):",
-            Date.now() - loadingStartedTime
-          );
-          console.debug(
-            "Conversations:",
-            "Second phase took (ms):",
-            Date.now() - phase2StartTime
-          );
-        }
-        // TODO: Fix this for the standalone message view, so that we send
-        // the correct notifications.
-        if (!currentState.summary.isInTab) {
-          await browser.convMsgWindow.fireLoadCompleted();
-        }
-        await dispatch(controllerActions.maybeSetMarkAsRead());
+      if (currentState.summary.prefs.loggingEnabled) {
+        console.debug(
+          "Conversations:",
+          "Load took (ms):",
+          Date.now() - loadingStartedTime
+        );
+        console.debug(
+          "Conversations:",
+          "Second phase took (ms):",
+          Date.now() - phase2StartTime
+        );
       }
+      // TODO: Fix this for the standalone message view, so that we send
+      // the correct notifications.
+      if (!currentState.summary.isInTab) {
+        await browser.convMsgWindow.fireLoadCompleted();
+      }
+      await dispatch(controllerActions.maybeSetMarkAsRead());
+    };
+  },
+  addConversationMsgs({ msgs }) {
+    return async (dispatch, getState) => {
+      let currentState = getState();
+      let currentMsgCount = currentState.messages.msgData.length;
+      let messages = msgs.map((msg, i) => {
+        return {
+          ...msg,
+          initialPosition: i + currentMsgCount,
+          detailsShowing: false,
+        };
+      });
+
+      // TODO: eliminate the need?
+      let mode = "replaceAll";
+      // The messages need some more filling out and tweaking.
+      let messageEnricher = new MessageEnricher();
+      let enrichedMsgs = await messageEnricher.enrich(
+        mode,
+        messages,
+        currentState.summary,
+        currentState.summary.initialSet
+      );
+
+      for (let msg of enrichedMsgs) {
+        messageEnricher.markExpansionForAddedMsg(
+          msg,
+          currentState.summary.expandWho
+        );
+      }
+
+      // The messages inside `msgData` don't come with filled in `to`/`from`/ect. fields.
+      // We need to fill them in ourselves.
+      await mergeContactDetails(enrichedMsgs);
+
+      await dispatch(
+        messageActions.addMessages({
+          msgs: enrichedMsgs,
+        })
+      );
     };
   },
 };
