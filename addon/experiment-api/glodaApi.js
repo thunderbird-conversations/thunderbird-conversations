@@ -119,13 +119,48 @@ class GlodaListener {
   }
 
   onItemsAdded(items) {
+    // The first batch of messages will be treated in onQueryCompleted, this
+    //  handler is only interested in subsequent messages.
+    if (!this.initialQueryComplete) {
+      return;
+    }
     console.log("onItemsAdded", items);
+    let messages = [];
+    for (let msg of items) {
+      let newMsg = this.translateGlodaMessage(msg);
+      if (newMsg) {
+        messages.push(newMsg);
+      }
+    }
+    messages = messages.sort((m1, m2) => m1.date - m2.date);
+    if (messages.length) {
+      this.fire.async({ added: messages });
+    }
   }
   onItemsModified(items) {
+    if (!this.initialQueryComplete) {
+      return;
+    }
     console.log("onItemsModified", items);
   }
   onItemsRemoved(items) {
+    if (!this.initialQueryComplete) {
+      return;
+    }
     console.log("onItemsRemoved", items);
+    let msgIds = [];
+    for (let msg of items) {
+      let message = this.context.extension.messageManager.convert(
+        msg.folderMessage
+      );
+      if (!message) {
+        continue;
+      }
+      if (message) {
+        msgIds.push(message.id);
+      }
+    }
+    this.fire.async({ removed: msgIds });
   }
   onQueryCompleted(collection) {
     if (this.initialQueryComplete) {

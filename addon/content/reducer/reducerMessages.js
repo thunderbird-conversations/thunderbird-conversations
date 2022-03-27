@@ -440,6 +440,12 @@ export const messagesSlice = RTK.createSlice({
       }
       return { ...state, msgData: messages };
     },
+    removeMessages(state, { payload }) {
+      return {
+        ...state,
+        msgData: state.msgData.filter((msg) => !payload.msgs.includes(msg.id)),
+      };
+    },
     msgExpand(state, { payload }) {
       return modifyOnlyMsg(state, payload.id, (msg) => ({
         ...msg,

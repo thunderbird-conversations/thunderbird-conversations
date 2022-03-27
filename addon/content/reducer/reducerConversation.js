@@ -65,6 +65,14 @@ export const conversationActions = {
               loadingStartedTime,
             })
           );
+        } else if (event.added) {
+          console.log("Added", event.added);
+        } else if (event.removed) {
+          dispatch(
+            messageActions.removeMessages({
+              msgs: event.removed,
+            })
+          );
         }
       };
       currentQueryListenerArgs = msgIds;
