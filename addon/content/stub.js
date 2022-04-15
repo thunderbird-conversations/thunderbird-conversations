@@ -4,7 +4,7 @@
 
 /* global conversationStore:true, BrowserSim */
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOMClient from "react-dom/client";
 import * as RTK from "@reduxjs/toolkit";
 import * as ReactRedux from "react-redux";
 import { conversationApp } from "./reducer/reducer.js";
@@ -26,13 +26,13 @@ document.addEventListener(
     const conversationContainer = document.getElementById(
       "conversationWrapper"
     );
-    ReactDOM.render(
+    let root = ReactDOMClient.createRoot(conversationContainer);
+    root.render(
       React.createElement(
         ReactRedux.Provider,
         { store: conversationStore },
         React.createElement(ConversationWrapper)
-      ),
-      conversationContainer
+      )
     );
     for (let action of earlyActions) {
       conversationStore.dispatch(action);
