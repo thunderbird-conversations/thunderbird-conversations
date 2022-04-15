@@ -68,6 +68,9 @@
   "overrides": {
     "@devicefarmer/adbkit": {
       "node-forge": "1.3.0"
+    },
+    "@devicefarmer/adbkit-monkey": {
+      "async": "3.2.2"
     }
   },
   "scripts": {
