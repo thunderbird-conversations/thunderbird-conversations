@@ -78,10 +78,10 @@ export let conversationUtils = new (class {
               msg.from.email,
               '">',
               this._escapeHtml(msg.from.name),
+              "</a></span></b><br />",
             ]
           : [],
         [
-          "</a></span></b><br />",
           '<span style="color: #666">',
           msg.fullDate,
           "</span>",
