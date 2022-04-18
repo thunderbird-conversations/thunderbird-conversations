@@ -335,12 +335,16 @@ export function MessageHeader({
         >
           <SvgIcon hash="star" />
         </div>
-        <Avatar
-          url={from.avatar}
-          style={from.colorStyle}
-          initials={from.initials}
-        />{" "}
-        <ContactLabel className="author" contact={from} msgId={id} />
+        {!!from && (
+          <>
+            <Avatar
+              url={from.avatar}
+              style={from.colorStyle}
+              initials={from.initials}
+            />{" "}
+            <ContactLabel className="author" contact={from} msgId={id} />
+          </>
+        )}
         {extraContacts}
         {!expanded && (
           <span className="snippet">
@@ -395,7 +399,7 @@ MessageHeader.propTypes = {
   date: PropTypes.string.isRequired,
   detailsShowing: PropTypes.bool.isRequired,
   expanded: PropTypes.bool.isRequired,
-  from: PropTypes.object.isRequired,
+  from: PropTypes.object,
   fullDate: PropTypes.string.isRequired,
   id: PropTypes.number.isRequired,
   attachments: PropTypes.array.isRequired,
