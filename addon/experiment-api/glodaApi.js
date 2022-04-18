@@ -225,7 +225,7 @@ class GlodaListener {
     if (!message) {
       return null;
     }
-    message.glodaMessageId = msg.headerMessageID;
+    message.source = "gloda";
     message.snippet =
       msg.indexedBodyText?.substring(0, kSnippetLength - 1) || "...";
 
@@ -263,6 +263,7 @@ class GlodaListener {
   static translateStandardMessage(context, msg) {
     let message = context.extension.messageManager.convert(msg);
     message.getFullRequired = true;
+    message.source = "standard";
     message.type = "normal";
     message.attachments = [];
     message.recipientsIncludeLists = false;

@@ -212,26 +212,14 @@ describe("messageEnricher", () => {
 
     test("Prefers in-view messages", async () => {
       let fakeMsgs = [
+        createFakeData({ id: 1, folderType: "trash" }, fakeMessageHeaderData),
         createFakeData(
-          { id: 1, glodaMessageId: 1, folderType: "trash" },
+          { id: 2, folderType: "archives" },
           fakeMessageHeaderData
         ),
-        createFakeData(
-          { id: 2, glodaMessageId: 1, folderType: "archives" },
-          fakeMessageHeaderData
-        ),
-        createFakeData(
-          { id: 3, glodaMessageId: 1, folderType: "sent" },
-          fakeMessageHeaderData
-        ),
-        createFakeData(
-          { id: 4, glodaMessageId: 1, folderType: "inbox" },
-          fakeMessageHeaderData
-        ),
-        createFakeData(
-          { id: 5, glodaMessageId: 1, folderType: "junk" },
-          fakeMessageHeaderData
-        ),
+        createFakeData({ id: 3, folderType: "sent" }, fakeMessageHeaderData),
+        createFakeData({ id: 4, folderType: "inbox" }, fakeMessageHeaderData),
+        createFakeData({ id: 5, folderType: "junk" }, fakeMessageHeaderData),
       ];
       isInViewSpy.mockImplementation((tabId, msgId) => msgId == 5);
 
@@ -248,22 +236,13 @@ describe("messageEnricher", () => {
 
     test("Next messages in inbox", async () => {
       let fakeMsgs = [
+        createFakeData({ id: 1, folderType: "trash" }, fakeMessageHeaderData),
         createFakeData(
-          { id: 1, glodaMessageId: 1, folderType: "trash" },
+          { id: 2, folderType: "archives" },
           fakeMessageHeaderData
         ),
-        createFakeData(
-          { id: 2, glodaMessageId: 1, folderType: "archives" },
-          fakeMessageHeaderData
-        ),
-        createFakeData(
-          { id: 3, glodaMessageId: 1, folderType: "sent" },
-          fakeMessageHeaderData
-        ),
-        createFakeData(
-          { id: 4, glodaMessageId: 1, folderType: "inbox" },
-          fakeMessageHeaderData
-        ),
+        createFakeData({ id: 3, folderType: "sent" }, fakeMessageHeaderData),
+        createFakeData({ id: 4, folderType: "inbox" }, fakeMessageHeaderData),
       ];
 
       let msgs = await messageEnricher.enrich(
@@ -279,18 +258,12 @@ describe("messageEnricher", () => {
 
     test("Next messages in sent", async () => {
       let fakeMsgs = [
+        createFakeData({ id: 1, folderType: "trash" }, fakeMessageHeaderData),
         createFakeData(
-          { id: 1, glodaMessageId: 1, folderType: "trash" },
+          { id: 2, folderType: "archives" },
           fakeMessageHeaderData
         ),
-        createFakeData(
-          { id: 2, glodaMessageId: 1, folderType: "archives" },
-          fakeMessageHeaderData
-        ),
-        createFakeData(
-          { id: 3, glodaMessageId: 1, folderType: "sent" },
-          fakeMessageHeaderData
-        ),
+        createFakeData({ id: 3, folderType: "sent" }, fakeMessageHeaderData),
       ];
 
       let msgs = await messageEnricher.enrich(
@@ -306,12 +279,9 @@ describe("messageEnricher", () => {
 
     test("Next messages in archives", async () => {
       let fakeMsgs = [
+        createFakeData({ id: 1, folderType: "trash" }, fakeMessageHeaderData),
         createFakeData(
-          { id: 1, glodaMessageId: 1, folderType: "trash" },
-          fakeMessageHeaderData
-        ),
-        createFakeData(
-          { id: 2, glodaMessageId: 1, folderType: "archives" },
+          { id: 2, folderType: "archives" },
           fakeMessageHeaderData
         ),
       ];
@@ -329,14 +299,8 @@ describe("messageEnricher", () => {
 
     test("Lastly, the first of other messages", async () => {
       let fakeMsgs = [
-        createFakeData(
-          { id: 1, glodaMessageId: 1, folderType: "trash" },
-          fakeMessageHeaderData
-        ),
-        createFakeData(
-          { id: 2, glodaMessageId: 1, folderType: "junk" },
-          fakeMessageHeaderData
-        ),
+        createFakeData({ id: 1, folderType: "trash" }, fakeMessageHeaderData),
+        createFakeData({ id: 2, folderType: "junk" }, fakeMessageHeaderData),
       ];
 
       let msgs = await messageEnricher.enrich(

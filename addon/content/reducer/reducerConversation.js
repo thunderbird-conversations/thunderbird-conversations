@@ -101,6 +101,17 @@ export const conversationActions = {
 
       let summary = { initialSet };
       let currentState = getState();
+
+      if (currentState.summary.prefs.loggingEnabled) {
+        console.log(
+          "Displaying",
+          msgs.map((m) => ({
+            id: m.id,
+            headerMessageId: m.headerMessageId,
+          }))
+        );
+      }
+
       // The messages need some more filling out and tweaking.
       let messageEnricher = new MessageEnricher();
       let enrichedMsgs = await messageEnricher.enrich(
@@ -155,6 +166,17 @@ export const conversationActions = {
   addConversationMsgs({ msgs }) {
     return async (dispatch, getState) => {
       let currentState = getState();
+
+      if (currentState.summary.prefs.loggingEnabled) {
+        console.log(
+          "Adding",
+          msgs.map((m) => ({
+            id: m.id,
+            headerMessageId: m.headerMessageId,
+          }))
+        );
+      }
+
       let currentMsgCount = currentState.messages.msgData.length;
       let messages = msgs.map((msg, i) => {
         return {

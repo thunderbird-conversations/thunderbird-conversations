@@ -125,7 +125,7 @@ export class MessageEnricher {
       if (message.invalid) {
         continue;
       }
-      let id = message.glodaMessageId ?? message.headerMessageId;
+      let id = message.headerMessageId;
       let items = groupedMessages.get(id);
       if (!items) {
         groupedMessages.set(id, [message]);
@@ -150,7 +150,7 @@ export class MessageEnricher {
       if (this.loggingEnabled) {
         console.log(
           "Filtering out duplicates:",
-          group.map((m) => m.glodaMessageId ?? m.headerMessageId)
+          group.map((m) => m.headerMessageId)
         );
       }
 
@@ -330,7 +330,6 @@ export class MessageEnricher {
       type: message.type,
       // Needed to avoid de-duplicating at the wrong times.
       headerMessageId: message.headerMessageId,
-      glodaMessageId: message.glodaMessageId,
       detailsShowing: message.detailsShowing,
       recipientsIncludeLists: message.recipientsIncludeLists,
     };
@@ -544,8 +543,8 @@ export class MessageEnricher {
    *   The message to get the additional details for.
    * @param {number} message.initialPosition
    *   The initial position of the message.
-   * @param {number} message.glodaMessageId
-   *   The gloda message id.
+   * @param {string} message.source
+   *   The source of the message (gloda or standard).
    * @param {object[]} message.attachments
    *   The attachment data already extracted for the message.
    * @param {object} msg
@@ -554,11 +553,11 @@ export class MessageEnricher {
    *   Whether or not the user wants to display extra attachments.
    */
   async _addDetailsFromAttachments(
-    { initialPosition, glodaMessageId, attachments },
+    { initialPosition, source, attachments },
     msg,
     extraAttachments
   ) {
-    if (glodaMessageId && extraAttachments) {
+    if (source && extraAttachments) {
       msg.needsLateAttachments = true;
     }
 
