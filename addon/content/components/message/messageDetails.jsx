@@ -81,7 +81,7 @@ MessageDetails.propTypes = {
   bcc: PropTypes.array.isRequired,
   cc: PropTypes.array.isRequired,
   extraLines: PropTypes.array,
-  from: PropTypes.object.isRequired,
+  from: PropTypes.object,
   id: PropTypes.number.isRequired,
   to: PropTypes.array.isRequired,
 };
