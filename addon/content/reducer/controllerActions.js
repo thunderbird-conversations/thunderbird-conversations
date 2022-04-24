@@ -10,36 +10,11 @@
 
 /* global BrowserSim */
 import { conversationActions } from "./reducerConversation.js";
-import { mergeContactDetails } from "./contacts.js";
-import { MessageEnricher } from "./messageEnricher.js";
 import { messageActions } from "./reducerMessages.js";
-import { composeSlice } from "./reducerCompose.js";
 import { summaryActions, summarySlice } from "./reducerSummary.js";
-import { quickReplySlice } from "./reducerQuickReply.js";
 
 let loggingEnabled = false;
 let markAsReadTimer;
-let messageEnricher;
-
-async function handleShowDetails(messages, state, dispatch, updateFn) {
-  let defaultShowing = state.summary.defaultDetailsShowing;
-  for (let msg of messages.msgData) {
-    msg.detailsShowing = defaultShowing;
-  }
-
-  await updateFn();
-
-  if (defaultShowing) {
-    for (let msg of state.messages.msgData) {
-      await dispatch(
-        messageActions.showMsgDetails({
-          id: msg.id,
-          detailsShowing: true,
-        })
-      );
-    }
-  }
-}
 
 // TODO: Once the WebExtension parts work themselves out a bit more,
 // determine if this is worth sharing via a shared module with the background
@@ -189,72 +164,6 @@ export const controllerActions = {
 
         dispatch(conversationActions.showConversation({ msgIds }));
       }
-    };
-  },
-
-  /**
-   * Update a conversation either replacing or appending the messages.
-   *
-   * @param {object} root0
-   * @param {object} [root0.summary]
-   *   Only applies to replacing a conversation, the summary details to update.
-   * @param {object} root0.messages
-   *   The messages to insert or append.
-   * @param {string} root0.mode
-   *   Can be "append", "replaceAll" or "replaceMsg". replaceMsg will replace
-   *   only a single message.
-   */
-  updateConversation({ summary, messages, mode }) {
-    return async (dispatch, getState) => {
-      const state = getState();
-
-      if (!messageEnricher) {
-        // Delayed init to make sure browser has time to be defined.
-        messageEnricher = new MessageEnricher();
-      }
-
-      await handleShowDetails(messages, state, dispatch, async () => {
-        // The messages need some more filling out and tweaking.
-        let enrichedMsgs = await messageEnricher.enrich(
-          mode,
-          messages.msgData,
-          state.summary,
-          mode == "replaceAll" ? summary.initialSet : state.summary.initialSet
-        );
-
-        // The messages inside `msgData` don't come with filled in `to`/`from`/ect. fields.
-        // We need to fill them in ourselves.
-        await mergeContactDetails(enrichedMsgs);
-
-        if (mode == "replaceAll") {
-          summary.subject = enrichedMsgs[enrichedMsgs.length - 1]?.subject;
-
-          await dispatch(composeSlice.actions.resetStore());
-          await dispatch(
-            quickReplySlice.actions.setExpandedState({ expanded: false })
-          );
-          await dispatch(summaryActions.replaceSummaryDetails(summary));
-        }
-
-        await dispatch(
-          messageActions.updateConversation({ messages: enrichedMsgs, mode })
-        );
-
-        if (mode == "replaceAll") {
-          if (loggingEnabled) {
-            console.debug(
-              "Load took (ms):",
-              Date.now() - summary.loadingStartedTime
-            );
-          }
-          // TODO: Fix this for the standalone message view, so that we send
-          // the correct notifications.
-          if (!state.summary.isInTab) {
-            await browser.convMsgWindow.fireLoadCompleted();
-          }
-          await dispatch(this.maybeSetMarkAsRead());
-        }
-      });
     };
   },
 

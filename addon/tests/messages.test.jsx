@@ -40,7 +40,6 @@ describe("messageEnricher", () => {
       let fakeMsg = createFakeData({}, fakeMessageHeaderData);
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         [fakeMsg],
         createFakeSummaryData({ noFriendlyDate: true }),
         [fakeMessageHeaderData.size - 1]
@@ -64,7 +63,6 @@ describe("messageEnricher", () => {
       isInViewSpy.mockReturnValue(false);
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         [fakeMsg],
         createFakeSummaryData({ noFriendlyDate: true }),
         [fakeMessageHeaderData.size]
@@ -81,7 +79,6 @@ describe("messageEnricher", () => {
       isInViewSpy.mockReturnValue(true);
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         [fakeMsg],
         createFakeSummaryData({ noFriendlyDate: true }),
         [fakeMessageHeaderData.size]
@@ -163,7 +160,6 @@ describe("messageEnricher", () => {
         let fakeMsg = createFakeData(test.source, fakeMessageHeaderData);
 
         let msgs = await messageEnricher.enrich(
-          "replaceAll",
           [fakeMsg],
           createFakeSummaryData({ noFriendlyDate: true }),
           [3]
@@ -182,7 +178,6 @@ describe("messageEnricher", () => {
       );
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         [fakeMsg],
         createFakeSummaryData({ noFriendlyDate: true }),
         [fakeMessageHeaderData.size - 1]
@@ -212,23 +207,35 @@ describe("messageEnricher", () => {
 
     test("Prefers in-view messages", async () => {
       let fakeMsgs = [
-        createFakeData({ id: 1, folderType: "trash" }, fakeMessageHeaderData),
         createFakeData(
-          { id: 2, folderType: "archives" },
+          { id: 1, folderType: "trash", headerMessageId: 1 },
           fakeMessageHeaderData
         ),
-        createFakeData({ id: 3, folderType: "sent" }, fakeMessageHeaderData),
-        createFakeData({ id: 4, folderType: "inbox" }, fakeMessageHeaderData),
-        createFakeData({ id: 5, folderType: "junk" }, fakeMessageHeaderData),
+        createFakeData(
+          { id: 2, folderType: "archives", headerMessageId: 1 },
+          fakeMessageHeaderData
+        ),
+        createFakeData(
+          { id: 3, folderType: "sent", headerMessageId: 1 },
+          fakeMessageHeaderData
+        ),
+        createFakeData(
+          { id: 4, folderType: "inbox", headerMessageId: 1 },
+          fakeMessageHeaderData
+        ),
+        createFakeData(
+          { id: 5, folderType: "junk", headerMessageId: 1 },
+          fakeMessageHeaderData
+        ),
       ];
       isInViewSpy.mockImplementation((tabId, msgId) => msgId == 5);
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         fakeMsgs,
         createFakeSummaryData({ expandWho: 3 }),
         []
       );
+      messageEnricher.determineExpansion(msgs, 3, []);
 
       expect(msgs.length).toBe(1);
       expect(msgs[0].id).toBe(5);
@@ -236,21 +243,30 @@ describe("messageEnricher", () => {
 
     test("Next messages in inbox", async () => {
       let fakeMsgs = [
-        createFakeData({ id: 1, folderType: "trash" }, fakeMessageHeaderData),
         createFakeData(
-          { id: 2, folderType: "archives" },
+          { id: 1, folderType: "trash", headerMessageId: 1 },
           fakeMessageHeaderData
         ),
-        createFakeData({ id: 3, folderType: "sent" }, fakeMessageHeaderData),
-        createFakeData({ id: 4, folderType: "inbox" }, fakeMessageHeaderData),
+        createFakeData(
+          { id: 2, folderType: "archives", headerMessageId: 1 },
+          fakeMessageHeaderData
+        ),
+        createFakeData(
+          { id: 3, folderType: "sent", headerMessageId: 1 },
+          fakeMessageHeaderData
+        ),
+        createFakeData(
+          { id: 4, folderType: "inbox", headerMessageId: 1 },
+          fakeMessageHeaderData
+        ),
       ];
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         fakeMsgs,
         createFakeSummaryData({ expandWho: 3 }),
         []
       );
+      messageEnricher.determineExpansion(msgs, 3, []);
 
       expect(msgs.length).toBe(1);
       expect(msgs[0].id).toBe(4);
@@ -258,20 +274,26 @@ describe("messageEnricher", () => {
 
     test("Next messages in sent", async () => {
       let fakeMsgs = [
-        createFakeData({ id: 1, folderType: "trash" }, fakeMessageHeaderData),
         createFakeData(
-          { id: 2, folderType: "archives" },
+          { id: 1, folderType: "trash", headerMessageId: 1 },
           fakeMessageHeaderData
         ),
-        createFakeData({ id: 3, folderType: "sent" }, fakeMessageHeaderData),
+        createFakeData(
+          { id: 2, folderType: "archives", headerMessageId: 1 },
+          fakeMessageHeaderData
+        ),
+        createFakeData(
+          { id: 3, folderType: "sent", headerMessageId: 1 },
+          fakeMessageHeaderData
+        ),
       ];
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         fakeMsgs,
         createFakeSummaryData({ expandWho: 3 }),
         []
       );
+      messageEnricher.determineExpansion(msgs, 3, []);
 
       expect(msgs.length).toBe(1);
       expect(msgs[0].id).toBe(3);
@@ -279,19 +301,22 @@ describe("messageEnricher", () => {
 
     test("Next messages in archives", async () => {
       let fakeMsgs = [
-        createFakeData({ id: 1, folderType: "trash" }, fakeMessageHeaderData),
         createFakeData(
-          { id: 2, folderType: "archives" },
+          { id: 1, folderType: "trash", headerMessageId: 1 },
+          fakeMessageHeaderData
+        ),
+        createFakeData(
+          { id: 2, folderType: "archives", headerMessageId: 1 },
           fakeMessageHeaderData
         ),
       ];
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         fakeMsgs,
         createFakeSummaryData({ expandWho: 3 }),
         []
       );
+      messageEnricher.determineExpansion(msgs, 3, []);
 
       expect(msgs.length).toBe(1);
       expect(msgs[0].id).toBe(2);
@@ -299,16 +324,22 @@ describe("messageEnricher", () => {
 
     test("Lastly, the first of other messages", async () => {
       let fakeMsgs = [
-        createFakeData({ id: 1, folderType: "trash" }, fakeMessageHeaderData),
-        createFakeData({ id: 2, folderType: "junk" }, fakeMessageHeaderData),
+        createFakeData(
+          { id: 1, folderType: "trash", headerMessageId: 1 },
+          fakeMessageHeaderData
+        ),
+        createFakeData(
+          { id: 2, folderType: "junk", headerMessageId: 1 },
+          fakeMessageHeaderData
+        ),
       ];
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         fakeMsgs,
         createFakeSummaryData({ expandWho: 3 }),
         []
       );
+      messageEnricher.determineExpansion(msgs, 3, []);
 
       expect(msgs.length).toBe(1);
       expect(msgs[0].id).toBe(1);
@@ -323,11 +354,13 @@ describe("messageEnricher", () => {
       }
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         fakeMsgs,
         createFakeSummaryData({ expandWho: 3 }),
         [fakeMessageHeaderData.size - 1]
       );
+      messageEnricher.determineExpansion(msgs, 3, [
+        fakeMessageHeaderData.size - 1,
+      ]);
 
       for (let i = 0; i < 5; i++) {
         expect(msgs[i].expanded).toBe(true);
@@ -339,25 +372,6 @@ describe("messageEnricher", () => {
       }
     });
 
-    test("Expands all appended messages when expand is set to all", async () => {
-      let fakeMsgs = [];
-      for (let i = 0; i < 5; i++) {
-        fakeMsgs.push(createFakeData({ id: i }, fakeMessageHeaderData));
-      }
-
-      let msgs = await messageEnricher.enrich(
-        "append",
-        fakeMsgs.slice(2, 5),
-        createFakeSummaryData({ expandWho: 3 }),
-        [1]
-      );
-
-      for (let i = 2; i < 5; i++) {
-        expect(msgs[i - 2].expanded).toBe(true);
-        expect("scrollTo" in msgs[i - 2]).toBe(false);
-      }
-    });
-
     test("Expands no messages when expand is set to none", async () => {
       let fakeMsgs = [];
       for (let i = 0; i < 5; i++) {
@@ -365,11 +379,13 @@ describe("messageEnricher", () => {
       }
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         fakeMsgs,
         createFakeSummaryData({ expandWho: 1 }),
         [fakeMessageHeaderData.size - 1]
       );
+      messageEnricher.determineExpansion(msgs, 1, [
+        fakeMessageHeaderData.size - 1,
+      ]);
 
       for (let i = 0; i < 5; i++) {
         expect(msgs[i].expanded).toBe(false);
@@ -378,25 +394,6 @@ describe("messageEnricher", () => {
         } else {
           expect(msgs[i].scrollTo).toBe(true);
         }
-      }
-    });
-
-    test("Expands no appended messages when expand is set to none", async () => {
-      let fakeMsgs = [];
-      for (let i = 0; i < 5; i++) {
-        fakeMsgs.push(createFakeData({ id: i }, fakeMessageHeaderData));
-      }
-
-      let msgs = await messageEnricher.enrich(
-        "append",
-        fakeMsgs.slice(2, 5),
-        createFakeSummaryData({ expandWho: 1 }),
-        [1]
-      );
-
-      for (let i = 2; i < 5; i++) {
-        expect(msgs[i - 2].expanded).toBe(false);
-        expect("scrollTo" in msgs[i - 2]).toBe(false);
       }
     });
 
@@ -410,11 +407,11 @@ describe("messageEnricher", () => {
         }
 
         let msgs = await messageEnricher.enrich(
-          "replaceAll",
           fakeMsgs,
           createFakeSummaryData(),
           [3]
         );
+        messageEnricher.determineExpansion(msgs, 4, [3]);
 
         for (let i = 0; i < 5; i++) {
           expect(msgs[i].expanded).toBe(i == 3);
@@ -435,11 +432,11 @@ describe("messageEnricher", () => {
         }
 
         let msgs = await messageEnricher.enrich(
-          "replaceAll",
           fakeMsgs,
           createFakeSummaryData(),
           [3]
         );
+        messageEnricher.determineExpansion(msgs, 4, [3]);
 
         for (let i = 0; i < 5; i++) {
           expect(msgs[i].expanded).toBe(i == 3);
@@ -460,11 +457,11 @@ describe("messageEnricher", () => {
         }
 
         let msgs = await messageEnricher.enrich(
-          "replaceAll",
           fakeMsgs,
           createFakeSummaryData(),
           [3, 4]
         );
+        messageEnricher.determineExpansion(msgs, 4, [3, 4]);
 
         for (let i = 0; i < 5; i++) {
           expect(msgs[i].expanded).toBe(i > 2);
@@ -474,27 +471,6 @@ describe("messageEnricher", () => {
           } else {
             expect(msgs[i].scrollTo).toBe(true);
           }
-        }
-      });
-
-      test("Multi unread append", async () => {
-        let fakeMsgs = [];
-        for (let i = 0; i < 5; i++) {
-          fakeMsgs.push(
-            createFakeData({ id: i, read: i <= 2 }, fakeMessageHeaderData)
-          );
-        }
-
-        let msgs = await messageEnricher.enrich(
-          "append",
-          fakeMsgs.slice(2, 5),
-          createFakeSummaryData(),
-          [1]
-        );
-
-        for (let i = 2; i < 5; i++) {
-          expect(msgs[i - 2].expanded).toBe(true);
-          expect("scrollTo" in msgs[i - 2]).toBe(false);
         }
       });
     });
@@ -518,7 +494,6 @@ describe("messageEnricher", () => {
       );
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         [fakeMsg],
         createFakeSummaryData({ noFriendlyDate: true }),
         [fakeMessageHeaderData.size - 1]
@@ -567,13 +542,12 @@ describe("messageEnricher", () => {
         {
           snippet: "should not be used",
           getFullRequired: true,
-          from: "realEmail@invalid.com",
+          author: "realEmail@invalid.com",
         },
         fakeMessageHeaderData
       );
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         [fakeMsg],
         createFakeSummaryData(),
         [fakeMessageHeaderData.size - 1]
@@ -621,7 +595,6 @@ Updating`,
         )
       );
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         fakeMsgs,
         createFakeSummaryData(),
         [fakeMessageHeaderData.size - 1]
@@ -649,7 +622,6 @@ Updating`,
       );
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         [fakeMsg],
         createFakeSummaryData(),
         [fakeMessageHeaderData.size - 1]
@@ -675,7 +647,6 @@ Updating`,
       );
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         [fakeMsg],
         createFakeSummaryData(),
         [fakeMessageHeaderData.size - 1]
@@ -691,7 +662,6 @@ Updating`,
       let fakeMsg = createFakeData({ date: now }, fakeMessageHeaderData);
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         [fakeMsg],
         createFakeSummaryData(),
         [fakeMessageHeaderData.size - 1]
@@ -710,7 +680,6 @@ Updating`,
       let fakeMsg = createFakeData({ date: now }, fakeMessageHeaderData);
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         [fakeMsg],
         createFakeSummaryData({ noFriendlyDate: true }),
         [fakeMessageHeaderData.size - 1]

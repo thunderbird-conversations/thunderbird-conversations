@@ -242,7 +242,7 @@ export class MessageEnricher {
    *   The value of the expandWho preference.
    */
   markExpansionForAddedMsg(msg, expandWho) {
-    msg.expanded = !expandWho == kExpandNone;
+    msg.expanded = !(expandWho == kExpandNone);
   }
 
   /**

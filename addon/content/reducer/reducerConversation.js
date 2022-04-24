@@ -52,6 +52,26 @@ window.addEventListener(
   { once: true }
 );
 
+async function handleShowDetails(messages, state, dispatch, updateFn) {
+  let defaultShowing = state.summary.defaultDetailsShowing;
+  for (let msg of messages) {
+    msg.detailsShowing = defaultShowing;
+  }
+
+  await updateFn();
+
+  if (defaultShowing) {
+    for (let msg of messages) {
+      await dispatch(
+        messageActions.showMsgDetails({
+          id: msg.id,
+          detailsShowing: true,
+        })
+      );
+    }
+  }
+}
+
 export const conversationActions = {
   showConversation({ msgIds }) {
     return async (dispatch, getState) => {
@@ -105,76 +125,78 @@ export const conversationActions = {
   },
   displayConversationMsgs({ msgs, initialSet, loadingStartedTime }) {
     return async (dispatch, getState) => {
-      let phase2StartTime = new Date();
-      let messages = msgs
-        .map((msg, i) => {
-          return {
-            ...msg,
-            initialPosition: i,
-            detailsShowing: false,
-          };
-        })
-        .sort(sortMessages);
-
-      let summary = { initialSet };
       let currentState = getState();
+      await handleShowDetails(msgs, currentState, dispatch, async () => {
+        let phase2StartTime = new Date();
+        let messages = msgs
+          .map((msg, i) => {
+            return {
+              ...msg,
+              initialPosition: i,
+              detailsShowing: false,
+            };
+          })
+          .sort(sortMessages);
 
-      if (currentState.summary.prefs.loggingEnabled) {
-        console.log(
-          "Displaying",
-          msgs.map((m) => ({
-            id: m.id,
-            headerMessageId: m.headerMessageId,
-          }))
+        let summary = { initialSet };
+
+        if (currentState.summary.prefs.loggingEnabled) {
+          console.log(
+            "Displaying",
+            msgs.map((m) => ({
+              id: m.id,
+              headerMessageId: m.headerMessageId,
+            }))
+          );
+        }
+
+        // The messages need some more filling out and tweaking.
+        let enrichedMsgs = await messageEnricher().enrich(
+          messages,
+          currentState.summary,
+          initialSet
         );
-      }
 
-      // The messages need some more filling out and tweaking.
-      let enrichedMsgs = await messageEnricher().enrich(
-        messages,
-        currentState.summary,
-        initialSet
-      );
-
-      // Do expansion and scrolling after gathering the message data
-      // as this relies on the message read information.
-      messageEnricher().determineExpansion(
-        enrichedMsgs,
-        currentState.summary.prefs.expandWho,
-        initialSet
-      );
-
-      // The messages inside `msgData` don't come with filled in `to`/`from`/ect. fields.
-      // We need to fill them in ourselves.
-      await mergeContactDetails(enrichedMsgs);
-
-      summary.loading = false;
-      summary.subject = enrichedMsgs[enrichedMsgs.length - 1]?.subject;
-
-      await dispatch(summaryActions.replaceSummaryDetails(summary));
-
-      await dispatch(
-        messageActions.replaceConversation({ messages: enrichedMsgs })
-      );
-
-      if (currentState.summary.prefs.loggingEnabled) {
-        console.debug(
-          "Conversations:",
-          "Load took (ms):",
-          Date.now() - loadingStartedTime
+        // Do expansion and scrolling after gathering the message data
+        // as this relies on the message read information.
+        messageEnricher().determineExpansion(
+          enrichedMsgs,
+          currentState.summary.prefs.expandWho,
+          initialSet
         );
-        console.debug(
-          "Conversations:",
-          "Second phase took (ms):",
-          Date.now() - phase2StartTime
+
+        // The messages inside `msgData` don't come with filled in `to`/`from`/ect. fields.
+        // We need to fill them in ourselves.
+        await mergeContactDetails(enrichedMsgs);
+
+        summary.loading = false;
+        summary.subject = enrichedMsgs[enrichedMsgs.length - 1]?.subject;
+
+        await dispatch(summaryActions.replaceSummaryDetails(summary));
+
+        await dispatch(
+          messageActions.replaceConversation({ messages: enrichedMsgs })
         );
-      }
-      // TODO: Fix this for the standalone message view, so that we send
-      // the correct notifications.
-      if (!currentState.summary.isInTab) {
-        await browser.convMsgWindow.fireLoadCompleted();
-      }
-      await dispatch(controllerActions.maybeSetMarkAsRead());
+
+        if (currentState.summary.prefs.loggingEnabled) {
+          console.debug(
+            "Conversations:",
+            "Load took (ms):",
+            Date.now() - loadingStartedTime
+          );
+          console.debug(
+            "Conversations:",
+            "Second phase took (ms):",
+            Date.now() - phase2StartTime
+          );
+        }
+        // TODO: Fix this for the standalone message view, so that we send
+        // the correct notifications.
+        if (!currentState.summary.isInTab) {
+          await browser.convMsgWindow.fireLoadCompleted();
+        }
+        await dispatch(controllerActions.maybeSetMarkAsRead());
+      });
     };
   },
   addConversationMsgs({ msgs }) {
@@ -221,7 +243,7 @@ export const conversationActions = {
       for (let msg of enrichedMsgs) {
         messageEnricher().markExpansionForAddedMsg(
           msg,
-          currentState.summary.expandWho
+          currentState.summary.prefs.expandWho
         );
       }
 
