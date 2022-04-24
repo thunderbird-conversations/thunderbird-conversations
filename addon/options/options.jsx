@@ -256,12 +256,15 @@ export function TextOption({
   return (
     <React.Fragment>
       <div>
-        <label className="title">{title}</label>
+        <label htmlFor={name} className="title">
+          {title}
+        </label>
         <br />
         <label>{desc}</label>
       </div>
       <div>
         <input
+          id={name}
           type="text"
           className="pref"
           value={value}
@@ -290,13 +293,14 @@ export function NumericOption({
 }) {
   return (
     <React.Fragment>
-      <div>
+      <div htmlFor={name}>
         <label className="title">{title}</label>
         <br />
         <label>{desc}</label>
       </div>
       <div>
         <input
+          id={name}
           type="number"
           className="pref"
           min={0}
@@ -327,12 +331,15 @@ export function BinaryOption({
   return (
     <React.Fragment>
       <div>
-        <label className="title">{title}</label>
+        <label htmlFor={name} className="title">
+          {title}
+        </label>
         <br />
         <label>{desc}</label>
       </div>
       <div>
         <input
+          id={name}
           type="checkbox"
           className="pref"
           checked={value}

@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import { enzyme } from "./utils.js";
+import { render, screen } from "@testing-library/react";
 import React from "react";
 
 // Import the components we want to test
@@ -10,16 +10,18 @@ import { SvgIcon } from "../content/components/svgIcon.jsx";
 
 describe("SvgIcon test", () => {
   test("renders given a full path", async () => {
-    const PATH = "/full/path/to/icon";
-    const wrapper = enzyme.mount(<SvgIcon fullPath={PATH} />);
+    const PATH = "full/path/to/icon";
+    render(<SvgIcon fullPath={PATH} />);
 
-    expect(wrapper.find("use").html()).toMatch(PATH);
+    expect(screen.getByTestId("use").getAttribute("xlink:href")).toMatch(PATH);
   });
 
   test("renders given a hash", async () => {
     const HASH = "abc";
-    const wrapper = enzyme.mount(<SvgIcon hash={HASH} />);
+    render(<SvgIcon hash={HASH} />);
 
-    expect(wrapper.find("use").html()).toMatch("#" + HASH);
+    expect(screen.getByTestId("use").getAttribute("xlink:href")).toMatch(
+      "#" + HASH
+    );
   });
 });

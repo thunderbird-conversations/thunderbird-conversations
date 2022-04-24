@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import { enzyme } from "./utils.js";
+import { render, fireEvent, screen } from "@testing-library/react";
 import React from "react";
 import { jest } from "@jest/globals";
 
@@ -15,7 +15,7 @@ import {
 describe("Compose components have correct return values", () => {
   test("TextBox always returns a string type", () => {
     const callback = jest.fn();
-    const option = enzyme.shallow(
+    render(
       <TextBox
         title="foo"
         disabled={false}
@@ -24,9 +24,9 @@ describe("Compose components have correct return values", () => {
         value={"first text"}
       />
     );
-    option
-      .find("input")
-      .simulate("change", { target: { value: "my special text" } });
+    fireEvent.change(screen.getByRole("textbox"), {
+      target: { value: "my special text" },
+    });
 
     expect(callback.mock.calls[0][0]).toBe("option_name");
     expect(callback.mock.calls[0][1]).toBe("my special text");
@@ -35,12 +35,12 @@ describe("Compose components have correct return values", () => {
 
   test("TextArea always returns a string type", () => {
     const callback = jest.fn();
-    const option = enzyme.shallow(
+    render(
       <TextArea onChange={callback} name="option_name" value={"first text"} />
     );
-    option
-      .find("textarea")
-      .simulate("change", { target: { value: "my special text" } });
+    fireEvent.change(screen.getByRole("textbox"), {
+      target: { value: "my special text" },
+    });
 
     expect(callback.mock.calls[0][0]).toBe("option_name");
     expect(callback.mock.calls[0][1]).toBe("my special text");
