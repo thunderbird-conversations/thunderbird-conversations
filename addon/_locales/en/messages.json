@@ -476,6 +476,11 @@
     }
   },
 
+  "tags.removeButton": {
+    "message": "Remove tag",
+    "description": "Message label/tooltip for removing a tag."
+  },
+
   "attachments.downloadAll.tooltip": {
     "message": "save all",
     "description": "Tooltip for the download all attachments button."

@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import { enzyme, waitForComponentToPaint } from "./utils.js";
+import { render, fireEvent, act, screen } from "@testing-library/react";
 import React from "react";
 import * as RTK from "@reduxjs/toolkit";
 import * as ReactRedux from "react-redux";
@@ -11,7 +11,6 @@ import { conversationApp } from "../content/reducer/reducer.js";
 
 // Import the components we want to test
 import { QuickReply } from "../content/components/quickreply/quickReply.jsx";
-import { ComposeWidget } from "../content/components/compose/composeWidget.jsx";
 import { quickReplyActions } from "../content/reducer/reducerQuickReply.js";
 
 describe("Quick Reply tests", () => {
@@ -35,7 +34,7 @@ describe("Quick Reply tests", () => {
 
   describe("Expansion Actions", () => {
     test("It should handle only the reply button", async () => {
-      let main = enzyme.mount(
+      render(
         <ReactRedux.Provider store={store}>
           <QuickReply
             id={0}
@@ -45,14 +44,13 @@ describe("Quick Reply tests", () => {
         </ReactRedux.Provider>
       );
 
-      await waitForComponentToPaint(main);
+      let replyButton = screen.getByRole("button", { name: "reply" });
+      expect(screen.queryByRole("button", { name: "reply all" })).toBe(null);
+      expect(screen.queryByRole("button", { name: "reply to list" })).toBe(
+        null
+      );
 
-      let replyButton = main.find(".reply");
-      expect(replyButton.exists()).toBe(true);
-      expect(main.find("replyAll").exists()).toBe(false);
-      expect(main.find("replyList").exists()).toBe(false);
-
-      replyButton.simulate("click");
+      fireEvent.click(replyButton);
 
       expect(quickReplyActions.expand.mock.calls.length).toBe(1);
       expect(quickReplyActions.expand.mock.calls[0][0]).toStrictEqual({
@@ -62,7 +60,7 @@ describe("Quick Reply tests", () => {
     });
 
     test("It should handle the reply and replyAll button", async () => {
-      let main = enzyme.mount(
+      render(
         <ReactRedux.Provider store={store}>
           <QuickReply
             id={0}
@@ -72,15 +70,15 @@ describe("Quick Reply tests", () => {
         </ReactRedux.Provider>
       );
 
-      await waitForComponentToPaint(main);
+      expect(screen.queryByRole("button", { name: "reply" })).not.toBe(null);
+      expect(screen.queryByRole("button", { name: "reply all" })).not.toBe(
+        null
+      );
+      expect(screen.queryByRole("button", { name: "reply to list" })).toBe(
+        null
+      );
 
-      let replyButton = main.find(".reply");
-      let replyAllButton = main.find(".replyAll");
-      expect(replyButton.exists()).toBe(true);
-      expect(replyAllButton.exists()).toBe(true);
-      expect(main.find("replyList").exists()).toBe(false);
-
-      replyButton.simulate("click");
+      fireEvent.click(screen.getByRole("button", { name: "reply" }));
 
       expect(quickReplyActions.expand.mock.calls.length).toBe(1);
       expect(quickReplyActions.expand.mock.calls[0][0]).toStrictEqual({
@@ -88,7 +86,7 @@ describe("Quick Reply tests", () => {
         type: "reply",
       });
 
-      replyAllButton.simulate("click");
+      fireEvent.click(screen.getByRole("button", { name: "reply all" }));
 
       expect(quickReplyActions.expand.mock.calls.length).toBe(2);
       expect(quickReplyActions.expand.mock.calls[1][0]).toStrictEqual({
@@ -98,7 +96,7 @@ describe("Quick Reply tests", () => {
     });
 
     test("It should handle the reply and replyList button", async () => {
-      let main = enzyme.mount(
+      render(
         <ReactRedux.Provider store={store}>
           <QuickReply
             id={0}
@@ -108,15 +106,13 @@ describe("Quick Reply tests", () => {
         </ReactRedux.Provider>
       );
 
-      await waitForComponentToPaint(main);
+      expect(screen.queryByRole("button", { name: "reply" })).not.toBe(null);
+      expect(screen.queryByRole("button", { name: "reply all" })).toBe(null);
+      expect(screen.queryByRole("button", { name: "reply to list" })).not.toBe(
+        null
+      );
 
-      let replyButton = main.find(".reply");
-      let replyListButton = main.find(".replyList");
-      expect(replyButton.exists()).toBe(true);
-      expect(main.find("replyAll").exists()).toBe(false);
-      expect(replyListButton.exists()).toBe(true);
-
-      replyButton.simulate("click");
+      fireEvent.click(screen.getByRole("button", { name: "reply" }));
 
       expect(quickReplyActions.expand.mock.calls.length).toBe(1);
       expect(quickReplyActions.expand.mock.calls[0][0]).toStrictEqual({
@@ -124,7 +120,7 @@ describe("Quick Reply tests", () => {
         type: "reply",
       });
 
-      replyListButton.simulate("click");
+      fireEvent.click(screen.getByRole("button", { name: "reply to list" }));
 
       expect(quickReplyActions.expand.mock.calls.length).toBe(2);
       expect(quickReplyActions.expand.mock.calls[1][0]).toStrictEqual({
@@ -136,7 +132,7 @@ describe("Quick Reply tests", () => {
 
   describe("Expanded state", () => {
     test("Should show the ComposeWidget when expanded", async () => {
-      let main = enzyme.mount(
+      render(
         <ReactRedux.Provider store={store}>
           <QuickReply
             id={0}
@@ -146,18 +142,19 @@ describe("Quick Reply tests", () => {
         </ReactRedux.Provider>
       );
 
-      await waitForComponentToPaint(main);
+      await act(() => {
+        return store.dispatch(
+          quickReplyActions.setExpandedState({ expanded: true })
+        );
+      });
 
-      await store.dispatch(
-        quickReplyActions.setExpandedState({ expanded: true })
+      expect(screen.queryByRole("button", { name: "reply" })).toBe(null);
+      expect(screen.queryByRole("button", { name: "reply all" })).toBe(null);
+      expect(screen.queryByRole("button", { name: "reply to list" })).toBe(
+        null
       );
 
-      await waitForComponentToPaint(main);
-
-      expect(main.find("reply").exists()).toBe(false);
-      expect(main.find("replyAll").exists()).toBe(false);
-      expect(main.find("replyList").exists()).toBe(false);
-      expect(main.find(ComposeWidget).exists()).toBe(true);
+      expect(screen.queryByRole("textbox", { name: "to:" })).not.toBe(null);
     });
   });
 });

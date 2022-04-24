@@ -40,7 +40,13 @@ export function MessageTag({ onClickX, expanded, name, color }) {
     >
       {name}
       {expanded && (
-        <span className="tag-x" onClick={onClickX}>
+        <span
+          role="button"
+          aria-label={browser.i18n.getMessage("tags.removeButton")}
+          className="tag-x"
+          tabIndex="0"
+          onClick={onClickX}
+        >
           {" "}
           x
         </span>
