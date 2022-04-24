@@ -16,12 +16,22 @@ import { MessageEnricher } from "./messageEnricher.js";
 import { quickReplySlice } from "./reducerQuickReply.js";
 import { summaryActions } from "./reducerSummary.js";
 
+const sortMessages = (m1, m2) => m1.date - m2.date;
+
 export const initialConversation = {
   currentId: 0,
 };
 
 let currentQueryListener;
 let currentQueryListenerArgs;
+
+let _messageEnricher;
+let messageEnricher = () => {
+  if (_messageEnricher) {
+    return _messageEnricher;
+  }
+  return (_messageEnricher = new MessageEnricher());
+};
 
 function removeListeners() {
   if (currentQueryListener) {
@@ -66,10 +76,15 @@ export const conversationActions = {
             })
           );
         } else if (event.added) {
-          console.log("Added", event.added);
           dispatch(
             conversationActions.addConversationMsgs({
               msgs: event.added,
+            })
+          );
+        } else if (event.modified) {
+          dispatch(
+            conversationActions.modifyConversationMsgs({
+              msgs: event.modified,
             })
           );
         } else if (event.removed) {
@@ -91,13 +106,15 @@ export const conversationActions = {
   displayConversationMsgs({ msgs, initialSet, loadingStartedTime }) {
     return async (dispatch, getState) => {
       let phase2StartTime = new Date();
-      let messages = msgs.map((msg, i) => {
-        return {
-          ...msg,
-          initialPosition: i,
-          detailsShowing: false,
-        };
-      });
+      let messages = msgs
+        .map((msg, i) => {
+          return {
+            ...msg,
+            initialPosition: i,
+            detailsShowing: false,
+          };
+        })
+        .sort(sortMessages);
 
       let summary = { initialSet };
       let currentState = getState();
@@ -113,10 +130,7 @@ export const conversationActions = {
       }
 
       // The messages need some more filling out and tweaking.
-      let messageEnricher = new MessageEnricher();
-      let enrichedMsgs = await messageEnricher.enrich(
-        // TODO: eliminate the need? - depends on remote content for modifying messages.
-        "replaceAll",
+      let enrichedMsgs = await messageEnricher().enrich(
         messages,
         currentState.summary,
         initialSet
@@ -124,7 +138,7 @@ export const conversationActions = {
 
       // Do expansion and scrolling after gathering the message data
       // as this relies on the message read information.
-      messageEnricher.determineExpansion(
+      messageEnricher().determineExpansion(
         enrichedMsgs,
         currentState.summary.prefs.expandWho,
         initialSet
@@ -177,28 +191,35 @@ export const conversationActions = {
         );
       }
 
+      // TODO: Handle drafts.
+      // TODO: Maybe in future replace messages from a different
+      // folder with ones in the current folder?
       let currentMsgCount = currentState.messages.msgData.length;
-      let messages = msgs.map((msg, i) => {
-        return {
-          ...msg,
-          initialPosition: i + currentMsgCount,
-          detailsShowing: false,
-        };
-      });
+      let messages = msgs
+        .filter((msg) => {
+          let found = currentState.messages.msgData.find(
+            (m) => m.headerMessageId == msg.headerMessageId
+          );
+          return !found;
+        })
+        .map((msg, i) => {
+          return {
+            ...msg,
+            initialPosition: i + currentMsgCount,
+            detailsShowing: false,
+          };
+        })
+        .sort(sortMessages);
 
-      // TODO: eliminate the need?
-      let mode = "replaceAll";
       // The messages need some more filling out and tweaking.
-      let messageEnricher = new MessageEnricher();
-      let enrichedMsgs = await messageEnricher.enrich(
-        mode,
+      let enrichedMsgs = await messageEnricher().enrich(
         messages,
         currentState.summary,
         currentState.summary.initialSet
       );
 
       for (let msg of enrichedMsgs) {
-        messageEnricher.markExpansionForAddedMsg(
+        messageEnricher().markExpansionForAddedMsg(
           msg,
           currentState.summary.expandWho
         );
@@ -210,6 +231,32 @@ export const conversationActions = {
 
       await dispatch(
         messageActions.addMessages({
+          msgs: enrichedMsgs,
+        })
+      );
+    };
+  },
+  modifyConversationMsgs({ msgs }) {
+    return async (dispatch, getState) => {
+      let currentState = getState();
+
+      if (currentState.summary.prefs.loggingEnabled) {
+        console.log(
+          "Modifying",
+          msgs.map((m) => ({
+            id: m.id,
+            headerMessageId: m.headerMessageId,
+          }))
+        );
+      }
+      // The messages need some more filling out and tweaking.
+      let enrichedMsgs = await messageEnricher().enrich(
+        msgs,
+        currentState.summary,
+        currentState.summary.initialSet
+      );
+      await dispatch(
+        messageActions.updateMessages({
           msgs: enrichedMsgs,
         })
       );

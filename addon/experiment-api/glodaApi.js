@@ -132,7 +132,6 @@ class GlodaListener {
         messages.push(newMsg);
       }
     }
-    messages = messages.sort((m1, m2) => m1.date - m2.date);
     if (messages.length) {
       this.fire.async({ added: messages });
     }
@@ -142,6 +141,16 @@ class GlodaListener {
       return;
     }
     console.log("onItemsModified", items);
+    let messages = [];
+    for (let msg of items) {
+      let newMsg = this.translateGlodaMessage(msg);
+      if (newMsg) {
+        messages.push(newMsg);
+      }
+    }
+    if (messages.length) {
+      this.fire.async({ modified: messages });
+    }
   }
   onItemsRemoved(items) {
     if (!this.initialQueryComplete) {
@@ -208,7 +217,6 @@ class GlodaListener {
     // since we would still need to load the headers to inject into the gloda
     // query and for the basic details.
 
-    messages.sort((m1, m2) => m1.date - m2.date);
     this.fire.async({ initial: messages });
   }
 

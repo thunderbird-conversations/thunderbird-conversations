@@ -436,6 +436,32 @@ export const messagesSlice = RTK.createSlice({
         msgData: [...state.msgData, ...payload.msgs],
       };
     },
+    updateMessages(state, { payload }) {
+      let msgData = state.msgData.map((msg) => {
+        let updateMsg = payload.msgs.find((m) => m.id == msg.id);
+        if (!updateMsg) {
+          return msg;
+        }
+
+        // When modifying messages, we don't want to override various fields
+        // about the message display state.
+        delete updateMsg.hasRemoteContent;
+        delete updateMsg.expanded;
+        delete updateMsg.isPhishing;
+        delete updateMsg.detailsShowing;
+        delete updateMsg.initialPosition;
+
+        return {
+          ...msg,
+          ...updateMsg,
+        };
+      });
+
+      return {
+        ...state,
+        msgData,
+      };
+    },
     removeMessages(state, { payload }) {
       return {
         ...state,

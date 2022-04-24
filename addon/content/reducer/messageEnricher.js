@@ -36,9 +36,6 @@ export class MessageEnricher {
    * each message. When the details are fetched, merge them into the
    * message object itself.
    *
-   * @param {string} mode
-   *   Can be "append", "replaceAll" or "replaceMsg". replaceMsg will replace
-   *   only a single message.
    * @param {object[]} msgData
    *   The message details.
    * @param {object} summary
@@ -46,7 +43,7 @@ export class MessageEnricher {
    * @param {number[]} selectedMessages
    *   The messages that are currently selected.
    */
-  async enrich(mode, msgData, summary, selectedMessages) {
+  async enrich(msgData, summary, selectedMessages) {
     this.loggingEnabled = summary.prefs.loggingEnabled;
 
     const userTags = await browser.messages.listTags();
@@ -57,7 +54,6 @@ export class MessageEnricher {
         try {
           msg = await this._addDetailsFromHeader(
             summary.tabId,
-            mode,
             message,
             userTags,
             selectedMessages
@@ -306,9 +302,6 @@ export class MessageEnricher {
    *
    * @param {number} tabId
    *   The id of the current tab.
-   * @param {string} mode
-   *   Can be "append", "replaceAll" or "replaceMsg". replaceMsg will replace
-   *   only a single message.
    * @param {object} message
    *   The message to get the additional details for.
    * @param {Array} userTags
@@ -316,13 +309,7 @@ export class MessageEnricher {
    * @param {MessageHeader[]} selectedMessages
    *   An array of the currently selected messages.
    */
-  async _addDetailsFromHeader(
-    tabId,
-    mode,
-    message,
-    userTags,
-    selectedMessages
-  ) {
+  async _addDetailsFromHeader(tabId, message, userTags, selectedMessages) {
     // TODO: Maybe only clone msg & start using more fields directly.
     let msg = {
       id: message.id,
@@ -351,13 +338,9 @@ export class MessageEnricher {
     }
 
     msg.rawDate = message.date.getTime();
-    // Only set hasRemoteContent for new messages, otherwise we cause a reload
-    // of content each time when a message already has remote content.
-    if (mode != "replaceMsg") {
-      // We don't actually know until we load the message, so default to false,
-      // we'll get notified if it should be true.
-      msg.hasRemoteContent = false;
-    }
+    // We don't actually know until we load the message, so default to false,
+    // we'll get notified if it should be true.
+    msg.hasRemoteContent = false;
     msg.smimeReload = false;
     msg.isPhishing = false;
 
