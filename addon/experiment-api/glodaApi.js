@@ -251,9 +251,8 @@ class GlodaListener {
       message.type = "normal";
     }
 
-    if ("attachmentInfos" in msg) {
-      message.attachments = msg.attachmentInfos.map(this.simplifyAttachment);
-    }
+    message.attachments =
+      msg.attachmentInfos?.map(this.simplifyAttachment) ?? [];
 
     message.recipientsIncludeLists = !!msg.mailingLists?.length;
 
