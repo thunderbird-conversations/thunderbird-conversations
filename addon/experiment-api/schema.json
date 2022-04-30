@@ -51,13 +51,7 @@
         "type": "function",
         "description": "Temporary. Does the necessary work to start conversations",
         "async": true,
-        "parameters": [
-          {
-            "name": "loggingEnabled",
-            "type": "boolean",
-            "description": "Whether or not to enable logging."
-          }
-        ]
+        "parameters": []
       },
       {
         "name": "getLocaleDirection",

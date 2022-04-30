@@ -8,13 +8,7 @@ var { XPCOMUtils } = ChromeUtils.import(
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   ExtensionCommon: "resource://gre/modules/ExtensionCommon.jsm",
-  msgHdrGetUri: "chrome://conversations/content/modules/misc.js",
   Services: "resource://gre/modules/Services.jsm",
-  setupLogging: "chrome://conversations/content/modules/misc.js",
-});
-
-XPCOMUtils.defineLazyGetter(this, "Log", () => {
-  return setupLogging("Conversations.msgWindowApi");
 });
 
 const kMultiMessageUrl = "chrome://messenger/content/multimessageview.xhtml";
@@ -574,7 +568,7 @@ function summarizeThreadHandler(win, id, context) {
     }
 
     if (!win.gMessageDisplay.visible) {
-      Log.debug("Message pane is hidden, not fetching...");
+      // Log.debug("Message pane is hidden, not fetching...");
       return;
     }
 
@@ -623,7 +617,9 @@ function summarizeThreadHandler(win, id, context) {
         //  is the conversation in the message pane is already alive, and
         //  the gloda query is updating messages just fine, so we should not
         //  worry about messages which are not in the view.
-        let newlySelectedUris = aSelectedMessages.map((m) => msgHdrGetUri(m));
+        let newlySelectedUris = aSelectedMessages.map((m) =>
+          m.folder.getUriForMsg(m)
+        );
         let isSelectionThreaded = determineIfSelectionIsThreaded(win);
 
         function isSubSetOrEqual(a1, a2) {
@@ -658,9 +654,9 @@ function summarizeThreadHandler(win, id, context) {
           isSubSetOrEqual(previouslySelectedUris, newlySelectedUris) &&
           previousIsSelectionThreaded == isSelectionThreaded
         ) {
-          Log.debug(
-            "Hey, know what? The selection hasn't changed, so we're good!"
-          );
+          // Log.debug(
+          //   "Hey, know what? The selection hasn't changed, so we're good!"
+          // );
           return;
         }
         // Remember the previously selected URIs now, so that if we get
@@ -711,11 +707,11 @@ function summarizeThreadHandler(win, id, context) {
         win.ClearPendingReadTimer();
 
         let selectedCount = this.folderDisplay.selectedCount;
-        Log.debug(
-          "Intercepted message load,",
-          selectedCount,
-          "message(s) selected"
-        );
+        // Log.debug(
+        //   "Intercepted message load,",
+        //   selectedCount,
+        //   "message(s) selected"
+        // );
 
         if (selectedCount == 0) {
           // So we're not copying the code here. This changes nothing, and the

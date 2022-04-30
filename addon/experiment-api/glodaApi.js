@@ -124,7 +124,7 @@ class GlodaListener {
     if (!this.initialQueryComplete) {
       return;
     }
-    console.log("onItemsAdded", items);
+
     let messages = [];
     for (let msg of items) {
       let newMsg = this.translateGlodaMessage(msg);
@@ -140,7 +140,7 @@ class GlodaListener {
     if (!this.initialQueryComplete) {
       return;
     }
-    console.log("onItemsModified", items);
+
     let messages = [];
     for (let msg of items) {
       let newMsg = this.translateGlodaMessage(msg);
@@ -156,7 +156,7 @@ class GlodaListener {
     if (!this.initialQueryComplete) {
       return;
     }
-    console.log("onItemsRemoved", items);
+
     let msgIds = [];
     for (let msg of items) {
       let message = this.context.extension.messageManager.convert(

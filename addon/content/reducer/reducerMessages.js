@@ -429,8 +429,6 @@ export const messagesSlice = RTK.createSlice({
       return { ...state, msgData: messages };
     },
     addMessages(state, { payload }) {
-      // TODO: Handle drafts
-
       return {
         ...state,
         msgData: [...state.msgData, ...payload.msgs],
@@ -563,12 +561,6 @@ export const messagesSlice = RTK.createSlice({
           extraLines: payload.extraLines,
         };
       });
-    },
-    removeMessageFromConversation(state, { payload }) {
-      return {
-        ...state,
-        msgData: state.msgData.filter((m) => m.id !== payload.id),
-      };
     },
     clearScrollto(state, { payload }) {
       return modifyOnlyMsg(state, payload.id, (msg) => {
