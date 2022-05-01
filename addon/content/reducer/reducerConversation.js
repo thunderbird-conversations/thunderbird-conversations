@@ -213,7 +213,6 @@ export const conversationActions = {
         );
       }
 
-      // TODO: Handle drafts.
       // TODO: Maybe in future replace messages from a different
       // folder with ones in the current folder?
       let currentMsgCount = currentState.messages.msgData.length;

@@ -256,7 +256,6 @@ if (!browser.convCompose) {
 if (!browser.convMsgWindow) {
   browser.convMsgWindow = {
     async fireLoadCompleted() {},
-    async getSelectedMessages() {},
   };
 }
 

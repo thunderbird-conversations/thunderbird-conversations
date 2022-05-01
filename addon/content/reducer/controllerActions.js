@@ -158,11 +158,15 @@ export const controllerActions = {
       if (getState().summary.isInTab) {
         setupConversationInTab(params, dispatch).catch(console.error);
       } else {
-        let msgIds = await browser.convMsgWindow.getSelectedMessages(
+        let msgIds = await browser.messageDisplay.getDisplayedMessages(
           getState().summary.tabId
         );
 
-        dispatch(conversationActions.showConversation({ msgIds }));
+        dispatch(
+          conversationActions.showConversation({
+            msgIds: msgIds.map((m) => m.id),
+          })
+        );
       }
     };
   },
@@ -372,12 +376,10 @@ function onExternalMessages(dispatch, msg) {
 function setupListeners(dispatch, getState) {
   let windowId = getState().summary.windowId;
 
-  async function msgSelectionChanged() {
-    let msgIds = await browser.convMsgWindow.getSelectedMessages(
-      getState().summary.tabId
+  async function msgSelectionChanged(msgs) {
+    dispatch(
+      conversationActions.showConversation({ msgIds: msgs.map((m) => m.id) })
     );
-    console.log("selection changed");
-    dispatch(conversationActions.showConversation({ msgIds }));
   }
 
   function selectionChangedListener(tab) {

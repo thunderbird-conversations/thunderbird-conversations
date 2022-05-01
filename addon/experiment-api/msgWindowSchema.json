@@ -3,13 +3,6 @@
     "namespace": "convMsgWindow",
     "functions": [
       {
-        "name": "getSelectedMessages",
-        "type": "function",
-        "description": "Gets the currently selected messages according to the view backend.",
-        "async": true,
-        "parameters": []
-      },
-      {
         "name": "openNewWindow",
         "type": "function",
         "description": "Opens a new window with the specified url.",
@@ -68,7 +61,12 @@
         "name": "onSelectedMessagesChanged",
         "type": "function",
         "description": "Temporary. Listens for selection changes on the thread pane.",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "message",
+            "$ref": "messages.MessageHeader"
+          }
+        ],
         "extraParameters": [
           {
             "name": "window",

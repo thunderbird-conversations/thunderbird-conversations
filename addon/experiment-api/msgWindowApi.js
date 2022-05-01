@@ -65,14 +65,6 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
     const { messageManager, windowManager } = extension;
     return {
       convMsgWindow: {
-        // TODO: Add tabid
-        async getSelectedMessages() {
-          let result = [];
-          for (let m of selectedMessages) {
-            result.push((await context.extension.messageManager.convert(m)).id);
-          }
-          return result;
-        },
         async openNewWindow(url, params) {
           const win = getWindowFromId();
           const args = { params };
@@ -239,7 +231,8 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
           register(fire) {
             const windowObserver = new WindowObserver(
               windowManager,
-              summarizeThreadHandler
+              summarizeThreadHandler,
+              context
             );
             monkeyPatchAllWindows(
               windowManager,
@@ -580,7 +573,7 @@ function summarizeThreadHandler(win, id, context) {
 
     win.gSummaryFrameManager.loadAndCallback(
       "chrome://conversations/content/stub.html",
-      function (isRefresh) {
+      async function (isRefresh) {
         // See issue #673
         if (htmlpane.contentDocument?.body) {
           htmlpane.contentDocument.body.hidden = false;
@@ -669,22 +662,11 @@ function summarizeThreadHandler(win, id, context) {
         let tabId = context.extension.tabManager.convert(
           tabmail.selectedTab
         ).id;
-        msgsChangedListeners.get(tabId)?.async();
-
-        // let freshConversation = new Conversation(
-        //   win,
-        //   aSelectedMessages,
-        //   ++win.Conversations.counter
-        // );
-        // Log.debug(
-        //   "New conversation:",
-        //   freshConversation.counter,
-        //   "Old conversation:",
-        //   win.Conversations.currentConversation?.counter
-        // );
-        // win.Conversations.currentConversation?.cleanup();
-        // win.Conversations.currentConversation = freshConversation;
-        // freshConversation.outputInto(htmlpane.contentWindow);
+        let msgs = [];
+        for (let m of selectedMessages) {
+          msgs.push(await context.extension.messageManager.convert(m));
+        }
+        msgsChangedListeners.get(tabId)?.async(msgs);
       }
     );
   };
