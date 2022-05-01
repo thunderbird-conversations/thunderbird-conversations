@@ -7,9 +7,9 @@ var { XPCOMUtils } = ChromeUtils.import(
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
+  BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   cal: "resource:///modules/calendar/calUtils.jsm",
   ExtensionCommon: "resource://gre/modules/ExtensionCommon.jsm",
-  messageActions: "chrome://conversations/content/modules/misc.js",
 });
 
 // This is a version of setupOptions suitable for Conversations
@@ -34,18 +34,17 @@ function imipOptions(
       onOperationComplete(aCalendar, aStatus, aOperationType, aId, aDetail) {
         let label = cal.itip.getCompleteText(aStatus, aOperationType);
 
-        browser.contentWindow.conversationStore.dispatch(
-          messageActions.msgShowNotification({
-            msgData: {
-              id: msgId,
-              notification: {
-                iconName: "calendar_today",
-                label,
-                type: "calendar",
-              },
+        BrowserSim.sendMessage({
+          type: "showNotification",
+          msgData: {
+            id: msgId,
+            notification: {
+              iconName: "calendar_today",
+              label,
+              type: "calendar",
             },
-          })
-        );
+          },
+        });
 
         // In case it's useful
         listener.onOperationComplete(
@@ -105,19 +104,18 @@ function imipOptions(
   }
 
   // Update the Conversation UI
-  browser.contentWindow.conversationStore.dispatch(
-    messageActions.msgShowNotification({
-      msgData: {
-        id: msgId,
-        notification: {
-          buttons,
-          iconName: "calendar_today",
-          label: data.label,
-          type: "calendar",
-        },
+  BrowserSim.sendMessage({
+    type: "showNotification",
+    msgData: {
+      id: msgId,
+      notification: {
+        buttons,
+        iconName: "calendar_today",
+        label: data.label,
+        type: "calendar",
       },
-    })
-  );
+    },
+  });
 }
 
 /* exported convCalendar */
@@ -156,18 +154,17 @@ var convCalendar = class extends ExtensionCommon.ExtensionAPI {
             let browser = win.document
               .getElementById("tabmail")
               .getBrowserForTab(tabObject.nativeTab);
-            browser.contentWindow.conversationStore.dispatch(
-              messageActions.msgShowNotification({
-                msgData: {
-                  id: msgId,
-                  notification: {
-                    iconName: "calendar_today",
-                    type: "calendar",
-                    label,
-                  },
+            BrowserSim.sendMessage({
+              type: "showNotification",
+              msgData: {
+                id: msgId,
+                notification: {
+                  iconName: "calendar_today",
+                  type: "calendar",
+                  label,
                 },
-              })
-            );
+              },
+            });
 
             cal.itip.processItipItem(
               itipItem,

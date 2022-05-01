@@ -44,7 +44,7 @@ export class Prefs {
           results.preferences[prefName] = kPrefDefaults[prefName];
         }
       }
-      await browser.conversations.startup(results.preferences.logging_enabled);
+      await browser.conversations.startup();
 
       if (updatePrefs) {
         try {

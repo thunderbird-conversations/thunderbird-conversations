@@ -36,9 +36,6 @@ export class MessageEnricher {
    * each message. When the details are fetched, merge them into the
    * message object itself.
    *
-   * @param {string} mode
-   *   Can be "append", "replaceAll" or "replaceMsg". replaceMsg will replace
-   *   only a single message.
    * @param {object[]} msgData
    *   The message details.
    * @param {object} summary
@@ -46,7 +43,7 @@ export class MessageEnricher {
    * @param {number[]} selectedMessages
    *   The messages that are currently selected.
    */
-  async enrich(mode, msgData, summary, selectedMessages) {
+  async enrich(msgData, summary, selectedMessages) {
     this.loggingEnabled = summary.prefs.loggingEnabled;
 
     const userTags = await browser.messages.listTags();
@@ -57,13 +54,10 @@ export class MessageEnricher {
         try {
           msg = await this._addDetailsFromHeader(
             summary.tabId,
-            mode,
             message,
             userTags,
             selectedMessages
           );
-
-          await this._parseMimeLines(message, msg);
 
           if (message.getFullRequired) {
             await this._getFullDetails(message, msg);
@@ -83,30 +77,24 @@ export class MessageEnricher {
         return msg;
       })
     );
-
-    // Do expansion and scrolling after gathering the message data
-    // as this relies on the message read information.
-    if (mode != "replaceMsg") {
-      if (mode == "replaceAll") {
-        this._filterOutDuplicatesAndInvalids(msgs);
-
-        this._expandAndScroll(
-          msgs,
-          selectedMessages,
-          summary.tabId,
-          summary.prefs.expandWho
-        );
-      } else {
-        this._markMsgsToExpand(
-          msgs,
-          selectedMessages,
-          -1,
-          summary.prefs.expandWho,
-          mode
-        );
-      }
-    }
     return msgs;
+  }
+
+  /**
+   * Used to determine which messages should be expanded and which one should
+   * be scrolled to.
+   *
+   * @param {object[]} msgs
+   *   The message details.
+   * @param {number} expandWho
+   *   The value of the expandWho preference.
+   * @param {number[]} selectedMessages
+   *   The messages that are currently selected.
+   */
+  determineExpansion(msgs, expandWho, selectedMessages) {
+    this._filterOutDuplicatesAndInvalids(msgs);
+
+    this._expandAndScroll(msgs, selectedMessages, expandWho);
   }
 
   /**
@@ -133,7 +121,7 @@ export class MessageEnricher {
       if (message.invalid) {
         continue;
       }
-      let id = message.glodaMessageId ?? message.messageHeaderId;
+      let id = message.headerMessageId;
       let items = groupedMessages.get(id);
       if (!items) {
         groupedMessages.set(id, [message]);
@@ -158,7 +146,7 @@ export class MessageEnricher {
       if (this.loggingEnabled) {
         console.log(
           "Filtering out duplicates:",
-          group.map((m) => m.glodaMessageId ?? m.messageHeaderId)
+          group.map((m) => m.headerMessageId)
         );
       }
 
@@ -194,21 +182,13 @@ export class MessageEnricher {
    *   The message details.
    * @param {object[]} selectedMessages
    *   The currently selected messages in the UI.
-   * @param {number} tabId
-   *   The current tab id.
    * @param {number} expandWho
    *   The value of the expandWho preference.
    */
-  _expandAndScroll(msgData, selectedMessages, tabId, expandWho) {
+  _expandAndScroll(msgData, selectedMessages, expandWho) {
     let focusThis = this._whereToScroll(msgData, selectedMessages);
     msgData[focusThis].scrollTo = true;
-    this._markMsgsToExpand(
-      msgData,
-      selectedMessages,
-      focusThis,
-      expandWho,
-      "expandAll"
-    );
+    this._markMsgsToExpand(msgData, selectedMessages, focusThis, expandWho);
   }
 
   /**
@@ -253,6 +233,19 @@ export class MessageEnricher {
   }
 
   /**
+   * Marks a message to be expanded or not, depending on the state of the
+   * expandWho preference.
+   *
+   * @param {object} msg
+   *   The message to set the flag for.
+   * @param {number} expandWho
+   *   The value of the expandWho preference.
+   */
+  markExpansionForAddedMsg(msg, expandWho) {
+    msg.expanded = !(expandWho == kExpandNone);
+  }
+
+  /**
    * Figure out which messages we should expand and mark them.
    *
    * @param {object[]} msgData
@@ -263,11 +256,8 @@ export class MessageEnricher {
    *   The message in the array to focus.
    * @param {number} expandWho
    *   The value of the expandWho preference.
-   * @param {string} mode
-   *   Can be "append", "replaceAll" or "replaceMsg". replaceMsg will replace
-   *   only a single message.
    */
-  _markMsgsToExpand(msgData, selectedMessages, focusIndex, expandWho, mode) {
+  _markMsgsToExpand(msgData, selectedMessages, focusIndex, expandWho) {
     switch (expandWho) {
       default:
         console.error(
@@ -276,12 +266,7 @@ export class MessageEnricher {
         );
       // Falls through so we can default to the same as the pref and keep going.
       case kExpandAuto: {
-        if (mode == "append") {
-          // For all new appended messages, we expand them.
-          for (let msg of msgData) {
-            msg.expanded = true;
-          }
-        } else if (selectedMessages.length > 1) {
+        if (selectedMessages.length > 1) {
           // In this mode, we scroll to the first unread message (or the last
           //  message if all messages are read), and we expand all unread messages
           //  + the last one (which will probably be unread as well).
@@ -317,9 +302,6 @@ export class MessageEnricher {
    *
    * @param {number} tabId
    *   The id of the current tab.
-   * @param {string} mode
-   *   Can be "append", "replaceAll" or "replaceMsg". replaceMsg will replace
-   *   only a single message.
    * @param {object} message
    *   The message to get the additional details for.
    * @param {Array} userTags
@@ -327,54 +309,55 @@ export class MessageEnricher {
    * @param {MessageHeader[]} selectedMessages
    *   An array of the currently selected messages.
    */
-  async _addDetailsFromHeader(
-    tabId,
-    mode,
-    message,
-    userTags,
-    selectedMessages
-  ) {
+  async _addDetailsFromHeader(tabId, message, userTags, selectedMessages) {
+    // TODO: Maybe only clone msg & start using more fields directly.
     let msg = {
       id: message.id,
       initialPosition: message.initialPosition,
       type: message.type,
       // Needed to avoid de-duplicating at the wrong times.
-      messageHeaderId: message.messageHeaderId,
-      glodaMessageId: message.glodaMessageId,
+      headerMessageId: message.headerMessageId,
       detailsShowing: message.detailsShowing,
       recipientsIncludeLists: message.recipientsIncludeLists,
     };
-    const messageHeader = await browser.messages.get(message.id);
-    if (!messageHeader) {
-      throw new Error("Message no longer exists");
-    }
-    const messageFolderType = messageHeader.folder.type;
+    const messageFolderType = message.folder.type;
 
-    msg.rawDate = messageHeader.date.getTime();
-    // Only set hasRemoteContent for new messages, otherwise we cause a reload
-    // of content each time when a message already has remote content.
-    if (mode != "replaceMsg") {
-      // We don't actually know until we load the message, so default to false,
-      // we'll get notified if it should be true.
-      msg.hasRemoteContent = false;
+    await this._parseContactLines(
+      {
+        from: message.author,
+        to: message.recipients,
+        cc: message.ccList,
+        bcc: message.bccList,
+        alternativeSender: message.alternativeSender,
+      },
+      msg
+    );
+    if (message.realFrom) {
+      let real = await browser.conversations.parseMimeLine(message.realFrom);
+      msg.realFrom = real?.[0].email;
     }
+
+    msg.rawDate = message.date.getTime();
+    // We don't actually know until we load the message, so default to false,
+    // we'll get notified if it should be true.
+    msg.hasRemoteContent = false;
     msg.smimeReload = false;
     msg.isPhishing = false;
 
-    msg.folderAccountId = messageHeader.folder.accountId;
-    msg.folderPath = messageHeader.folder.path;
+    msg.folderAccountId = message.folder.accountId;
+    msg.folderPath = message.folder.path;
     msg.isArchives = messageFolderType == "archives";
     msg.isDraft = messageFolderType == "drafts";
     msg.isInbox = messageFolderType == "inbox";
-    msg.isJunk = messageHeader.junk;
+    msg.isJunk = message.junk;
     msg.isSent = messageFolderType == "sent";
     msg.isTemplate = messageFolderType == "templates";
     msg.isOutbox = messageFolderType == "outbox";
-    msg.read = messageHeader.read;
-    msg.subject = messageHeader.subject;
-    msg.starred = messageHeader.flagged;
+    msg.read = message.read;
+    msg.subject = message.subject;
+    msg.starred = message.flagged;
 
-    msg.tags = messageHeader.tags.map((tagKey) => {
+    msg.tags = message.tags.map((tagKey) => {
       // The fallback here shouldn't ever happen, but just in case...
       const tagDetails = userTags.find((t) => t.key == tagKey) || {
         color: "#FFFFFF",
@@ -393,14 +376,14 @@ export class MessageEnricher {
       (await browser.conversations.isInView(tabId, message.id));
     if (!isInView) {
       let parentFolders = await browser.folders.getParentFolders(
-        messageHeader.folder
+        message.folder
       );
-      let folderName = messageHeader.folder.name;
+      let folderName = message.folder.name;
       for (let folder of parentFolders) {
         folderName = folder.name + "/" + folderName;
       }
       msg.folderName = folderName;
-      msg.shortFolderName = messageHeader.folder.name;
+      msg.shortFolderName = message.folder.name;
     }
     return msg;
   }
@@ -501,23 +484,39 @@ export class MessageEnricher {
   /**
    * Handles parsing of the mime (to/cc/bcc/from) lines of a message.
    *
-   * @param {object} message
-   *   The message to get the additional details for.
+   * @param {object} contactData
+   *   The contact data for the message.
    * @param {object} msg
    *   The new message to put the details into.
    */
-  async _parseMimeLines(message, msg) {
-    if (!message._contactsData) {
-      return;
+  async _parseContactLines(contactData, msg) {
+    msg.parsedLines = {
+      from: contactData.from
+        ? await browser.conversations.parseMimeLine(contactData.from)
+        : [],
+    };
+
+    // TODO: Drop realFrom, and use alternativeSender in the UI where
+    // we need to differentiate.
+    // The from can be overridden, e.g. in the case of bugzilla, so this field
+    // is always the email address this was originally from.
+    msg.realFrom = msg.parsedLines.from[0]?.email;
+
+    for (let line of ["to", "cc", "bcc", "alternativeSender"]) {
+      msg.parsedLines[line] = [];
+      let item = contactData[line];
+      if (!item?.length) {
+        continue;
+      }
+      for (let i of item) {
+        let data = i ? await browser.conversations.parseMimeLine(i) : [];
+        msg.parsedLines[line] = msg.parsedLines[line].concat(data);
+      }
     }
-    msg.parsedLines = {};
-    for (let line of ["from", "to", "cc", "bcc"]) {
-      msg.parsedLines[line] = message._contactsData[line]
-        ? await browser.conversations.parseMimeLine(message._contactsData[line])
-        : [];
+
+    if (msg.parsedLines.alternativeSender?.length) {
+      msg.parsedLines.from = msg.parsedLines.alternativeSender;
     }
-    let real = await browser.conversations.parseMimeLine(message.realFrom);
-    msg.realFrom = real?.[0].email;
   }
 
   /**
@@ -527,8 +526,8 @@ export class MessageEnricher {
    *   The message to get the additional details for.
    * @param {number} message.initialPosition
    *   The initial position of the message.
-   * @param {number} message.glodaMessageId
-   *   The gloda message id.
+   * @param {string} message.source
+   *   The source of the message (gloda or standard).
    * @param {object[]} message.attachments
    *   The attachment data already extracted for the message.
    * @param {object} msg
@@ -537,11 +536,11 @@ export class MessageEnricher {
    *   Whether or not the user wants to display extra attachments.
    */
   async _addDetailsFromAttachments(
-    { initialPosition, glodaMessageId, attachments },
+    { initialPosition, source, attachments },
     msg,
     extraAttachments
   ) {
-    if (glodaMessageId && extraAttachments) {
+    if (source && extraAttachments) {
       msg.needsLateAttachments = true;
     }
 

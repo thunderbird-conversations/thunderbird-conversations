@@ -52,6 +52,7 @@ class Background {
     await this._prefs.init();
     await this._uiHandler.init();
     await this._window.init();
+    contactManager.init();
 
     // Reset the message pane if the font size is changed, that seems to be
     // the best we can do at the moment, as the message pane doesn't get
@@ -83,8 +84,9 @@ browser.runtime.onInstalled.addListener((details) => {
 // Request handler for getting contact details.
 // Accessible through browser._background.request({ type: "contactDetails", payload: contact })
 requestHandlers.push(async (msg) => {
-  if (msg.type !== "contactDetails") {
-    return null;
+  switch (msg.type) {
+    case "contactDetails":
+      return contactManager.get(msg.payload.email);
   }
-  return contactManager.get(msg.payload.email);
+  return null;
 });

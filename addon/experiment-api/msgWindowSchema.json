@@ -54,46 +54,29 @@
             "description": "The iframe id."
           }
         ]
-      },
-      {
-        "name": "addSpecialTag",
-        "type": "function",
-        "description": "Adds a special tag to a message.",
-        "async": true,
-        "parameters": [
-          {
-            "name": "tagDetails",
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "number",
-                "description": "The message id to add the tag to."
-              },
-              "classNames": {
-                "type": "string",
-                "description": "The class for the tag."
-              },
-              "icon": {
-                "type": "string",
-                "description": "The icon for the tag."
-              },
-              "message": {
-                "type": "string",
-                "description": "The message for the tag."
-              },
-              "tooltip": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "description": "The optional tooltip for the tag."
-              }
-            }
-          }
-        ]
       }
     ],
     "events": [
+      {
+        "name": "onSelectedMessagesChanged",
+        "type": "function",
+        "description": "Temporary. Listens for selection changes on the thread pane.",
+        "parameters": [
+          {
+            "name": "message",
+            "$ref": "messages.MessageHeader"
+          }
+        ],
+        "extraParameters": [
+          {
+            "name": "window",
+            "type": "integer",
+            "optional": true,
+            "minimum": -2,
+            "description": "The window id."
+          }
+        ]
+      },
       {
         "name": "onThreadPaneDoubleClick",
         "type": "function",

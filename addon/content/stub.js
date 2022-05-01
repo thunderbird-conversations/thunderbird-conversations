@@ -2,21 +2,23 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* global conversationStore:true, BrowserSim */
+/* global BrowserSim */
 import React from "react";
 import ReactDOMClient from "react-dom/client";
 import * as RTK from "@reduxjs/toolkit";
 import * as ReactRedux from "react-redux";
 import { conversationApp } from "./reducer/reducer.js";
 import { ConversationWrapper } from "./components/conversation/conversationWrapper.jsx";
+import { controllerActions } from "./reducer/controllerActions.js";
 
 document.addEventListener(
   "DOMContentLoaded",
   async () => {
-    globalThis.browser = await BrowserSim.getBrowserAsync();
+    if (BrowserSim) {
+      globalThis.browser = await BrowserSim.getBrowserAsync();
+    }
 
-    let earlyActions = conversationStore.pendingActions;
-    conversationStore = RTK.configureStore({
+    let store = RTK.configureStore({
       reducer: conversationApp,
       middleware: RTK.getDefaultMiddleware(),
     });
@@ -30,13 +32,13 @@ document.addEventListener(
     root.render(
       React.createElement(
         ReactRedux.Provider,
-        { store: conversationStore },
+        { store },
         React.createElement(ConversationWrapper)
       )
     );
-    for (let action of earlyActions) {
-      conversationStore.dispatch(action);
-    }
+
+    // Kick everything off.
+    store.dispatch(controllerActions.waitForStartup());
   },
   { once: true }
 );

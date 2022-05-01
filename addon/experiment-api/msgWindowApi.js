@@ -7,16 +7,8 @@ var { XPCOMUtils } = ChromeUtils.import(
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
-  Conversation: "chrome://conversations/content/modules/conversation.js",
   ExtensionCommon: "resource://gre/modules/ExtensionCommon.jsm",
-  messageActions: "chrome://conversations/content/modules/misc.js",
-  msgHdrGetUri: "chrome://conversations/content/modules/misc.js",
   Services: "resource://gre/modules/Services.jsm",
-  setupLogging: "chrome://conversations/content/modules/misc.js",
-});
-
-XPCOMUtils.defineLazyGetter(this, "Log", () => {
-  return setupLogging("Conversations.msgWindowApi");
 });
 
 const kMultiMessageUrl = "chrome://messenger/content/multimessageview.xhtml";
@@ -63,6 +55,9 @@ class WindowObserver {
   }
 }
 
+let selectedMessages = [];
+let msgsChangedListeners = new Map();
+
 /* exported convMsgWindow */
 var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
   getAPI(context) {
@@ -89,30 +84,16 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
             printFrameOnly: true,
           });
         },
-        async addSpecialTag({ id, classNames, icon, message, tooltip }) {
-          for (const win of Services.wm.getEnumerator("mail:3pane")) {
-            let multimessage = win.document.getElementById("multimessage");
-            if (
-              !multimessage ||
-              !multimessage.contentWindow?.Conversations?.currentConversation
-            ) {
-              continue;
-            }
-            multimessage.contentWindow.Conversations.currentConversation.dispatch(
-              messageActions.msgAddSpecialTag({
-                tagDetails: {
-                  classNames,
-                  icon,
-                  name: message,
-                  tooltip: {
-                    strings: tooltip,
-                  },
-                },
-                id,
-              })
-            );
-          }
-        },
+        onSelectedMessagesChanged: new ExtensionCommon.EventManager({
+          context,
+          name: "convMsgWindow.onSelectedMessagesChanged",
+          register(fire, tabId) {
+            msgsChangedListeners.set(tabId, fire);
+            return function () {
+              msgsChangedListeners.delete(tabId);
+            };
+          },
+        }).api(),
         onThreadPaneDoubleClick: new ExtensionCommon.EventManager({
           context,
           name: "convMsgWindow.onThreadPaneDoubleClick",
@@ -250,9 +231,14 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
           register(fire) {
             const windowObserver = new WindowObserver(
               windowManager,
-              summarizeThreadHandler
+              summarizeThreadHandler,
+              context
             );
-            monkeyPatchAllWindows(windowManager, summarizeThreadHandler);
+            monkeyPatchAllWindows(
+              windowManager,
+              summarizeThreadHandler,
+              context
+            );
             Services.ww.registerNotification(windowObserver);
 
             return function () {
@@ -558,7 +544,7 @@ function determineIfSelectionIsThreaded(win) {
   return !isSelectionExpanded(win);
 }
 
-function summarizeThreadHandler(win, id) {
+function summarizeThreadHandler(win, id, context) {
   let previouslySelectedUris = [];
   let previousIsSelectionThreaded = null;
 
@@ -575,15 +561,19 @@ function summarizeThreadHandler(win, id) {
     }
 
     if (!win.gMessageDisplay.visible) {
-      Log.debug("Message pane is hidden, not fetching...");
+      // Log.debug("Message pane is hidden, not fetching...");
       return;
     }
 
     win.gMessageDisplay.singleMessageDisplay = false;
 
+    // Save the newly selected messages as early as possible, so that we
+    // definitely have them as soon as stub.html loads.
+    selectedMessages = [...aSelectedMessages];
+
     win.gSummaryFrameManager.loadAndCallback(
       "chrome://conversations/content/stub.html",
-      function (isRefresh) {
+      async function (isRefresh) {
         // See issue #673
         if (htmlpane.contentDocument?.body) {
           htmlpane.contentDocument.body.hidden = false;
@@ -620,7 +610,9 @@ function summarizeThreadHandler(win, id) {
         //  is the conversation in the message pane is already alive, and
         //  the gloda query is updating messages just fine, so we should not
         //  worry about messages which are not in the view.
-        let newlySelectedUris = aSelectedMessages.map((m) => msgHdrGetUri(m));
+        let newlySelectedUris = aSelectedMessages.map((m) =>
+          m.folder.getUriForMsg(m)
+        );
         let isSelectionThreaded = determineIfSelectionIsThreaded(win);
 
         function isSubSetOrEqual(a1, a2) {
@@ -655,9 +647,9 @@ function summarizeThreadHandler(win, id) {
           isSubSetOrEqual(previouslySelectedUris, newlySelectedUris) &&
           previousIsSelectionThreaded == isSelectionThreaded
         ) {
-          Log.debug(
-            "Hey, know what? The selection hasn't changed, so we're good!"
-          );
+          // Log.debug(
+          //   "Hey, know what? The selection hasn't changed, so we're good!"
+          // );
           return;
         }
         // Remember the previously selected URIs now, so that if we get
@@ -666,20 +658,15 @@ function summarizeThreadHandler(win, id) {
         previouslySelectedUris = newlySelectedUris;
         previousIsSelectionThreaded = isSelectionThreaded;
 
-        let freshConversation = new Conversation(
-          win,
-          aSelectedMessages,
-          ++win.Conversations.counter
-        );
-        Log.debug(
-          "New conversation:",
-          freshConversation.counter,
-          "Old conversation:",
-          win.Conversations.currentConversation?.counter
-        );
-        win.Conversations.currentConversation?.cleanup();
-        win.Conversations.currentConversation = freshConversation;
-        freshConversation.outputInto(htmlpane.contentWindow);
+        let tabmail = win.document.getElementById("tabmail");
+        let tabId = context.extension.tabManager.convert(
+          tabmail.selectedTab
+        ).id;
+        let msgs = [];
+        for (let m of selectedMessages) {
+          msgs.push(await context.extension.messageManager.convert(m));
+        }
+        msgsChangedListeners.get(tabId)?.async(msgs);
       }
     );
   };
@@ -702,11 +689,11 @@ function summarizeThreadHandler(win, id) {
         win.ClearPendingReadTimer();
 
         let selectedCount = this.folderDisplay.selectedCount;
-        Log.debug(
-          "Intercepted message load,",
-          selectedCount,
-          "message(s) selected"
-        );
+        // Log.debug(
+        //   "Intercepted message load,",
+        //   selectedCount,
+        //   "message(s) selected"
+        // );
 
         if (selectedCount == 0) {
           // So we're not copying the code here. This changes nothing, and the

@@ -7,6 +7,10 @@
  * to manage the message preview correctly.
  */
 export class Window {
+  constructor() {
+    this.connectedPorts = new Set();
+  }
+
   async init() {
     // Set up our monkey patches which aren't really listeners, but this
     // is a good way to manage them.
@@ -56,6 +60,10 @@ export class Window {
 
     browser.convMsgWindow.onSummarizeThread.addListener(async () => {});
 
+    browser.runtime.onConnect.addListener((port) => {
+      this._handlePort(port);
+    });
+
     /**
      * @typedef {"normal"|"success"|"warning"|"error"} Severity
      */
@@ -89,7 +97,20 @@ export class Window {
           pillMessage.icon = undefined;
         }
 
-        browser.convMsgWindow.addSpecialTag({
+        for (let port of this.connectedPorts) {
+          port.postMessage({
+            type: "addSpecialTag",
+            id: pillMessage.msgId,
+            classNames: pillMessage.severity ?? "normal",
+            icon: pillMessage.icon ?? "material-icons.svg#edit",
+            message: pillMessage.message,
+            tooltip: pillMessage.tooltip ?? [],
+          });
+        }
+        // The above supports WebExtension page, this supports the chrome based
+        // stub.xhtml.
+        browser.conversations.postMessageViaBrowserSim({
+          type: "addSpecialTag",
           id: pillMessage.msgId,
           classNames: pillMessage.severity ?? "normal",
           icon: pillMessage.icon ?? "material-icons.svg#edit",
@@ -97,6 +118,13 @@ export class Window {
           tooltip: pillMessage.tooltip ?? [],
         });
       });
+    });
+  }
+
+  _handlePort(port) {
+    this.connectedPorts.add(port);
+    port.onDisconnect.addListener((port) => {
+      this.connectedPorts.delete(port);
     });
   }
 
@@ -114,6 +142,12 @@ export class Window {
         break;
       }
       case 2: {
+        // TODO: An experimental standalone page which is WebExtension only.
+        // It mainly works but is missing capabilities to stream the message
+        // into the remote browser for the WebExtension.
+        // await browser.tabs.create({
+        //   url: `/content/standalone.html${this.getQueryString(urls)}`,
+        // });
         await browser.conversations.createTab({
           url: `chrome://conversations/content/stub.html${this.getQueryString(
             urls

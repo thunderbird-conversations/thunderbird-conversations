@@ -28,15 +28,16 @@ export const waitForComponentToPaint = async (wrapper) => {
 export function createFakeData(
   {
     id = 0,
-    glodaMessageId = null,
+    headerMessageId = null,
     attachments = [],
+    author = null,
     date = new Date(),
     detailsShowing,
     flagged = false,
     folderType = "inbox",
     folderName = "Inbox",
-    fullDate = "",
     from = null,
+    fullDate = "",
     getFullRequired = false,
     initialPosition = 0,
     junk = false,
@@ -50,26 +51,36 @@ export function createFakeData(
   postProcessing = false
 ) {
   let data = {
-    id,
-    // Set the glodaMessageId to avoid filtering out duplicates due to no id.
-    glodaMessageId: glodaMessageId ?? id,
     attachments,
-    initialPosition,
+    date,
+    // Set the headerMessageId to avoid filtering out duplicates due to no id.
+    headerMessageId: headerMessageId ?? id,
+    flagged,
+    folder: {
+      accountId: "id1",
+      type: folderType,
+      name: folderName,
+    },
     getFullRequired,
+    id,
+    initialPosition,
+    junk,
+    read,
     recipientsIncludeLists: false,
     snippet,
-    _contactsData: [],
+    source: "gloda",
+    subject,
+    tags,
     type,
   };
   if (detailsShowing !== undefined) {
     data.detailsShowing = detailsShowing;
   }
+  if (author) {
+    data.author = author;
+  }
   if (from) {
-    if (postProcessing) {
-      data.from = from;
-    } else {
-      data._contactsData.from = from;
-    }
+    data.from = from;
   }
 
   fakeMessageHeaderData.set(id, {

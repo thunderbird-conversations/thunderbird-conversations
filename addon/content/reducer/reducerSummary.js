@@ -194,7 +194,7 @@ export const summaryActions = {
       );
     };
   },
-  msgStreamMsg({ dueToExpansion, id, dueToReload = false }) {
+  msgStreamMsg({ dueToExpansion, id, iframe, dueToReload = false }) {
     return async (dispatch, getState) => {
       if (!dueToExpansion) {
         dispatch(summarySlice.actions.incIframesLoading());
@@ -214,7 +214,21 @@ export const summaryActions = {
       } else {
         options.tabId = state.summary.tabId;
       }
-      await browser.conversations.streamMessage(options).catch(console.error);
+      let result = await browser.conversations
+        .streamMessage(options)
+        .catch(console.error);
+
+      // Pretends we've finished loading the message if we're not displaying the
+      // message, e.g. due to being in a WebExtension context.
+      if (!result) {
+        dispatch(
+          summaryActions.msgStreamLoadFinished({
+            dueToExpansion: this.dueToExpansion,
+            id,
+            iframe,
+          })
+        );
+      }
     };
   },
 };
@@ -286,5 +300,3 @@ export const summarySlice = RTK.createSlice({
 // actions and thunks, so we make the actions and thunks
 // available from the same object.
 Object.assign(summaryActions, summarySlice.actions);
-
-globalThis.conversationSummaryActions = summaryActions;

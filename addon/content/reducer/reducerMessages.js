@@ -424,21 +424,47 @@ export const messagesSlice = RTK.createSlice({
      * @param {object} payload.payload
      * @param {object} payload.payload.messages
      *   The messages to insert or append.
-     * @param {string} payload.payload.mode
-     *   Can be "append", "replaceAll" or "replaceMsg". replaceMsg will replace
-     *   only a single message.
      */
-    updateConversation(state, { payload: { messages, mode } }) {
-      if (mode == "append") {
-        return { ...state, msgData: state.msgData.concat(messages) };
-      }
-      if (mode == "replaceMsg") {
-        return modifyOnlyMsg(state, messages[0].id, (msg) => ({
-          ...msg,
-          ...messages[0],
-        }));
-      }
+    replaceConversation(state, { payload: { messages } }) {
       return { ...state, msgData: messages };
+    },
+    addMessages(state, { payload }) {
+      return {
+        ...state,
+        msgData: [...state.msgData, ...payload.msgs],
+      };
+    },
+    updateMessages(state, { payload }) {
+      let msgData = state.msgData.map((msg) => {
+        let updateMsg = payload.msgs.find((m) => m.id == msg.id);
+        if (!updateMsg) {
+          return msg;
+        }
+
+        // When modifying messages, we don't want to override various fields
+        // about the message display state.
+        delete updateMsg.hasRemoteContent;
+        delete updateMsg.expanded;
+        delete updateMsg.isPhishing;
+        delete updateMsg.detailsShowing;
+        delete updateMsg.initialPosition;
+
+        return {
+          ...msg,
+          ...updateMsg,
+        };
+      });
+
+      return {
+        ...state,
+        msgData,
+      };
+    },
+    removeMessages(state, { payload }) {
+      return {
+        ...state,
+        msgData: state.msgData.filter((msg) => !payload.msgs.includes(msg.id)),
+      };
     },
     msgExpand(state, { payload }) {
       return modifyOnlyMsg(state, payload.id, (msg) => ({
@@ -535,12 +561,6 @@ export const messagesSlice = RTK.createSlice({
           extraLines: payload.extraLines,
         };
       });
-    },
-    removeMessageFromConversation(state, { payload }) {
-      return {
-        ...state,
-        msgData: state.msgData.filter((m) => m.id !== payload.id),
-      };
     },
     clearScrollto(state, { payload }) {
       return modifyOnlyMsg(state, payload.id, (msg) => {
