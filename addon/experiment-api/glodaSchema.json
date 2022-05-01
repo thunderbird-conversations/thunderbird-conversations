@@ -1,0 +1,30 @@
+[
+  {
+    "namespace": "convContacts",
+    "functions": [
+    ],
+    "events": [
+      {
+        "name": "queryConversationMessages",
+        "type": "function",
+        "description": "Temporary. Queries the conversation messages associated with the message ids",
+        "parameters": [
+          {
+            "name": "event",
+            "type": "any"
+          }
+        ],
+        "extraParameters": [
+          {
+            "name": "msgIds",
+            "type": "array",
+            "description": "The message ids to query.",
+            "items": {
+              "type": "number"
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

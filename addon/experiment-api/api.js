@@ -14,13 +14,9 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   MailServices: "resource:///modules/MailServices.jsm",
   makeFriendlyDateAgo: "resource:///modules/TemplateUtils.jsm",
   MsgHdrToMimeMessage: "resource:///modules/gloda/MimeMessage.jsm",
-  msgHdrGetUri: "chrome://conversations/content/modules/misc.js",
-  msgUriToMsgHdr: "chrome://conversations/content/modules/misc.js",
   NetUtil: "resource://gre/modules/NetUtil.jsm",
   PluralForm: "resource://gre/modules/PluralForm.jsm",
   Services: "resource://gre/modules/Services.jsm",
-  setLogState: "chrome://conversations/content/modules/misc.js",
-  setupLogging: "chrome://conversations/content/modules/misc.js",
 });
 
 XPCOMUtils.defineLazyGlobalGetters(this, ["TextDecoder"]);
@@ -29,6 +25,22 @@ XPCOMUtils.defineLazyGetter(this, "messenger", () =>
   Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger)
 );
 
+/**
+ * Get a msgHdr from a message URI (msgHdr.URI).
+ *
+ * @param {string} aUri The URI of the message
+ * @returns {nsIMsgDBHdr}
+ */
+function msgUriToMsgHdr(aUri) {
+  try {
+    let messageService = messenger.messageServiceFromURI(aUri);
+    return messageService.messageURIToMsgHdr(aUri);
+  } catch (e) {
+    console.error("Unable to get ", aUri, " — returning null instead");
+    return null;
+  }
+}
+
 // To help updates to apply successfully, we need to properly unload the modules
 // that Conversations loads.
 const conversationModules = [
@@ -36,9 +48,6 @@ const conversationModules = [
   // providers. Unloading these will break gloda when someone updates.
   // "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
   "chrome://conversations/content/modules/browserSim.js",
-  "chrome://conversations/content/modules/conversation.js",
-  "chrome://conversations/content/modules/message.js",
-  "chrome://conversations/content/modules/misc.js",
 ];
 
 /**
@@ -55,10 +64,6 @@ const nsMsgViewIndex_None = 0xffffffff;
 
 // Note: we must not use any modules until after initialization of prefs,
 // otherwise the prefs might not get loaded correctly.
-XPCOMUtils.defineLazyGetter(this, "Log", () => {
-  return setupLogging("Conversations.api");
-});
-
 function prefType(name) {
   switch (name) {
     case "no_friendly_date":
@@ -84,8 +89,6 @@ function prefType(name) {
 }
 
 function monkeyPatchWindow(win, windowId) {
-  Log.debug("monkey-patching...");
-
   // Insert our own global Conversations object
   win.Conversations = {
     // These two are replicated in the case of a conversation tab, so use
@@ -95,6 +98,10 @@ function monkeyPatchWindow(win, windowId) {
   };
 
   win.Conversations.finishedStartup = true;
+}
+
+function msgHdrGetUri(aMsg) {
+  return aMsg.folder.getUriForMsg(aMsg);
 }
 
 /**
@@ -203,7 +210,6 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
   }
 
   onShutdown(isAppShutdown) {
-    Log.debug("shutdown, isApp=", isAppShutdown);
     if (isAppShutdown) {
       return;
     }
@@ -228,11 +234,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
     const { windowManager } = extension;
     return {
       conversations: {
-        async startup(loggingEnabled) {
-          setLogState(loggingEnabled);
-
-          Log.debug("startup");
-
+        async startup() {
           try {
             // Patch all existing windows when the UI is built; all locales should have been loaded here
             // Hook in the embedding and gloda attribute providers.
@@ -741,6 +743,10 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
               );
             }
             if (tabObject.nativeTab.mode.type == "contentTab") {
+              if (tabObject.browser.getAttribute("remote")) {
+                console.error("Can't stream into a remote browser yet.");
+                return false;
+              }
               messageIframe =
                 tabObject.browser.contentDocument.getElementsByClassName(
                   iframeClass
@@ -767,6 +773,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             undefined,
             {}
           );
+          return true;
         },
         /**
          * Wraps the low-level header parser stuff.
@@ -829,6 +836,9 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
         async getReplyOnTop(identityId) {
           let identity = MailServices.accounts.getIdentity(identityId);
           return identity.replyOnTop;
+        },
+        async postMessageViaBrowserSim(msg) {
+          BrowserSim.sendMessage(msg);
         },
         onCallAPI: new ExtensionCommon.EventManager({
           context,

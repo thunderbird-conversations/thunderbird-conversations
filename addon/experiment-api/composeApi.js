@@ -9,7 +9,6 @@ var { XPCOMUtils } = ChromeUtils.import(
 XPCOMUtils.defineLazyModuleGetters(this, {
   ExtensionCommon: "resource://gre/modules/ExtensionCommon.jsm",
   MailServices: "resource:///modules/MailServices.jsm",
-  msgHdrGetUri: "chrome://conversations/content/modules/misc.js",
 });
 
 /**
@@ -66,7 +65,7 @@ var convCompose = class extends ExtensionCommon.ExtensionAPI {
             if (!msgHdr) {
               throw new Error("could not find the specified message");
             }
-            msgUri = msgHdrGetUri(msgHdr);
+            msgUri = msgHdr.folder.getUriForMsg(msgHdr);
 
             let numRef = msgHdr.numReferences;
             let references = [];

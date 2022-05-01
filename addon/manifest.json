@@ -66,6 +66,14 @@
         "script": "experiment-api/contactsApi.js"
       }
     },
+    "convGloda": {
+      "schema": "experiment-api/glodaSchema.json",
+      "parent": {
+        "scopes": ["addon_parent"],
+        "paths": [["convGloda"]],
+        "script": "experiment-api/glodaApi.js"
+      }
+    },
     "convMsgWindow": {
       "schema": "experiment-api/msgWindowSchema.json",
       "parent": {
