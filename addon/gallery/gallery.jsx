@@ -22,7 +22,7 @@ Photo.propTypes = {
   length: PropTypes.number.isRequired,
   name: PropTypes.string.isRequired,
   size: PropTypes.string.isRequired,
-  src: PropTypes.string.isRequired,
+  src: PropTypes.string,
 };
 
 /**
