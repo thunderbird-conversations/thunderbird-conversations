@@ -79,7 +79,6 @@ function Attachment({
   name,
   size,
   partName,
-  url,
   id,
 }) {
   let [displayMenu, setDisplayMenu] = React.useState(false);
@@ -204,18 +203,24 @@ function Attachment({
     ? browser.i18n.getMessage("attachments.viewAttachment.tooltip")
     : browser.i18n.getMessage("attachments.open.tooltip");
 
-  let thumb;
-  let imgClass;
-  if (isImage) {
-    // TODO: Can we load images separately and make them available later,
-    // so that we're not relying on having the url here. This would
-    // mean we can use browser.messages.listAttachments.
-    thumb = url;
-    imgClass = "resize-me";
-  } else {
-    thumb = "icons/" + iconForMimeType(this.props.contentType);
-    imgClass = "mime-icon";
-  }
+  let [thumb, setThumb] = React.useState(null);
+  let [imgClass, setImgClass] = React.useState(null);
+  React.useEffect(() => {
+    if (isImage) {
+      // TODO: Can we load images separately and make them available later,
+      // so that we're not relying on having the url here. This would
+      // mean we can use browser.messages.listAttachments.
+      (async () => {
+        let file = await browser.messages.getAttachmentFile(id, partName);
+        setThumb(URL.createObjectURL(file));
+        setImgClass("resize-me");
+      })();
+    } else {
+      setThumb("icons/" + iconForMimeType(contentType));
+      setImgClass("mime-icon");
+    }
+  }, [id, contentType, partName]);
+
   // TODO: Drag n drop
   // onDragStart={this.onDragStart}
   return (
@@ -283,7 +288,6 @@ Attachment.propTypes = {
   name: PropTypes.string.isRequired,
   size: PropTypes.number.isRequired,
   partName: PropTypes.string.isRequired,
-  url: PropTypes.string.isRequired,
   id: PropTypes.number.isRequired,
 };
 
@@ -350,7 +354,6 @@ export class Attachments extends React.PureComponent {
             name={attachment.name}
             partName={attachment.partName}
             size={attachment.size}
-            url={attachment.url}
           />
         ))}
       </ul>

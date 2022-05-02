@@ -486,7 +486,6 @@ describe("messageEnricher", () => {
               name: "foo.pdf",
               partName: "1.2",
               size: 634031,
-              url: "imap://fakeurl",
             },
           ],
         },
@@ -508,7 +507,6 @@ describe("messageEnricher", () => {
             name: "foo.pdf",
             partName: "1.2",
             size: 634031,
-            url: "imap://fakeurl",
           },
         ],
       });

@@ -117,7 +117,6 @@ function populateAttachmentFields(message, numAttachments) {
       formattedSize: `${(i + 1) * 1024}KB`,
       name: `attachment ${i}`,
       partName: `part1.${i + 1}`,
-      url: `../icon.png`,
       anchor: "msgatt" + i,
     });
   }
