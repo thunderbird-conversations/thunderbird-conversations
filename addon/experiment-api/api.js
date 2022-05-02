@@ -389,7 +389,6 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
                     contentType: a.contentType,
                     name: a.name,
                     partName: a.partName,
-                    url: a.url,
                     anchor: "msg" + this.initialPosition + "att" + i,
                   };
                 })

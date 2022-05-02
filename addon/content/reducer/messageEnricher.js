@@ -563,7 +563,6 @@ export class MessageEnricher {
         formattedSize,
         name: att.name,
         partName: att.partName,
-        url: att.url,
         anchor: "msg" + initialPosition + "att" + i,
       });
     }
