@@ -67,34 +67,29 @@ AttachmentMoreMenu.propTypes = {
   deleteCallback: PropTypes.func.isRequired,
 };
 
+// eslint-disable-next-line jsdoc/require-param
 /**
  * Handles display of an individual attachment.
  */
-class Attachment extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    this.preview = this.preview.bind(this);
-    // this.onDragStart = this.onDragStart.bind(this);
-    this.downloadAttachment = this.downloadAttachment.bind(this);
-    this.openAttachment = this.openAttachment.bind(this);
-    this.deleteAttachment = this.deleteAttachment.bind(this);
-    this.detachAttachment = this.detachAttachment.bind(this);
-    this.displayMenu = this.displayMenu.bind(this);
-    this.state = {
-      displayMenu: false,
-    };
-  }
+function Attachment({
+  anchor,
+  dispatch,
+  contentType,
+  formattedSize,
+  name,
+  size,
+  partName,
+  url,
+  id,
+}) {
+  let [displayMenu, setDisplayMenu] = React.useState(false);
 
-  isImage(contentType) {
-    return contentType.startsWith("image/");
-  }
-
-  preview() {
-    this.props.dispatch(
+  function preview() {
+    dispatch(
       attachmentActions.previewAttachment({
-        name: this.props.name,
-        id: this.props.id,
-        partName: this.props.partName,
+        name,
+        id,
+        partName,
       })
     );
   }
@@ -126,79 +121,74 @@ class Attachment extends React.PureComponent {
   //   event.stopPropagation();
   // }
 
-  downloadAttachment() {
-    this.props.dispatch(
+  function downloadAttachment() {
+    dispatch(
       attachmentActions.downloadAttachment({
-        id: this.props.id,
-        partName: this.props.partName,
+        id,
+        partName,
       })
     );
   }
 
-  openAttachment() {
-    this.props.dispatch(
+  function openAttachment() {
+    dispatch(
       attachmentActions.openAttachment({
-        id: this.props.id,
-        partName: this.props.partName,
+        id,
+        partName,
       })
     );
   }
 
-  detachAttachment() {
-    this.props.dispatch(
+  function detachAttachment() {
+    dispatch(
       attachmentActions.detachAttachment({
-        id: this.props.id,
-        partName: this.props.partName,
+        id,
+        partName,
         shouldSave: true,
       })
     );
   }
 
-  deleteAttachment() {
-    this.props.dispatch(
+  function deleteAttachment() {
+    dispatch(
       attachmentActions.detachAttachment({
-        id: this.props.id,
-        partName: this.props.partName,
+        id,
+        partName,
         shouldSave: false,
       })
     );
   }
 
-  displayMenu(event) {
-    event.preventDefault();
-    event.stopPropagation();
-    if (!this.clickListener) {
-      this.clickListener = (event) => {
-        this.clearMenu();
-      };
-      this.keyListener = (event) => {
-        if (event.keyCode == KeyEvent.DOM_VK_ESCAPE) {
-          this.clearMenu();
-        }
-      };
-      this.onBlur = (event) => {
-        this.clearMenu();
-      };
-      document.addEventListener("click", this.clickListener);
-      document.addEventListener("keypress", this.keyListener);
-      document.addEventListener("blur", this.onBlur);
+  React.useEffect(() => {
+    function clickOrBlurListener(event) {
+      clearMenu();
     }
+    function keyListener(event) {
+      if (event.keyCode == KeyEvent.DOM_VK_ESCAPE) {
+        clearMenu();
+      }
+    }
+    if (displayMenu) {
+      document.addEventListener("click", clickOrBlurListener);
+      document.addEventListener("keypress", keyListener);
+      document.addEventListener("blur", clickOrBlurListener);
+    }
+    return () => {
+      document.removeEventListener("click", clickOrBlurListener);
+      document.removeEventListener("keypress", keyListener);
+      document.removeEventListener("blur", clickOrBlurListener);
+    };
+  }, [displayMenu]);
 
-    this.setState((prevState) => ({ displayMenu: !prevState.displayMenu }));
+  function handleDisplayMenu(event) {
+    setDisplayMenu(!displayMenu);
   }
 
-  clearMenu() {
-    this.setState({ displayMenu: false });
-    if (this.clickListener) {
-      document.removeEventListener("click", this.clickListener);
-      document.removeEventListener("keypress", this.keyListener);
-      document.removeEventListener("blur", this.keyListener);
-      this.clickListener = null;
-      this.keyListener = null;
-    }
+  function clearMenu() {
+    setDisplayMenu(false);
   }
 
-  iconForMimeType(mimeType) {
+  function iconForMimeType(mimeType) {
     if (ICON_MAPPING.has(mimeType)) {
       return ICON_MAPPING.get(mimeType) + ".svg";
     }
@@ -209,82 +199,80 @@ class Attachment extends React.PureComponent {
     return "gtk-file.png";
   }
 
-  render() {
-    const isImage = this.isImage(this.props.contentType);
-    const imgTitle = isImage
-      ? browser.i18n.getMessage("attachments.viewAttachment.tooltip")
-      : browser.i18n.getMessage("attachments.open.tooltip");
+  const isImage = contentType.startsWith("image/");
+  const imgTitle = isImage
+    ? browser.i18n.getMessage("attachments.viewAttachment.tooltip")
+    : browser.i18n.getMessage("attachments.open.tooltip");
 
-    let thumb;
-    let imgClass;
-    if (isImage) {
-      // TODO: Can we load images separately and make them available later,
-      // so that we're not relying on having the url here. This would
-      // mean we can use browser.messages.listAttachments.
-      thumb = this.props.url;
-      imgClass = "resize-me";
-    } else {
-      thumb = "icons/" + this.iconForMimeType(this.props.contentType);
-      imgClass = "mime-icon";
-    }
-    // TODO: Drag n drop
-    // onDragStart={this.onDragStart}
-    return (
-      <li className="attachment">
-        <div
-          className="attachmentThumb"
-          draggable="false"
-          onClick={isImage ? this.preview : this.openAttachment}
-        >
-          <img className={imgClass} src={thumb} title={imgTitle} />
-        </div>
-        <div className="attachmentInfo align">
-          <span className="filename">{this.props.name}</span>
-          <span className="filesize">{this.props.formattedSize}</span>
-          <div className="attachActions">
-            {isImage && (
-              <a
-                className="icon-link preview-attachment"
-                title={browser.i18n.getMessage("attachments.preview.tooltip")}
-                onClick={this.preview}
-              >
-                <SvgIcon hash="visibility" />
-              </a>
-            )}
-            <a
-              className="icon-link download-attachment"
-              title={browser.i18n.getMessage("attachments.download.tooltip")}
-              onClick={this.downloadAttachment}
-            >
-              <SvgIcon hash="file_download" />
-            </a>
-            <a
-              className="icon-link open-attachment"
-              title={browser.i18n.getMessage("attachments.open.tooltip")}
-              onClick={this.openAttachment}
-            >
-              <SvgIcon hash="search" />
-            </a>
-            <span className="attachmentsDropDown">
-              <a
-                className="icon-link more-attachment"
-                title={browser.i18n.getMessage("message.moreMenu.tooltip")}
-                onClick={this.displayMenu}
-              >
-                <SvgIcon hash="more_vert" />
-              </a>
-              {this.state.displayMenu && (
-                <AttachmentMoreMenu
-                  detachCallback={this.detachAttachment}
-                  deleteCallback={this.deleteAttachment}
-                />
-              )}
-            </span>
-          </div>
-        </div>
-      </li>
-    );
+  let thumb;
+  let imgClass;
+  if (isImage) {
+    // TODO: Can we load images separately and make them available later,
+    // so that we're not relying on having the url here. This would
+    // mean we can use browser.messages.listAttachments.
+    thumb = url;
+    imgClass = "resize-me";
+  } else {
+    thumb = "icons/" + iconForMimeType(this.props.contentType);
+    imgClass = "mime-icon";
   }
+  // TODO: Drag n drop
+  // onDragStart={this.onDragStart}
+  return (
+    <li className="attachment">
+      <div
+        className="attachmentThumb"
+        draggable="false"
+        onClick={isImage ? preview : openAttachment}
+      >
+        <img className={imgClass} src={thumb} title={imgTitle} />
+      </div>
+      <div className="attachmentInfo align">
+        <span className="filename">{name}</span>
+        <span className="filesize">{formattedSize}</span>
+        <div className="attachActions">
+          {isImage && (
+            <a
+              className="icon-link preview-attachment"
+              title={browser.i18n.getMessage("attachments.preview.tooltip")}
+              onClick={preview}
+            >
+              <SvgIcon hash="visibility" />
+            </a>
+          )}
+          <a
+            className="icon-link download-attachment"
+            title={browser.i18n.getMessage("attachments.download.tooltip")}
+            onClick={downloadAttachment}
+          >
+            <SvgIcon hash="file_download" />
+          </a>
+          <a
+            className="icon-link open-attachment"
+            title={browser.i18n.getMessage("attachments.open.tooltip")}
+            onClick={openAttachment}
+          >
+            <SvgIcon hash="search" />
+          </a>
+          <span className="attachmentsDropDown">
+            <a
+              className="icon-link more-attachment"
+              title={browser.i18n.getMessage("message.moreMenu.tooltip")}
+              onClick={handleDisplayMenu}
+            >
+              <SvgIcon hash="more_vert" />
+            </a>
+            {displayMenu && (
+              <AttachmentMoreMenu
+                detachCallback={detachAttachment}
+                deleteCallback={deleteAttachment}
+              />
+            )}
+          </span>
+        </div>
+      </div>
+    </li>
+  );
 }
 
 Attachment.propTypes = {
