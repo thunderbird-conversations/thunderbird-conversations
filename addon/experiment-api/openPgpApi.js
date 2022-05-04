@@ -432,7 +432,9 @@ const securityStatusPatch = (win, id, context) => {
  * @param {object} signerCert
  */
 function loadSmimeMessageSecurityInfo(win, signatureStatus, signerCert) {
-  let sBundle = win.document.getElementById("bundle_smime_read_info");
+  let sBundle = Services.strings.createBundle(
+    "chrome://messenger-smime/locale/msgSecurityInfo.properties"
+  );
 
   if (!sBundle) {
     return null;
@@ -508,17 +510,21 @@ function loadSmimeMessageSecurityInfo(win, signatureStatus, signerCert) {
 
   let signatureExplanation = "";
   if (sigInfoHeader) {
-    signatureExplanation += sBundle.getString(sigInfoHeader);
+    signatureExplanation += sBundle.GetStringFromName(sigInfoHeader);
   }
   if (sigInfo) {
-    signatureExplanation += "\n" + sBundle.getString(sigInfo);
+    signatureExplanation += "\n" + sBundle.GetStringFromName(sigInfo);
   } else if (sigInfo_clueless) {
     signatureExplanation +=
-      "\n" + sBundle.getString("SIClueless") + " (" + signatureStatus + ")";
+      "\n" +
+      sBundle.GetStringFromName("SIClueless") +
+      " (" +
+      signatureStatus +
+      ")";
   }
 
   return {
-    signatureLabel: sBundle.getString(sigInfoLabel),
+    signatureLabel: sBundle.GetStringFromName(sigInfoLabel),
     signatureExplanation,
     signerCert: {
       name: signerCert.commonName,
@@ -529,7 +535,9 @@ function loadSmimeMessageSecurityInfo(win, signatureStatus, signerCert) {
 }
 
 function loadSmimeMessageEncryptionInfo(win, encryptionStatus, recipientCert) {
-  let sBundle = win.document.getElementById("bundle_smime_read_info");
+  let sBundle = Services.strings.createBundle(
+    "chrome://messenger-smime/locale/msgSecurityInfo.properties"
+  );
 
   if (!sBundle) {
     return null;
@@ -567,17 +575,17 @@ function loadSmimeMessageEncryptionInfo(win, encryptionStatus, recipientCert) {
 
   let encryptionExplanation = "";
   if (encInfoHeader) {
-    encryptionExplanation += sBundle.getString(encInfoHeader);
+    encryptionExplanation += sBundle.GetStringFromName(encInfoHeader);
   }
 
   if (encInfo) {
-    encryptionExplanation += "\n" + sBundle.getString(encInfo);
+    encryptionExplanation += "\n" + sBundle.GetStringFromName(encInfo);
   } else if (encInfo_clueless) {
-    encryptionExplanation += "\n" + sBundle.getString("EIClueless");
+    encryptionExplanation += "\n" + sBundle.GetStringFromName("EIClueless");
   }
 
   return {
-    encryptionLabel: sBundle.getString(encInfoLabel),
+    encryptionLabel: sBundle.GetStringFromName(encInfoLabel),
     encryptionExplanation,
   };
 }
@@ -592,7 +600,9 @@ function loadSmimeMessageEncryptionInfo(win, encryptionStatus, recipientCert) {
  *   The window the security info is being obtained from.
  */
 async function loadOpenPgpMessageSecurityInfo(win) {
-  let sBundle = win.document.getElementById("bundle_smime_read_info");
+  let sBundle = Services.strings.createBundle(
+    "chrome://messenger-smime/locale/msgSecurityInfo.properties"
+  );
 
   if (!sBundle) {
     return null;
@@ -693,11 +703,11 @@ async function loadOpenPgpMessageSecurityInfo(win) {
     signatureExplanation: hasAnySig
       ? // eslint-disable-next-line mozilla/prefer-formatValues
         await l10n.formatValue(sigInfo)
-      : sBundle.getString(sigInfo),
+      : sBundle.GetStringFromName(sigInfo),
   };
   let encyptDetails = {
-    encryptionLabel: sBundle.getString(encInfoLabel),
-    encryptionExplanation: sBundle.getString(encInfo),
+    encryptionLabel: sBundle.GetStringFromName(encInfoLabel),
+    encryptionExplanation: sBundle.GetStringFromName(encInfo),
   };
 
   let signatureKey = hdrView.msgSignatureKeyId;
