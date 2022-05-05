@@ -365,6 +365,8 @@ function onExternalMessages(dispatch, msg) {
   }
 }
 
+let unloadListeners;
+
 /**
  * Sets up any listeners required.
  *
@@ -374,7 +376,8 @@ function onExternalMessages(dispatch, msg) {
  *   Function to get the current store state.
  */
 function setupListeners(dispatch, getState) {
-  let windowId = getState().summary.windowId;
+  let summary = getState().summary;
+  let windowId = summary.windowId;
 
   async function msgSelectionChanged(msgs) {
     dispatch(
@@ -404,6 +407,39 @@ function setupListeners(dispatch, getState) {
     browser.convMsgWindow.print(winId, `convIframe${msgId}`);
   }
 
+  async function updateTab(tab) {
+    if (summary.isStandalone || tab.id == summary.tabId) {
+      return;
+    }
+
+    unloadListeners?.();
+    await dispatch(
+      summaryActions.setConversationState({
+        isInTab: summary.isInTab,
+        isStandalone: summary.isStandalone,
+        tabId: tab.id,
+        windowId: summary.windowId,
+      })
+    );
+    setupListeners(dispatch, getState);
+    await dispatch(controllerActions.initializeMessageThread({}));
+  }
+
+  async function activeTabChanged({ tabId }) {
+    let tab = await browser.tabs.get(tabId);
+    if (tab.windowId == windowId && tab.mailTab) {
+      updateTab(tab);
+    }
+  }
+  function tabCreated(tab) {
+    if (tab.active && tab.mailTab) {
+      updateTab(tab);
+    }
+  }
+
+  browser.tabs.onCreated.addListener(tabCreated);
+  browser.tabs.onActivated.addListener(activeTabChanged);
+
   browser.convMsgWindow.onSelectedMessagesChanged.addListener(
     msgSelectionChanged,
     getState().summary.tabId
@@ -431,34 +467,35 @@ function setupListeners(dispatch, getState) {
   let externalMessagesListener = onExternalMessages.bind(this, dispatch);
   port.onMessage.addListener(externalMessagesListener);
 
-  window.addEventListener(
-    "unload",
-    () => {
-      console.trace("unload");
-      browser.convMsgWindow.onSelectedMessagesChanged.removeListener(
-        msgSelectionChanged,
-        getState().summary.tabId
-      );
-      browser.messageDisplay.onMessagesDisplayed.removeListener(
-        selectionChangedListener
-      );
-      browser.convMsgWindow.onPrint.removeListener(printListener);
-      browser.convMsgWindow.onMsgHasRemoteContent.removeListener(
-        remoteContentListener
-      );
-      browser.convOpenPgp.onUpdateSecurityStatus.removeListener(
-        updateSecurityStatusListener
-      );
-      browser.convOpenPgp.onSMIMEStatus.removeListener(
-        updateSecurityStatusListener
-      );
-      browser.convOpenPgp.onSMIMEReload.removeListener(smimeReloadListener);
-      window.Conversations?.currentConversation?.cleanup();
-      port.onMessage.removeListener(externalMessagesListener);
-      port.disconnect();
-    },
-    { once: true }
-  );
+  unloadListeners = () => {
+    unloadListeners = null;
+    window.removeEventListener("unload", unloadListeners, { once: true });
+    console.log("unload");
+    browser.tabs.onActivated.removeListener(activeTabChanged);
+    browser.tabs.onCreated.removeListener(tabCreated);
+    browser.convMsgWindow.onSelectedMessagesChanged.removeListener(
+      msgSelectionChanged,
+      getState().summary.tabId
+    );
+    browser.messageDisplay.onMessagesDisplayed.removeListener(
+      selectionChangedListener
+    );
+    browser.convMsgWindow.onPrint.removeListener(printListener);
+    browser.convMsgWindow.onMsgHasRemoteContent.removeListener(
+      remoteContentListener
+    );
+    browser.convOpenPgp.onUpdateSecurityStatus.removeListener(
+      updateSecurityStatusListener
+    );
+    browser.convOpenPgp.onSMIMEStatus.removeListener(
+      updateSecurityStatusListener
+    );
+    browser.convOpenPgp.onSMIMEReload.removeListener(smimeReloadListener);
+    window.Conversations?.currentConversation?.cleanup();
+    port.onMessage.removeListener(externalMessagesListener);
+    port.disconnect();
+  };
+  window.addEventListener("unload", unloadListeners, { once: true });
 }
 
 /**
