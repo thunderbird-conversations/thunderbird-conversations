@@ -214,9 +214,22 @@ class _BrowserSim {
     //
     // Alternately, we need to complete the switch to loading as a WebExtension
     // page, but that's a lot more work at the moment.
-    let tab = tabmail.getTabForBrowser(
-      docWin.browsingContext?.embedderElement || docWin.frameElement
-    );
+
+    // TODO: Thunderbird's 91.x getTabForBrowser is broken in the case of the
+    // multimessage pane (bug 1767586). Work around that here.
+    let browser =
+      docWin.browsingContext?.embedderElement || docWin.frameElement;
+    let tab;
+    if (
+      browser?.id == "multimessage" &&
+      tabmail.selectedTab.mode.tabType.name == "mail"
+    ) {
+      tab = tabmail.currentTabInfo;
+    } else {
+      tab = tabmail.getTabForBrowser(
+        docWin.browsingContext?.embedderElement || docWin.frameElement
+      );
+    }
     if (!tab) {
       // We are probably in a window all by ourselves in Thunderbird 91,
       // fallback to getting the selected tab.
