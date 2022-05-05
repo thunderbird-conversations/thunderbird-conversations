@@ -86,6 +86,14 @@ export const conversationActions = {
         quickReplySlice.actions.setExpandedState({ expanded: false })
       );
 
+      if (!msgIds.length) {
+        // TODO: Add a better error message.
+        console.error("Could not find any messages to load");
+        document.getElementById("messageList").textContent =
+          browser.i18n.getMessage("message.movedOrDeletedConversation");
+        return;
+      }
+
       currentQueryListener = (event) => {
         if (event.initial) {
           dispatch(
