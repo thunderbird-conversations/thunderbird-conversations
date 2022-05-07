@@ -788,7 +788,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             return [{ email: "", name: "-", fullName: "-" }];
           }
           let addresses =
-            MailServices.headerParser.parseEncodedHeader(mimeLine);
+            MailServices.headerParser.parseDecodedHeader(mimeLine);
           if (addresses.length) {
             return addresses.map((addr) => {
               return {
