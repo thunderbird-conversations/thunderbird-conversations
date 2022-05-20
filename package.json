@@ -70,7 +70,7 @@
       "@devicefarmer/adbkit": "3.2.3"
     },
     "@devicefarmer/adbkit-monkey": {
-      "async": "3.2.2"
+      "async": "3.2.3"
     }
   },
   "scripts": {
