@@ -230,6 +230,7 @@ export const messageActions = {
           title: null,
           windowId: state.summary.windowId,
           windowType: null,
+          url: null,
         });
         await browser.tabs.remove(currentTab[0].id);
       }
