@@ -119,6 +119,7 @@ describe("Controller Actions tests", () => {
         isSent: false,
         isTemplate: false,
         multipleRecipients: false,
+        needsLateAttachments: undefined,
         rawDate: now.getTime(),
         read: false,
         realFrom: undefined,
