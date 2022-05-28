@@ -224,12 +224,12 @@ export class MessageHeaderOptions extends React.PureComponent {
 
   render() {
     let actionButtonType = "reply";
-    if (this.props.recipientsIncludeLists) {
+    if (this.props.isDraft) {
+      actionButtonType = "draft";
+    } else if (this.props.recipientsIncludeLists) {
       actionButtonType = "replyList";
     } else if (this.props.multipleRecipients) {
       actionButtonType = "replyAll";
-    } else if (this.props.isDraft) {
-      actionButtonType = "draft";
     }
 
     return (
