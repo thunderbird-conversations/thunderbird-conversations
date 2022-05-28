@@ -36,7 +36,10 @@ export const quickReplyActions = {
       let webExtMsg = await browser.messages.get(id);
       switch (type) {
         case "reply": {
-          to = webExtMsg.author;
+          to = webExtMsg.author.includes(identity.email)
+            ? webExtMsg.recipients[0] ?? ""
+            : webExtMsg.author;
+          console.log(webExtMsg.author, identity.email);
           break;
         }
         case "replyAll": {
