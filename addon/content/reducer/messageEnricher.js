@@ -319,6 +319,7 @@ export class MessageEnricher {
       headerMessageId: message.headerMessageId,
       detailsShowing: message.detailsShowing,
       recipientsIncludeLists: message.recipientsIncludeLists,
+      needsLateAttachments: message.needsLateAttachments,
     };
     const messageFolderType = message.folder.type;
 
