@@ -408,7 +408,7 @@ function setupListeners(dispatch, getState) {
   }
 
   async function updateTab(tab) {
-    if (summary.isStandalone || tab.id == summary.tabId) {
+    if (summary.isStandalone || summary.isInTab || tab.id == summary.tabId) {
       return;
     }
 
