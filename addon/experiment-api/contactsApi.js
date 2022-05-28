@@ -489,10 +489,10 @@ function waitForWindow(win) {
   });
 }
 
-function monkeyPatchAllWindows(windowManager, callback) {
+function monkeyPatchAllWindows(windowManager, callback, context) {
   for (const win of Services.wm.getEnumerator("mail:3pane")) {
     waitForWindow(win).then(() => {
-      callback(win, windowManager.getWrapper(win).id);
+      callback(win, windowManager.getWrapper(win).id, context);
     });
   }
 }
