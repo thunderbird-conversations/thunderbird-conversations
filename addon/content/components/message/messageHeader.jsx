@@ -323,18 +323,25 @@ export function MessageHeader({
     extraContacts = <React.Fragment></React.Fragment>;
   }
 
+  let starTitle = browser.i18n.getMessage(
+    starred ? "message.removeStar.tooltip" : "message.addStar.tooltip"
+  );
+
   return (
     <div
       className={`messageHeader hbox ${expanded ? "expanded" : ""}`}
       onClick={onClickHeader}
     >
       <div className="shrink-box">
-        <div
+        <span
+          role="button"
+          tabIndex={expanded ? 0 : -1}
           className={`star ${starred ? "starred" : ""}`}
+          title={starTitle}
           onClick={onClickStar}
         >
-          <SvgIcon hash="star" />
-        </div>
+          <SvgIcon ariaHidden={true} hash="star" />
+        </span>
         {!!from && (
           <>
             <Avatar

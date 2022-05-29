@@ -12,12 +12,14 @@ import PropTypes from "prop-types";
  * @param {object} root0
  * @param {string} [root0.fullPath]
  * @param {string} [root0.hash]
+ * @param {string} [root0.ariaHidden]
  * @returns {React.ReactNode}
  */
-export function SvgIcon({ fullPath, hash }) {
+export function SvgIcon({ fullPath, hash, ariaHidden = false }) {
   fullPath = fullPath || `material-icons.svg#${hash}`;
   return (
     <svg
+      aria-hidden={ariaHidden}
       className="icon"
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
@@ -27,4 +29,8 @@ export function SvgIcon({ fullPath, hash }) {
     </svg>
   );
 }
-SvgIcon.propTypes = { fullPath: PropTypes.string, hash: PropTypes.string };
+SvgIcon.propTypes = {
+  fullPath: PropTypes.string,
+  hash: PropTypes.string,
+  ariaHidden: PropTypes.bool,
+};
