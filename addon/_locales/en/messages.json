@@ -339,6 +339,16 @@
     "description": "Tooltip for the more menu"
   },
 
+  "message.addStar.tooltip": {
+    "message": "Add Star",
+    "description": "Tooltip for the add star button"
+  },
+
+  "message.removeStar.tooltip": {
+    "message": "Remove Star",
+    "description": "Tooltip for the remove star button"
+  },
+
   "action.archive": {
     "message": "archive this message",
     "description": "Archive button name in the message more menu"

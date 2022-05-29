@@ -177,8 +177,6 @@ export class MessageHeaderOptions extends React.PureComponent {
   showDetails(event) {
     event.preventDefault();
     event.stopPropagation();
-    // Force a blur, so that the button looks correct after clicking.
-    event.target.blur();
     this.props.dispatch(
       messageActions.showMsgDetails({
         id: this.props.id,
@@ -257,7 +255,7 @@ export class MessageHeaderOptions extends React.PureComponent {
               "details" + this.props.detailsShowing ? "details-hidden" : ""
             }
           >
-            <a
+            <button
               className="icon-link"
               onClick={this.showDetails}
               title={browser.i18n.getMessage(
@@ -267,9 +265,10 @@ export class MessageHeaderOptions extends React.PureComponent {
               )}
             >
               <SvgIcon
+                ariaHidden="true"
                 hash={this.props.detailsShowing ? "info" : "info_outline"}
               />
-            </a>
+            </button>
           </span>
         )}
         {this.props.expanded && (
@@ -279,7 +278,7 @@ export class MessageHeaderOptions extends React.PureComponent {
               className="icon-link top-right-more"
               title={browser.i18n.getMessage("message.moreMenu.tooltip")}
             >
-              <SvgIcon hash={"more_vert"} />
+              <SvgIcon ariaHidden="true" hash={"more_vert"} />
             </button>
             {this.state.expanded && (
               <OptionsMoreMenu

@@ -73,7 +73,7 @@ export function ActionButton({ type, callback, className, showString }) {
 
   return (
     <button className={className || ""} title={title} onClick={action}>
-      <SvgIcon hash={info.icon} /> {!!showString && title}
+      <SvgIcon ariaHidden={true} hash={info.icon} /> {!!showString && title}
     </button>
   );
 }
