@@ -379,7 +379,8 @@ const printPatch = (win, winId, context) => {
         case "button_print":
         case "cmd_print":
           return (
-            tabmail.selectedTab.mode?.type == "folder" ||
+            (tabmail.selectedTab.mode?.type == "folder" &&
+              tabmail.selectedTab.messageDisplay.visible) ||
             (tabmail.selectedTab.mode?.type == "contentTab" &&
               tabmail.selectedBrowser?.browsingContext.currentURI.spec.startsWith(
                 "chrome://conversations/content/stub.html"
