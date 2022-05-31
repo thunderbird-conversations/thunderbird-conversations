@@ -265,7 +265,7 @@ export class MessageHeaderOptions extends React.PureComponent {
               )}
             >
               <SvgIcon
-                ariaHidden="true"
+                ariaHidden={true}
                 hash={this.props.detailsShowing ? "info" : "info_outline"}
               />
             </button>
@@ -278,7 +278,7 @@ export class MessageHeaderOptions extends React.PureComponent {
               className="icon-link top-right-more"
               title={browser.i18n.getMessage("message.moreMenu.tooltip")}
             >
-              <SvgIcon ariaHidden="true" hash={"more_vert"} />
+              <SvgIcon ariaHidden={true} hash={"more_vert"} />
             </button>
             {this.state.expanded && (
               <OptionsMoreMenu
