@@ -257,18 +257,11 @@ export function MessageHeader({
 }) {
   function onClickHeader() {
     dispatch(
-      messageActions.msgExpand({
+      messageActions.expandMsg({
         expand: !expanded,
         id,
       })
     );
-    if (!expanded) {
-      dispatch(
-        messageActions.markAsRead({
-          id,
-        })
-      );
-    }
   }
 
   function onClickStar(event) {
