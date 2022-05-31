@@ -172,6 +172,23 @@ export const messageActions = {
         .catch(console.error);
     };
   },
+  expandMsg({ id, expand }) {
+    return async (dispatch, getState) => {
+      await dispatch(
+        messageActions.msgExpand({
+          expand,
+          id,
+        })
+      );
+      if (expand && getState().summary.autoMarkAsRead) {
+        await dispatch(
+          messageActions.markAsRead({
+            id,
+          })
+        );
+      }
+    };
+  },
   markAsRead({ id }) {
     return async () => {
       browser.messages.update(id, { read: true }).catch(console.error);
