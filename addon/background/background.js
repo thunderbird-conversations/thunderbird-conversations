@@ -4,7 +4,7 @@
 
 import { Assistant } from "./assistant.js";
 import { contactManager } from "./contactManager.js";
-import { Prefs } from "../prefs.js";
+import { Prefs } from "./prefs.js";
 import { UIHandler } from "./uiHandler.js";
 import { Window } from "./window.js";
 

@@ -62,32 +62,6 @@ const conversationModules = [
 const kAllowRemoteContent = 2;
 const nsMsgViewIndex_None = 0xffffffff;
 
-// Note: we must not use any modules until after initialization of prefs,
-// otherwise the prefs might not get loaded correctly.
-function prefType(name) {
-  switch (name) {
-    case "no_friendly_date":
-    case "logging_enabled":
-    case "tweak_bodies":
-    case "tweak_chrome":
-    case "operate_on_conversations":
-    case "extra_attachments":
-    case "compose_in_tab":
-    case "hide_sigs": {
-      return "bool";
-    }
-    case "expand_who":
-    case "hide_quote_length": {
-      return "int";
-    }
-    case "unwanted_recipients":
-    case "uninstall_infos": {
-      return "char";
-    }
-  }
-  throw new Error(`Unexpected pref type ${name}`);
-}
-
 function monkeyPatchWindow(win, windowId) {
   // Insert our own global Conversations object
   win.Conversations = {
@@ -248,24 +222,6 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           } catch (ex) {
             console.error(ex);
           }
-        },
-        async getPref(name) {
-          try {
-            switch (prefType(name)) {
-              case "bool": {
-                return Services.prefs.getBoolPref(`conversations.${name}`);
-              }
-              case "int": {
-                return Services.prefs.getIntPref(`conversations.${name}`);
-              }
-              case "char": {
-                return Services.prefs.getCharPref(`conversations.${name}`);
-              }
-            }
-          } catch (ex) {
-            return undefined;
-          }
-          throw new Error("Unexpected pref type");
         },
         async getCorePref(name) {
           try {
