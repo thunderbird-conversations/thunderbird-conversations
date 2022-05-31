@@ -34,19 +34,6 @@
         ]
       },
       {
-        "name": "getPref",
-        "type": "function",
-        "description": "Temporary. Gets a conversation preference.",
-        "async": true,
-        "parameters": [
-          {
-            "name": "name",
-            "type": "string",
-            "description": "The preference name"
-          }
-        ]
-      },
-      {
         "name": "startup",
         "type": "function",
         "description": "Temporary. Does the necessary work to start conversations",
