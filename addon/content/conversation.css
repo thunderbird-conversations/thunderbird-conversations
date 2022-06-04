@@ -747,6 +747,8 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
   margin-inline-end: 3px;
   color: #888a85;
   font-size: 80%;
+  border: none !important;
+  background: transparent;
 }
 
 .star .icon {
