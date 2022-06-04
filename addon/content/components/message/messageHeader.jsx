@@ -326,15 +326,13 @@ export function MessageHeader({
       onClick={onClickHeader}
     >
       <div className="shrink-box">
-        <span
-          role="button"
-          tabIndex={expanded ? 0 : -1}
+        <button
           className={`star ${starred ? "starred" : ""}`}
           title={starTitle}
           onClick={onClickStar}
         >
           <SvgIcon ariaHidden={true} hash="star" />
-        </span>
+        </button>
         {!!from && (
           <>
             <Avatar
