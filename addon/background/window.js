@@ -14,7 +14,21 @@ export class Window {
   async init() {
     // Set up our monkey patches which aren't really listeners, but this
     // is a good way to manage them.
-    browser.convMsgWindow.onMonkeyPatch.addListener(() => {});
+    let monkeyPatchListener = () => {};
+    browser.convMsgWindow.onMonkeyPatch.addListener(monkeyPatchListener);
+
+    browser.convMsgWindow.onLayoutChange.addListener(async () => {
+      // Let any stacks unwind and ensure the new layout applies.
+      await new Promise((r) => setTimeout(r, 0));
+
+      browser.convMsgWindow.onMonkeyPatch.removeListener(monkeyPatchListener);
+      browser.convMsgWindow.onMonkeyPatch.addListener(monkeyPatchListener);
+
+      // Now reload the multi message pane, if necessary, to ensure the stub
+      // page continues to work. This may loose scroll position, but its the
+      // best we can do.
+      await browser.convMsgWindow.maybeReloadMultiMessage();
+    });
 
     browser.convMsgWindow.onThreadPaneDoubleClick.addListener(
       async (windowId, msgHdrs) => {
@@ -57,8 +71,6 @@ export class Window {
         };
       }
     );
-
-    browser.convMsgWindow.onSummarizeThread.addListener(async () => {});
 
     browser.runtime.onConnect.addListener((port) => {
       this._handlePort(port);
@@ -119,6 +131,8 @@ export class Window {
         });
       });
     });
+
+    await browser.convMsgWindow.maybeReloadMultiMessage();
   }
 
   _handlePort(port) {

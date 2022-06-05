@@ -3,6 +3,13 @@
     "namespace": "convMsgWindow",
     "functions": [
       {
+        "name": "maybeReloadMultiMessage",
+        "type": "function",
+        "description": "Reloads the multi message views if they are showing the stub page.",
+        "async": true,
+        "parameters": []
+      },
+      {
         "name": "openNewWindow",
         "type": "function",
         "description": "Opens a new window with the specified url.",
@@ -140,9 +147,9 @@
         "parameters": []
       },
       {
-        "name": "onSummarizeThread",
+        "name": "onLayoutChange",
         "type": "function",
-        "description": "Temporary. Fake Listener, actually used for hooking into summarize thread.",
+        "description": "Temporary. Listens for layout changes.",
         "parameters": []
       },
       {
