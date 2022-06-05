@@ -65,6 +65,20 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
     const { messageManager, windowManager } = extension;
     return {
       convMsgWindow: {
+        async maybeReloadMultiMessage() {
+          monkeyPatchAllWindows(windowManager, (win) => {
+            // Pretend the selection has changed, to update any message pane
+            // browsers as necessary.
+            win.document.getElementById("threadTree").view.selectionChanged();
+            let multimessage = win.document.getElementById("multimessage");
+            if (
+              multimessage?.documentURI.spec ==
+              "chrome://conversations/content/stub.html"
+            ) {
+              multimessage.reload();
+            }
+          });
+        },
         async openNewWindow(url, params) {
           const win = getWindowFromId();
           const args = { params };
@@ -214,22 +228,7 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
             );
             monkeyPatchAllWindows(windowManager, specialPatches);
             Services.ww.registerNotification(windowObserver);
-
-            return function () {
-              Services.ww.unregisterNotification(windowObserver);
-              monkeyPatchAllWindows(windowManager, (win, id) => {
-                for (const undo of win.conversationUndoFuncs) {
-                  undo();
-                }
-              });
-            };
-          },
-        }).api(),
-        onSummarizeThread: new ExtensionCommon.EventManager({
-          context,
-          name: "convMsgWindow.onSummarizeThread",
-          register(fire) {
-            const windowObserver = new WindowObserver(
+            const threadWindowObserver = new WindowObserver(
               windowManager,
               summarizeThreadHandler,
               context
@@ -239,17 +238,43 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
               summarizeThreadHandler,
               context
             );
-            Services.ww.registerNotification(windowObserver);
+            Services.ww.registerNotification(threadWindowObserver);
 
             return function () {
+              Services.ww.unregisterNotification(windowObserver);
+              Services.ww.unregisterNotification(threadWindowObserver);
               monkeyPatchAllWindows(windowManager, (win, id) => {
-                Services.ww.unregisterNotification(windowObserver);
+                for (const undo of win.conversationUndoFuncs) {
+                  undo();
+                }
+
                 win.summarizeThread = win.oldSummarizeThread;
                 delete win.oldSummarizeThread;
                 win.MessageDisplayWidget.prototype.onSelectedMessagesChanged =
                   win.originalOnSelectedMessagesChanged;
                 delete win.originalOnSelectedMessagesChanged;
+
+                // Fake updating the selection to get the message panes in the
+                // correct states for Conversations having been removed.
+                win.document
+                  .getElementById("threadTree")
+                  .view.selectionChanged();
               });
+            };
+          },
+        }).api(),
+        onLayoutChange: new ExtensionCommon.EventManager({
+          context,
+          name: "convMsgWindow.onLayoutChange",
+          register(fire) {
+            let listener = () => fire.async();
+            Services.prefs.addObserver("mail.pane_config.dynamic", listener);
+
+            return () => {
+              Services.prefs.removeObserver(
+                "mail.pane_config.dynamic",
+                listener
+              );
             };
           },
         }).api(),
