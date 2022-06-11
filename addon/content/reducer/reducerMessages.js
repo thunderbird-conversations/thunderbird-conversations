@@ -570,7 +570,7 @@ export const messagesSlice = RTK.createSlice({
     },
     msgHdrDetails(state, { payload }) {
       return modifyOnlyMsg(state, payload.id, (msg) => {
-        if (payload.extraLines != null) {
+        if (!payload.extraLines) {
           return { ...msg, detailsShowing: payload.detailsShowing };
         }
         return {
