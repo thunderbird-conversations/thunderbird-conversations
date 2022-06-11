@@ -317,6 +317,9 @@ if (!browser.accounts) {
       ];
     },
     async get(id) {
+      if (id == -1) {
+        return null;
+      }
       return {
         id,
         identities: [
