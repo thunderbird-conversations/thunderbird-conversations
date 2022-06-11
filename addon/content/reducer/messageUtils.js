@@ -35,7 +35,7 @@ export let messageUtils = new (class {
 
     if (identityId == -1) {
       let account = await browser.accounts.get(msg.folderAccountId);
-      if (!account || !account.identities.length) {
+      if (!account?.identities.length) {
         let defaultAccount = await browser.accounts.getDefault();
         let identityDetail = await browser.identities.getDefault(
           defaultAccount.id
