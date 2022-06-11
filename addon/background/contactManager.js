@@ -293,7 +293,12 @@ export class ContactManager {
       }
 
       for (let identity of account.identities) {
-        emails.set(identity.email.toLocaleLowerCase(), identity.id);
+        let idEmail = identity.email.toLocaleLowerCase();
+        // The default identity for the account is returned first, so
+        // if subsequent identites have the same email, then skip them.
+        if (!emails.has(idEmail)) {
+          emails.set(idEmail, identity.id);
+        }
       }
     }
     this._identityEmails = emails;

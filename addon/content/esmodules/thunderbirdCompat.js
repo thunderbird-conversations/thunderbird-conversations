@@ -297,6 +297,23 @@ if (!browser.accounts) {
             },
           ],
         },
+        {
+          id: "ac4",
+          identities: [
+            {
+              id: "id10",
+              email: "id6@example.com",
+            },
+            {
+              id: "id11",
+              email: "id6@example.com",
+            },
+            {
+              id: "id12",
+              email: "id6@example.com",
+            },
+          ],
+        },
       ];
     },
     async get(id) {

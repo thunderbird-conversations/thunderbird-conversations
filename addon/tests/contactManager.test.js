@@ -184,6 +184,25 @@ describe("Test ContactManager", () => {
     expect(spy).toHaveBeenCalledTimes(1);
   });
 
+  test("should return the default identity if several identities match the email", async () => {
+    let contact = await contactManager.get("id6@example.com");
+
+    expect(contact).toMatchObject({
+      contactId: undefined,
+      identityId: "id10",
+      name: undefined,
+      photoURI: undefined,
+    });
+    expect(isValidColor(contact.color)).toBe(true);
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    // Getting the contact a second time should cache the color.
+    let contact2 = await contactManager.get("id6@example.com");
+
+    expect(contact2.color).toBe(contact.color);
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
   test("should return a contact with address book and identity data", async () => {
     let contact = await contactManager.get("id4@example.com");
 
