@@ -249,6 +249,7 @@ export function MessageHeader({
   multipleRecipients,
   recipientsIncludeLists,
   isDraft,
+  inView,
   shortFolderName,
   snippet,
   tags,
@@ -369,6 +370,7 @@ export function MessageHeader({
                 );
               }}
               folderName={shortFolderName}
+              inView={inView}
             />
             {snippet}
           </span>
@@ -400,6 +402,7 @@ MessageHeader.propTypes = {
   from: PropTypes.object,
   fullDate: PropTypes.string.isRequired,
   id: PropTypes.number.isRequired,
+  inView: PropTypes.bool.isRequired,
   attachments: PropTypes.array.isRequired,
   multipleRecipients: PropTypes.bool.isRequired,
   recipientsIncludeLists: PropTypes.bool.isRequired,

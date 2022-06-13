@@ -160,8 +160,7 @@ export class MessageEnricher {
       }
 
       let msg =
-        // If it doesn't have a folderName it is in view.
-        findForCriterion((msg) => !msg.folderName) ||
+        findForCriterion((msg) => msg.inView) ||
         findForCriterion((msg) => msg.isInbox) ||
         findForCriterion((msg) => msg.isSent) ||
         findForCriterion((msg) => msg.isArchives) ||
@@ -372,20 +371,18 @@ export class MessageEnricher {
     });
 
     // Only need to do this if the message is not in the current view.
-    let isInView =
+    msg.inView =
       selectedMessages.some((id) => id == message.id) ||
       (await browser.conversations.isInView(tabId, message.id));
-    if (!isInView) {
-      let parentFolders = await browser.folders.getParentFolders(
-        message.folder
-      );
-      let folderName = message.folder.name;
-      for (let folder of parentFolders) {
-        folderName = folder.name + "/" + folderName;
-      }
-      msg.folderName = folderName;
-      msg.shortFolderName = message.folder.name;
+
+    let parentFolders = await browser.folders.getParentFolders(message.folder);
+    let folderName = message.folder.name;
+    for (let folder of parentFolders) {
+      folderName = folder.name + "/" + folderName;
     }
+    msg.folderName = folderName;
+    msg.shortFolderName = message.folder.name;
+
     return msg;
   }
 
