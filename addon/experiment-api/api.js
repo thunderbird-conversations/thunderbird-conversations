@@ -60,7 +60,6 @@ const conversationModules = [
  */
 
 const kAllowRemoteContent = 2;
-const nsMsgViewIndex_None = 0xffffffff;
 
 function monkeyPatchWindow(win, windowId) {
   // Insert our own global Conversations object
@@ -526,24 +525,6 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
         },
         async makeFriendlyDateAgo(date) {
           return makeFriendlyDateAgo(new Date(date));
-        },
-        async isInView(tabId, msgId) {
-          let tabObject = context.extension.tabManager.get(tabId);
-          if (!tabObject.nativeTab) {
-            return false;
-          }
-          let win = Cu.getGlobalForObject(tabObject.nativeTab);
-          if (!win) {
-            return false;
-          }
-
-          let msgHdr = context.extension.messageManager.get(msgId);
-          if (!msgHdr) {
-            return false;
-          }
-          return (
-            win.gDBView?.findIndexOfMsgHdr(msgHdr, false) != nsMsgViewIndex_None
-          );
         },
         /**
          * Use the mailnews component to stream a message, and process it in a way

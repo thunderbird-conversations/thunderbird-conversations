@@ -371,9 +371,18 @@ export class MessageEnricher {
     });
 
     // Only need to do this if the message is not in the current view.
-    msg.inView =
-      selectedMessages.some((id) => id == message.id) ||
-      (await browser.conversations.isInView(tabId, message.id));
+    msg.inView = selectedMessages.some((id) => id == message.id);
+    if (!msg.inView) {
+      try {
+        let currentTab = await browser.mailTabs.get(tabId);
+        msg.inView =
+          currentTab.displayedFolder.accountId == message.folder.accountId &&
+          currentTab.displayedFolder.path == message.folder.path;
+      } catch (ex) {
+        // If we can't get the current tab, we assume the message is not in
+        // the current view, e.g. standalone tab.
+      }
+    }
 
     let parentFolders = await browser.folders.getParentFolders(message.folder);
     let folderName = message.folder.name;

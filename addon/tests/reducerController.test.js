@@ -104,7 +104,7 @@ describe("Controller Actions tests", () => {
         expanded: true,
         folderAccountId: "id1",
         folderName: "Fake/Inbox",
-        folderPath: undefined,
+        folderPath: "Inbox",
         from: undefined,
         fullDate: date,
         hasRemoteContent: false,

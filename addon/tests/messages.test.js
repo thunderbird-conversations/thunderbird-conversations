@@ -8,7 +8,7 @@ import { MessageEnricher } from "../content/reducer/messageEnricher.js";
 
 describe("messageEnricher", () => {
   let fakeMessageHeaderData;
-  let isInViewSpy;
+  let mailTabsGetSpy;
   let messageEnricher;
 
   beforeEach(() => {
@@ -17,8 +17,7 @@ describe("messageEnricher", () => {
     jest
       .spyOn(browser.messages, "get")
       .mockImplementation(async (id) => fakeMessageHeaderData.get(id));
-    isInViewSpy = jest.spyOn(browser.conversations, "isInView");
-    isInViewSpy.mockReturnValue(true);
+    mailTabsGetSpy = jest.spyOn(browser.mailTabs, "get");
     let originalConsoleError = console.error;
     // We expect some errors due to how the tests are run with single messages
     // only.
@@ -59,9 +58,8 @@ describe("messageEnricher", () => {
       });
     });
 
-    test("Marks as not in view if the message is not in the selected view", async () => {
+    test("Marks as not in view if the message is not in the selected view nor folder", async () => {
       let fakeMsg = createFakeData({}, fakeMessageHeaderData);
-      isInViewSpy.mockReturnValue(false);
 
       let msgs = await messageEnricher.enrich(
         [fakeMsg],
@@ -74,9 +72,14 @@ describe("messageEnricher", () => {
       });
     });
 
-    test("Marks as in view if isInView returns true", async () => {
+    test("Marks as in view if the message is not selected but in the same folder", async () => {
       let fakeMsg = createFakeData({}, fakeMessageHeaderData);
-      isInViewSpy.mockReturnValue(true);
+      mailTabsGetSpy.mockReturnValue({
+        displayedFolder: {
+          accountId: "id1",
+          path: "Inbox",
+        },
+      });
 
       let msgs = await messageEnricher.enrich(
         [fakeMsg],
@@ -169,7 +172,7 @@ describe("messageEnricher", () => {
         },
       ];
 
-      isInViewSpy.mockReturnValue(false);
+      mailTabsGetSpy.mockReturnValue(false);
 
       for (let test of tests) {
         let fakeMsg = createFakeData(test.source, fakeMessageHeaderData);
@@ -216,10 +219,6 @@ describe("messageEnricher", () => {
   });
 
   describe("De-duplicates messages when they have the same ids", () => {
-    beforeEach(() => {
-      isInViewSpy.mockReturnValue(false);
-    });
-
     test("Prefers in-view messages", async () => {
       let fakeMsgs = [
         createFakeData(
@@ -239,11 +238,16 @@ describe("messageEnricher", () => {
           fakeMessageHeaderData
         ),
         createFakeData(
-          { id: 5, folderType: "junk", headerMessageId: 1 },
+          { id: 5, folderType: "junk", folderName: "Junk", headerMessageId: 1 },
           fakeMessageHeaderData
         ),
       ];
-      isInViewSpy.mockImplementation((tabId, msgId) => msgId == 5);
+      mailTabsGetSpy.mockReturnValue({
+        displayedFolder: {
+          accountId: "id1",
+          path: "Junk",
+        },
+      });
 
       let msgs = await messageEnricher.enrich(
         fakeMsgs,
