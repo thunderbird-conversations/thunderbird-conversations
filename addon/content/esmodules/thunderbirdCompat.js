@@ -167,6 +167,18 @@ if (!browser.tabs) {
   };
 }
 
+if (!browser.mailTabs) {
+  browser.mailTabs = {
+    async get(tabId) {
+      return {
+        displayedFolder: {
+          accountId: `account${tabId}`,
+          path: "Sent",
+        },
+      };
+    },
+  };
+}
 if (!browser.conversations) {
   browser.conversations = {
     send(details) {
@@ -220,9 +232,6 @@ if (!browser.conversations) {
     },
     async makePlural(form, string, count) {
       return `${string} ${count}`;
-    },
-    async isInView() {
-      return true;
     },
     async quoteMsgHdr() {
       return "MsgBody";

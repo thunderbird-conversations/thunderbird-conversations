@@ -37,6 +37,7 @@ export function createFakeData(
       accountId: "id1",
       type: folderType,
       name: folderName,
+      path: folderName,
     },
     getFullRequired,
     id,
@@ -67,6 +68,7 @@ export function createFakeData(
       accountId: "id1",
       type: folderType,
       name: folderName,
+      path: folderName,
     },
     junk,
     read,
@@ -79,6 +81,7 @@ export function createFakeData(
 
 export function createFakeSummaryData(prefs = {}) {
   return {
+    tabId: 1,
     prefs: {
       noFriendlyDate: false,
       expandWho: 4,
