@@ -46,22 +46,51 @@ describe("messageEnricher", () => {
       );
 
       expect(msgs[0]).toMatchObject({
+        folderName: "Fake/Inbox",
+        inView: true,
         isDraft: false,
         isJunk: false,
         isOutbox: false,
         read: false,
+        shortFolderName: "Inbox",
         subject: "Fake Msg",
         starred: false,
         tags: [],
       });
-      expect(msgs[0]).not.toHaveProperty("folderName");
-      expect(msgs[0]).not.toHaveProperty("shortFolderName");
     });
 
-    test("Fills out folder name if the message is not selected nor in view", async () => {
+    test("Marks as not in view if the message is not in the selected view", async () => {
       let fakeMsg = createFakeData({}, fakeMessageHeaderData);
       isInViewSpy.mockReturnValue(false);
 
+      let msgs = await messageEnricher.enrich(
+        [fakeMsg],
+        createFakeSummaryData({ noFriendlyDate: true }),
+        []
+      );
+
+      expect(msgs[0]).toMatchObject({
+        inView: false,
+      });
+    });
+
+    test("Marks as in view if isInView returns true", async () => {
+      let fakeMsg = createFakeData({}, fakeMessageHeaderData);
+      isInViewSpy.mockReturnValue(true);
+
+      let msgs = await messageEnricher.enrich(
+        [fakeMsg],
+        createFakeSummaryData({ noFriendlyDate: true }),
+        []
+      );
+
+      expect(msgs[0]).toMatchObject({
+        inView: true,
+      });
+    });
+
+    test("Fills out folder name", async () => {
+      let fakeMsg = createFakeData({}, fakeMessageHeaderData);
       let msgs = await messageEnricher.enrich(
         [fakeMsg],
         createFakeSummaryData({ noFriendlyDate: true }),
@@ -72,20 +101,6 @@ describe("messageEnricher", () => {
         folderName: "Fake/Inbox",
         shortFolderName: "Inbox",
       });
-    });
-
-    test("Does not fill out folder name if the message is not selected but in view", async () => {
-      let fakeMsg = createFakeData({}, fakeMessageHeaderData);
-      isInViewSpy.mockReturnValue(true);
-
-      let msgs = await messageEnricher.enrich(
-        [fakeMsg],
-        createFakeSummaryData({ noFriendlyDate: true }),
-        [fakeMessageHeaderData.size]
-      );
-
-      expect(msgs[0]).not.toHaveProperty("folderName");
-      expect(msgs[0]).not.toHaveProperty("shortFolderName");
     });
 
     test("Correctly sets flags with details from the header", async () => {
