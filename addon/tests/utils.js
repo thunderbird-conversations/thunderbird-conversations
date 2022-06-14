@@ -4,10 +4,13 @@
 
 export function createFakeData(
   {
+    asInternal = false,
     id = 0,
     headerMessageId = null,
     attachments = [],
     author = null,
+    bccList = [],
+    ccList = [],
     date = new Date(),
     detailsShowing,
     flagged = false,
@@ -22,14 +25,20 @@ export function createFakeData(
     subject = "Fake Msg",
     snippet = "",
     tags = [],
+    to = [],
     type = "normal",
   } = {},
   fakeMessageHeaderData,
   postProcessing = false
 ) {
+  if (!Array.isArray(to)) {
+    to = [to];
+  }
   let data = {
     attachments,
-    date,
+    bcc: [],
+    cc: [],
+    date: asInternal ? date.toString() : date,
     // Set the headerMessageId to avoid filtering out duplicates due to no id.
     headerMessageId: headerMessageId ?? id,
     flagged,
@@ -49,6 +58,7 @@ export function createFakeData(
     source: "gloda",
     subject,
     tags,
+    to: [],
     type,
   };
   if (detailsShowing !== undefined) {
@@ -60,8 +70,14 @@ export function createFakeData(
   if (from) {
     data.from = from;
   }
+  if (to.length) {
+    data.to = [to];
+  }
 
   fakeMessageHeaderData.set(id, {
+    author,
+    ccList,
+    bccList,
     date,
     flagged,
     folder: {
@@ -72,6 +88,7 @@ export function createFakeData(
     },
     junk,
     read,
+    recipients: to ? to.map((t) => t.email) : [],
     subject,
     tags,
   });

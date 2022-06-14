@@ -379,6 +379,30 @@ if (!browser.identities) {
         email: "id5@example.com",
       };
     },
+    async get(id) {
+      if (id == "id3") {
+        return {
+          accountId: "ac1",
+          email: `id3@EXAMPLE.com`,
+        };
+      }
+      if (id == "id4") {
+        return {
+          accountId: "ac1",
+          email: `id4@EXAMPLE.com`,
+        };
+      }
+      if (id == "idac34") {
+        return {
+          accountId: "ac34",
+          email: `ac34@EXAMPLE.com`,
+        };
+      }
+      return {
+        accountId: "ac5",
+        email: "id5@example.com",
+      };
+    },
   };
 }
 
@@ -443,7 +467,7 @@ if (!browser.messages) {
     },
     async getFull(id) {
       return {
-        headers: [],
+        headers: {},
         parts: [{}],
       };
     },
