@@ -72,7 +72,7 @@
     "description": "Options - title for archive/delete behavior."
   },
   "options.operate_on_conversations_desc": {
-    "message": "Кнопки панелі повинні архівувати й видаляти розмови цілком, а не лише вибрані повідомлення.",
+    "message": "Кнопки панелі мають архівувати й видаляти розмови цілком, а не лише вибрані повідомлення.",
     "description": "Options - description for archive/delete behavior."
   },
   "options.extra_attachments_title": {
@@ -80,7 +80,7 @@
     "description": "Options - title for attachment settings."
   },
   "options.extra_attachments_desc": {
-    "message": "В окремих випадках Thunderbird не зможе розпізнавати деякі вкладення. Цей параметр дозволяє обійти цей недолік Thunderbird і показати всі можливі вкладення. Використовуйте комбіновано з додатком Show All Body Parts.",
+    "message": "Іноді Thunderbird не зможе розпізнавати деякі вкладення. Цей параметр дозволяє обійти цей недолік і показати всі можливі вкладення. Використовуйте разом з додатком Show All Body Parts.",
     "description": "Options - description for attachment settings."
   },
   "options.hide_quick_reply_title": {
@@ -90,6 +90,14 @@
   "options.hide_quick_reply_desc": {
     "message": "Приховати панель швидкої відповіді в розмовах.",
     "description": "Options - description for hiding the quick reply display."
+  },
+  "options.disable_between_column_title": {
+    "message": "Вимкнути стовпчик \"Учасники\" (Потрібен перезапуск)",
+    "description": "Options - title for disabling the between column."
+  },
+  "options.disable_between_column_desc": {
+    "message": "Вимкнути стовпчик \"Учасники\". Цей параметр може бути корисним, якщо ви не користуєтеся цим стовпчиком, але бачите, що Thunderbird все одно намагається його показувати.",
+    "description": "Options - description for disabling the between column."
   },
   "options.compose_in_tab2_title": {
     "message": "Увімкнути вкладку редактора",
@@ -104,16 +112,44 @@
     "description": "Options - title for debugging setting."
   },
   "options.debugging_desc": {
-    "message": "Активувати вивід зневадження в системній консолі та консолі помилок. Ця дія генеруватиме багато повідомлень.",
+    "message": "Активувати результати зневадження в системній консолі та консолі помилок. Ця дія генеруватиме багато повідомлень.",
     "description": "Options - description for debugging setting."
   },
   "assistant.title": {
     "message": "Помічник першого запуску",
     "description": "The document title of the assistant page."
   },
+  "assistant.intro2": {
+    "message": "Цей помічник допоможе оптимізувати налаштування Thunderbird для найкращої роботи.",
+    "description": "Introduction paragraph for the assistant."
+  },
+  "assistant.settingsBetweenTitle": {
+    "message": "Чи бажаєте показати стовпчик \"Учасники\"?",
+    "description": "Title for the section for enabling the between column."
+  },
+  "assistant.settingsBetweenDetail": {
+    "message": "Цей параметр додає стовпчик у списку повідомлень, щоб ви бачили імена всіх кореспондентів розмови.",
+    "description": "Details for the section for enabling the between column."
+  },
+  "assistant.actionEnableBetween": {
+    "message": "Увімкнути стовпчик \"Учасники\"",
+    "description": "Label for the checkbox for enabling the between column."
+  },
+  "assistant.settingsColumnInfo": {
+    "message": "Ви завжди можете увімкнути чи вимкнути його, клацнувши правою кнопкою миші на заголовку стовпчика.",
+    "description": "Information after the between column about how to enable and disable columns."
+  },
+  "assistant.otherSettingsTitle": {
+    "message": "Інші налаштування",
+    "description": "Title for the other settings."
+  },
   "assistant.working": {
     "message": "Обробка...",
     "description": "An indication that the assistant is working."
+  },
+  "assistant.workingText": {
+    "message": "Це може тривати деякий час. Ви можете зачекати доки закриється ця вкладка, або закрити її та стежити за процесом у меню Інструменти > Менеджер діяльності.",
+    "description": "Third detail paragraph for the assistant."
   },
   "assistant.apply": {
     "message": "Застосувати зміни",
@@ -127,8 +163,12 @@
     "message": "Вхідні й Надіслані синхронізуються для автономного сховища (рекомендовано).",
     "description": "Option text for allowing offline download."
   },
+  "assistant.actionSetupMessageViews": {
+    "message": "Показувати розмови у списку повідомлень і сортувати їх за датою. Застосувати до всіх тек (наполегливо рекомендується).",
+    "description": "Option text for how the view is set."
+  },
   "assistant.actionEnsureMessagePaneVisible": {
-    "message": "Переконайтеся, що панель повідомлення видима.",
+    "message": "Переконатися, що панель повідомлення видима.",
     "description": "Option text for ensuring the message pane is visible."
   },
   "assistant.settings2": {
@@ -136,19 +176,19 @@
     "description": "Paragraph informing users of the ability to change settings later."
   },
   "gallery.messageMovedOrDeleted": {
-    "message": "Шкода, але ми не можемо показати перегляд галереї, тому що повідомлення переміщено або видалено.",
+    "message": "Перепрошуємо, але ми не можемо показати вигляд галереї, тому що повідомлення переміщено або видалено.",
     "description": "Message displayed if the email that the gallery is trying to view cannot be found."
   },
   "gallery.title": {
-    "message": "Вигляд галереї за : $1",
+    "message": "Вигляд галереї для: $1",
     "description": "The tab title for the image gallery"
   },
   "options.start_setup_assistant": {
-    "message": "Запустити майстер налаштувань",
+    "message": "Запустити помічник налаштувань",
     "description": "Title of the button to open the setup assistant."
   },
   "message.movedOrDeletedConversation": {
-    "message": "Шкода, але ми не можемо показати цю розмову, тому що повідомлення переміщено або видалено.",
+    "message": "На жаль, ми не можемо показати цю розмову, оскільки повідомлення було переміщено або видалено.",
     "description": "Error message for the conversation tab"
   },
   "contact.copyEmailTooltip": {
@@ -156,7 +196,7 @@
     "description": "Tooltip shown on the copy email to clipboard button"
   },
   "contact.createFilterTooltip": {
-    "message": "створити фільтр для відправника",
+    "message": "Створити фільтр для відправника",
     "description": "Tooltip shown on the create filter for contact button"
   },
   "contact.addContactTooltip": {
@@ -167,6 +207,10 @@
     "message": "Редагувати контакт в адресній книзі",
     "description": "Tooltip shown on the edit contact button"
   },
+  "contact.viewContactTooltip": {
+    "message": "Переглянути контакт в адресній книзі",
+    "description": "Tooltip shown on the view contact button for read-only contacts"
+  },
   "contact.sendEmailTooltip": {
     "message": "Надіслати пошту",
     "description": "Tooltip shown on the send email button"
@@ -176,19 +220,19 @@
     "description": "Tooltip shown on the recent conversations button"
   },
   "message.forwardConversation": {
-    "message": "Переслати цю розмову",
+    "message": "Переслати розмову",
     "description": "The link text for forwarding a conversation"
   },
   "message.printConversation": {
-    "message": "Друкувати цю розмову",
+    "message": "Друкувати розмову",
     "description": "The link text for printing a conversation"
   },
   "message.trash.tooltip": {
-    "message": "Видалити цю розмову",
+    "message": "Видалити розмову",
     "description": "Tooltip for the trash button in the conversation header"
   },
   "message.archive.tooltip": {
-    "message": "Архівувати цю розмову",
+    "message": "Архівувати розмову",
     "description": "Tooltip for the archive button in the conversation header"
   },
   "message.junk.tooltip": {
@@ -200,11 +244,11 @@
     "description": "Tooltip for the expand button in the conversation header"
   },
   "message.read.tooltip": {
-    "message": "Перемкнути прочитані/непрочитані всі повідомлення",
+    "message": "Зробити розмову прочитаною / непрочитаною",
     "description": "Tooltip for the mark as read button in the conversation header"
   },
   "message.detach.tooltip": {
-    "message": "Показати цю розмову в новій вкладці",
+    "message": "Відкрити розмову в новій вкладці",
     "description": "Tooltip for the detach to new tab button in the conversation header"
   },
   "message.loading": {
@@ -227,12 +271,20 @@
     "message": "Більше",
     "description": "Tooltip for the more menu"
   },
+  "message.addStar.tooltip": {
+    "message": "Додати зірочку",
+    "description": "Tooltip for the add star button"
+  },
+  "message.removeStar.tooltip": {
+    "message": "Прибрати зірочку",
+    "description": "Tooltip for the remove star button"
+  },
   "action.archive": {
-    "message": "Архівувати це повідомлення",
+    "message": "Архівувати повідомлення",
     "description": "Archive button name in the message more menu"
   },
   "action.delete": {
-    "message": "Видалити це повідомлення",
+    "message": "Видалити повідомлення",
     "description": "Delete button name in the message more menu"
   },
   "action.viewClassic": {
@@ -322,7 +374,7 @@
     "description": "Header name displayed for the cc field"
   },
   "header.to": {
-    "message": "кому",
+    "message": "Кому:",
     "description": "Used in the header, inserted in 'from me to you'."
   },
   "tags.jumpToFolder.tooltip": {
@@ -330,7 +382,7 @@
     "description": "Tooltip for the jump to folder tag."
   },
   "tags.inFolder": {
-    "message": "В $folderName$",
+    "message": "$folderName$",
     "description": "Folder indication for the jump to folder tag.",
     "placeholders": {
       "folderName": {
@@ -338,6 +390,10 @@
         "example": "Sent"
       }
     }
+  },
+  "tags.removeButton": {
+    "message": "Вилучити тег",
+    "description": "Message label/tooltip for removing a tag."
   },
   "attachments.downloadAll.tooltip": {
     "message": "Зберегти все",
@@ -348,7 +404,7 @@
     "description": "Tooltip for the view attachments in gallery button."
   },
   "attachments.preview.tooltip": {
-    "message": "Перегляд",
+    "message": "Попередній перегляд",
     "description": "Tooltip displayed for the preview button of an attachment."
   },
   "attachments.open.tooltip": {
@@ -384,7 +440,7 @@
     "description": "This is used in messages, for the recipients, and the 'between' column as well. In English, space after the comma."
   },
   "header.andSeparator": {
-    "message": " та ",
+    "message": " і ",
     "description": "This is used in messages, for the recipients, and the 'between' column as well. In English, space after and before « and »."
   },
   "attachments.context.detach": {
@@ -396,7 +452,7 @@
     "description": "Context menu item to delete an attachment."
   },
   "pluralForm": {
-    "message": "1",
+    "message": "7",
     "description": "Please make sure you read and understood https://developer.mozilla.org/en/Localization_and_Plurals. pluralForm corresponds to the 'pluralRule' variable that's described in the page, it's just a mistake if the name doesn't match the MDC page."
   },
   "attachments.numAttachments": {
@@ -525,13 +581,33 @@
     "message": "Це повідомлення підписане",
     "description": "Tooltip displayed when a signature is good and verified."
   },
+  "enigmail.messageBadSignature": {
+    "message": "Неприпустимий підпис",
+    "description": "Tag description displayed when a message is signed but has a bad signature"
+  },
+  "enigmail.messageBadSignatureLong": {
+    "message": "Це повідомлення було підписано, але підпис неприпустимий",
+    "description": "Tooltip displayed when a signature is bad."
+  },
   "enigmail.messageDecrypted": {
     "message": "Розшифровано",
     "description": "Tag description displayed when a message has been decrypted."
   },
   "enigmail.messageDecryptedLong": {
-    "message": "Це повідомлення розшифроване для його показу",
+    "message": "Це повідомлення було розшифровано для показу",
     "description": "Tooltip displayed when a message has been decrypted."
+  },
+  "openpgp.signedByLabel": {
+    "message": "Підписано:",
+    "description": "Label displayed for a SMIME certificate to label who it was signed by."
+  },
+  "openpgp.signedByEmailLabel": {
+    "message": "Адреса е-пошти:",
+    "description": "Label displayed for a SMIME certificate to label who it was signed by."
+  },
+  "openpgp.certificateIssuedByLabel": {
+    "message": "Видавець сертифіката:",
+    "description": "Label displayed for a SMIME certificate to label who it was signed by."
   },
   "compose.addCc": {
     "message": "Копія",
@@ -602,11 +678,29 @@
     "description": "Description for the undo customizations button."
   },
   "options.undoCustomizations.tooltip": {
-    "message": "Відновити параметри, що були при першому встановленні.",
+    "message": "Відновити параметри на момент встановлення.",
     "description": "Tooltip for the undo customizations button."
   },
   "options.undoCustomizations.finished": {
     "message": "Відновлення параметрів виконано",
     "description": "Message displayed once the customizations have been uninstalled."
+  },
+  "compose.reply_header_citation": {
+    "message": "Повідомлення від $author$, $date$ $time$:",
+    "description": "Citation header when replying to a message.",
+    "placeholders": {
+      "author": {
+        "content": "$1",
+        "example": "John Smith"
+      },
+      "date": {
+        "content": "$2",
+        "example": "12/01/21"
+      },
+      "time": {
+        "content": "$3",
+        "example": "12:14"
+      }
+    }
   }
 }
