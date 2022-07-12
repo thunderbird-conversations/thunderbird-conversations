@@ -58,7 +58,7 @@
     "npm-watch": "0.11.0",
     "prettier": "2.7.1",
     "prop-types": "15.8.1",
-    "serve": "13.0.2",
+    "serve": "14.0.0",
     "@testing-library/react": "13.3.0",
     "web-ext": "7.0.0",
     "webpack": "5.73.0",
