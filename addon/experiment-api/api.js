@@ -2,13 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-var { XPCOMUtils } = ChromeUtils.import(
-  "resource://gre/modules/XPCOMUtils.jsm"
-);
+/* global ExtensionCommon, XPCOMUtils */
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
-  ExtensionCommon: "resource://gre/modules/ExtensionCommon.jsm",
   GlodaAttrProviders:
     "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
   MailServices: "resource:///modules/MailServices.jsm",
@@ -19,6 +16,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   Services: "resource://gre/modules/Services.jsm",
 });
 
+// eslint-disable-next-line mozilla/reject-importGlobalProperties
 XPCOMUtils.defineLazyGlobalGetters(this, ["TextDecoder"]);
 
 XPCOMUtils.defineLazyGetter(this, "messenger", () =>
