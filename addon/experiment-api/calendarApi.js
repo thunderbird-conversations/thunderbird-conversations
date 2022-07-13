@@ -2,14 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-var { XPCOMUtils } = ChromeUtils.import(
-  "resource://gre/modules/XPCOMUtils.jsm"
-);
+/* global ExtensionCommon, XPCOMUtils */
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   cal: "resource:///modules/calendar/calUtils.jsm",
-  ExtensionCommon: "resource://gre/modules/ExtensionCommon.jsm",
 });
 
 // This is a version of setupOptions suitable for Conversations
