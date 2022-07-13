@@ -4,10 +4,6 @@
 
 /* global ExtensionCommon, XPCOMUtils */
 
-var { XPCOMUtils } = ChromeUtils.import(
-  "resource://gre/modules/XPCOMUtils.jsm"
-);
-
 ChromeUtils.defineModuleGetter(
   this,
   "MailServices",
