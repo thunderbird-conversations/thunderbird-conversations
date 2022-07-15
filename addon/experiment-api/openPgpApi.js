@@ -99,7 +99,10 @@ var convOpenPgp = class extends ExtensionCommon.ExtensionAPI {
             let win = getWindow(context, tabId);
             // TODO: This might not be necessary once decryption handling is
             // in place, but not sure yet.
-            win.EnigmailVerify.registerContentTypeHandler();
+            // Changed to `registerPGPMimeHandler` in Thunderbird 104.
+            "registerPGPMimeHandler" in win.EnigmailVerify
+              ? win.EnigmailVerify.registerPGPMimeHandler()
+              : win.EnigmailVerify.registerContentTypeHandler();
           }
           // Not sure if we need this or not.
           // win.EnigmailVerify.lastMsgWindow = win.msgWindow;
@@ -232,7 +235,10 @@ const smimeReloadPatch = (win, id, context) => {
     let msgHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
     let id = context.extension.messageManager.convert(msgHdr).id;
 
-    win.EnigmailVerify.unregisterContentTypeHandler();
+    // Changed to `registerPGPMimeHandler` in Thunderbird 104.
+    "unregisterPGPMimeHandler" in win.EnigmailVerify
+      ? win.EnigmailVerify.unregisterPGPMimeHandler()
+      : win.EnigmailVerify.unregisterContentTypeHandler();
 
     for (let listener of smimeReloadListeners) {
       listener.async(id);
