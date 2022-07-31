@@ -484,6 +484,16 @@ export const messagesSlice = RTK.createSlice({
         msgData: state.msgData.filter((msg) => !payload.msgs.includes(msg.id)),
       };
     },
+    addContactPhoto(state, { payload }) {
+      return modifyOnlyMsg(state, payload.id, (msg) => {
+        let newMsg = { ...msg };
+
+        if (newMsg.from.contactId == payload.contactId) {
+          newMsg.from = { ...msg.from, avatar: payload.url };
+        }
+        return newMsg;
+      });
+    },
     msgExpand(state, { payload }) {
       return modifyOnlyMsg(state, payload.id, (msg) => ({
         ...msg,

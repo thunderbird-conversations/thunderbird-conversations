@@ -3,6 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import { getInitials } from "../esmodules/utils.js";
+import { messageActions } from "./reducerMessages.js";
 
 /**
  * Adds necessary information for display contacts.
@@ -132,18 +133,20 @@ export async function mergeContactDetails(msgData) {
         ])
       );
       const formattedData = await Promise.all(
-        contactData.map(([contact, email, name]) =>
-          enrichWithDisplayData({
+        contactData.map(([contact, email, name]) => {
+          let data = enrichWithDisplayData({
             contact,
             email,
             field,
             nameFromEmail: name,
             showCondensed,
-          })
-        )
+          });
+
+          return data;
+        })
       );
       // There is only ever one email in the `from` field. All the others are arrays.
-      if (field === "from") {
+      if (field == "from") {
         message[field] = formattedData[0];
       } else {
         message[field] = formattedData;
@@ -180,4 +183,43 @@ function hasMultipleRecipients(message) {
     }
   }
   return count > 1;
+}
+
+export async function getContactPhotos(enrichedMsgs, dispatch) {
+  // TODO: Maybe optimise for a page load, should we save contacts to a different
+  // part of the reducer, so that we can load them as needed?
+  let loadedPhotos = new Map();
+  for (let msg of enrichedMsgs) {
+    let from = msg.from;
+    if (
+      !from ||
+      !from.contactId ||
+      // No need to load if we already have the avatar.
+      from.avatar
+    ) {
+      continue;
+    }
+
+    let url = loadedPhotos.get(from.contactId);
+    if (!url) {
+      // This is currently needed in Thunderbird 102 & later, as we do not
+      // have the contact information available there.
+      // Once we drop support for pre-102, and 102 has the option for photo
+      // handling, then we could potentially remove this and rewrite it
+      // for the new photo data handling.
+      url = await browser.convContacts.getPhotoUrl(msg.from.contactId);
+      loadedPhotos.set(msg.from.contactId, url);
+    }
+    if (!url) {
+      continue;
+    }
+
+    dispatch(
+      messageActions.addContactPhoto({
+        id: msg.id,
+        contactId: msg.from.contactId,
+        url,
+      })
+    );
+  }
 }

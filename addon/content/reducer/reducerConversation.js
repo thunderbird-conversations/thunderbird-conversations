@@ -10,7 +10,7 @@
 import * as RTK from "@reduxjs/toolkit";
 import { composeSlice } from "./reducerCompose.js";
 import { controllerActions } from "./controllerActions.js";
-import { mergeContactDetails } from "./contacts.js";
+import { mergeContactDetails, getContactPhotos } from "./contacts.js";
 import { messageActions } from "./reducerMessages.js";
 import { MessageEnricher } from "./messageEnricher.js";
 import { quickReplySlice } from "./reducerQuickReply.js";
@@ -173,8 +173,8 @@ export const conversationActions = {
           initialSet
         );
 
-        // The messages inside `msgData` don't come with filled in `to`/`from`/ect. fields.
-        // We need to fill them in ourselves.
+        // The messages inside `msgData` don't come with filled in `to`/`from`/etc.
+        // fields. We need to fill them in ourselves.
         await mergeContactDetails(enrichedMsgs);
 
         summary.loading = false;
@@ -204,6 +204,9 @@ export const conversationActions = {
           await browser.convMsgWindow.fireLoadCompleted();
         }
         await dispatch(controllerActions.maybeSetMarkAsRead());
+
+        // Set this off, but don't wait for it.
+        getContactPhotos(enrichedMsgs, dispatch);
       });
     };
   },
