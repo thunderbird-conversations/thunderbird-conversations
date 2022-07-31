@@ -11,6 +11,9 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   MailServices: "resource:///modules/MailServices.jsm",
 });
 
+// eslint-disable-next-line mozilla/reject-importGlobalProperties
+XPCOMUtils.defineLazyGlobalGetters(this, ["btoa", "IOUtils", "PathUtils"]);
+
 /**
  * @typedef nsIMsgFolder
  * @see https://searchfox.org/comm-central/rev/9d9fac50cddfd9606a51c4ec3059728c33d58028/mailnews/base/public/nsIMsgFolder.idl
@@ -79,7 +82,7 @@ function getWindowFromId(windowManager, context, id) {
 var convContacts = class extends ExtensionCommon.ExtensionAPI {
   getAPI(context) {
     const { extension } = context;
-    const { windowManager } = extension;
+    const { windowManager, addressBookManager } = extension;
     return {
       convContacts: {
         async beginNew(beginNewProperties) {
@@ -146,6 +149,38 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
             action: "edit",
             card: cardAndBook.card,
           });
+        },
+        async getPhotoUrl(contactId) {
+          let contact = addressBookManager.findContactById(contactId);
+          if (!contact) {
+            return null;
+          }
+
+          let photoName = contact.item.getProperty("PhotoName", "");
+          if (photoName) {
+            let path = PathUtils.join(
+              PathUtils.profileDir,
+              "Photos",
+              photoName
+            );
+
+            let buffer = await IOUtils.read(path);
+            let data = btoa(String.fromCharCode.apply(null, buffer));
+
+            let type;
+            if (data.startsWith("iVBO")) {
+              // The first 3 bytes say this image is PNG.
+              type = "png";
+            } else if (data.startsWith("/9j/")) {
+              // The first 3 bytes say this image is JPEG.
+              type = "jpeg";
+            } else {
+              throw new Error("Unsupported image format");
+            }
+            return `data:image/${type};base64,${data}`;
+          }
+
+          return null;
         },
         async showMessagesInvolving(options) {
           const window = getWindowFromId(

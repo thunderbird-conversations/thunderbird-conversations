@@ -62,6 +62,34 @@
         ]
       },
       {
+        "name": "getPhotoUrl",
+        "type": "function",
+        "description": "Temporary. Gets the photo url for the contact.",
+        "async": "callback",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "contactId",
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "The contact to get the photo for"
+              }
+            }
+          },
+          {
+            "type": "function",
+            "name": "callback",
+            "optional": true,
+            "parameters": [
+              {
+                "type": "string"
+              }
+            ]
+          }
+        ]
+      },
+      {
         "name": "showMessagesInvolving",
         "type": "function",
         "description": "Temporary. Shows all messages involving a particular email.",
