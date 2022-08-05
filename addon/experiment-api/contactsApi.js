@@ -88,19 +88,34 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
             context,
             beginNewProperties.windowId
           );
-          const args = {};
-          if (beginNewProperties.email !== null) {
-            args.primaryEmail = beginNewProperties.email;
+
+          // Proxy for > Thunderbird 101.
+          if ("AskUser" in Ci.nsIMsgCompSendFormat) {
+            const window = getWindowFromId(
+              windowManager,
+              context,
+              beginNewProperties.windowId
+            );
+            const args = {};
+            if (beginNewProperties.email !== null) {
+              args.primaryEmail = beginNewProperties.email;
+            }
+            if (beginNewProperties.displayName !== null) {
+              args.displayName = beginNewProperties.displayName;
+            }
+            window.openDialog(
+              "chrome://messenger/content/addressbook/abNewCardDialog.xhtml",
+              "",
+              "chrome,resizable=no,titlebar,modal,centerscreen",
+              args
+            );
+            return;
           }
-          if (beginNewProperties.displayName !== null) {
-            args.displayName = beginNewProperties.displayName;
-          }
-          window.openDialog(
-            "chrome://messenger/content/addressbook/abNewCardDialog.xhtml",
-            "",
-            "chrome,resizable=no,titlebar,modal,centerscreen",
-            args
-          );
+
+          window.toAddressBook({
+            action: "create",
+            vCard: `BEGIN:VCARD\r\nFN:${beginNewProperties.displayName}\r\nEMAIL:${beginNewProperties.email}\r\nEND:VCARD\r\n`,
+          });
         },
         async beginEdit(beginEditProperties) {
           const window = getWindowFromId(
@@ -111,16 +126,26 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
           let cardAndBook = DisplayNameUtils.getCardForEmail(
             beginEditProperties.email
           );
-          const args = {
-            abURI: cardAndBook.book.URI,
+
+          // Proxy for > Thunderbird 101.
+          if ("AskUser" in Ci.nsIMsgCompSendFormat) {
+            const args = {
+              abURI: cardAndBook.book.URI,
+              card: cardAndBook.card,
+            };
+            window.openDialog(
+              "chrome://messenger/content/addressbook/abEditCardDialog.xhtml",
+              "",
+              "chrome,modal,resizable=no,centerscreen",
+              args
+            );
+            return;
+          }
+
+          window.toAddressBook({
+            action: "edit",
             card: cardAndBook.card,
-          };
-          window.openDialog(
-            "chrome://messenger/content/addressbook/abEditCardDialog.xhtml",
-            "",
-            "chrome,modal,resizable=no,centerscreen",
-            args
-          );
+          });
         },
         async showMessagesInvolving(options) {
           const window = getWindowFromId(
