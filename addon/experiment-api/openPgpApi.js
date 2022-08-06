@@ -324,7 +324,72 @@ const securityStatusPatch = (win, id, context) => {
   win.oldOnUpdateSecurityStatus = headerSink.updateSecurityStatus;
   win.oldProcessDecryptionResult = headerSink.processDecryptionResult;
 
-  headerSink.processDecryptionResult = () => {};
+  headerSink.processDecryptionResult = (
+    uri,
+    actionType,
+    headerData,
+    mimePartNumber
+  ) => {
+    // if (!isCurrentMessage(uri) {
+    //   return;
+    // })
+
+    let hdr;
+    try {
+      hdr = JSON.parse(headerData);
+    } catch (ex) {
+      console.info("modifyMessageHeaders: - no headers to display\n");
+      return;
+    }
+
+    if (typeof hdr !== "object") {
+      return;
+    }
+
+    // TODO: do we need to do something with displaySubPart here?
+
+    if ("subject" in hdr) {
+      // Taken from Enigmail.hdrView.setSubject
+      if (
+        win.gFolderDisplay.selectedMessages.length === 1 &&
+        win.gFolderDisplay.selectedMessage
+      ) {
+        // Strip multiple localised Re: prefixes. This emulates NS_MsgStripRE().
+        let newSubject = hdr.subject;
+        let prefixes = Services.prefs.getStringPref(
+          "mailnews.localizedRe",
+          "Re"
+        );
+        prefixes = prefixes.split(",");
+        if (!prefixes.includes("Re")) {
+          prefixes.push("Re");
+        }
+        // Construct a regular expression like this: ^(Re: |Aw: )+
+        let regEx = new RegExp(`^(${prefixes.join(": |")}: )+`, "i");
+        newSubject = newSubject.replace(regEx, "");
+        let hadRe = newSubject != hdr.subject;
+
+        let tree = win.gFolderDisplay.tree;
+        let msgHdr = win.gFolderDisplay.selectedMessage;
+        msgHdr.subject = win.EnigmailData.convertFromUnicode(
+          hdr.subject,
+          "utf-8"
+        );
+
+        // Set the corred HasRe flag and refresh the row.
+        let oldFlags = msgHdr.flags;
+        if (hadRe && !(oldFlags & Ci.nsMsgMessageFlags.HasRe)) {
+          let newFlags = oldFlags | Ci.nsMsgMessageFlags.HasRe;
+          msgHdr.flags = newFlags;
+          if (tree && tree.view) {
+            tree.view.db.NotifyHdrChangeAll(msgHdr, oldFlags, newFlags, {});
+          }
+        } else if (tree && tree.view && tree.view.selection) {
+          tree.invalidateRow(tree.view.selection.currentIndex);
+        }
+      }
+    }
+  };
 
   let messagepane = win.document.getElementById("messagepane");
 
