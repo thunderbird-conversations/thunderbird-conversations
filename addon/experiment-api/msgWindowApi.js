@@ -607,14 +607,6 @@ function summarizeThreadHandler(win, id, context) {
         if (isRefresh) {
           // Invalidate the previous selection
           previouslySelectedUris = [];
-          // Invalidate any remaining conversation
-          if (win.Conversations.currentConversation) {
-            win.Conversations.currentConversation.cleanup();
-            win.Conversations.currentConversation = null;
-          }
-          // Make the stub aware of the Conversations object it's currently
-          //  representing.
-          htmlpane.contentWindow.Conversations = win.Conversations;
           // The DOM window is fresh, it needs an event listener to forward
           //  keyboard shorcuts to the main window when the conversation view
           //  has focus.

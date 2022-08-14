@@ -60,15 +60,8 @@ const conversationModules = [
 const kAllowRemoteContent = 2;
 
 function monkeyPatchWindow(win, windowId) {
-  // Insert our own global Conversations object
-  win.Conversations = {
-    // These two are replicated in the case of a conversation tab, so use
-    //  Conversation._window.Conversations to access the right instance
-    currentConversation: null,
-    counter: 0,
-  };
-
-  win.Conversations.finishedStartup = true;
+  // Let the stub know we've finished starting.
+  win.conversationsFinishedStartup = true;
 }
 
 function msgHdrGetUri(aMsg) {
@@ -210,15 +203,15 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             // Patch all existing windows when the UI is built; all locales should have been loaded here
             // Hook in the embedding and gloda attribute providers.
             GlodaAttrProviders.init();
-            apiMonkeyPatchAllWindows(windowManager, monkeyPatchWindow);
-            apiWindowObserver = new ApiWindowObserver(
-              windowManager,
-              monkeyPatchWindow
-            );
-            Services.ww.registerNotification(apiWindowObserver);
           } catch (ex) {
             console.error(ex);
           }
+          apiMonkeyPatchAllWindows(windowManager, monkeyPatchWindow);
+          apiWindowObserver = new ApiWindowObserver(
+            windowManager,
+            monkeyPatchWindow
+          );
+          Services.ww.registerNotification(apiWindowObserver);
         },
         async getCorePref(name) {
           try {

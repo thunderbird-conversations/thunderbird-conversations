@@ -123,14 +123,11 @@ export const controllerActions = {
         let mainWindow = isStandalone
           ? window.browsingContext.topChromeWindow.opener
           : window.browsingContext.topChromeWindow;
-        if (!mainWindow.Conversations?.finishedStartup) {
+        if (!mainWindow.conversationsFinishedStartup) {
           await new Promise((resolve, reject) => {
             let tries = 0;
             function checkStarted() {
-              if (
-                mainWindow.Conversations &&
-                mainWindow.Conversations.finishedStartup
-              ) {
+              if (mainWindow.conversationsFinishedStartup) {
                 resolve();
               } else {
                 // Wait up to 10 seconds, if it is that slow we're in trouble.
@@ -491,7 +488,6 @@ function setupListeners(dispatch, getState) {
       updateSecurityStatusListener
     );
     browser.convOpenPgp.onSMIMEReload.removeListener(smimeReloadListener);
-    window.Conversations?.currentConversation?.cleanup();
     port.onMessage.removeListener(externalMessagesListener);
     port.disconnect();
   };
