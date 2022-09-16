@@ -115,7 +115,7 @@ class GenericMultiButtonNotification extends React.PureComponent {
         {this.props.buttons.map((button, i) => (
           <button
             className={button.classNames}
-            tooltiptext={button.tooltiptext}
+            title={button.tooltiptext}
             key={i}
             onClick={this.onClick.bind(this, button.actionParams)}
           >
