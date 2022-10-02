@@ -73,8 +73,9 @@
     "test:jest": "jest ./addon/tests/",
     "webextlint": "web-ext lint",
     "preversion": "npm ci && npm test",
-    "version": "scripts/update-version.sh",
-    "postversion": "npm run prod"
+    "version": "scripts/update-max-version.sh && scripts/update-version.sh",
+    "postversion": "npm run prod",
+    "maxversion": "scripts/update-max-version.sh"
   },
   "webExt": {
     "sourceDir": "dist/"
