@@ -4,8 +4,13 @@
 
 /* global ExtensionCommon, XPCOMUtils */
 
+var lazy = {};
+
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
+  DownloadPaths: "resource://gre/modules/DownloadPaths.jsm",
+  Downloads: "resource://gre/modules/Downloads.jsm",
+  FileUtils: "resource://gre/modules/FileUtils.sys.mjs",
   GlodaAttrProviders:
     "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
   MailServices: "resource:///modules/MailServices.jsm",
@@ -22,6 +27,14 @@ XPCOMUtils.defineLazyGlobalGetters(this, ["TextDecoder"]);
 XPCOMUtils.defineLazyGetter(this, "messenger", () =>
   Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger)
 );
+
+XPCOMUtils.defineLazyServiceGetters(lazy, {
+  gHandlerService: [
+    "@mozilla.org/uriloader/handler-service;1",
+    "nsIHandlerService",
+  ],
+  gMIMEService: ["@mozilla.org/mime;1", "nsIMIMEService"],
+});
 
 /**
  * Get a msgHdr from a message URI (msgHdr.URI).
@@ -482,17 +495,205 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
               // If no tabmail, open PDF same as other attachments.
             }
           }
-          let url = Services.io.newURI(msgUri);
           let msgService = Cc[
-            `@mozilla.org/messenger/messageservice;1?type=${url.scheme}`
+            `@mozilla.org/messenger/messageservice;1?type=${
+              Services.io.newURI(msgUri).scheme
+            }`
           ].createInstance(Ci.nsIMsgMessageService);
-          msgService.openAttachment(
-            attachment.contentType,
-            encodeURIComponent(attachment.name),
-            attachment.url,
-            msgUri,
-            win.docShell,
-            win.msgWindow,
+
+          if (attachment.contentType == "message/rfc822") {
+            msgService.openAttachment(
+              attachment.contentType,
+              encodeURIComponent(attachment.name),
+              attachment.url,
+              msgUri,
+              win.docShell,
+              win.msgWindow,
+              null
+            );
+            return;
+          }
+
+          // Get the MIME info from the service.
+          let mimeInfo;
+          try {
+            mimeInfo = lazy.gMIMEService.getFromTypeAndExtension(
+              attachment.contentType,
+              extension
+            );
+          } catch (ex) {
+            // If the call above fails, which can happen on Windows where there's
+            // nothing registered for the file type, assume this generic type.
+            mimeInfo = lazy.gMIMEService.getFromTypeAndExtension(
+              "application/octet-stream",
+              ""
+            );
+          }
+          // The default action is saveToDisk, which is not what we want.
+          // If we don't have a stored handler, ask before handling.
+          if (!lazy.gHandlerService.exists(mimeInfo)) {
+            mimeInfo.alwaysAskBeforeHandling = true;
+            mimeInfo.preferredAction = Ci.nsIHandlerInfo.alwaysAsk;
+          }
+
+          // If we know what to do, do it.
+
+          let { name, url } = attachment;
+          name = DownloadPaths.sanitize(name);
+
+          async function saveToFile(path) {
+            let buffer = await new Promise(function (resolve, reject) {
+              NetUtil.asyncFetch(
+                {
+                  uri: Services.io.newURI(url),
+                  loadUsingSystemPrincipal: true,
+                },
+                function (inputStream, status) {
+                  if (Components.isSuccessCode(status)) {
+                    resolve(NetUtil.readInputStream(inputStream));
+                  } else {
+                    reject(
+                      new Components.Exception(
+                        "Failed to fetch attachment",
+                        status
+                      )
+                    );
+                  }
+                }
+              );
+            });
+            await IOUtils.write(path, new Uint8Array(buffer));
+          }
+
+          let createTemporaryFileAndOpen = async (mimeInfo) => {
+            let tmpPath = PathUtils.join(
+              Services.dirsvc.get("TmpD", Ci.nsIFile).path,
+              "pid-" + Services.appinfo.processID
+            );
+            await IOUtils.makeDirectory(tmpPath, { permissions: 0o700 });
+            let tempFile = Cc["@mozilla.org/file/local;1"].createInstance(
+              Ci.nsIFile
+            );
+            tempFile.initWithPath(tmpPath);
+
+            tempFile.append(name);
+            tempFile.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, 0o600);
+            tempFile.remove(false);
+
+            Cc["@mozilla.org/uriloader/external-helper-app-service;1"]
+              .getService(Ci.nsPIExternalAppLauncher)
+              .deleteTemporaryFileOnExit(tempFile);
+
+            await saveToFile(tempFile.path);
+            // Before opening from the temp dir, make the file read only so that
+            // users don't edit and lose their edits...
+            tempFile.permissions = 0o400;
+            mimeInfo.launchWithFile(tempFile);
+          };
+
+          let openLocalFile = (mimeInfo) => {
+            let fileHandler = Services.io
+              .getProtocolHandler("file")
+              .QueryInterface(Ci.nsIFileProtocolHandler);
+
+            try {
+              let externalFile = fileHandler.getFileFromURLSpec(attachment.url);
+              mimeInfo.launchWithFile(externalFile);
+            } catch (ex) {
+              Cu.reportError(
+                "AttachmentInfo.open: file - " + attachment.url + ", " + ex
+              );
+            }
+          };
+
+          if (!mimeInfo.alwaysAskBeforeHandling) {
+            switch (mimeInfo.preferredAction) {
+              case Ci.nsIHandlerInfo.saveToDisk:
+                if (
+                  Services.prefs.getBoolPref("browser.download.useDownloadDir")
+                ) {
+                  let destFile = new FileUtils.File(
+                    await Downloads.getPreferredDownloadsDirectory()
+                  );
+                  destFile.append(name);
+                  destFile.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, 0o755);
+                  destFile.remove(false);
+                  await saveToFile(destFile.path);
+                } else {
+                  let filePicker = Cc[
+                    "@mozilla.org/filepicker;1"
+                  ].createInstance(Ci.nsIFilePicker);
+                  filePicker.defaultString = attachment.name;
+                  filePicker.defaultExtension = extension;
+                  let bundleMessenger =
+                    win.document.getElementById("bundle_messenger");
+                  filePicker.init(
+                    win,
+                    bundleMessenger.getString("SaveAttachment"),
+                    Ci.nsIFilePicker.modeSave
+                  );
+                  let rv = await new Promise((resolve) =>
+                    filePicker.open(resolve)
+                  );
+                  if (rv != Ci.nsIFilePicker.returnCancel) {
+                    await saveToFile(filePicker.file.path);
+                  }
+                }
+                return;
+              case Ci.nsIHandlerInfo.useHelperApp:
+              case Ci.nsIHandlerInfo.useSystemDefault:
+                // Attachments can be detached and, if this is the case, opened from
+                // their location on disk instead of copied to a temporary file.
+                if (attachment.isExternalAttachment) {
+                  openLocalFile(mimeInfo);
+
+                  return;
+                }
+
+                await createTemporaryFileAndOpen(mimeInfo);
+                return;
+            }
+          }
+
+          // Ask what to do, then do it.
+          let appLauncherDialog = Cc[
+            "@mozilla.org/helperapplauncherdialog;1"
+          ].createInstance(Ci.nsIHelperAppLauncherDialog);
+          appLauncherDialog.show(
+            {
+              QueryInterface: ChromeUtils.generateQI(["nsIHelperAppLauncher"]),
+              MIMEInfo: mimeInfo,
+              source: Services.io.newURI(attachment.url),
+              suggestedFileName: attachment.name,
+              cancel(reason) {},
+              promptForSaveDestination() {
+                appLauncherDialog.promptForSaveToFileAsync(
+                  attachment,
+                  win,
+                  attachment.suggestedFileName,
+                  "." + extension, // Dot stripped by promptForSaveToFileAsync.
+                  false
+                );
+              },
+              launchLocalFile() {
+                openLocalFile(mimeInfo);
+              },
+              async setDownloadToLaunch(handleInternally, file) {
+                await createTemporaryFileAndOpen(mimeInfo);
+              },
+              async saveDestinationAvailable(file) {
+                if (file) {
+                  await saveToFile(file.path);
+                }
+              },
+              setWebProgressListener(webProgressListener) {},
+              targetFile: null,
+              targetFileIsExecutable: null,
+              timeDownloadStarted: null,
+              contentLength: attachment.size,
+              browsingContextId: win.getMessagePaneBrowser().browsingContext.id,
+            },
+            win,
             null
           );
         },
