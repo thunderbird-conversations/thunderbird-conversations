@@ -5,7 +5,6 @@
 /* global ExtensionCommon, XPCOMUtils */
 
 XPCOMUtils.defineLazyModuleGetters(this, {
-  DisplayNameUtils: "resource:///modules/DisplayNameUtils.jsm",
   Gloda: "resource:///modules/gloda/Gloda.jsm",
   Services: "resource://gre/modules/Services.jsm",
   MailServices: "resource:///modules/MailServices.jsm",
@@ -126,15 +125,19 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
             context,
             beginEditProperties.windowId
           );
-          let cardAndBook = DisplayNameUtils.getCardForEmail(
-            beginEditProperties.email
+          let contact = addressBookManager.findContactById(
+            beginEditProperties.contactId
           );
+          if (!contact) {
+            console.error("Could not find contact to load");
+            return;
+          }
 
           // Proxy for > Thunderbird 101.
           if ("AskUser" in Ci.nsIMsgCompSendFormat) {
             const args = {
-              abURI: cardAndBook.book.URI,
-              card: cardAndBook.card,
+              abURI: MailServices.ab.getDirectoryFromUID(contact.directoryUID),
+              card: contact.item,
             };
             window.openDialog(
               "chrome://messenger/content/addressbook/abEditCardDialog.xhtml",
@@ -147,7 +150,7 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
 
           window.toAddressBook({
             action: "edit",
-            card: cardAndBook.card,
+            card: contact.item,
           });
         },
         async getPhotoUrl(contactId) {
