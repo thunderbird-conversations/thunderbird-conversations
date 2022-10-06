@@ -47,9 +47,9 @@
             "type": "object",
             "name": "beginEditProperties",
             "properties": {
-              "email": {
+              "contactId": {
                 "type": "string",
-                "description": "The contact email to edit."
+                "description": "The contact id to edit."
               },
               "windowId": {
                 "type": "integer",

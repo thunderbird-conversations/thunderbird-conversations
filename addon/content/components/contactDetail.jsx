@@ -53,7 +53,7 @@ function _ContactDetail({
   function editContact(event) {
     event.stopPropagation();
     event.preventDefault();
-    dispatch(summaryActions.editContact({ email: realEmail }));
+    dispatch(summaryActions.editContact({ contactId }));
   }
 
   function sendEmail(event) {

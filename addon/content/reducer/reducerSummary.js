@@ -111,10 +111,10 @@ export const summaryActions = {
       navigator.clipboard.writeText(email);
     };
   },
-  editContact({ email }) {
+  editContact({ contactId }) {
     return () => {
       browser.convContacts.beginEdit({
-        email,
+        contactId,
       });
     };
   },
