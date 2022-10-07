@@ -42,7 +42,7 @@
     "@testing-library/react": "13.4.0",
     "babel-jest": "29.1.2",
     "babel-loader": "8.2.5",
-    "eslint": "8.24.0",
+    "eslint": "8.25.0",
     "eslint-config-prettier": "8.5.0",
     "eslint-plugin-fetch-options": "0.0.5",
     "eslint-plugin-html": "7.1.0",
