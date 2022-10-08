@@ -302,8 +302,9 @@ export function NumericOption({
         <input
           id={name}
           type="number"
-          className="pref"
+          className="pref hidespinbuttons"
           min={0}
+          max={100}
           onChange={(e) => {
             onChange(name, parseInt(e.target.value || value, 10));
           }}
@@ -370,7 +371,7 @@ BinaryOption.propTypes = {
  * @param {object} root0
  * @param {object[]} root0.localizedPrefsInfo
  * @param {string} root0.localizedName
- * @param  {string}root0.localizedStartAssistant
+ * @param {string}root0.localizedStartAssistant
  * @param {string} root0.localizedUndoCustomizations
  * @param {string} root0.localizedUndoCustomizationsTooltip
  * @param {object} root0.prefs
