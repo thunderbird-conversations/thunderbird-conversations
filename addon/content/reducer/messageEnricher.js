@@ -421,6 +421,12 @@ export class MessageEnricher {
       );
     }
 
+    if ("reply-to" in fullMsg.headers) {
+      msg.replyTo = await browser.conversations.parseMimeLine(
+        fullMsg.headers["reply-to"][0]
+      );
+    }
+
     function checkPart(msgPart) {
       switch (msgPart.contentType) {
         case "text/html":
