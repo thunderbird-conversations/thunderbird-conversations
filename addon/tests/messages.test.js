@@ -572,6 +572,51 @@ describe("messageEnricher", () => {
       expect(msgs[0].parsedLines.from[0].email).toBe("actualFrom@invalid.com");
       expect(msgs[0].realFrom).toBe("realEmail@invalid.com");
     });
+
+    test("Parse reply-to header", async () => {
+      jest.spyOn(browser.messages, "getFull").mockReturnValue({
+        headers: {
+          "reply-to": ["actualFrom@invalid.com"],
+        },
+        parts: [
+          {
+            contentType: "text/plain",
+            body: "should be used",
+          },
+        ],
+      });
+      jest
+        .spyOn(browser.conversations, "parseMimeLine")
+        .mockImplementation((line) => [
+          {
+            email: line,
+            name: "-",
+            fullName: "-",
+          },
+        ]);
+
+      let fakeMsg = createFakeData(
+        {
+          snippet: "should not be used",
+          getFullRequired: true,
+          author: "listEmail@invalid.com",
+        },
+        fakeMessageHeaderData
+      );
+
+      let msgs = await messageEnricher.enrich(
+        [fakeMsg],
+        createFakeSummaryData(),
+        [fakeMessageHeaderData.size - 1]
+      );
+      expect(msgs[0].replyTo).toStrictEqual([
+        {
+          email: "actualFrom@invalid.com",
+          name: "-",
+          fullName: "-",
+        },
+      ]);
+    });
   });
 
   describe("Snippets", () => {

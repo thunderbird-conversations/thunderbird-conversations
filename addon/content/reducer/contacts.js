@@ -169,7 +169,7 @@ export async function mergeContactDetails(msgData) {
 function hasMultipleRecipients(message) {
   let seen = new Set();
   let count = 0;
-  for (let field of ["from", "to", "cc", "bcc"]) {
+  for (let field of ["from", "to", "cc", "bcc", "replyTo"]) {
     // TODO: The ?? and subsequent !contact currently helps some of the tests to pass.
     let contacts = (field == "from" ? [message[field]] : message[field]) ?? [];
     for (let contact of contacts) {
