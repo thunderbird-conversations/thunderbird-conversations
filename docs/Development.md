@@ -85,7 +85,7 @@ $ npm test
 To run just the *jest* tests, do
 
 ```
-$ npm test:jest
+$ npm run test:jest
 ```
 
 Tests are stored in `test` directories. Because native ESM modules are used while
