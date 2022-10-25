@@ -48,7 +48,7 @@
     "eslint-plugin-html": "7.1.0",
     "eslint-plugin-jsdoc": "39.3.24",
     "eslint-plugin-json": "3.1.0",
-    "eslint-plugin-mozilla": "2.12.5",
+    "eslint-plugin-mozilla": "3.0.0",
     "eslint-plugin-no-unsanitized": "4.0.1",
     "eslint-plugin-prettier": "4.2.1",
     "eslint-plugin-react": "7.31.10",
