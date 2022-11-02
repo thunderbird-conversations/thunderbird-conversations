@@ -2,11 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* global ExtensionCommon, XPCOMUtils */
+/* global ExtensionCommon, XPCOMUtils, Services */
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   Gloda: "resource:///modules/gloda/Gloda.jsm",
-  Services: "resource://gre/modules/Services.jsm",
   MailServices: "resource:///modules/MailServices.jsm",
 });
 
