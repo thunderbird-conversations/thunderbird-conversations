@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* global ExtensionCommon, XPCOMUtils */
+/* global ExtensionCommon, XPCOMUtils, Services */
 
 var lazy = {};
 
@@ -18,7 +18,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   MsgHdrToMimeMessage: "resource:///modules/gloda/MimeMessage.jsm",
   NetUtil: "resource://gre/modules/NetUtil.jsm",
   PluralForm: "resource://gre/modules/PluralForm.jsm",
-  Services: "resource://gre/modules/Services.jsm",
 });
 
 // eslint-disable-next-line mozilla/reject-importGlobalProperties
