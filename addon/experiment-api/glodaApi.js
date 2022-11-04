@@ -180,7 +180,9 @@ class GlodaListener {
 
     // Beware, some bad things might have happened in the meanwhile...
     this.msgHdrs = this.msgHdrs.filter((msgHdr) =>
-      msgHdr?.folder.msgDatabase.ContainsKey(msgHdr.messageKey)
+        // Thunderbird 108 fallback.
+        msgHdr?.folder.msgDatabase.ContainsKey?.(msgHdr.messageKey) ??
+        msgHdr?.folder.msgDatabase.containsKey(msgHdr.messageKey)
     );
 
     let messageIdMap = new Map();
