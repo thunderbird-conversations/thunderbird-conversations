@@ -599,8 +599,11 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
               let externalFile = fileHandler.getFileFromURLSpec(attachment.url);
               mimeInfo.launchWithFile(externalFile);
             } catch (ex) {
-              Cu.reportError(
-                "AttachmentInfo.open: file - " + attachment.url + ", " + ex
+              console.error(
+                "AttachmentInfo.open: file - ",
+                attachment.url,
+                ",",
+                ex
               );
             }
           };
