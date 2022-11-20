@@ -4,8 +4,6 @@
 
 /* global ExtensionCommon, Services */
 
-const kMultiMessageUrl = "chrome://messenger/content/multimessageview.xhtml";
-
 /**
  * @typedef nsIMsgDBHdr
  * @see https://searchfox.org/comm-central/rev/9d9fac50cddfd9606a51c4ec3059728c33d58028/mailnews/base/public/nsIMsgHdr.idl#14
@@ -48,7 +46,6 @@ class WindowObserver {
   }
 }
 
-let selectedMessages = [];
 let msgsChangedListeners = new Map();
 
 /* exported convMsgWindow */
@@ -502,19 +499,6 @@ const specialPatches = (win) => {
     win.removeEventListener("messagepane-unhide", unhideListener, true)
   );
 
-  let oldSummarizeMultipleSelection = win.summarizeMultipleSelection;
-  win.summarizeMultipleSelection = function _summarizeMultiple_patched(
-    aSelectedMessages,
-    aListener
-  ) {
-    win.gSummaryFrameManager.loadAndCallback(kMultiMessageUrl, function () {
-      oldSummarizeMultipleSelection(aSelectedMessages, aListener);
-    });
-  };
-  win.conversationUndoFuncs.push(
-    () => (win.summarizeMultipleSelection = oldSummarizeMultipleSelection)
-  );
-
   function fightAboutBlank() {
     if (messagepane.contentWindow?.location.href == "about:blank") {
       // Workaround the "feature" that disables the context menu when the
@@ -573,7 +557,7 @@ function summarizeThreadHandler(win, id, context) {
   //  actually the entry point to the original ThreadSummary class.
   win.summarizeThread = function _summarizeThread_patched(
     aSelectedMessages,
-    aListener
+    messageDisplay
   ) {
     if (!aSelectedMessages.length) {
       return;
@@ -584,11 +568,23 @@ function summarizeThreadHandler(win, id, context) {
       return;
     }
 
+    let folderDisplay = messageDisplay.folderDisplay;
+    let selectedIndices = folderDisplay.selectedIndices;
+    if (selectedIndices.length == 1) {
+      let dbView = folderDisplay.view.dbView;
+      if (dbView.getRowProperties(selectedIndices[0]) == "dummy") {
+        // Abort Abort! This is really a multi-message view. Call Thunderbird's
+        // viewer instead.
+        win.summarizeMultipleSelection(aSelectedMessages, messageDisplay);
+        return;
+      }
+    }
+
     win.gMessageDisplay.singleMessageDisplay = false;
 
     // Save the newly selected messages as early as possible, so that we
     // definitely have them as soon as stub.html loads.
-    selectedMessages = [...aSelectedMessages];
+    let selectedMessages = [...aSelectedMessages];
 
     win.gSummaryFrameManager.loadAndCallback(
       "chrome://conversations/content/stub.html",
