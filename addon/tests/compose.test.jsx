@@ -2,29 +2,30 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import { enzyme, waitForComponentToPaint } from "./utils.js";
+import {
+  render,
+  fireEvent,
+  act,
+  waitFor,
+  screen,
+} from "@testing-library/react";
 import React from "react";
 import { jest } from "@jest/globals";
 
 // Import the components we want to test
 import { Main, store } from "../compose/compose.jsx";
-import {
-  TextArea,
-  TextBox,
-} from "../content/components/compose/composeFields.jsx";
 import { composeActions } from "../content/reducer/reducerCompose.js";
 
 describe("Compose full page tests", () => {
   let mockedSend;
-  let main;
 
   beforeEach(async () => {
     mockedSend = jest.spyOn(browser.convCompose, "send");
-    main = enzyme.mount(<Main />);
+    render(<Main />);
 
-    await store.dispatch(composeActions.initCompose({ showSubject: true }));
-
-    await waitForComponentToPaint(main);
+    await act(async () => {
+      await store.dispatch(composeActions.initCompose({ showSubject: true }));
+    });
   });
 
   afterEach(() => {
@@ -32,52 +33,48 @@ describe("Compose full page tests", () => {
   });
 
   test("A message can be sent", async () => {
-    const inputs = main.find(TextBox);
-    for (let i = 0; i < inputs.length; i++) {
-      const inputBox = inputs.at(i);
-      const name = inputBox.props().name;
+    const inputs = screen.getAllByRole("textbox");
+
+    for (let inputBox of inputs) {
+      const name = inputBox.id;
       if (name != "from") {
-        inputBox.find("input").simulate("change", { target: { value: name } });
+        fireEvent.change(inputBox, {
+          target: { value: name },
+        });
       }
     }
 
-    const textArea = main.find(TextArea).at(0);
-    textArea
-      .find("textarea")
-      .simulate("change", { target: { value: "testArea" } });
-    const sendButton = main.find("#send");
-    sendButton.simulate("click");
+    fireEvent.click(screen.getByRole("button"));
 
-    await new Promise((resolve) => {
-      let maxTimes = 10;
-      function tryIt() {
-        if (mockedSend.mock.calls.length) {
-          resolve();
-          return;
-        }
-        maxTimes--;
-        if (!maxTimes) {
-          resolve();
-        }
-        setTimeout(tryIt, 50);
+    await waitFor(() => {
+      if (!mockedSend.mock.calls.length) {
+        throw new Error("Not got one yet");
       }
-      setTimeout(tryIt, 50);
     });
 
     expect(mockedSend).toHaveBeenCalledWith({
       from: "id3",
       to: "to",
       subject: "subject",
-      body: "testArea",
+      body: "body",
     });
   });
 
-  test("Modifying a field sets the modififed flag", async () => {
-    await store.dispatch(composeActions.resetStore());
+  test("Modifying a field sets the modified flag", async () => {
+    await act(async () => {
+      await store.dispatch(composeActions.resetStore());
+    });
 
-    const inputs = main.find(TextBox);
-    const inputBox = inputs.at(0);
-    inputBox.find("input").simulate("change", { target: { value: "a" } });
+    const inputBox = screen.getByRole("textbox", { name: /to/i });
+    fireEvent.change(inputBox, {
+      target: { value: "a" },
+    });
+
+    await waitFor(() => {
+      if (!store.getState().compose.modified) {
+        throw new Error("Not ready yet");
+      }
+    });
 
     // Should have correctly set up the initial values.
     expect(store.getState().compose).toStrictEqual({

@@ -3,7 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOMClient from "react-dom/client";
 import PropTypes from "prop-types";
 
 const Photo = React.forwardRef(({ index, length, name, size, src }, ref) => (
@@ -22,7 +22,7 @@ Photo.propTypes = {
   length: PropTypes.number.isRequired,
   name: PropTypes.string.isRequired,
   size: PropTypes.string.isRequired,
-  src: PropTypes.string.isRequired,
+  src: PropTypes.string,
 };
 
 /**
@@ -153,7 +153,8 @@ window.addEventListener(
   "load",
   () => {
     const domContainer = document.getElementById("gallery");
-    ReactDOM.render(React.createElement(MyComponent), domContainer);
+    let root = ReactDOMClient.createRoot(domContainer);
+    root.render(React.createElement(MyComponent));
   },
   { once: true }
 );

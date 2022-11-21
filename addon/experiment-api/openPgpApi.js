@@ -2,14 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-var { XPCOMUtils } = ChromeUtils.import(
-  "resource://gre/modules/XPCOMUtils.jsm"
-);
+/* global ExtensionCommon, XPCOMUtils, Services */
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   EnigmailConstants: "chrome://openpgp/content/modules/constants.jsm",
-  ExtensionCommon: "resource://gre/modules/ExtensionCommon.jsm",
-  Services: "resource://gre/modules/Services.jsm",
 });
 
 let securityListeners = new Set();
@@ -102,7 +98,10 @@ var convOpenPgp = class extends ExtensionCommon.ExtensionAPI {
             let win = getWindow(context, tabId);
             // TODO: This might not be necessary once decryption handling is
             // in place, but not sure yet.
-            win.EnigmailVerify.registerContentTypeHandler();
+            // Changed to `registerPGPMimeHandler` in Thunderbird 104.
+            "registerPGPMimeHandler" in win.EnigmailVerify
+              ? win.EnigmailVerify.registerPGPMimeHandler()
+              : win.EnigmailVerify.registerContentTypeHandler();
           }
           // Not sure if we need this or not.
           // win.EnigmailVerify.lastMsgWindow = win.msgWindow;
@@ -235,7 +234,10 @@ const smimeReloadPatch = (win, id, context) => {
     let msgHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
     let id = context.extension.messageManager.convert(msgHdr).id;
 
-    win.EnigmailVerify.unregisterContentTypeHandler();
+    // Changed to `registerPGPMimeHandler` in Thunderbird 104.
+    "unregisterPGPMimeHandler" in win.EnigmailVerify
+      ? win.EnigmailVerify.unregisterPGPMimeHandler()
+      : win.EnigmailVerify.unregisterContentTypeHandler();
 
     for (let listener of smimeReloadListeners) {
       listener.async(id);
@@ -321,7 +323,72 @@ const securityStatusPatch = (win, id, context) => {
   win.oldOnUpdateSecurityStatus = headerSink.updateSecurityStatus;
   win.oldProcessDecryptionResult = headerSink.processDecryptionResult;
 
-  headerSink.processDecryptionResult = () => {};
+  headerSink.processDecryptionResult = (
+    uri,
+    actionType,
+    headerData,
+    mimePartNumber
+  ) => {
+    // if (!isCurrentMessage(uri) {
+    //   return;
+    // })
+
+    let hdr;
+    try {
+      hdr = JSON.parse(headerData);
+    } catch (ex) {
+      console.info("modifyMessageHeaders: - no headers to display\n");
+      return;
+    }
+
+    if (typeof hdr !== "object") {
+      return;
+    }
+
+    // TODO: do we need to do something with displaySubPart here?
+
+    if ("subject" in hdr) {
+      // Taken from Enigmail.hdrView.setSubject
+      if (
+        win.gFolderDisplay.selectedMessages.length === 1 &&
+        win.gFolderDisplay.selectedMessage
+      ) {
+        // Strip multiple localised Re: prefixes. This emulates NS_MsgStripRE().
+        let newSubject = hdr.subject;
+        let prefixes = Services.prefs.getStringPref(
+          "mailnews.localizedRe",
+          "Re"
+        );
+        prefixes = prefixes.split(",");
+        if (!prefixes.includes("Re")) {
+          prefixes.push("Re");
+        }
+        // Construct a regular expression like this: ^(Re: |Aw: )+
+        let regEx = new RegExp(`^(${prefixes.join(": |")}: )+`, "i");
+        newSubject = newSubject.replace(regEx, "");
+        let hadRe = newSubject != hdr.subject;
+
+        let tree = win.gFolderDisplay.tree;
+        let msgHdr = win.gFolderDisplay.selectedMessage;
+        msgHdr.subject = win.EnigmailData.convertFromUnicode(
+          hdr.subject,
+          "utf-8"
+        );
+
+        // Set the corred HasRe flag and refresh the row.
+        let oldFlags = msgHdr.flags;
+        if (hadRe && !(oldFlags & Ci.nsMsgMessageFlags.HasRe)) {
+          let newFlags = oldFlags | Ci.nsMsgMessageFlags.HasRe;
+          msgHdr.flags = newFlags;
+          if (tree && tree.view) {
+            tree.view.db.NotifyHdrChangeAll(msgHdr, oldFlags, newFlags, {});
+          }
+        } else if (tree && tree.view && tree.view.selection) {
+          tree.invalidateRow(tree.view.selection.currentIndex);
+        }
+      }
+    }
+  };
 
   let messagepane = win.document.getElementById("messagepane");
 
@@ -432,7 +499,9 @@ const securityStatusPatch = (win, id, context) => {
  * @param {object} signerCert
  */
 function loadSmimeMessageSecurityInfo(win, signatureStatus, signerCert) {
-  let sBundle = win.document.getElementById("bundle_smime_read_info");
+  let sBundle = Services.strings.createBundle(
+    "chrome://messenger-smime/locale/msgSecurityInfo.properties"
+  );
 
   if (!sBundle) {
     return null;
@@ -508,17 +577,21 @@ function loadSmimeMessageSecurityInfo(win, signatureStatus, signerCert) {
 
   let signatureExplanation = "";
   if (sigInfoHeader) {
-    signatureExplanation += sBundle.getString(sigInfoHeader);
+    signatureExplanation += sBundle.GetStringFromName(sigInfoHeader);
   }
   if (sigInfo) {
-    signatureExplanation += "\n" + sBundle.getString(sigInfo);
+    signatureExplanation += "\n" + sBundle.GetStringFromName(sigInfo);
   } else if (sigInfo_clueless) {
     signatureExplanation +=
-      "\n" + sBundle.getString("SIClueless") + " (" + signatureStatus + ")";
+      "\n" +
+      sBundle.GetStringFromName("SIClueless") +
+      " (" +
+      signatureStatus +
+      ")";
   }
 
   return {
-    signatureLabel: sBundle.getString(sigInfoLabel),
+    signatureLabel: sBundle.GetStringFromName(sigInfoLabel),
     signatureExplanation,
     signerCert: {
       name: signerCert.commonName,
@@ -529,7 +602,9 @@ function loadSmimeMessageSecurityInfo(win, signatureStatus, signerCert) {
 }
 
 function loadSmimeMessageEncryptionInfo(win, encryptionStatus, recipientCert) {
-  let sBundle = win.document.getElementById("bundle_smime_read_info");
+  let sBundle = Services.strings.createBundle(
+    "chrome://messenger-smime/locale/msgSecurityInfo.properties"
+  );
 
   if (!sBundle) {
     return null;
@@ -567,17 +642,17 @@ function loadSmimeMessageEncryptionInfo(win, encryptionStatus, recipientCert) {
 
   let encryptionExplanation = "";
   if (encInfoHeader) {
-    encryptionExplanation += sBundle.getString(encInfoHeader);
+    encryptionExplanation += sBundle.GetStringFromName(encInfoHeader);
   }
 
   if (encInfo) {
-    encryptionExplanation += "\n" + sBundle.getString(encInfo);
+    encryptionExplanation += "\n" + sBundle.GetStringFromName(encInfo);
   } else if (encInfo_clueless) {
-    encryptionExplanation += "\n" + sBundle.getString("EIClueless");
+    encryptionExplanation += "\n" + sBundle.GetStringFromName("EIClueless");
   }
 
   return {
-    encryptionLabel: sBundle.getString(encInfoLabel),
+    encryptionLabel: sBundle.GetStringFromName(encInfoLabel),
     encryptionExplanation,
   };
 }
@@ -592,7 +667,9 @@ function loadSmimeMessageEncryptionInfo(win, encryptionStatus, recipientCert) {
  *   The window the security info is being obtained from.
  */
 async function loadOpenPgpMessageSecurityInfo(win) {
-  let sBundle = win.document.getElementById("bundle_smime_read_info");
+  let sBundle = Services.strings.createBundle(
+    "chrome://messenger-smime/locale/msgSecurityInfo.properties"
+  );
 
   if (!sBundle) {
     return null;
@@ -693,11 +770,11 @@ async function loadOpenPgpMessageSecurityInfo(win) {
     signatureExplanation: hasAnySig
       ? // eslint-disable-next-line mozilla/prefer-formatValues
         await l10n.formatValue(sigInfo)
-      : sBundle.getString(sigInfo),
+      : sBundle.GetStringFromName(sigInfo),
   };
   let encyptDetails = {
-    encryptionLabel: sBundle.getString(encInfoLabel),
-    encryptionExplanation: sBundle.getString(encInfo),
+    encryptionLabel: sBundle.GetStringFromName(encInfoLabel),
+    encryptionExplanation: sBundle.GetStringFromName(encInfo),
   };
 
   let signatureKey = hdrView.msgSignatureKeyId;

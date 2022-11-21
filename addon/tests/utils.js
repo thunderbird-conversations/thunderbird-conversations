@@ -2,41 +2,22 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* This module should be imported by all tests. It sets up
- * required global mocks and some compatibility between ES6 modules
- * and CJS modules, as required by Node. */
-
-/* eslint-env node */
-
-import Enzyme from "enzyme";
-import Adapter from "@wojtekmaj/enzyme-adapter-react-17";
-import testUtils from "react-dom/test-utils";
-
-Enzyme.configure({ adapter: new Adapter() });
-
-export var enzyme = Enzyme;
-
-// Workaround for warnings about component not being wrapped in `act()`/
-// Taken from https://github.com/airbnb/enzyme/issues/2073#issuecomment-565736674
-export const waitForComponentToPaint = async (wrapper) => {
-  await testUtils.act(async () => {
-    await new Promise((resolve) => setTimeout(resolve, 0));
-    wrapper.update();
-  });
-};
-
 export function createFakeData(
   {
+    asInternal = false,
     id = 0,
-    glodaMessageId = null,
+    headerMessageId = null,
     attachments = [],
+    author = null,
+    bccList = [],
+    ccList = [],
     date = new Date(),
     detailsShowing,
     flagged = false,
     folderType = "inbox",
     folderName = "Inbox",
-    fullDate = "",
     from = null,
+    fullDate = "",
     getFullRequired = false,
     initialPosition = 0,
     junk = false,
@@ -44,44 +25,70 @@ export function createFakeData(
     subject = "Fake Msg",
     snippet = "",
     tags = [],
+    to = [],
     type = "normal",
   } = {},
   fakeMessageHeaderData,
   postProcessing = false
 ) {
+  if (!Array.isArray(to)) {
+    to = [to];
+  }
   let data = {
-    id,
-    // Set the glodaMessageId to avoid filtering out duplicates due to no id.
-    glodaMessageId: glodaMessageId ?? id,
     attachments,
-    initialPosition,
+    bcc: [],
+    cc: [],
+    date: asInternal ? date.toString() : date,
+    // Set the headerMessageId to avoid filtering out duplicates due to no id.
+    headerMessageId: headerMessageId ?? id,
+    flagged,
+    folder: {
+      accountId: "id1",
+      type: folderType,
+      name: folderName,
+      path: folderName,
+    },
     getFullRequired,
+    id,
+    initialPosition,
+    junk,
+    read,
     recipientsIncludeLists: false,
     snippet,
-    _contactsData: [],
+    source: "gloda",
+    subject,
+    tags,
+    to: [],
     type,
   };
   if (detailsShowing !== undefined) {
     data.detailsShowing = detailsShowing;
   }
+  if (author) {
+    data.author = author;
+  }
   if (from) {
-    if (postProcessing) {
-      data.from = from;
-    } else {
-      data._contactsData.from = from;
-    }
+    data.from = from;
+  }
+  if (to.length) {
+    data.to = [to];
   }
 
   fakeMessageHeaderData.set(id, {
+    author,
+    ccList,
+    bccList,
     date,
     flagged,
     folder: {
       accountId: "id1",
       type: folderType,
       name: folderName,
+      path: folderName,
     },
     junk,
     read,
+    recipients: to ? to.map((t) => t.email) : [],
     subject,
     tags,
   });
@@ -91,6 +98,7 @@ export function createFakeData(
 
 export function createFakeSummaryData(prefs = {}) {
   return {
+    tabId: 1,
     prefs: {
       noFriendlyDate: false,
       expandWho: 4,

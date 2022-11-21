@@ -34,30 +34,11 @@
         ]
       },
       {
-        "name": "getPref",
-        "type": "function",
-        "description": "Temporary. Gets a conversation preference.",
-        "async": true,
-        "parameters": [
-          {
-            "name": "name",
-            "type": "string",
-            "description": "The preference name"
-          }
-        ]
-      },
-      {
         "name": "startup",
         "type": "function",
         "description": "Temporary. Does the necessary work to start conversations",
         "async": true,
-        "parameters": [
-          {
-            "name": "loggingEnabled",
-            "type": "boolean",
-            "description": "Whether or not to enable logging."
-          }
-        ]
+        "parameters": []
       },
       {
         "name": "getLocaleDirection",
@@ -410,24 +391,6 @@
         ]
       },
       {
-        "name": "isInView",
-        "type": "function",
-        "description": "Determines if the message is in the view for the current tab.",
-        "async": true,
-        "parameters": [
-          {
-            "name": "tabId",
-            "type": "integer",
-            "description": "The tab id."
-          },
-          {
-            "name": "msgId",
-            "type": "integer",
-            "description": "The message id."
-          }
-        ]
-      },
-      {
         "name": "quoteMsgHdr",
         "type": "function",
         "description": "Use the mailnews component to stream a message, and process it in a way that's suitable for quoting (strip signature, remove images, stuff like that).",
@@ -507,7 +470,11 @@
               }
             }
           }
-        ]
+        ],
+        "returns": {
+          "type": "boolean",
+          "description": "true if the stream can be done, false otherwise."
+        }
       },
       {
         "name": "setAccountOfflineDownload",
@@ -614,6 +581,19 @@
             "name": "identityId",
             "type": "string",
             "description": "The identity to get the preference from."
+          }
+        ]
+      },
+      {
+        "name": "postMessageViaBrowserSim",
+        "type": "function",
+        "Description": "Temporary. Allows posting a message to stub.xhtml",
+        "async": true,
+        "parameters": [
+          {
+            "name": "msg",
+            "type": "any",
+            "description": "The message to pass."
           }
         ]
       }

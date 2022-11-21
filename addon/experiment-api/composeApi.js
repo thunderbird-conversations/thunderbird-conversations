@@ -2,15 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-var { XPCOMUtils } = ChromeUtils.import(
-  "resource://gre/modules/XPCOMUtils.jsm"
-);
+/* global ExtensionCommon */
 
-XPCOMUtils.defineLazyModuleGetters(this, {
-  ExtensionCommon: "resource://gre/modules/ExtensionCommon.jsm",
-  MailServices: "resource:///modules/MailServices.jsm",
-  msgHdrGetUri: "chrome://conversations/content/modules/misc.js",
-});
+ChromeUtils.defineModuleGetter(
+  this,
+  "MailServices",
+  "resource:///modules/MailServices.jsm"
+);
 
 /**
  * @typedef nsIMsgDBHdr
@@ -66,7 +64,7 @@ var convCompose = class extends ExtensionCommon.ExtensionAPI {
             if (!msgHdr) {
               throw new Error("could not find the specified message");
             }
-            msgUri = msgHdrGetUri(msgHdr);
+            msgUri = msgHdr.folder.getUriForMsg(msgHdr);
 
             let numRef = msgHdr.numReferences;
             let references = [];

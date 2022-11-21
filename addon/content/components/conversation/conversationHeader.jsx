@@ -31,9 +31,7 @@ class LinkifiedSubject extends React.PureComponent {
       subject = browser.i18n.getMessage("message.loading");
     } else if (!subject) {
       subject = browser.i18n.getMessage("message.noSubject");
-    }
-
-    if (LINKS_REGEX.test(this.props.subject)) {
+    } else if (LINKS_REGEX.test(subject)) {
       let contents = [];
       let text = subject;
       let i = 0;
@@ -62,15 +60,15 @@ class LinkifiedSubject extends React.PureComponent {
       }
 
       return (
-        <div className="subject" title={this.props.subject}>
+        <div className="subject" title={subject}>
           <span>{contents}</span>
         </div>
       );
     }
 
     return (
-      <div className="subject" title={this.props.subject}>
-        {this.props.subject}
+      <div className="subject" title={subject}>
+        {subject}
       </div>
     );
   }
@@ -181,27 +179,20 @@ class _ConversationHeader extends React.PureComponent {
           <div className="actions">
             <button
               className="button-flat"
-              title={browser.i18n.getMessage("message.trash.tooltip")}
-              onClick={this.delete}
+              title={browser.i18n.getMessage("message.detach.tooltip")}
+              onClick={this.detachTab}
             >
-              <SvgIcon hash={"delete"} />
+              <SvgIcon ariaHidden={true} hash={"open_in_new"} />
             </button>
             <button
-              className="button-flat"
-              title={browser.i18n.getMessage("message.archive.tooltip")}
-              onClick={this.archiveToolbar}
+              className={`button-flat ${
+                this.areSomeMessagesUnread ? "unread" : ""
+              }`}
+              title={browser.i18n.getMessage("message.read.tooltip")}
+              onClick={this.toggleRead}
             >
-              <SvgIcon hash={"archive"} />
+              <SvgIcon ariaHidden={true} hash={"new"} />
             </button>
-            {this.canJunk && (
-              <button
-                className="button-flat junk-button"
-                title={browser.i18n.getMessage("message.junk.tooltip")}
-                onClick={this.junkConversation}
-              >
-                <SvgIcon hash={"whatshot"} />
-              </button>
-            )}
             <button
               className="button-flat"
               title={browser.i18n.getMessage("message.expand.tooltip")}
@@ -211,6 +202,7 @@ class _ConversationHeader extends React.PureComponent {
                 className={`icon expand ${
                   this.areSomeMessagesCollapsed ? "" : "collapse"
                 }`}
+                aria-hidden={true}
                 viewBox="0 0 24 24"
                 xmlns="http://www.w3.org/2000/svg"
                 xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -225,21 +217,28 @@ class _ConversationHeader extends React.PureComponent {
                 ></use>
               </svg>
             </button>
+            {this.canJunk && (
+              <button
+                className="button-flat junk-button"
+                title={browser.i18n.getMessage("message.junk.tooltip")}
+                onClick={this.junkConversation}
+              >
+                <SvgIcon ariaHidden={true} hash={"whatshot"} />
+              </button>
+            )}
             <button
-              className={`button-flat ${
-                this.areSomeMessagesUnread ? "unread" : ""
-              }`}
-              title={browser.i18n.getMessage("message.read.tooltip")}
-              onClick={this.toggleRead}
+              className="button-flat"
+              title={browser.i18n.getMessage("message.archive.tooltip")}
+              onClick={this.archiveToolbar}
             >
-              <SvgIcon hash={"new"} />
+              <SvgIcon ariaHidden={true} hash={"archive"} />
             </button>
             <button
               className="button-flat"
-              title={browser.i18n.getMessage("message.detach.tooltip")}
-              onClick={this.detachTab}
+              title={browser.i18n.getMessage("message.trash.tooltip")}
+              onClick={this.delete}
             >
-              <SvgIcon hash={"open_in_new"} />
+              <SvgIcon ariaHidden={true} hash={"delete"} />
             </button>
           </div>
         </div>

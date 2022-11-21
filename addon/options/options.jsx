@@ -256,12 +256,15 @@ export function TextOption({
   return (
     <React.Fragment>
       <div>
-        <label className="title">{title}</label>
+        <label htmlFor={name} className="title">
+          {title}
+        </label>
         <br />
         <label>{desc}</label>
       </div>
       <div>
         <input
+          id={name}
           type="text"
           className="pref"
           value={value}
@@ -290,16 +293,18 @@ export function NumericOption({
 }) {
   return (
     <React.Fragment>
-      <div>
+      <div htmlFor={name}>
         <label className="title">{title}</label>
         <br />
         <label>{desc}</label>
       </div>
       <div>
         <input
+          id={name}
           type="number"
-          className="pref"
+          className="pref hidespinbuttons"
           min={0}
+          max={100}
           onChange={(e) => {
             onChange(name, parseInt(e.target.value || value, 10));
           }}
@@ -327,12 +332,15 @@ export function BinaryOption({
   return (
     <React.Fragment>
       <div>
-        <label className="title">{title}</label>
+        <label htmlFor={name} className="title">
+          {title}
+        </label>
         <br />
         <label>{desc}</label>
       </div>
       <div>
         <input
+          id={name}
           type="checkbox"
           className="pref"
           checked={value}
@@ -363,7 +371,7 @@ BinaryOption.propTypes = {
  * @param {object} root0
  * @param {object[]} root0.localizedPrefsInfo
  * @param {string} root0.localizedName
- * @param  {string}root0.localizedStartAssistant
+ * @param {string}root0.localizedStartAssistant
  * @param {string} root0.localizedUndoCustomizations
  * @param {string} root0.localizedUndoCustomizationsTooltip
  * @param {object} root0.prefs

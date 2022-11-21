@@ -8,7 +8,7 @@ import { MessageEnricher } from "../content/reducer/messageEnricher.js";
 
 describe("messageEnricher", () => {
   let fakeMessageHeaderData;
-  let isInViewSpy;
+  let mailTabsGetSpy;
   let messageEnricher;
 
   beforeEach(() => {
@@ -17,8 +17,7 @@ describe("messageEnricher", () => {
     jest
       .spyOn(browser.messages, "get")
       .mockImplementation(async (id) => fakeMessageHeaderData.get(id));
-    isInViewSpy = jest.spyOn(browser.conversations, "isInView");
-    isInViewSpy.mockReturnValue(true);
+    mailTabsGetSpy = jest.spyOn(browser.mailTabs, "get");
     let originalConsoleError = console.error;
     // We expect some errors due to how the tests are run with single messages
     // only.
@@ -40,31 +39,62 @@ describe("messageEnricher", () => {
       let fakeMsg = createFakeData({}, fakeMessageHeaderData);
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         [fakeMsg],
         createFakeSummaryData({ noFriendlyDate: true }),
         [fakeMessageHeaderData.size - 1]
       );
 
       expect(msgs[0]).toMatchObject({
+        folderName: "Fake/Inbox",
+        inView: true,
         isDraft: false,
         isJunk: false,
         isOutbox: false,
         read: false,
+        shortFolderName: "Inbox",
         subject: "Fake Msg",
         starred: false,
         tags: [],
       });
-      expect(msgs[0]).not.toHaveProperty("folderName");
-      expect(msgs[0]).not.toHaveProperty("shortFolderName");
     });
 
-    test("Fills out folder name if the message is not selected nor in view", async () => {
+    test("Marks as not in view if the message is not in the selected view nor folder", async () => {
       let fakeMsg = createFakeData({}, fakeMessageHeaderData);
-      isInViewSpy.mockReturnValue(false);
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
+        [fakeMsg],
+        createFakeSummaryData({ noFriendlyDate: true }),
+        []
+      );
+
+      expect(msgs[0]).toMatchObject({
+        inView: false,
+      });
+    });
+
+    test("Marks as in view if the message is not selected but in the same folder", async () => {
+      let fakeMsg = createFakeData({}, fakeMessageHeaderData);
+      mailTabsGetSpy.mockReturnValue({
+        displayedFolder: {
+          accountId: "id1",
+          path: "Inbox",
+        },
+      });
+
+      let msgs = await messageEnricher.enrich(
+        [fakeMsg],
+        createFakeSummaryData({ noFriendlyDate: true }),
+        []
+      );
+
+      expect(msgs[0]).toMatchObject({
+        inView: true,
+      });
+    });
+
+    test("Fills out folder name", async () => {
+      let fakeMsg = createFakeData({}, fakeMessageHeaderData);
+      let msgs = await messageEnricher.enrich(
         [fakeMsg],
         createFakeSummaryData({ noFriendlyDate: true }),
         [fakeMessageHeaderData.size]
@@ -74,21 +104,6 @@ describe("messageEnricher", () => {
         folderName: "Fake/Inbox",
         shortFolderName: "Inbox",
       });
-    });
-
-    test("Does not fill out folder name if the message is not selected but in view", async () => {
-      let fakeMsg = createFakeData({}, fakeMessageHeaderData);
-      isInViewSpy.mockReturnValue(true);
-
-      let msgs = await messageEnricher.enrich(
-        "replaceAll",
-        [fakeMsg],
-        createFakeSummaryData({ noFriendlyDate: true }),
-        [fakeMessageHeaderData.size]
-      );
-
-      expect(msgs[0]).not.toHaveProperty("folderName");
-      expect(msgs[0]).not.toHaveProperty("shortFolderName");
     });
 
     test("Correctly sets flags with details from the header", async () => {
@@ -157,13 +172,12 @@ describe("messageEnricher", () => {
         },
       ];
 
-      isInViewSpy.mockReturnValue(false);
+      mailTabsGetSpy.mockReturnValue(false);
 
       for (let test of tests) {
         let fakeMsg = createFakeData(test.source, fakeMessageHeaderData);
 
         let msgs = await messageEnricher.enrich(
-          "replaceAll",
           [fakeMsg],
           createFakeSummaryData({ noFriendlyDate: true }),
           [3]
@@ -182,7 +196,6 @@ describe("messageEnricher", () => {
       );
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         [fakeMsg],
         createFakeSummaryData({ noFriendlyDate: true }),
         [fakeMessageHeaderData.size - 1]
@@ -206,41 +219,42 @@ describe("messageEnricher", () => {
   });
 
   describe("De-duplicates messages when they have the same ids", () => {
-    beforeEach(() => {
-      isInViewSpy.mockReturnValue(false);
-    });
-
     test("Prefers in-view messages", async () => {
       let fakeMsgs = [
         createFakeData(
-          { id: 1, glodaMessageId: 1, folderType: "trash" },
+          { id: 1, folderType: "trash", headerMessageId: 1 },
           fakeMessageHeaderData
         ),
         createFakeData(
-          { id: 2, glodaMessageId: 1, folderType: "archives" },
+          { id: 2, folderType: "archives", headerMessageId: 1 },
           fakeMessageHeaderData
         ),
         createFakeData(
-          { id: 3, glodaMessageId: 1, folderType: "sent" },
+          { id: 3, folderType: "sent", headerMessageId: 1 },
           fakeMessageHeaderData
         ),
         createFakeData(
-          { id: 4, glodaMessageId: 1, folderType: "inbox" },
+          { id: 4, folderType: "inbox", headerMessageId: 1 },
           fakeMessageHeaderData
         ),
         createFakeData(
-          { id: 5, glodaMessageId: 1, folderType: "junk" },
+          { id: 5, folderType: "junk", folderName: "Junk", headerMessageId: 1 },
           fakeMessageHeaderData
         ),
       ];
-      isInViewSpy.mockImplementation((tabId, msgId) => msgId == 5);
+      mailTabsGetSpy.mockReturnValue({
+        displayedFolder: {
+          accountId: "id1",
+          path: "Junk",
+        },
+      });
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         fakeMsgs,
         createFakeSummaryData({ expandWho: 3 }),
         []
       );
+      messageEnricher.determineExpansion(msgs, 3, []);
 
       expect(msgs.length).toBe(1);
       expect(msgs[0].id).toBe(5);
@@ -249,29 +263,29 @@ describe("messageEnricher", () => {
     test("Next messages in inbox", async () => {
       let fakeMsgs = [
         createFakeData(
-          { id: 1, glodaMessageId: 1, folderType: "trash" },
+          { id: 1, folderType: "trash", headerMessageId: 1 },
           fakeMessageHeaderData
         ),
         createFakeData(
-          { id: 2, glodaMessageId: 1, folderType: "archives" },
+          { id: 2, folderType: "archives", headerMessageId: 1 },
           fakeMessageHeaderData
         ),
         createFakeData(
-          { id: 3, glodaMessageId: 1, folderType: "sent" },
+          { id: 3, folderType: "sent", headerMessageId: 1 },
           fakeMessageHeaderData
         ),
         createFakeData(
-          { id: 4, glodaMessageId: 1, folderType: "inbox" },
+          { id: 4, folderType: "inbox", headerMessageId: 1 },
           fakeMessageHeaderData
         ),
       ];
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         fakeMsgs,
         createFakeSummaryData({ expandWho: 3 }),
         []
       );
+      messageEnricher.determineExpansion(msgs, 3, []);
 
       expect(msgs.length).toBe(1);
       expect(msgs[0].id).toBe(4);
@@ -280,25 +294,25 @@ describe("messageEnricher", () => {
     test("Next messages in sent", async () => {
       let fakeMsgs = [
         createFakeData(
-          { id: 1, glodaMessageId: 1, folderType: "trash" },
+          { id: 1, folderType: "trash", headerMessageId: 1 },
           fakeMessageHeaderData
         ),
         createFakeData(
-          { id: 2, glodaMessageId: 1, folderType: "archives" },
+          { id: 2, folderType: "archives", headerMessageId: 1 },
           fakeMessageHeaderData
         ),
         createFakeData(
-          { id: 3, glodaMessageId: 1, folderType: "sent" },
+          { id: 3, folderType: "sent", headerMessageId: 1 },
           fakeMessageHeaderData
         ),
       ];
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         fakeMsgs,
         createFakeSummaryData({ expandWho: 3 }),
         []
       );
+      messageEnricher.determineExpansion(msgs, 3, []);
 
       expect(msgs.length).toBe(1);
       expect(msgs[0].id).toBe(3);
@@ -307,21 +321,21 @@ describe("messageEnricher", () => {
     test("Next messages in archives", async () => {
       let fakeMsgs = [
         createFakeData(
-          { id: 1, glodaMessageId: 1, folderType: "trash" },
+          { id: 1, folderType: "trash", headerMessageId: 1 },
           fakeMessageHeaderData
         ),
         createFakeData(
-          { id: 2, glodaMessageId: 1, folderType: "archives" },
+          { id: 2, folderType: "archives", headerMessageId: 1 },
           fakeMessageHeaderData
         ),
       ];
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         fakeMsgs,
         createFakeSummaryData({ expandWho: 3 }),
         []
       );
+      messageEnricher.determineExpansion(msgs, 3, []);
 
       expect(msgs.length).toBe(1);
       expect(msgs[0].id).toBe(2);
@@ -330,21 +344,21 @@ describe("messageEnricher", () => {
     test("Lastly, the first of other messages", async () => {
       let fakeMsgs = [
         createFakeData(
-          { id: 1, glodaMessageId: 1, folderType: "trash" },
+          { id: 1, folderType: "trash", headerMessageId: 1 },
           fakeMessageHeaderData
         ),
         createFakeData(
-          { id: 2, glodaMessageId: 1, folderType: "junk" },
+          { id: 2, folderType: "junk", headerMessageId: 1 },
           fakeMessageHeaderData
         ),
       ];
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         fakeMsgs,
         createFakeSummaryData({ expandWho: 3 }),
         []
       );
+      messageEnricher.determineExpansion(msgs, 3, []);
 
       expect(msgs.length).toBe(1);
       expect(msgs[0].id).toBe(1);
@@ -359,11 +373,13 @@ describe("messageEnricher", () => {
       }
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         fakeMsgs,
         createFakeSummaryData({ expandWho: 3 }),
         [fakeMessageHeaderData.size - 1]
       );
+      messageEnricher.determineExpansion(msgs, 3, [
+        fakeMessageHeaderData.size - 1,
+      ]);
 
       for (let i = 0; i < 5; i++) {
         expect(msgs[i].expanded).toBe(true);
@@ -375,25 +391,6 @@ describe("messageEnricher", () => {
       }
     });
 
-    test("Expands all appended messages when expand is set to all", async () => {
-      let fakeMsgs = [];
-      for (let i = 0; i < 5; i++) {
-        fakeMsgs.push(createFakeData({ id: i }, fakeMessageHeaderData));
-      }
-
-      let msgs = await messageEnricher.enrich(
-        "append",
-        fakeMsgs.slice(2, 5),
-        createFakeSummaryData({ expandWho: 3 }),
-        [1]
-      );
-
-      for (let i = 2; i < 5; i++) {
-        expect(msgs[i - 2].expanded).toBe(true);
-        expect("scrollTo" in msgs[i - 2]).toBe(false);
-      }
-    });
-
     test("Expands no messages when expand is set to none", async () => {
       let fakeMsgs = [];
       for (let i = 0; i < 5; i++) {
@@ -401,11 +398,13 @@ describe("messageEnricher", () => {
       }
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         fakeMsgs,
         createFakeSummaryData({ expandWho: 1 }),
         [fakeMessageHeaderData.size - 1]
       );
+      messageEnricher.determineExpansion(msgs, 1, [
+        fakeMessageHeaderData.size - 1,
+      ]);
 
       for (let i = 0; i < 5; i++) {
         expect(msgs[i].expanded).toBe(false);
@@ -414,25 +413,6 @@ describe("messageEnricher", () => {
         } else {
           expect(msgs[i].scrollTo).toBe(true);
         }
-      }
-    });
-
-    test("Expands no appended messages when expand is set to none", async () => {
-      let fakeMsgs = [];
-      for (let i = 0; i < 5; i++) {
-        fakeMsgs.push(createFakeData({ id: i }, fakeMessageHeaderData));
-      }
-
-      let msgs = await messageEnricher.enrich(
-        "append",
-        fakeMsgs.slice(2, 5),
-        createFakeSummaryData({ expandWho: 1 }),
-        [1]
-      );
-
-      for (let i = 2; i < 5; i++) {
-        expect(msgs[i - 2].expanded).toBe(false);
-        expect("scrollTo" in msgs[i - 2]).toBe(false);
       }
     });
 
@@ -446,11 +426,11 @@ describe("messageEnricher", () => {
         }
 
         let msgs = await messageEnricher.enrich(
-          "replaceAll",
           fakeMsgs,
           createFakeSummaryData(),
           [3]
         );
+        messageEnricher.determineExpansion(msgs, 4, [3]);
 
         for (let i = 0; i < 5; i++) {
           expect(msgs[i].expanded).toBe(i == 3);
@@ -471,11 +451,11 @@ describe("messageEnricher", () => {
         }
 
         let msgs = await messageEnricher.enrich(
-          "replaceAll",
           fakeMsgs,
           createFakeSummaryData(),
           [3]
         );
+        messageEnricher.determineExpansion(msgs, 4, [3]);
 
         for (let i = 0; i < 5; i++) {
           expect(msgs[i].expanded).toBe(i == 3);
@@ -496,11 +476,11 @@ describe("messageEnricher", () => {
         }
 
         let msgs = await messageEnricher.enrich(
-          "replaceAll",
           fakeMsgs,
           createFakeSummaryData(),
           [3, 4]
         );
+        messageEnricher.determineExpansion(msgs, 4, [3, 4]);
 
         for (let i = 0; i < 5; i++) {
           expect(msgs[i].expanded).toBe(i > 2);
@@ -510,27 +490,6 @@ describe("messageEnricher", () => {
           } else {
             expect(msgs[i].scrollTo).toBe(true);
           }
-        }
-      });
-
-      test("Multi unread append", async () => {
-        let fakeMsgs = [];
-        for (let i = 0; i < 5; i++) {
-          fakeMsgs.push(
-            createFakeData({ id: i, read: i <= 2 }, fakeMessageHeaderData)
-          );
-        }
-
-        let msgs = await messageEnricher.enrich(
-          "append",
-          fakeMsgs.slice(2, 5),
-          createFakeSummaryData(),
-          [1]
-        );
-
-        for (let i = 2; i < 5; i++) {
-          expect(msgs[i - 2].expanded).toBe(true);
-          expect("scrollTo" in msgs[i - 2]).toBe(false);
         }
       });
     });
@@ -546,7 +505,6 @@ describe("messageEnricher", () => {
               name: "foo.pdf",
               partName: "1.2",
               size: 634031,
-              url: "imap://fakeurl",
             },
           ],
         },
@@ -554,7 +512,6 @@ describe("messageEnricher", () => {
       );
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         [fakeMsg],
         createFakeSummaryData({ noFriendlyDate: true }),
         [fakeMessageHeaderData.size - 1]
@@ -569,7 +526,6 @@ describe("messageEnricher", () => {
             name: "foo.pdf",
             partName: "1.2",
             size: 634031,
-            url: "imap://fakeurl",
           },
         ],
       });
@@ -603,19 +559,63 @@ describe("messageEnricher", () => {
         {
           snippet: "should not be used",
           getFullRequired: true,
-          from: "realEmail@invalid.com",
+          author: "realEmail@invalid.com",
         },
         fakeMessageHeaderData
       );
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         [fakeMsg],
         createFakeSummaryData(),
         [fakeMessageHeaderData.size - 1]
       );
       expect(msgs[0].parsedLines.from[0].email).toBe("actualFrom@invalid.com");
       expect(msgs[0].realFrom).toBe("realEmail@invalid.com");
+    });
+
+    test("Parse reply-to header", async () => {
+      jest.spyOn(browser.messages, "getFull").mockReturnValue({
+        headers: {
+          "reply-to": ["actualFrom@invalid.com"],
+        },
+        parts: [
+          {
+            contentType: "text/plain",
+            body: "should be used",
+          },
+        ],
+      });
+      jest
+        .spyOn(browser.conversations, "parseMimeLine")
+        .mockImplementation((line) => [
+          {
+            email: line,
+            name: "-",
+            fullName: "-",
+          },
+        ]);
+
+      let fakeMsg = createFakeData(
+        {
+          snippet: "should not be used",
+          getFullRequired: true,
+          author: "listEmail@invalid.com",
+        },
+        fakeMessageHeaderData
+      );
+
+      let msgs = await messageEnricher.enrich(
+        [fakeMsg],
+        createFakeSummaryData(),
+        [fakeMessageHeaderData.size - 1]
+      );
+      expect(msgs[0].replyTo).toStrictEqual([
+        {
+          email: "actualFrom@invalid.com",
+          name: "-",
+          fullName: "-",
+        },
+      ]);
     });
   });
 
@@ -657,7 +657,6 @@ Updating`,
         )
       );
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         fakeMsgs,
         createFakeSummaryData(),
         [fakeMessageHeaderData.size - 1]
@@ -685,7 +684,6 @@ Updating`,
       );
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         [fakeMsg],
         createFakeSummaryData(),
         [fakeMessageHeaderData.size - 1]
@@ -711,7 +709,6 @@ Updating`,
       );
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         [fakeMsg],
         createFakeSummaryData(),
         [fakeMessageHeaderData.size - 1]
@@ -727,7 +724,6 @@ Updating`,
       let fakeMsg = createFakeData({ date: now }, fakeMessageHeaderData);
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         [fakeMsg],
         createFakeSummaryData(),
         [fakeMessageHeaderData.size - 1]
@@ -746,7 +742,6 @@ Updating`,
       let fakeMsg = createFakeData({ date: now }, fakeMessageHeaderData);
 
       let msgs = await messageEnricher.enrich(
-        "replaceAll",
         [fakeMsg],
         createFakeSummaryData({ noFriendlyDate: true }),
         [fakeMessageHeaderData.size - 1]

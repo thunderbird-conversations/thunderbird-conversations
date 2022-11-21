@@ -3,15 +3,13 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOMClient from "react-dom/client";
 import { Main, store } from "./compose.jsx";
 import { composeActions } from "../content/reducer/reducerCompose.js";
 
 // Render the options to the root of the page
-ReactDOM.render(
-  React.createElement(Main, null),
-  document.querySelector("#root")
-);
+let root = ReactDOMClient.createRoot(document.querySelector("#root"));
+root.render(React.createElement(Main, null));
 
 let params = new URLSearchParams(document.location.search);
 

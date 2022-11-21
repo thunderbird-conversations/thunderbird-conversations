@@ -249,6 +249,7 @@ export function MessageHeader({
   multipleRecipients,
   recipientsIncludeLists,
   isDraft,
+  inView,
   shortFolderName,
   snippet,
   tags,
@@ -257,18 +258,11 @@ export function MessageHeader({
 }) {
   function onClickHeader() {
     dispatch(
-      messageActions.msgExpand({
+      messageActions.expandMsg({
         expand: !expanded,
         id,
       })
     );
-    if (!expanded) {
-      dispatch(
-        messageActions.markAsRead({
-          id,
-        })
-      );
-    }
   }
 
   function onClickStar(event) {
@@ -323,24 +317,33 @@ export function MessageHeader({
     extraContacts = <React.Fragment></React.Fragment>;
   }
 
+  let starTitle = browser.i18n.getMessage(
+    starred ? "message.removeStar.tooltip" : "message.addStar.tooltip"
+  );
+
   return (
     <div
       className={`messageHeader hbox ${expanded ? "expanded" : ""}`}
       onClick={onClickHeader}
     >
       <div className="shrink-box">
-        <div
+        <button
           className={`star ${starred ? "starred" : ""}`}
+          title={starTitle}
           onClick={onClickStar}
         >
-          <SvgIcon hash="star" />
-        </div>
-        <Avatar
-          url={from.avatar}
-          style={from.colorStyle}
-          initials={from.initials}
-        />{" "}
-        <ContactLabel className="author" contact={from} msgId={id} />
+          <SvgIcon ariaHidden={true} hash="star" />
+        </button>
+        {!!from && (
+          <>
+            <Avatar
+              url={from.avatar}
+              style={from.colorStyle}
+              initials={from.initials}
+            />{" "}
+            <ContactLabel className="author" contact={from} msgId={id} />
+          </>
+        )}
         {extraContacts}
         {!expanded && (
           <span className="snippet">
@@ -367,6 +370,7 @@ export function MessageHeader({
                 );
               }}
               folderName={shortFolderName}
+              inView={inView}
             />
             {snippet}
           </span>
@@ -395,9 +399,10 @@ MessageHeader.propTypes = {
   date: PropTypes.string.isRequired,
   detailsShowing: PropTypes.bool.isRequired,
   expanded: PropTypes.bool.isRequired,
-  from: PropTypes.object.isRequired,
+  from: PropTypes.object,
   fullDate: PropTypes.string.isRequired,
   id: PropTypes.number.isRequired,
+  inView: PropTypes.bool.isRequired,
   attachments: PropTypes.array.isRequired,
   multipleRecipients: PropTypes.bool.isRequired,
   recipientsIncludeLists: PropTypes.bool.isRequired,

@@ -7,7 +7,6 @@ import * as ReactRedux from "react-redux";
 import PropTypes from "prop-types";
 import { ConversationFooter } from "./conversationFooter.jsx";
 import { ConversationHeader } from "./conversationHeader.jsx";
-import { controllerActions } from "../../reducer/controllerActions.js";
 import { MessageList } from "../message/messageList.jsx";
 
 /**
@@ -27,8 +26,6 @@ class _ConversationWrapper extends React.PureComponent {
     browser.conversations.getLocaleDirection().then((dir) => {
       document.documentElement.setAttribute("dir", dir);
     });
-
-    this.props.dispatch(controllerActions.waitForStartup());
   }
 
   componentDidUpdate(prevProps) {

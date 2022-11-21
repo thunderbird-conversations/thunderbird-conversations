@@ -29,6 +29,17 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   Gloda: "resource:///modules/gloda/GlodaPublic.jsm",
 });
 
+let GlodaConstants;
+// Thunderbird 105 introduced GlodaConstants.jsm.
+try {
+  GlodaConstants = ChromeUtils.import(
+    "resource:///modules/gloda/GlodaConstants.jsm"
+  ).GlodaConstants;
+} catch (ex) {
+  GlodaConstants = Gloda;
+  // Do nothing.
+}
+
 let AlternativeSender = {
   init() {
     this.defineAttributes();
@@ -38,12 +49,12 @@ let AlternativeSender = {
     this._alternativeSenderAttribute = Gloda.defineAttribute({
       provider: this,
       extensionName: "bugzilla-alternative-sender",
-      attributeType: Gloda.kAttrDerived,
+      attributeType: GlodaConstants.kAttrDerived,
       attributeName: "alternativeSender",
       bind: true,
       singular: true,
-      subjectNouns: [Gloda.NOUN_MESSAGE],
-      objectNoun: Gloda.NOUN_STRING,
+      subjectNouns: [GlodaConstants.NOUN_MESSAGE],
+      objectNoun: GlodaConstants.NOUN_STRING,
     });
   },
 
@@ -62,7 +73,7 @@ let AlternativeSender = {
       dump(e + "\n" + e.stack + "\n");
     }
 
-    yield Gloda.kWorkDone;
+    yield GlodaConstants.kWorkDone;
   },
 
   // About to do more special-casing here? Please check out the corresponding
@@ -88,12 +99,12 @@ let ContentType = {
     this._bugzillaAttribute = Gloda.defineAttribute({
       provider: this,
       extensionName: "content-type",
-      attributeType: Gloda.kAttrDerived,
+      attributeType: GlodaConstants.kAttrDerived,
       attributeName: "contentType",
       bind: true,
       singular: true,
-      subjectNouns: [Gloda.NOUN_MESSAGE],
-      objectNoun: Gloda.NOUN_STRING,
+      subjectNouns: [GlodaConstants.NOUN_MESSAGE],
+      objectNoun: GlodaConstants.NOUN_STRING,
     });
   },
 
@@ -111,7 +122,7 @@ let ContentType = {
       dump(e + "\n" + e.stack + "\n");
     }
 
-    yield Gloda.kWorkDone;
+    yield GlodaConstants.kWorkDone;
   },
 };
 

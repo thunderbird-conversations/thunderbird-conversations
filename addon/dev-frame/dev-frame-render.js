@@ -3,7 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOMClient from "react-dom/client";
 import { browser } from "../content/esmodules/thunderbirdCompat.js";
 import { Main } from "./dev-frame.jsx";
 
@@ -14,8 +14,6 @@ import { Main } from "./dev-frame.jsx";
   await browser.i18n.isLoaded;
 
   // Render the options to the root of the page
-  ReactDOM.render(
-    React.createElement(Main, null),
-    document.querySelector("#root")
-  );
+  let root = ReactDOMClient.createRoot(document.querySelector("#root"));
+  root.render(React.createElement(Main, null));
 })().catch(console.error);

@@ -40,7 +40,13 @@ export function MessageTag({ onClickX, expanded, name, color }) {
     >
       {name}
       {expanded && (
-        <span className="tag-x" onClick={onClickX}>
+        <span
+          role="button"
+          aria-label={browser.i18n.getMessage("tags.removeButton")}
+          className="tag-x"
+          tabIndex="0"
+          onClick={onClickX}
+        >
           {" "}
           x
         </span>
@@ -268,15 +274,17 @@ SpecialMessageTag.propTypes = {
  * @param {Function} root0.onFolderClick
  * @param {object[]} root0.specialTags
  * @param {string} root0.folderName
+ * @param {boolean} root0.inView
  */
 export function SpecialMessageTags({
   onTagClick,
   onFolderClick = null,
   specialTags,
   folderName,
+  inView,
 }) {
   let folderItem = null;
-  if (folderName) {
+  if (!inView) {
     folderItem = (
       <li
         className="in-folder"
@@ -312,5 +320,6 @@ SpecialMessageTags.propTypes = {
   onTagClick: PropTypes.func.isRequired,
   onFolderClick: PropTypes.func,
   folderName: PropTypes.string,
+  inView: PropTypes.bool,
   specialTags: PropTypes.array,
 };

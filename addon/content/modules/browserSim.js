@@ -22,7 +22,6 @@ const SUPPORTED_APIS_NO_EVENTS = [
   // MUST be tested very carefully. Last time this was tried, it would end up
   // clearing the starred flag when marking a message as read.
   "messages",
-  "tabs",
   "windows",
   // This is a temporary workaround so that we can "message" the background script.
   "_background",
@@ -31,6 +30,7 @@ const SUPPORTED_APIS_NO_EVENTS = [
 const SUPPORTED_BASE_APIS = [
   ...SUPPORTED_APIS_NO_EVENTS,
   "convContacts",
+  "convGloda",
   "convMsgWindow",
   "convOpenPgp",
   "conversations",
@@ -38,6 +38,7 @@ const SUPPORTED_BASE_APIS = [
   "messageDisplay",
   "runtime",
   "storage",
+  "tabs",
 ];
 
 /**
@@ -48,6 +49,10 @@ const SUPPORTED_BASE_APIS = [
  * privileged scope.
  */
 class _BrowserSim {
+  constructor() {
+    this.connectionListeners = new Set();
+  }
+
   setBrowserListener(listener, context) {
     if (!listener) {
       delete this._browser;
@@ -151,14 +156,17 @@ class _BrowserSim {
     browser.runtime.connect = () => {
       return {
         disconnect() {
-          this.listener = null;
+          self.connectionListeners.delete(this.onMessagelistener);
+          this.onMessage.listener = null;
         },
         onMessage: {
           listener: null,
           addListener(l) {
+            self.connectionListeners.add(l);
             this.listener = l;
           },
-          removeListener() {
+          removeListener(l) {
+            self.connectionListeners.delete(l);
             this.listener = null;
           },
         },
@@ -177,6 +185,12 @@ class _BrowserSim {
 
     this._asyncBrowser = browser;
     return browser;
+  }
+
+  sendMessage(msg) {
+    for (let l of BrowserSim.connectionListeners) {
+      l(msg);
+    }
   }
 
   // This is provided so that we can call background scripts from stub.html.
@@ -200,9 +214,22 @@ class _BrowserSim {
     //
     // Alternately, we need to complete the switch to loading as a WebExtension
     // page, but that's a lot more work at the moment.
-    let tab = tabmail.getTabForBrowser(
-      docWin.browsingContext?.embedderElement || docWin.frameElement
-    );
+
+    // TODO: Thunderbird's 91.x getTabForBrowser is broken in the case of the
+    // multimessage pane (bug 1767586). Work around that here.
+    let browser =
+      docWin.browsingContext?.embedderElement || docWin.frameElement;
+    let tab;
+    if (
+      browser?.id == "multimessage" &&
+      tabmail.selectedTab.mode.tabType.name == "mail"
+    ) {
+      tab = tabmail.currentTabInfo;
+    } else {
+      tab = tabmail.getTabForBrowser(
+        docWin.browsingContext?.embedderElement || docWin.frameElement
+      );
+    }
     if (!tab) {
       // We are probably in a window all by ourselves in Thunderbird 91,
       // fallback to getting the selected tab.

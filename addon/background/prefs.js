@@ -33,7 +33,6 @@ export class Prefs {
       console.error(ex);
     }
 
-    // Now we've done the migration, tell the backend about all our prefs.
     const results = await browser.storage.local.get("preferences");
     if (results.preferences) {
       let updatePrefs = false;
@@ -44,7 +43,8 @@ export class Prefs {
           results.preferences[prefName] = kPrefDefaults[prefName];
         }
       }
-      await browser.conversations.startup(results.preferences.logging_enabled);
+      // Let the backend know we've started.
+      await browser.conversations.startup();
 
       if (updatePrefs) {
         try {
@@ -61,25 +61,13 @@ export class Prefs {
   async _migrate() {
     const results = await browser.storage.local.get("preferences");
 
-    const currentMigration =
-      results.preferences && results.preferences.migratedLegacy
-        ? results.preferences.migratedLegacy
-        : 0;
+    const currentMigration = results.preferences?.migratedLegacy ?? 0;
 
     if (currentMigration >= kCurrentLegacyMigration) {
       return;
     }
 
     let prefs = results.preferences || {};
-
-    if (currentMigration < 1) {
-      for (const prefName of Object.getOwnPropertyNames(kPrefDefaults)) {
-        prefs[prefName] = await browser.conversations.getPref(prefName);
-        if (prefs[prefName] === undefined) {
-          prefs[prefName] = kPrefDefaults[prefName];
-        }
-      }
-    }
 
     // Version 2 was the migration from the legacy storage format for saved
     // quick reply drafts. It might be better just to drop these completely

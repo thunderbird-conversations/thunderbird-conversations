@@ -172,6 +172,23 @@ export const messageActions = {
         .catch(console.error);
     };
   },
+  expandMsg({ id, expand }) {
+    return async (dispatch, getState) => {
+      await dispatch(
+        messageActions.msgExpand({
+          expand,
+          id,
+        })
+      );
+      if (expand && getState().summary.autoMarkAsRead) {
+        await dispatch(
+          messageActions.markAsRead({
+            id,
+          })
+        );
+      }
+    };
+  },
   markAsRead({ id }) {
     return async () => {
       browser.messages.update(id, { read: true }).catch(console.error);
@@ -230,6 +247,7 @@ export const messageActions = {
           title: null,
           windowId: state.summary.windowId,
           windowType: null,
+          url: null,
         });
         await browser.tabs.remove(currentTab[0].id);
       }
@@ -288,6 +306,7 @@ export const messageActions = {
   notificationClick({ id, notificationType, extraData }) {
     return async (dispatch, getState) => {
       if (notificationType == "calendar") {
+        console.log(getState().summary.tabId, extraData.execute);
         await browser.convCalendar.onMessageNotification(
           getState().summary.tabId,
           extraData.execute
@@ -423,21 +442,57 @@ export const messagesSlice = RTK.createSlice({
      * @param {object} payload.payload
      * @param {object} payload.payload.messages
      *   The messages to insert or append.
-     * @param {string} payload.payload.mode
-     *   Can be "append", "replaceAll" or "replaceMsg". replaceMsg will replace
-     *   only a single message.
      */
-    updateConversation(state, { payload: { messages, mode } }) {
-      if (mode == "append") {
-        return { ...state, msgData: state.msgData.concat(messages) };
-      }
-      if (mode == "replaceMsg") {
-        return modifyOnlyMsg(state, messages[0].id, (msg) => ({
-          ...msg,
-          ...messages[0],
-        }));
-      }
+    replaceConversation(state, { payload: { messages } }) {
       return { ...state, msgData: messages };
+    },
+    addMessages(state, { payload }) {
+      return {
+        ...state,
+        msgData: [...state.msgData, ...payload.msgs],
+      };
+    },
+    updateMessages(state, { payload }) {
+      let msgData = state.msgData.map((msg) => {
+        let updateMsg = payload.msgs.find((m) => m.id == msg.id);
+        if (!updateMsg) {
+          return msg;
+        }
+
+        // When modifying messages, we don't want to override various fields
+        // about the message display state.
+        delete updateMsg.hasRemoteContent;
+        delete updateMsg.expanded;
+        delete updateMsg.isPhishing;
+        delete updateMsg.detailsShowing;
+        delete updateMsg.initialPosition;
+
+        return {
+          ...msg,
+          ...updateMsg,
+        };
+      });
+
+      return {
+        ...state,
+        msgData,
+      };
+    },
+    removeMessages(state, { payload }) {
+      return {
+        ...state,
+        msgData: state.msgData.filter((msg) => !payload.msgs.includes(msg.id)),
+      };
+    },
+    addContactPhoto(state, { payload }) {
+      return modifyOnlyMsg(state, payload.id, (msg) => {
+        let newMsg = { ...msg };
+
+        if (newMsg.from.contactId == payload.contactId) {
+          newMsg.from = { ...msg.from, avatar: payload.url };
+        }
+        return newMsg;
+      });
     },
     msgExpand(state, { payload }) {
       return modifyOnlyMsg(state, payload.id, (msg) => ({
@@ -525,7 +580,7 @@ export const messagesSlice = RTK.createSlice({
     },
     msgHdrDetails(state, { payload }) {
       return modifyOnlyMsg(state, payload.id, (msg) => {
-        if (payload.extraLines != null) {
+        if (!payload.extraLines) {
           return { ...msg, detailsShowing: payload.detailsShowing };
         }
         return {
@@ -534,12 +589,6 @@ export const messagesSlice = RTK.createSlice({
           extraLines: payload.extraLines,
         };
       });
-    },
-    removeMessageFromConversation(state, { payload }) {
-      return {
-        ...state,
-        msgData: state.msgData.filter((m) => m.id !== payload.id),
-      };
     },
     clearScrollto(state, { payload }) {
       return modifyOnlyMsg(state, payload.id, (msg) => {

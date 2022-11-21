@@ -47,9 +47,9 @@
             "type": "object",
             "name": "beginEditProperties",
             "properties": {
-              "email": {
+              "contactId": {
                 "type": "string",
-                "description": "The contact email to edit."
+                "description": "The contact id to edit."
               },
               "windowId": {
                 "type": "integer",
@@ -58,6 +58,34 @@
                 "description": "The window to create the new tab in. Defaults to the current window."
               }
             }
+          }
+        ]
+      },
+      {
+        "name": "getPhotoUrl",
+        "type": "function",
+        "description": "Temporary. Gets the photo url for the contact.",
+        "async": "callback",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "contactId",
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "The contact to get the photo for"
+              }
+            }
+          },
+          {
+            "type": "function",
+            "name": "callback",
+            "optional": true,
+            "parameters": [
+              {
+                "type": "string"
+              }
+            ]
           }
         ]
       },

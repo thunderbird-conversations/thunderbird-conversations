@@ -3,6 +3,13 @@
     "namespace": "convMsgWindow",
     "functions": [
       {
+        "name": "maybeReloadMultiMessage",
+        "type": "function",
+        "description": "Reloads the multi message views if they are showing the stub page.",
+        "async": true,
+        "parameters": []
+      },
+      {
         "name": "openNewWindow",
         "type": "function",
         "description": "Opens a new window with the specified url.",
@@ -54,46 +61,29 @@
             "description": "The iframe id."
           }
         ]
-      },
-      {
-        "name": "addSpecialTag",
-        "type": "function",
-        "description": "Adds a special tag to a message.",
-        "async": true,
-        "parameters": [
-          {
-            "name": "tagDetails",
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "number",
-                "description": "The message id to add the tag to."
-              },
-              "classNames": {
-                "type": "string",
-                "description": "The class for the tag."
-              },
-              "icon": {
-                "type": "string",
-                "description": "The icon for the tag."
-              },
-              "message": {
-                "type": "string",
-                "description": "The message for the tag."
-              },
-              "tooltip": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "description": "The optional tooltip for the tag."
-              }
-            }
-          }
-        ]
       }
     ],
     "events": [
+      {
+        "name": "onSelectedMessagesChanged",
+        "type": "function",
+        "description": "Temporary. Listens for selection changes on the thread pane.",
+        "parameters": [
+          {
+            "name": "message",
+            "$ref": "messages.MessageHeader"
+          }
+        ],
+        "extraParameters": [
+          {
+            "name": "window",
+            "type": "integer",
+            "optional": true,
+            "minimum": -2,
+            "description": "The window id."
+          }
+        ]
+      },
       {
         "name": "onThreadPaneDoubleClick",
         "type": "function",
@@ -157,9 +147,9 @@
         "parameters": []
       },
       {
-        "name": "onSummarizeThread",
+        "name": "onLayoutChange",
         "type": "function",
-        "description": "Temporary. Fake Listener, actually used for hooking into summarize thread.",
+        "description": "Temporary. Listens for layout changes.",
         "parameters": []
       },
       {

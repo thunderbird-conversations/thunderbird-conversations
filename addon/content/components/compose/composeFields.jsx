@@ -10,9 +10,10 @@ export const TextBox = React.forwardRef(
     return (
       <React.Fragment>
         <div className="headerField">
-          <label>{browser.i18n.getMessage(title)}</label>
+          <label htmlFor={name}>{browser.i18n.getMessage(title)}</label>
           <div className="headerEntry">
             <input
+              id={name}
               type="text"
               ref={ref}
               value={value}
@@ -42,6 +43,7 @@ export const TextArea = React.forwardRef(
       <React.Fragment>
         <div className={`${name}Wrapper`}>
           <textarea
+            id={name}
             className={name}
             ref={ref}
             value={value}

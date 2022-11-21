@@ -2,15 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import { enzyme } from "./utils.js";
+import { render, fireEvent, within, screen } from "@testing-library/react";
 import React from "react";
 import { jest } from "@jest/globals";
 
 // Import the components we want to test
 import {
-  MessageTag,
   MessageTags,
-  SpecialMessageTag,
   SpecialMessageTags,
 } from "../content/components/message/messageTags.jsx";
 
@@ -29,7 +27,7 @@ describe("SpecialMessageTags test", () => {
       },
     ];
 
-    const wrapper = enzyme.mount(
+    render(
       <SpecialMessageTags
         onTagClick={callback}
         folderName="n/a"
@@ -37,12 +35,9 @@ describe("SpecialMessageTags test", () => {
       />
     );
 
-    // There should be one parent node with class `special-tags`
-    expect(wrapper.find(".special-tags")).toHaveLength(1);
-    // There should be one react child `SpecialMessageTag`
-    expect(wrapper.find(SpecialMessageTag)).toHaveLength(1);
-    // That child should have all relevant classes applied
-    expect(wrapper.find(".success.special-tag")).toHaveLength(1);
+    expect(screen.getByText("DKIM signed").className).toBe(
+      "success special-tag can-click"
+    );
   });
 
   test("Clicking of special-tags", async () => {
@@ -52,7 +47,7 @@ describe("SpecialMessageTags test", () => {
         details: null,
         classNames: "success",
         icon: "material-icons.svg#edit",
-        name: "DKIM signed",
+        name: "Can't click",
         tooltip: {
           strings: ["Valid (Signed by example.com)"],
         },
@@ -61,14 +56,14 @@ describe("SpecialMessageTags test", () => {
         details: true,
         classNames: "success",
         icon: "material-icons.svg#edit",
-        name: "DKIM signed",
+        name: "Can click",
         tooltip: {
           strings: ["Valid (Signed by example.com)"],
         },
       },
     ];
 
-    const wrapper = enzyme.mount(
+    render(
       <SpecialMessageTags
         onTagClick={callback}
         folderName="n/a"
@@ -77,14 +72,13 @@ describe("SpecialMessageTags test", () => {
     );
 
     // The first tag cannot be clicked
-    const special1 = wrapper.find(SpecialMessageTag).at(0);
-    special1.simulate("click");
+    fireEvent.click(screen.getByText("Can't click"));
     expect(callback.mock.calls).toHaveLength(0);
 
-    // The second tag can be clicked
-    const special2 = wrapper.find(SpecialMessageTag).at(1);
     callback.mockReset();
-    special2.simulate("click");
+
+    // The second tag can be clicked
+    fireEvent.click(screen.getByText("Can click"));
     expect(callback.mock.calls).toHaveLength(1);
   });
 });
@@ -110,28 +104,29 @@ describe("MessageTags test", () => {
 
   test("Basic tags", async () => {
     const callback = jest.fn();
-    const wrapper = enzyme.mount(
+    render(
       <MessageTags onTagsChange={callback} tags={SAMPLE_TAGS} expanded={true} />
     );
 
-    expect(wrapper.find(MessageTag)).toHaveLength(SAMPLE_TAGS.length);
-    const tag = wrapper.find(MessageTag).at(0);
+    let tags = screen.getAllByRole("listitem");
+    expect(tags).toHaveLength(SAMPLE_TAGS.length);
 
     // Make sure the name actually shows up in the tag
-    expect(tag.text()).toEqual(expect.stringContaining(SAMPLE_TAGS[0].name));
+    expect(tags[0].textContent).toEqual(
+      expect.stringContaining(SAMPLE_TAGS[0].name)
+    );
   });
 
   test("Expanded tags", async () => {
     const callback = jest.fn();
-    const wrapper = enzyme.mount(
+    render(
       <MessageTags onTagsChange={callback} tags={SAMPLE_TAGS} expanded={true} />
     );
 
-    expect(wrapper.find(MessageTag)).toHaveLength(SAMPLE_TAGS.length);
-    const tag = wrapper.find(MessageTag).at(0);
-    // There should be an "x" button that triggers the callback when clicked
-    expect(tag.find(".tag-x")).toHaveLength(1);
-    tag.find(".tag-x").simulate("click");
+    let tags = screen.getAllByRole("listitem");
+    expect(tags).toHaveLength(SAMPLE_TAGS.length);
+
+    fireEvent.click(within(tags[0]).getByRole("button"));
     expect(callback.mock.calls).toHaveLength(1);
 
     // The callback should be called with a list of tags with the clicked
@@ -143,7 +138,7 @@ describe("MessageTags test", () => {
 
   test("Unexpanded tags", async () => {
     const callback = jest.fn();
-    const wrapper = enzyme.mount(
+    render(
       <MessageTags
         onTagsChange={callback}
         tags={SAMPLE_TAGS}
@@ -151,9 +146,10 @@ describe("MessageTags test", () => {
       />
     );
 
-    expect(wrapper.find(MessageTag)).toHaveLength(SAMPLE_TAGS.length);
-    const tag = wrapper.find(MessageTag).at(0);
+    let tags = screen.getAllByRole("listitem");
+    expect(tags).toHaveLength(SAMPLE_TAGS.length);
+
     // There should be no "x" button in an unexpanded tag
-    expect(tag.find(".tag-x")).toHaveLength(0);
+    expect(within(tags[0]).queryByRole("button")).toBe(null);
   });
 });

@@ -1347,7 +1347,7 @@ export const mockMessages = [
   },
   {
     id: 96,
-    date: 1584945000000,
+    date: "03/10/2023, 6:30 AM",
     folderName: "me@thunderbird.net",
     shortFolderName: "Inbox",
     snippet:

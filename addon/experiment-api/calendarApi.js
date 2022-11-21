@@ -2,14 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-var { XPCOMUtils } = ChromeUtils.import(
-  "resource://gre/modules/XPCOMUtils.jsm"
-);
+/* global ExtensionCommon, XPCOMUtils */
 
 XPCOMUtils.defineLazyModuleGetters(this, {
+  BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   cal: "resource:///modules/calendar/calUtils.jsm",
-  ExtensionCommon: "resource://gre/modules/ExtensionCommon.jsm",
-  messageActions: "chrome://conversations/content/modules/misc.js",
 });
 
 // This is a version of setupOptions suitable for Conversations
@@ -23,7 +20,7 @@ function imipOptions(
   actionFunc,
   foundItems
 ) {
-  let data = cal.itip.getOptionsText(itipItem, rc, actionFunc);
+  let data = cal.itip.getOptionsText(itipItem, rc, actionFunc, foundItems);
 
   // Set the right globals so that actionFunc works properly.
   win.calImipBar.itipItem = itipItem;
@@ -34,18 +31,17 @@ function imipOptions(
       onOperationComplete(aCalendar, aStatus, aOperationType, aId, aDetail) {
         let label = cal.itip.getCompleteText(aStatus, aOperationType);
 
-        browser.contentWindow.conversationStore.dispatch(
-          messageActions.msgShowNotification({
-            msgData: {
-              id: msgId,
-              notification: {
-                iconName: "calendar_today",
-                label,
-                type: "calendar",
-              },
+        BrowserSim.sendMessage({
+          type: "showNotification",
+          msgData: {
+            id: msgId,
+            notification: {
+              iconName: "calendar_today",
+              label,
+              type: "calendar",
             },
-          })
-        );
+          },
+        });
 
         // In case it's useful
         listener.onOperationComplete(
@@ -68,6 +64,9 @@ function imipOptions(
     imipTentativeButton: "TENTATIVE",
     imipDeclineButton: "DECLINED",
     imipGoToCalendarButton: "GOTO",
+    imipDetailsButton: "X-SHOWDETAILS",
+    imipDeclineCounterButton: "X-DECLINECOUNTER",
+    imipRescheduleButton: "X-RESCHEDULE",
   };
 
   const buttons = [];
@@ -81,7 +80,7 @@ function imipOptions(
       id: c,
       actionParams: {
         extraData: {
-          execute: idToActionMap[c],
+          execute: idToActionMap[c] ?? "",
         },
       },
       classNames: `imip-button calendarImipButton msgHeaderView-button ${c}`,
@@ -102,19 +101,18 @@ function imipOptions(
   }
 
   // Update the Conversation UI
-  browser.contentWindow.conversationStore.dispatch(
-    messageActions.msgShowNotification({
-      msgData: {
-        id: msgId,
-        notification: {
-          buttons,
-          iconName: "calendar_today",
-          label: data.label,
-          type: "calendar",
-        },
+  BrowserSim.sendMessage({
+    type: "showNotification",
+    msgData: {
+      id: msgId,
+      notification: {
+        buttons,
+        iconName: "calendar_today",
+        label: data.label,
+        type: "calendar",
       },
-    })
-  );
+    },
+  });
 }
 
 /* exported convCalendar */
@@ -153,18 +151,17 @@ var convCalendar = class extends ExtensionCommon.ExtensionAPI {
             let browser = win.document
               .getElementById("tabmail")
               .getBrowserForTab(tabObject.nativeTab);
-            browser.contentWindow.conversationStore.dispatch(
-              messageActions.msgShowNotification({
-                msgData: {
-                  id: msgId,
-                  notification: {
-                    iconName: "calendar_today",
-                    type: "calendar",
-                    label,
-                  },
+            BrowserSim.sendMessage({
+              type: "showNotification",
+              msgData: {
+                id: msgId,
+                notification: {
+                  iconName: "calendar_today",
+                  type: "calendar",
+                  label,
                 },
-              })
-            );
+              },
+            });
 
             cal.itip.processItipItem(
               itipItem,

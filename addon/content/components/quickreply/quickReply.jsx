@@ -41,18 +41,33 @@ export function QuickReply({ id, multipleRecipients, recipientsIncludeLists }) {
   return (
     <div className="quickReply collapsed">
       <div className="replyBoxWrapper">
-        <div className="replyBox reply" onClick={expand}>
+        <div
+          role="button"
+          tabIndex="0"
+          className="replyBox reply"
+          onClick={expand}
+        >
           <span>{browser.i18n.getMessage("action.reply")}</span>{" "}
           <SvgIcon hash="reply" />
         </div>
         {recipientsIncludeLists && (
-          <div className="replyBox replyList" onClick={expand}>
+          <div
+            role="button"
+            tabIndex="0"
+            className="replyBox replyList"
+            onClick={expand}
+          >
             <span>{browser.i18n.getMessage("action.replyList")}</span>{" "}
             <SvgIcon hash="list" />
           </div>
         )}
         {!recipientsIncludeLists && multipleRecipients && (
-          <div className="replyBox replyAll" onClick={expand}>
+          <div
+            role="button"
+            tabIndex="0"
+            className="replyBox replyAll"
+            onClick={expand}
+          >
             <span>{browser.i18n.getMessage("action.replyAll")}</span>{" "}
             <SvgIcon hash="reply_all" />
           </div>

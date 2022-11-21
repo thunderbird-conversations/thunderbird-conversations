@@ -34,13 +34,24 @@ export const quickReplyActions = {
       // For now cheat and use the WebExtension message which has properly formed
       // addresses.
       let webExtMsg = await browser.messages.get(id);
+      let fullMsg = await browser.messages.getFull(id);
+      let replyTo = fullMsg.headers?.["reply-to"]?.[0];
+
       switch (type) {
         case "reply": {
-          to = webExtMsg.author;
+          if (replyTo) {
+            to = replyTo;
+          } else {
+            to = webExtMsg.author.includes(identity.email)
+              ? webExtMsg.recipients[0] ?? ""
+              : webExtMsg.author;
+          }
           break;
         }
         case "replyAll": {
-          let recipients = [webExtMsg.author];
+          let recipients = replyTo
+            ? [replyTo, webExtMsg.author]
+            : [webExtMsg.author];
           let identityEmail = identity.email;
           for (let section of ["recipients", "ccList", "bccList"]) {
             if (!(section in webExtMsg)) {
@@ -57,8 +68,7 @@ export const quickReplyActions = {
           break;
         }
         case "replyList": {
-          let msg = await browser.messages.getFull(id);
-          let listPost = msg.headers["list-post"][0];
+          let listPost = fullMsg.headers["list-post"][0];
           let match = listPost?.match(/<mailto:(.*?)>/);
           if (!match) {
             console.error("Could not find list-post header or match it");

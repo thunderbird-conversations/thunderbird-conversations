@@ -1,0 +1,63 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
+
+:root {
+  --application-background-color: white;
+  --application-foreground-color: black;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --application-background-color: rgb(28, 27, 34);
+    --application-foreground-color: rgb(251, 251, 254);
+    --in-content-box-background: rgb(35, 34, 43);
+    --in-content-button-background: rgb(43, 42, 51);
+    --in-content-button-text-color: rgb(251, 251, 254);
+    --in-content-button-background-hover: rgb(82, 82, 94);
+    --in-content-button-background-active: rgb(91, 91, 102);
+  }
+}
+
+body {
+  background-color: var(--application-background-color);
+  color: var(--application-foreground-color);
+  direction: __MSG_@@bidi_dir__;
+}
+
+@media (prefers-color-scheme: dark) {
+  button {
+    background-color: var(--in-content-button-background);
+    border: solid 1px var(--in-content-button-background);
+    color: var(--in-content-button-text-color);
+  }
+
+  button:hover {
+    background-color: var(--in-content-button-background-hover);
+    border: solid 1px var(--in-content-button-background-hover);
+  }
+
+  button:hover:active {
+    background-color: var(--in-content-button-background-active);
+    border: solid 1px var(--in-content-button-background-active);
+  }
+}
+
+input[type="number"].hidespinbuttons {
+  appearance: textfield !important;
+}
+
+input[type="number"] {
+  background-color: var(--in-content-box-background);
+  color: inherit;
+  border: solid 1px grey;
+  padding: 5px;
+  width: 2em
+}
+
+button {
+  display: block;
+  font-size: 1em;
+  margin: 0.5em auto;
+  padding: 0.5em;
+}

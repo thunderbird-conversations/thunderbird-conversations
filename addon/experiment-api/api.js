@@ -2,32 +2,54 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-var { XPCOMUtils } = ChromeUtils.import(
-  "resource://gre/modules/XPCOMUtils.jsm"
-);
+/* global ExtensionCommon, XPCOMUtils, Services */
+
+var lazy = {};
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
-  ExtensionCommon: "resource://gre/modules/ExtensionCommon.jsm",
+  DownloadPaths: "resource://gre/modules/DownloadPaths.jsm",
+  Downloads: "resource://gre/modules/Downloads.jsm",
+  FileUtils: "resource://gre/modules/FileUtils.sys.mjs",
   GlodaAttrProviders:
     "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
   MailServices: "resource:///modules/MailServices.jsm",
   makeFriendlyDateAgo: "resource:///modules/TemplateUtils.jsm",
   MsgHdrToMimeMessage: "resource:///modules/gloda/MimeMessage.jsm",
-  msgHdrGetUri: "chrome://conversations/content/modules/misc.js",
-  msgUriToMsgHdr: "chrome://conversations/content/modules/misc.js",
   NetUtil: "resource://gre/modules/NetUtil.jsm",
   PluralForm: "resource://gre/modules/PluralForm.jsm",
-  Services: "resource://gre/modules/Services.jsm",
-  setLogState: "chrome://conversations/content/modules/misc.js",
-  setupLogging: "chrome://conversations/content/modules/misc.js",
 });
 
+// eslint-disable-next-line mozilla/reject-importGlobalProperties
 XPCOMUtils.defineLazyGlobalGetters(this, ["TextDecoder"]);
 
 XPCOMUtils.defineLazyGetter(this, "messenger", () =>
   Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger)
 );
+
+XPCOMUtils.defineLazyServiceGetters(lazy, {
+  gHandlerService: [
+    "@mozilla.org/uriloader/handler-service;1",
+    "nsIHandlerService",
+  ],
+  gMIMEService: ["@mozilla.org/mime;1", "nsIMIMEService"],
+});
+
+/**
+ * Get a msgHdr from a message URI (msgHdr.URI).
+ *
+ * @param {string} aUri The URI of the message
+ * @returns {nsIMsgDBHdr}
+ */
+function msgUriToMsgHdr(aUri) {
+  try {
+    let messageService = messenger.messageServiceFromURI(aUri);
+    return messageService.messageURIToMsgHdr(aUri);
+  } catch (e) {
+    console.error("Unable to get ", aUri, " — returning null instead");
+    return null;
+  }
+}
 
 // To help updates to apply successfully, we need to properly unload the modules
 // that Conversations loads.
@@ -36,9 +58,6 @@ const conversationModules = [
   // providers. Unloading these will break gloda when someone updates.
   // "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
   "chrome://conversations/content/modules/browserSim.js",
-  "chrome://conversations/content/modules/conversation.js",
-  "chrome://conversations/content/modules/message.js",
-  "chrome://conversations/content/modules/misc.js",
 ];
 
 /**
@@ -51,50 +70,14 @@ const conversationModules = [
  */
 
 const kAllowRemoteContent = 2;
-const nsMsgViewIndex_None = 0xffffffff;
-
-// Note: we must not use any modules until after initialization of prefs,
-// otherwise the prefs might not get loaded correctly.
-XPCOMUtils.defineLazyGetter(this, "Log", () => {
-  return setupLogging("Conversations.api");
-});
-
-function prefType(name) {
-  switch (name) {
-    case "no_friendly_date":
-    case "logging_enabled":
-    case "tweak_bodies":
-    case "tweak_chrome":
-    case "operate_on_conversations":
-    case "extra_attachments":
-    case "compose_in_tab":
-    case "hide_sigs": {
-      return "bool";
-    }
-    case "expand_who":
-    case "hide_quote_length": {
-      return "int";
-    }
-    case "unwanted_recipients":
-    case "uninstall_infos": {
-      return "char";
-    }
-  }
-  throw new Error(`Unexpected pref type ${name}`);
-}
 
 function monkeyPatchWindow(win, windowId) {
-  Log.debug("monkey-patching...");
+  // Let the stub know we've finished starting.
+  win.conversationsFinishedStartup = true;
+}
 
-  // Insert our own global Conversations object
-  win.Conversations = {
-    // These two are replicated in the case of a conversation tab, so use
-    //  Conversation._window.Conversations to access the right instance
-    currentConversation: null,
-    counter: 0,
-  };
-
-  win.Conversations.finishedStartup = true;
+function msgHdrGetUri(aMsg) {
+  return aMsg.folder.getUriForMsg(aMsg);
 }
 
 /**
@@ -203,7 +186,6 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
   }
 
   onShutdown(isAppShutdown) {
-    Log.debug("shutdown, isApp=", isAppShutdown);
     if (isAppShutdown) {
       return;
     }
@@ -228,42 +210,20 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
     const { windowManager } = extension;
     return {
       conversations: {
-        async startup(loggingEnabled) {
-          setLogState(loggingEnabled);
-
-          Log.debug("startup");
-
+        async startup() {
           try {
             // Patch all existing windows when the UI is built; all locales should have been loaded here
             // Hook in the embedding and gloda attribute providers.
             GlodaAttrProviders.init();
-            apiMonkeyPatchAllWindows(windowManager, monkeyPatchWindow);
-            apiWindowObserver = new ApiWindowObserver(
-              windowManager,
-              monkeyPatchWindow
-            );
-            Services.ww.registerNotification(apiWindowObserver);
           } catch (ex) {
             console.error(ex);
           }
-        },
-        async getPref(name) {
-          try {
-            switch (prefType(name)) {
-              case "bool": {
-                return Services.prefs.getBoolPref(`conversations.${name}`);
-              }
-              case "int": {
-                return Services.prefs.getIntPref(`conversations.${name}`);
-              }
-              case "char": {
-                return Services.prefs.getCharPref(`conversations.${name}`);
-              }
-            }
-          } catch (ex) {
-            return undefined;
-          }
-          throw new Error("Unexpected pref type");
+          apiMonkeyPatchAllWindows(windowManager, monkeyPatchWindow);
+          apiWindowObserver = new ApiWindowObserver(
+            windowManager,
+            monkeyPatchWindow
+          );
+          Services.ww.registerNotification(apiWindowObserver);
         },
         async getCorePref(name) {
           try {
@@ -387,7 +347,6 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
                     contentType: a.contentType,
                     name: a.name,
                     partName: a.partName,
-                    url: a.url,
                     anchor: "msg" + this.initialPosition + "att" + i,
                   };
                 })
@@ -535,17 +494,208 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
               // If no tabmail, open PDF same as other attachments.
             }
           }
-          let url = Services.io.newURI(msgUri);
           let msgService = Cc[
-            `@mozilla.org/messenger/messageservice;1?type=${url.scheme}`
+            `@mozilla.org/messenger/messageservice;1?type=${
+              Services.io.newURI(msgUri).scheme
+            }`
           ].createInstance(Ci.nsIMsgMessageService);
-          msgService.openAttachment(
-            attachment.contentType,
-            encodeURIComponent(attachment.name),
-            attachment.url,
-            msgUri,
-            win.docShell,
-            win.msgWindow,
+
+          if (attachment.contentType == "message/rfc822") {
+            msgService.openAttachment(
+              attachment.contentType,
+              encodeURIComponent(attachment.name),
+              attachment.url,
+              msgUri,
+              win.docShell,
+              win.msgWindow,
+              null
+            );
+            return;
+          }
+
+          // Get the MIME info from the service.
+          let mimeInfo;
+          try {
+            mimeInfo = lazy.gMIMEService.getFromTypeAndExtension(
+              attachment.contentType,
+              extension
+            );
+          } catch (ex) {
+            // If the call above fails, which can happen on Windows where there's
+            // nothing registered for the file type, assume this generic type.
+            mimeInfo = lazy.gMIMEService.getFromTypeAndExtension(
+              "application/octet-stream",
+              ""
+            );
+          }
+          // The default action is saveToDisk, which is not what we want.
+          // If we don't have a stored handler, ask before handling.
+          if (!lazy.gHandlerService.exists(mimeInfo)) {
+            mimeInfo.alwaysAskBeforeHandling = true;
+            mimeInfo.preferredAction = Ci.nsIHandlerInfo.alwaysAsk;
+          }
+
+          // If we know what to do, do it.
+
+          let { name, url } = attachment;
+          name = DownloadPaths.sanitize(name);
+
+          async function saveToFile(path) {
+            let buffer = await new Promise(function (resolve, reject) {
+              NetUtil.asyncFetch(
+                {
+                  uri: Services.io.newURI(url),
+                  loadUsingSystemPrincipal: true,
+                },
+                function (inputStream, status) {
+                  if (Components.isSuccessCode(status)) {
+                    resolve(NetUtil.readInputStream(inputStream));
+                  } else {
+                    reject(
+                      new Components.Exception(
+                        "Failed to fetch attachment",
+                        status
+                      )
+                    );
+                  }
+                }
+              );
+            });
+            await IOUtils.write(path, new Uint8Array(buffer));
+          }
+
+          let createTemporaryFileAndOpen = async (mimeInfo) => {
+            let tmpPath = PathUtils.join(
+              Services.dirsvc.get("TmpD", Ci.nsIFile).path,
+              "pid-" + Services.appinfo.processID
+            );
+            await IOUtils.makeDirectory(tmpPath, { permissions: 0o700 });
+            let tempFile = Cc["@mozilla.org/file/local;1"].createInstance(
+              Ci.nsIFile
+            );
+            tempFile.initWithPath(tmpPath);
+
+            tempFile.append(name);
+            tempFile.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, 0o600);
+            tempFile.remove(false);
+
+            Cc["@mozilla.org/uriloader/external-helper-app-service;1"]
+              .getService(Ci.nsPIExternalAppLauncher)
+              .deleteTemporaryFileOnExit(tempFile);
+
+            await saveToFile(tempFile.path);
+            // Before opening from the temp dir, make the file read only so that
+            // users don't edit and lose their edits...
+            tempFile.permissions = 0o400;
+            mimeInfo.launchWithFile(tempFile);
+          };
+
+          let openLocalFile = (mimeInfo) => {
+            let fileHandler = Services.io
+              .getProtocolHandler("file")
+              .QueryInterface(Ci.nsIFileProtocolHandler);
+
+            try {
+              let externalFile = fileHandler.getFileFromURLSpec(attachment.url);
+              mimeInfo.launchWithFile(externalFile);
+            } catch (ex) {
+              console.error(
+                "AttachmentInfo.open: file - ",
+                attachment.url,
+                ",",
+                ex
+              );
+            }
+          };
+
+          if (!mimeInfo.alwaysAskBeforeHandling) {
+            switch (mimeInfo.preferredAction) {
+              case Ci.nsIHandlerInfo.saveToDisk:
+                if (
+                  Services.prefs.getBoolPref("browser.download.useDownloadDir")
+                ) {
+                  let destFile = new FileUtils.File(
+                    await Downloads.getPreferredDownloadsDirectory()
+                  );
+                  destFile.append(name);
+                  destFile.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, 0o755);
+                  destFile.remove(false);
+                  await saveToFile(destFile.path);
+                } else {
+                  let filePicker = Cc[
+                    "@mozilla.org/filepicker;1"
+                  ].createInstance(Ci.nsIFilePicker);
+                  filePicker.defaultString = attachment.name;
+                  filePicker.defaultExtension = extension;
+                  let bundleMessenger =
+                    win.document.getElementById("bundle_messenger");
+                  filePicker.init(
+                    win,
+                    bundleMessenger.getString("SaveAttachment"),
+                    Ci.nsIFilePicker.modeSave
+                  );
+                  let rv = await new Promise((resolve) =>
+                    filePicker.open(resolve)
+                  );
+                  if (rv != Ci.nsIFilePicker.returnCancel) {
+                    await saveToFile(filePicker.file.path);
+                  }
+                }
+                return;
+              case Ci.nsIHandlerInfo.useHelperApp:
+              case Ci.nsIHandlerInfo.useSystemDefault:
+                // Attachments can be detached and, if this is the case, opened from
+                // their location on disk instead of copied to a temporary file.
+                if (attachment.isExternalAttachment) {
+                  openLocalFile(mimeInfo);
+
+                  return;
+                }
+
+                await createTemporaryFileAndOpen(mimeInfo);
+                return;
+            }
+          }
+
+          // Ask what to do, then do it.
+          let appLauncherDialog = Cc[
+            "@mozilla.org/helperapplauncherdialog;1"
+          ].createInstance(Ci.nsIHelperAppLauncherDialog);
+          appLauncherDialog.show(
+            {
+              QueryInterface: ChromeUtils.generateQI(["nsIHelperAppLauncher"]),
+              MIMEInfo: mimeInfo,
+              source: Services.io.newURI(attachment.url),
+              suggestedFileName: attachment.name,
+              cancel(reason) {},
+              promptForSaveDestination() {
+                appLauncherDialog.promptForSaveToFileAsync(
+                  attachment,
+                  win,
+                  attachment.suggestedFileName,
+                  "." + extension, // Dot stripped by promptForSaveToFileAsync.
+                  false
+                );
+              },
+              launchLocalFile() {
+                openLocalFile(mimeInfo);
+              },
+              async setDownloadToLaunch(handleInternally, file) {
+                await createTemporaryFileAndOpen(mimeInfo);
+              },
+              async saveDestinationAvailable(file) {
+                if (file) {
+                  await saveToFile(file.path);
+                }
+              },
+              setWebProgressListener(webProgressListener) {},
+              targetFile: null,
+              targetFileIsExecutable: null,
+              timeDownloadStarted: null,
+              contentLength: attachment.size,
+              browsingContextId: win.getMessagePaneBrowser().browsingContext.id,
+            },
+            win,
             null
           );
         },
@@ -569,24 +719,6 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
         },
         async makeFriendlyDateAgo(date) {
           return makeFriendlyDateAgo(new Date(date));
-        },
-        async isInView(tabId, msgId) {
-          let tabObject = context.extension.tabManager.get(tabId);
-          if (!tabObject.nativeTab) {
-            return false;
-          }
-          let win = Cu.getGlobalForObject(tabObject.nativeTab);
-          if (!win) {
-            return false;
-          }
-
-          let msgHdr = context.extension.messageManager.get(msgId);
-          if (!msgHdr) {
-            return false;
-          }
-          return (
-            win.gDBView?.findIndexOfMsgHdr(msgHdr, false) != nsMsgViewIndex_None
-          );
         },
         /**
          * Use the mailnews component to stream a message, and process it in a way
@@ -741,6 +873,10 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
               );
             }
             if (tabObject.nativeTab.mode.type == "contentTab") {
+              if (tabObject.browser.getAttribute("remote")) {
+                console.error("Can't stream into a remote browser yet.");
+                return false;
+              }
               messageIframe =
                 tabObject.browser.contentDocument.getElementsByClassName(
                   iframeClass
@@ -767,6 +903,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             undefined,
             {}
           );
+          return true;
         },
         /**
          * Wraps the low-level header parser stuff.
@@ -782,7 +919,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             return [{ email: "", name: "-", fullName: "-" }];
           }
           let addresses =
-            MailServices.headerParser.parseEncodedHeader(mimeLine);
+            MailServices.headerParser.parseDecodedHeader(mimeLine);
           if (addresses.length) {
             return addresses.map((addr) => {
               return {
@@ -829,6 +966,9 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
         async getReplyOnTop(identityId) {
           let identity = MailServices.accounts.getIdentity(identityId);
           return identity.replyOnTop;
+        },
+        async postMessageViaBrowserSim(msg) {
+          BrowserSim.sendMessage(msg);
         },
         onCallAPI: new ExtensionCommon.EventManager({
           context,

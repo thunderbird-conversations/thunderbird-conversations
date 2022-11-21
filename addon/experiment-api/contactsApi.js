@@ -2,17 +2,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-var { XPCOMUtils } = ChromeUtils.import(
-  "resource://gre/modules/XPCOMUtils.jsm"
-);
+/* global ExtensionCommon, XPCOMUtils, Services */
 
 XPCOMUtils.defineLazyModuleGetters(this, {
-  DisplayNameUtils: "resource:///modules/DisplayNameUtils.jsm",
-  ExtensionCommon: "resource://gre/modules/ExtensionCommon.jsm",
   Gloda: "resource:///modules/gloda/Gloda.jsm",
-  Services: "resource://gre/modules/Services.jsm",
   MailServices: "resource:///modules/MailServices.jsm",
 });
+
+// eslint-disable-next-line mozilla/reject-importGlobalProperties
+XPCOMUtils.defineLazyGlobalGetters(this, ["btoa", "IOUtils", "PathUtils"]);
 
 /**
  * @typedef nsIMsgFolder
@@ -82,7 +80,7 @@ function getWindowFromId(windowManager, context, id) {
 var convContacts = class extends ExtensionCommon.ExtensionAPI {
   getAPI(context) {
     const { extension } = context;
-    const { windowManager } = extension;
+    const { windowManager, addressBookManager } = extension;
     return {
       convContacts: {
         async beginNew(beginNewProperties) {
@@ -91,19 +89,34 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
             context,
             beginNewProperties.windowId
           );
-          const args = {};
-          if (beginNewProperties.email !== null) {
-            args.primaryEmail = beginNewProperties.email;
+
+          // Proxy for > Thunderbird 101.
+          if ("AskUser" in Ci.nsIMsgCompSendFormat) {
+            const window = getWindowFromId(
+              windowManager,
+              context,
+              beginNewProperties.windowId
+            );
+            const args = {};
+            if (beginNewProperties.email !== null) {
+              args.primaryEmail = beginNewProperties.email;
+            }
+            if (beginNewProperties.displayName !== null) {
+              args.displayName = beginNewProperties.displayName;
+            }
+            window.openDialog(
+              "chrome://messenger/content/addressbook/abNewCardDialog.xhtml",
+              "",
+              "chrome,resizable=no,titlebar,modal,centerscreen",
+              args
+            );
+            return;
           }
-          if (beginNewProperties.displayName !== null) {
-            args.displayName = beginNewProperties.displayName;
-          }
-          window.openDialog(
-            "chrome://messenger/content/addressbook/abNewCardDialog.xhtml",
-            "",
-            "chrome,resizable=no,titlebar,modal,centerscreen",
-            args
-          );
+
+          window.toAddressBook({
+            action: "create",
+            vCard: `BEGIN:VCARD\r\nFN:${beginNewProperties.displayName}\r\nEMAIL:${beginNewProperties.email}\r\nEND:VCARD\r\n`,
+          });
         },
         async beginEdit(beginEditProperties) {
           const window = getWindowFromId(
@@ -111,19 +124,65 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
             context,
             beginEditProperties.windowId
           );
-          let cardAndBook = DisplayNameUtils.getCardForEmail(
-            beginEditProperties.email
+          let contact = addressBookManager.findContactById(
+            beginEditProperties.contactId
           );
-          const args = {
-            abURI: cardAndBook.book.URI,
-            card: cardAndBook.card,
-          };
-          window.openDialog(
-            "chrome://messenger/content/addressbook/abEditCardDialog.xhtml",
-            "",
-            "chrome,modal,resizable=no,centerscreen",
-            args
-          );
+          if (!contact) {
+            console.error("Could not find contact to load");
+            return;
+          }
+
+          // Proxy for > Thunderbird 101.
+          if ("AskUser" in Ci.nsIMsgCompSendFormat) {
+            const args = {
+              abURI: MailServices.ab.getDirectoryFromUID(contact.directoryUID),
+              card: contact.item,
+            };
+            window.openDialog(
+              "chrome://messenger/content/addressbook/abEditCardDialog.xhtml",
+              "",
+              "chrome,modal,resizable=no,centerscreen",
+              args
+            );
+            return;
+          }
+
+          window.toAddressBook({
+            action: "edit",
+            card: contact.item,
+          });
+        },
+        async getPhotoUrl(contactId) {
+          let contact = addressBookManager.findContactById(contactId);
+          if (!contact) {
+            return null;
+          }
+
+          let photoName = contact.item.getProperty("PhotoName", "");
+          if (photoName) {
+            let path = PathUtils.join(
+              PathUtils.profileDir,
+              "Photos",
+              photoName
+            );
+
+            let buffer = await IOUtils.read(path);
+            let data = btoa(String.fromCharCode.apply(null, buffer));
+
+            let type;
+            if (data.startsWith("iVBO")) {
+              // The first 3 bytes say this image is PNG.
+              type = "png";
+            } else if (data.startsWith("/9j/")) {
+              // The first 3 bytes say this image is JPEG.
+              type = "jpeg";
+            } else {
+              throw new Error("Unsupported image format");
+            }
+            return `data:image/${type};base64,${data}`;
+          }
+
+          return null;
         },
         async showMessagesInvolving(options) {
           const window = getWindowFromId(
@@ -489,10 +548,10 @@ function waitForWindow(win) {
   });
 }
 
-function monkeyPatchAllWindows(windowManager, callback) {
+function monkeyPatchAllWindows(windowManager, callback, context) {
   for (const win of Services.wm.getEnumerator("mail:3pane")) {
     waitForWindow(win).then(() => {
-      callback(win, windowManager.getWrapper(win).id);
+      callback(win, windowManager.getWrapper(win).id, context);
     });
   }
 }

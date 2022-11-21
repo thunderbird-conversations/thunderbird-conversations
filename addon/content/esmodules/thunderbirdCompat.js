@@ -5,7 +5,7 @@
 // A compatibility layer that can be imported whether in the browser or
 // in Thunderbird
 
-import { kPrefDefaults } from "../../prefs.js";
+import { kPrefDefaults } from "../../background/prefs.js";
 
 const browser = window.browser || {};
 
@@ -167,6 +167,18 @@ if (!browser.tabs) {
   };
 }
 
+if (!browser.mailTabs) {
+  browser.mailTabs = {
+    async get(tabId) {
+      return {
+        displayedFolder: {
+          accountId: `account${tabId}`,
+          path: "Sent",
+        },
+      };
+    },
+  };
+}
 if (!browser.conversations) {
   browser.conversations = {
     send(details) {
@@ -220,9 +232,6 @@ if (!browser.conversations) {
     },
     async makePlural(form, string, count) {
       return `${string} ${count}`;
-    },
-    async isInView() {
-      return true;
     },
     async quoteMsgHdr() {
       return "MsgBody";
@@ -297,9 +306,29 @@ if (!browser.accounts) {
             },
           ],
         },
+        {
+          id: "ac4",
+          identities: [
+            {
+              id: "id10",
+              email: "id6@example.com",
+            },
+            {
+              id: "id11",
+              email: "id6@example.com",
+            },
+            {
+              id: "id12",
+              email: "id6@example.com",
+            },
+          ],
+        },
       ];
     },
     async get(id) {
+      if (id == -1) {
+        return null;
+      }
       return {
         id,
         identities: [
@@ -347,6 +376,30 @@ if (!browser.identities) {
       }
       return {
         id: "id5",
+        email: "id5@example.com",
+      };
+    },
+    async get(id) {
+      if (id == "id3") {
+        return {
+          accountId: "ac1",
+          email: `id3@EXAMPLE.com`,
+        };
+      }
+      if (id == "id4") {
+        return {
+          accountId: "ac1",
+          email: `id4@EXAMPLE.com`,
+        };
+      }
+      if (id == "idac34") {
+        return {
+          accountId: "ac34",
+          email: `ac34@EXAMPLE.com`,
+        };
+      }
+      return {
+        accountId: "ac5",
         email: "id5@example.com",
       };
     },
@@ -414,7 +467,7 @@ if (!browser.messages) {
     },
     async getFull(id) {
       return {
-        headers: [],
+        headers: {},
         parts: [{}],
       };
     },

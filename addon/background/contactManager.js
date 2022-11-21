@@ -117,6 +117,25 @@ export class ContactManager {
     browser.contacts.onDeleted.addListener(this._contactDeleted.bind(this));
   }
 
+  init() {
+    browser.runtime.onConnect.addListener((port) => {
+      if (port.name == "contacts") {
+        this.portFromContentScript = port;
+        let handleMessage = async (msg) => {
+          if (msg.type == "contactDetails") {
+            let contact = await this.get(msg.payload.email);
+            port.postMessage({
+              type: "contactDetails",
+              for: msg.payload.email,
+              contact,
+            });
+          }
+        };
+        port.onMessage.addListener(handleMessage);
+      }
+    });
+  }
+
   /**
    * Returns contact information for an email.
    *
@@ -274,7 +293,12 @@ export class ContactManager {
       }
 
       for (let identity of account.identities) {
-        emails.set(identity.email.toLocaleLowerCase(), identity.id);
+        let idEmail = identity.email.toLocaleLowerCase();
+        // The default identity for the account is returned first, so
+        // if subsequent identites have the same email, then skip them.
+        if (!emails.has(idEmail)) {
+          emails.set(idEmail, identity.id);
+        }
       }
     }
     this._identityEmails = emails;

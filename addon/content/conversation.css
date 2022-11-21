@@ -148,7 +148,6 @@ a img {
   min-width: 30px;
   text-align: center;
   height: 24px;
-  float: right;
   margin: 0 0 0 3px;
   color: #666;
 }
@@ -204,6 +203,7 @@ a img {
 .mainActionButton > .icon-link,
 .dropDown > .icon-link,
 .attachmentsDropDown > .icon-link,
+.details-hidden > .icon-link,
 .optionsButton {
   background: none;
   border: 0;
@@ -460,7 +460,6 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
   padding: 0 5px;
   float: inline-start;
   margin: 0 3px 0 0;
-  background-color: white;
   border: 1px solid ThreeDShadow;
   height: 1.86em;
   border-radius: 7px;
@@ -747,6 +746,8 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
   margin-inline-end: 3px;
   color: #888a85;
   font-size: 80%;
+  border: none !important;
+  background: transparent;
 }
 
 .star .icon {
