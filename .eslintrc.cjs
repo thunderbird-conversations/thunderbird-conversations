@@ -43,6 +43,14 @@ module.exports = {
       files: ["addon/content/**/*.js", "addon/content/**/*.jsx"],
     },
     {
+      files: ["**/*.jsx"],
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
+    },
+    {
       env: {
         browser: false,
       },
