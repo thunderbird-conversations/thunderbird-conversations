@@ -122,8 +122,11 @@ if (!browser.storage) {
   };
 
   // Fake what we need from the browser storage library
-  const _stored = { preferences: DEFAULT_PREFS };
+  const _stored = {};
   browser.storage = {
+    initForTests() {
+      _stored.preferences = DEFAULT_PREFS;
+    },
     local: {
       async get(key) {
         if (typeof key === "undefined") {
@@ -184,6 +187,7 @@ if (!browser.conversations) {
     send(details) {
       console.log(details);
     },
+    async startup() {},
     async getLocaleDirection() {
       // RTL languages taken from https://github.com/shadiabuhilal/rtl-detect/blob/master/lib/rtl-detect.js
       const RTL_LANGUAGES = [
