@@ -9,6 +9,7 @@ describe("getDefaultIdentity", () => {
   let uiHandler;
 
   beforeEach(() => {
+    browser.storage.initForTests();
     uiHandler = new UIHandler();
   });
 
