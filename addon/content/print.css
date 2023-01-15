@@ -11,7 +11,8 @@
   white-space: pre-wrap;
 }
 
-.messageFooter, .actions {
+.messageFooter,
+.actions {
   display: none;
 }
 

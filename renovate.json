@@ -1,8 +1,5 @@
 {
-  "extends": [
-    "config:base",
-    ":disableDependencyDashboard"
-  ],
+  "extends": ["config:base", ":disableDependencyDashboard"],
   "packageRules": [
     {
       "matchDepTypes": ["devDependencies"],

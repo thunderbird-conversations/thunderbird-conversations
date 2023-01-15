@@ -146,8 +146,7 @@
         "name": "onColumnHandler",
         "type": "function",
         "description": "Temporary. Creates a custom column and handles updates to it.",
-        "parameters": [
-        ],
+        "parameters": [],
         "extraParameters": [
           {
             "name": "columnName",

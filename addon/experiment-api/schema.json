@@ -450,12 +450,12 @@
             "name": "streamMessageProperties",
             "type": "object",
             "properties": {
-              "winId" : {
+              "winId": {
                 "type": "integer",
                 "optional": true,
                 "description": "The window the message is displayed within."
               },
-              "tabId" : {
+              "tabId": {
                 "type": "integer",
                 "optional": true,
                 "description": "The tab the message is displayed within."
