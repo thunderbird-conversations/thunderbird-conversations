@@ -1,8 +1,7 @@
 [
   {
     "namespace": "convContacts",
-    "functions": [
-    ],
+    "functions": [],
     "events": [
       {
         "name": "queryConversationMessages",

@@ -5,33 +5,55 @@
 
 <?xml-stylesheet href="chrome://messenger/skin/messenger.css" type="text/css"?>
 
-<html id="conversationMessageWindow"
-      xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-      xmlns:html="http://www.w3.org/1999/xhtml"
-      icon="messengerWindow"
-      scrolling="false"
-      macanimationtype="document"
-      fullscreenbutton="true"
-      persist="screenX screenY width height sizemode"
-      windowtype="conversation:messageWindow">
+<html
+  id="conversationMessageWindow"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:html="http://www.w3.org/1999/xhtml"
+  icon="messengerWindow"
+  scrolling="false"
+  macanimationtype="document"
+  fullscreenbutton="true"
+  persist="screenX screenY width height sizemode"
+  windowtype="conversation:messageWindow"
+>
   <head>
-    <script src="chrome://global/content/contentAreaUtils.js" type="application/javascript"></script>
-    <script src="chrome://messenger/content/phishingDetector.js" type="application/javascript"></script>
-    <script src="chrome://communicator/content/utilityOverlay.js" type="application/javascript"></script>
-    <script src="chrome://communicator/content/contentAreaClick.js" type="application/javascript"></script>
-    <script src="stubWrapper.js" type="application/javascript" charset="utf-8"></script>
+    <script
+      src="chrome://global/content/contentAreaUtils.js"
+      type="application/javascript"
+    ></script>
+    <script
+      src="chrome://messenger/content/phishingDetector.js"
+      type="application/javascript"
+    ></script>
+    <script
+      src="chrome://communicator/content/utilityOverlay.js"
+      type="application/javascript"
+    ></script>
+    <script
+      src="chrome://communicator/content/contentAreaClick.js"
+      type="application/javascript"
+    ></script>
+    <script
+      src="stubWrapper.js"
+      type="application/javascript"
+      charset="utf-8"
+    ></script>
   </head>
-  <html:body xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <html:body
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  >
     <vbox flex="1">
-      <browser contextmenu="pageContextMenu"
-               flex="1"
-               id="multimessage"
-               disablesecurity="true"
-               disablehistory="true"
-               style="height: 100%"
-               tooltip="aHTMLTooltip"
-               type="content"/>
+      <browser
+        contextmenu="pageContextMenu"
+        flex="1"
+        id="multimessage"
+        disablesecurity="true"
+        disablehistory="true"
+        style="height: 100%"
+        tooltip="aHTMLTooltip"
+        type="content"
+      />
     </vbox>
   </html:body>
 </html>

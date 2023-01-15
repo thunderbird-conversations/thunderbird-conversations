@@ -3,61 +3,86 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at https://mozilla.org/MPL/2.0/. -->
 <html>
-<head>
-  <meta charset="utf-8">
-  <title data-i18n="assistant.title"></title>
-  <link rel="shortcut icon" type="image/png" href="/icon.png">
-  <link rel="stylesheet" type="text/css" href="../common.css" />
-  <link rel="stylesheet" type="text/css" href="assistant.css" />
-  <script type="application/javascript" src="assistant.js"></script>
-</head>
+  <head>
+    <meta charset="utf-8" />
+    <title data-i18n="assistant.title"></title>
+    <link rel="shortcut icon" type="image/png" href="/icon.png" />
+    <link rel="stylesheet" type="text/css" href="../common.css" />
+    <link rel="stylesheet" type="text/css" href="assistant.css" />
+    <script type="application/javascript" src="assistant.js"></script>
+  </head>
 
-<body>
-  <h1 class="title" data-i18n="extensionName"></h1>
-  <div id="intro" class="text">
-    <p data-i18n="assistant.intro2"></p>
-  </div>
-  <div class="settings">
-    <h2 data-i18n="assistant.settingsBetweenTitle"></h2>
-    <p data-i18n="assistant.settingsBetweenDetail"></p>
-    <div class="betweenInset">
-      <img id="betweenColumnImage" src="betweenColumn.png" />
+  <body>
+    <h1 class="title" data-i18n="extensionName"></h1>
+    <div id="intro" class="text">
+      <p data-i18n="assistant.intro2"></p>
     </div>
-    <div class="betweenInset">
-      <input type="checkbox" id="actionEnableBetween">
-      <label for="actionEnableBetween" data-i18n="assistant.actionEnableBetween"></label>
+    <div class="settings">
+      <h2 data-i18n="assistant.settingsBetweenTitle"></h2>
+      <p data-i18n="assistant.settingsBetweenDetail"></p>
+      <div class="betweenInset">
+        <img id="betweenColumnImage" src="betweenColumn.png" />
+      </div>
+      <div class="betweenInset">
+        <input type="checkbox" id="actionEnableBetween" />
+        <label
+          for="actionEnableBetween"
+          data-i18n="assistant.actionEnableBetween"
+        ></label>
+      </div>
+      <p data-i18n="assistant.settingsColumnInfo"></p>
     </div>
-    <p data-i18n="assistant.settingsColumnInfo"></p>
-  </div>
-  <div class="settings">
-    <p><h2 data-i18n="assistant.otherSettingsTitle"></h2></p>
-    <p class="otherSettings">
-      <input type="checkbox" disabled="disabled" checked="checked" id="actionEnableGloda" />
-      <label for="actionEnableGloda" data-i18n="assistant.actionEnableGloda"></label>
-      <br/>
-      <input type="checkbox" checked="checked" id="actionEnsureMessagePaneVisible" />
-      <label for="actionEnsureMessagePaneVisible" data-i18n="assistant.actionEnsureMessagePaneVisible"></label>
-      <br/>
-      <input type="checkbox" checked="checked" id="actionOfflineDownload" />
-      <label for="actionOfflineDownload" data-i18n="assistant.actionOfflineDownload"></label>
-      <br/>
-      <input type="checkbox" checked="checked" id="actionSetupView" />
-      <label for="actionSetupView" data-i18n="assistant.actionSetupMessageViews"></label>
-    </p>
-    <p data-i18n="assistant.settings2">
-    </p>
+    <div class="settings">
+      <h2 data-i18n="assistant.otherSettingsTitle"></h2>
+      <p class="otherSettings">
+        <input
+          type="checkbox"
+          disabled="disabled"
+          checked="checked"
+          id="actionEnableGloda"
+        />
+        <label
+          for="actionEnableGloda"
+          data-i18n="assistant.actionEnableGloda"
+        ></label>
+        <br />
+        <input
+          type="checkbox"
+          checked="checked"
+          id="actionEnsureMessagePaneVisible"
+        />
+        <label
+          for="actionEnsureMessagePaneVisible"
+          data-i18n="assistant.actionEnsureMessagePaneVisible"
+        ></label>
+        <br />
+        <input type="checkbox" checked="checked" id="actionOfflineDownload" />
+        <label
+          for="actionOfflineDownload"
+          data-i18n="assistant.actionOfflineDownload"
+        ></label>
+        <br />
+        <input type="checkbox" checked="checked" id="actionSetupView" />
+        <label
+          for="actionSetupView"
+          data-i18n="assistant.actionSetupMessageViews"
+        ></label>
+      </p>
+      <p data-i18n="assistant.settings2"></p>
+    </div>
+    <div class="working hidden">
+      <p data-i18n="assistant.working">
+        <img id="workingImg" src="loader.gif" />
+      </p>
+      <p data-i18n="assistant.workingText"></p>
+    </div>
 
-  </div>
-  <div class="working hidden">
-    <p data-i18n="assistant.working">
-      <img id="workingImg" src="loader.gif" />
-    </p>
-    <p data-i18n="assistant.workingText"></p>
-  </div>
-
-  <div class="buttonBox">
-    <button id="applyButton" class="applyChanges" data-i18n="assistant.apply"></button>
-  </div>
-</body>
-
+    <div class="buttonBox">
+      <button
+        id="applyButton"
+        class="applyChanges"
+        data-i18n="assistant.apply"
+      ></button>
+    </div>
+  </body>
 </html>

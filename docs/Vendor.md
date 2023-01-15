@@ -1,5 +1,4 @@
-Vendor files
-============
+# Vendor files
 
 The files within the packaged add-on in the `content/vendor/` directory are
 from third parties.
@@ -15,14 +14,14 @@ directory, and then `scripts/build.sh` is used to copy the vendor files out of
 The original repositories and their relevant npmjs hosting locations are given
 below:
 
-* https://github.com/facebook/prop-types
-  * https://www.npmjs.com/package/prop-types
-* https://github.com/facebook/react
-  * https://www.npmjs.com/package/react
-  * https://www.npmjs.com/package/react-dom
-* https://github.com/reduxjs/react-redux
-  * https://www.npmjs.com/package/react-redux
-* https://github.com/reduxjs/redux
-  * https://www.npmjs.com/package/redux
-* https://github.com/reduxjs/redux-toolkit
-  * https://www.npmjs.com/package/@reduxjs/redux-toolkit
+- https://github.com/facebook/prop-types
+  - https://www.npmjs.com/package/prop-types
+- https://github.com/facebook/react
+  - https://www.npmjs.com/package/react
+  - https://www.npmjs.com/package/react-dom
+- https://github.com/reduxjs/react-redux
+  - https://www.npmjs.com/package/react-redux
+- https://github.com/reduxjs/redux
+  - https://www.npmjs.com/package/redux
+- https://github.com/reduxjs/redux-toolkit
+  - https://www.npmjs.com/package/@reduxjs/redux-toolkit

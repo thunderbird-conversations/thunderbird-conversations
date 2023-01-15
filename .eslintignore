@@ -1,5 +1,7 @@
 # Don't ignore .eslintrc.js
 !.eslintrc.js
+!.prettier.config.js
+babel.config.js
 
 # Build directory
 dist/**

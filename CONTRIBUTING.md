@@ -1,20 +1,19 @@
-Contributing to the Thunderbird Conversations project
-=====================================================
+# Contributing to the Thunderbird Conversations project
 
 We love pull requests from everyone.
 
-* Fork the repository.
-* Follow the instructions in the [Development doc](Development.md) to clone, just use the newly clone repository URL for your clone.
-* Build & install as per the instructions.
-* Make sure the tests pass:
+- Fork the repository.
+- Follow the instructions in the [Development doc](Development.md) to clone, just use the newly clone repository URL for your clone.
+- Build & install as per the instructions.
+- Make sure the tests pass:
 
 ```
 npm test
 ```
 
-* Make your changes on the master branch.
-* Test them in Thunderbird and with the tests.
-* Consider adding new tests if you're touching code that is already tested, or just if you want to add more tests.
+- Make your changes on the master branch.
+- Test them in Thunderbird and with the tests.
+- Consider adding new tests if you're touching code that is already tested, or just if you want to add more tests.
 
 The general coding style we like is contained within the ESLint rules so follow the existing style and rules and if the tests pass you should be fine.
 
