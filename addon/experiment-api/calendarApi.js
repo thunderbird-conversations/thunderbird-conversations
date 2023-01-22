@@ -58,6 +58,7 @@ function imipOptions(
 
     actionFunc(newListener, actionMethod);
   };
+  win.calImipBar.actionFunc.method = actionFunc?.method;
 
   const idToActionMap = {
     imipAcceptButton: "ACCEPTED",
@@ -182,7 +183,7 @@ var convCalendar = class extends ExtensionCommon.ExtensionAPI {
           if (action == "GOTO") {
             win.calImipBar.goToCalendar();
           } else {
-            win.calImipBar.executeAction(action);
+            win.calImipBar.executeAction(action, "AUTO");
           }
         },
       },
