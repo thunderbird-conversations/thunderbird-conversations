@@ -770,8 +770,7 @@ async function loadOpenPgpMessageSecurityInfo(win) {
   let signedDetails = {
     signatureLabel: await l10n.formatValue(sigInfoLabel),
     signatureExplanation: hasAnySig
-      ? // eslint-disable-next-line mozilla/prefer-formatValues
-        await l10n.formatValue(sigInfo)
+      ? await l10n.formatValue(sigInfo)
       : sBundle.GetStringFromName(sigInfo),
   };
   let encyptDetails = {

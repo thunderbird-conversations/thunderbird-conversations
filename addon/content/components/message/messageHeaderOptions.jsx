@@ -193,7 +193,7 @@ export class MessageHeaderOptions extends React.PureComponent {
         this.clearMenu();
       };
       this.keyListener = (event) => {
-        if (event.keyCode == KeyEvent.DOM_VK_ESCAPE) {
+        if (event.key == "Escape") {
           this.clearMenu();
         }
       };

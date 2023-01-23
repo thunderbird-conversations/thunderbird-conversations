@@ -518,7 +518,6 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             let chunks = [];
             const decoder = new TextDecoder();
             let listener = {
-              /* eslint-disable jsdoc/require-param */
               /** @ignore*/
               setMimeHeaders() {},
 
@@ -573,7 +572,6 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
                 // Yay, good to go!
                 chunks.push(decoder.decode(Uint8Array.from(array)));
               },
-              /* eslint-enable jsdoc/require-param */
 
               QueryInterface: ChromeUtils.generateQI([
                 Ci.nsIStreamListener,

@@ -4,7 +4,6 @@
 
 /* eslint-env node */
 
-// eslint-disable-next-line no-shadow
 import { browser } from "../content/esmodules/thunderbirdCompat.js";
 import fileSystem from "fs";
 import path from "path";

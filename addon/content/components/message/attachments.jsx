@@ -163,7 +163,7 @@ function Attachment({
       clearMenu();
     }
     function keyListener(event) {
-      if (event.keyCode == KeyEvent.DOM_VK_ESCAPE) {
+      if (event.key == "Escape") {
         clearMenu();
       }
     }

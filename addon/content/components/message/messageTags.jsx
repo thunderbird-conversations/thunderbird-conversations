@@ -205,7 +205,7 @@ export function SpecialMessageTag({
     setDetailsExpanded(false);
   });
   let closeExpandedKeypress = React.useCallback((event) => {
-    if (event.keyCode == KeyEvent.DOM_VK_ESCAPE) {
+    if (event.key == "Escape") {
       setDetailsExpanded(false);
     }
   });
