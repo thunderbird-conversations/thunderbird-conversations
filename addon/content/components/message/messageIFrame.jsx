@@ -335,13 +335,12 @@ export class MessageIFrame extends React.Component {
     const doAdjustment = () => {
       const iframeDoc = this.iframe.contentDocument;
 
-      // The +1 here is due to having occasionally seen issues on Mac where
-      // the frame just doesn't quite scroll properly. In this case,
-      // getComputedStyle(body).height is .2px greater than the scrollHeight.
-      // Hence we try to work around that here.
-      // In #1517 made it +3 as occasional issues were still being seen with
-      // some messages.
-      const scrollHeight = iframeDoc.body.scrollHeight + 3;
+      // Sometimes vertical scroll bars may still appear. This is typically due
+      // to tables having height=100% with additional items outside the table.
+      // They should be doing something like height="calc(100% - n)".
+      // It is unclear at this time if this is a Gecko issue, or a general
+      // standards issue. See #1517 for more details.
+      const scrollHeight = iframeDoc.documentElement.scrollHeight;
       this.iframe.style.height = scrollHeight + "px";
 
       // So now we might overflow horizontally, which causes a horizontal
@@ -352,7 +351,8 @@ export class MessageIFrame extends React.Component {
       // 20px is a completely arbitrary default value which I hope is
       // greater
       if (iframeDoc.body.scrollWidth > iframeExternalWidth) {
-        this.iframe.style.height = iframeDoc.body.scrollHeight + 20 + "px";
+        this.iframe.style.height =
+          iframeDoc.documentElement.scrollHeight + 20 + "px";
       }
     };
     try {
