@@ -46,10 +46,10 @@ XPCOMUtils.defineLazyServiceGetters(lazy, {
  */
 function msgUriToMsgHdr(aUri) {
   try {
-    let messageService = messenger.messageServiceFromURI(aUri);
+    let messageService = MailServices.messageServiceFromURI(aUri);
     return messageService.messageURIToMsgHdr(aUri);
   } catch (e) {
-    console.error("Unable to get ", aUri, " — returning null instead");
+    console.error("Unable to get ", aUri, " — returning null instead", e);
     return null;
   }
 }
@@ -320,7 +320,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           Services.obs.notifyObservers(null, "startupcache-invalidate");
         },
         async getLateAttachments(id, extraAttachments) {
-          return new Promise((resolve) => {
+          return new Promise((resolve, reject) => {
             const msgHdr = context.extension.messageManager.get(id);
             MsgHdrToMimeMessage(msgHdr, null, (msgHdr, mimeMsg) => {
               if (!mimeMsg) {
@@ -392,7 +392,10 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           const win = Services.wm.getMostRecentWindow("mail:3pane");
           const msgHdr = context.extension.messageManager.get(id);
           const tabmail = win.document.getElementById("tabmail");
-          tabmail.openTab("message", { msgHdr, background: false });
+          tabmail.openTab("mailMessageTab", {
+            messageURI: msgHdr.folder.getUriForMsg(msgHdr),
+            background: false,
+          });
         },
         async showRemoteContent(id) {
           const msgHdr = context.extension.messageManager.get(id);
@@ -885,16 +888,17 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
                   iframeClass
                 )[0];
             } else {
-              let multimessage = win.document.getElementById("multimessage");
+              let webBrowser =
+                tabObject.nativeTab.chromeBrowser.contentWindow.webBrowser;
               messageIframe =
-                multimessage.contentDocument.getElementsByClassName(
+                webBrowser.contentDocument.getElementsByClassName(
                   iframeClass
                 )[0];
             }
           }
 
           let uri = msgHdr.folder.getUriForMsg(msgHdr);
-          let msgService = messenger.messageServiceFromURI(uri);
+          let msgService = MailServices.messageServiceFromURI(uri);
           let docShell = messageIframe.contentWindow.docShell;
           docShell.appType = Ci.nsIDocShell.APP_TYPE_MAIL;
 

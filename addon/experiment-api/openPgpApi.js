@@ -8,6 +8,9 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   EnigmailConstants: "chrome://openpgp/content/modules/constants.jsm",
 });
 
+// TODO: Fix this file.
+/* eslint-disable no-unused-vars */
+
 let securityListeners = new Set();
 let securityWindowListener = null;
 let smimeReloadListeners = new Set();
@@ -90,58 +93,57 @@ var convOpenPgp = class extends ExtensionCommon.ExtensionAPI {
       convOpenPgp: {
         beforeStreamingMessage(tabId, msgId, dueToReload) {
           // Can't do anything in the custom standalone message window at the moment.
-          if (tabId == -1) {
-            return;
-          }
-
-          if (!dueToReload) {
-            let win = getWindow(context, tabId);
-            // TODO: This might not be necessary once decryption handling is
-            // in place, but not sure yet.
-            // Changed to `registerPGPMimeHandler` in Thunderbird 104.
-            "registerPGPMimeHandler" in win.EnigmailVerify
-              ? win.EnigmailVerify.registerPGPMimeHandler()
-              : win.EnigmailVerify.registerContentTypeHandler();
-          }
-          // Not sure if we need this or not.
-          // win.EnigmailVerify.lastMsgWindow = win.msgWindow;
+          // if (tabId == -1) {
+          //   return;
+          // }
+          // if (!dueToReload) {
+          //   let win = getWindow(context, tabId);
+          //   // TODO: This might not be necessary once decryption handling is
+          //   // in place, but not sure yet.
+          //   // Changed to `registerPGPMimeHandler` in Thunderbird 104.
+          //   "registerPGPMimeHandler" in win.EnigmailVerify
+          //     ? win.EnigmailVerify.registerPGPMimeHandler()
+          //     : win.EnigmailVerify.registerContentTypeHandler();
+          // }
+          // // Not sure if we need this or not.
+          // // win.EnigmailVerify.lastMsgWindow = win.msgWindow;
         },
         handleMessageStreamed(tabId, msgId) {},
         handleTagClick(tabId, msgId) {
-          let win = getWindow(context, tabId);
-          win.showMessageReadSecurityInfo();
+          // let win = getWindow(context, tabId);
+          // win.showMessageReadSecurityInfo();
         },
         onUpdateSecurityStatus: new ExtensionCommon.EventManager({
           context,
           name: "convMsgWindow.onUpdateSecurityStatus",
           register(fire) {
-            if (securityListeners.size == 0) {
-              securityWindowListener = new OpenPgPWindowObserver(
-                windowManager,
-                securityStatusPatch,
-                context
-              );
-              openPgpMonkeyPatchAllWindows(
-                windowManager,
-                securityStatusPatch,
-                context
-              );
-              Services.ww.registerNotification(securityWindowListener);
-            }
-            securityListeners.add(fire);
+            // if (securityListeners.size == 0) {
+            //   securityWindowListener = new OpenPgPWindowObserver(
+            //     windowManager,
+            //     securityStatusPatch,
+            //     context
+            //   );
+            //   openPgpMonkeyPatchAllWindows(
+            //     windowManager,
+            //     securityStatusPatch,
+            //     context
+            //   );
+            //   Services.ww.registerNotification(securityWindowListener);
+            // }
+            // securityListeners.add(fire);
 
             return function () {
-              securityListeners.delete(fire);
-              if (securityListeners.size == 0) {
-                Services.ww.unregisterNotification(securityWindowListener);
-                openPgpMonkeyPatchAllWindows(windowManager, (win, id) => {
-                  let headerSink = win.Enigmail.hdrView.headerPane;
-                  headerSink.updateSecurityStatus =
-                    win.oldOnUpdateSecurityStatus;
-                  headerSink.processDecryptionResult =
-                    win.oldProcessDecryptionResult;
-                });
-              }
+              // securityListeners.delete(fire);
+              // if (securityListeners.size == 0) {
+              //   Services.ww.unregisterNotification(securityWindowListener);
+              //   openPgpMonkeyPatchAllWindows(windowManager, (win, id) => {
+              //     let headerSink = win.Enigmail.hdrView.headerPane;
+              //     headerSink.updateSecurityStatus =
+              //       win.oldOnUpdateSecurityStatus;
+              //     headerSink.processDecryptionResult =
+              //       win.oldProcessDecryptionResult;
+              //   });
+              // }
             };
           },
         }).api(),
@@ -149,31 +151,31 @@ var convOpenPgp = class extends ExtensionCommon.ExtensionAPI {
           context,
           name: "convMsgWindow.onSMIMEStatus",
           register(fire) {
-            if (smimeStatusListeners.size == 0) {
-              smimeStatusListener = new OpenPgPWindowObserver(
-                windowManager,
-                smimeStatusPatch,
-                context
-              );
-              openPgpMonkeyPatchAllWindows(
-                windowManager,
-                smimeStatusPatch,
-                context
-              );
-              Services.ww.registerNotification(smimeStatusListener);
-            }
-            smimeStatusListeners.add(fire);
+            // if (smimeStatusListeners.size == 0) {
+            //   smimeStatusListener = new OpenPgPWindowObserver(
+            //     windowManager,
+            //     smimeStatusPatch,
+            //     context
+            //   );
+            //   openPgpMonkeyPatchAllWindows(
+            //     windowManager,
+            //     smimeStatusPatch,
+            //     context
+            //   );
+            //   Services.ww.registerNotification(smimeStatusListener);
+            // }
+            // smimeStatusListeners.add(fire);
 
             return function () {
-              smimeStatusListeners.delete(fire);
-              if (smimeStatusListeners.size == 0) {
-                Services.ww.unregisterNotification(smimeStatusListener);
-                openPgpMonkeyPatchAllWindows(windowManager, (win, id) => {
-                  let headerSink = win.smimeHeaderSink;
-                  headerSink.signedStatus = win.oldSignedStatus;
-                  headerSink.encryptionStatus = win.oldEncyrptionStatus;
-                });
-              }
+              // smimeStatusListeners.delete(fire);
+              // if (smimeStatusListeners.size == 0) {
+              //   Services.ww.unregisterNotification(smimeStatusListener);
+              //   openPgpMonkeyPatchAllWindows(windowManager, (win, id) => {
+              //     let headerSink = win.smimeHeaderSink;
+              //     headerSink.signedStatus = win.oldSignedStatus;
+              //     headerSink.encryptionStatus = win.oldEncyrptionStatus;
+              //   });
+              // }
             };
           },
         }).api(),
@@ -181,30 +183,30 @@ var convOpenPgp = class extends ExtensionCommon.ExtensionAPI {
           context,
           name: "convMsgWindow.onSMIMEReload",
           register(fire) {
-            if (smimeReloadListeners.size == 0) {
-              smimeReloadWindowListener = new OpenPgPWindowObserver(
-                windowManager,
-                smimeReloadPatch,
-                context
-              );
-              openPgpMonkeyPatchAllWindows(
-                windowManager,
-                smimeReloadPatch,
-                context
-              );
-              Services.ww.registerNotification(smimeReloadWindowListener);
-            }
-            smimeReloadListeners.add(fire);
+            // if (smimeReloadListeners.size == 0) {
+            //   smimeReloadWindowListener = new OpenPgPWindowObserver(
+            //     windowManager,
+            //     smimeReloadPatch,
+            //     context
+            //   );
+            //   openPgpMonkeyPatchAllWindows(
+            //     windowManager,
+            //     smimeReloadPatch,
+            //     context
+            //   );
+            //   Services.ww.registerNotification(smimeReloadWindowListener);
+            // }
+            // smimeReloadListeners.add(fire);
 
             return function () {
-              smimeReloadListeners.delete(fire);
-              if (smimeReloadListeners.size == 0) {
-                Services.ww.unregisterNotification(smimeReloadWindowListener);
-                openPgpMonkeyPatchAllWindows(windowManager, (win, id) => {
-                  let headerSink = win.Enigmail.hdrView.headerPane;
-                  headerSink.handleSMimeMessage = win.oldHandleSMimeMessage;
-                });
-              }
+              // smimeReloadListeners.delete(fire);
+              // if (smimeReloadListeners.size == 0) {
+              //   Services.ww.unregisterNotification(smimeReloadWindowListener);
+              //   openPgpMonkeyPatchAllWindows(windowManager, (win, id) => {
+              //     let headerSink = win.Enigmail.hdrView.headerPane;
+              //     headerSink.handleSMimeMessage = win.oldHandleSMimeMessage;
+              //   });
+              // }
             };
           },
         }).api(),
