@@ -67,6 +67,10 @@ module.exports = {
       files: "addon/tests/*.test.js*",
     },
   ],
+  // Override mozilla/recommended to get private class fields
+  parserOptions: {
+    ecmaVersion: 13,
+  },
   plugins: ["mozilla", "html", "jsdoc", "json", "react"],
   root: true,
   rules: {
