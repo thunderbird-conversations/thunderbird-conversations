@@ -227,13 +227,8 @@ export const controllerActions = {
   },
 };
 
-function onMsgHasRemoteContent(dispatch, id) {
-  dispatch(
-    messageActions.setHasRemoteContent({
-      id,
-      hasRemoteContent: true,
-    })
-  );
+function onMsgHasRemoteContent(dispatch) {
+  dispatch(messageActions.setHasRemoteContent({ hasRemoteContent: true }));
 }
 
 async function onUpdateSecurityStatus(
@@ -404,42 +399,11 @@ function setupListeners(dispatch, getState) {
     browser.convMsgWindow.print(winId, `convIframe${msgId}`);
   }
 
-  async function updateTab(tab) {
-    if (summary.isStandalone || summary.isInTab || tab.id == summary.tabId) {
-      return;
-    }
-
-    unloadListeners?.();
-    await dispatch(
-      summaryActions.setConversationState({
-        isInTab: summary.isInTab,
-        isStandalone: summary.isStandalone,
-        tabId: tab.id,
-        windowId: summary.windowId,
-      })
-    );
-    setupListeners(dispatch, getState);
-    await dispatch(controllerActions.initializeMessageThread({}));
-  }
-
-  async function activeTabChanged({ tabId }) {
-    let tab = await browser.tabs.get(tabId);
-    if (tab.windowId == windowId && tab.mailTab) {
-      updateTab(tab);
-    }
-  }
-  function tabCreated(tab) {
-    if (tab.active && tab.mailTab) {
-      updateTab(tab);
-    }
-  }
-
-  browser.tabs.onCreated.addListener(tabCreated);
-  browser.tabs.onActivated.addListener(activeTabChanged);
+  let tabId = getState().summary.tabId;
 
   browser.convMsgWindow.onSelectedMessagesChanged.addListener(
     msgSelectionChanged,
-    getState().summary.tabId
+    tabId
   );
   browser.messageDisplay.onMessagesDisplayed.addListener(
     selectionChangedListener
@@ -448,7 +412,8 @@ function setupListeners(dispatch, getState) {
 
   let remoteContentListener = onMsgHasRemoteContent.bind(this, dispatch);
   browser.convMsgWindow.onMsgHasRemoteContent.addListener(
-    remoteContentListener
+    remoteContentListener,
+    tabId
   );
   let updateSecurityStatusListener = onUpdateSecurityStatus.bind(
     this,
@@ -467,19 +432,18 @@ function setupListeners(dispatch, getState) {
   unloadListeners = () => {
     unloadListeners = null;
     window.removeEventListener("unload", unloadListeners, { once: true });
-    console.log("unload");
-    browser.tabs.onActivated.removeListener(activeTabChanged);
-    browser.tabs.onCreated.removeListener(tabCreated);
+
     browser.convMsgWindow.onSelectedMessagesChanged.removeListener(
       msgSelectionChanged,
-      getState().summary.tabId
+      tabId
     );
     browser.messageDisplay.onMessagesDisplayed.removeListener(
       selectionChangedListener
     );
     browser.convMsgWindow.onPrint.removeListener(printListener);
     browser.convMsgWindow.onMsgHasRemoteContent.removeListener(
-      remoteContentListener
+      remoteContentListener,
+      tabId
     );
     browser.convOpenPgp.onUpdateSecurityStatus.removeListener(
       updateSecurityStatusListener
