@@ -227,10 +227,6 @@ export const controllerActions = {
   },
 };
 
-function onMsgHasRemoteContent(dispatch) {
-  dispatch(messageActions.setHasRemoteContent({ hasRemoteContent: true }));
-}
-
 async function onUpdateSecurityStatus(
   dispatch,
   { id, signedStatus, encryptionStatus, encryptionNotification, details }
@@ -410,11 +406,6 @@ function setupListeners(dispatch, getState) {
   );
   browser.convMsgWindow.onPrint.addListener(printListener);
 
-  let remoteContentListener = onMsgHasRemoteContent.bind(this, dispatch);
-  browser.convMsgWindow.onMsgHasRemoteContent.addListener(
-    remoteContentListener,
-    tabId
-  );
   let updateSecurityStatusListener = onUpdateSecurityStatus.bind(
     this,
     dispatch
@@ -441,10 +432,6 @@ function setupListeners(dispatch, getState) {
       selectionChangedListener
     );
     browser.convMsgWindow.onPrint.removeListener(printListener);
-    browser.convMsgWindow.onMsgHasRemoteContent.removeListener(
-      remoteContentListener,
-      tabId
-    );
     browser.convOpenPgp.onUpdateSecurityStatus.removeListener(
       updateSecurityStatusListener
     );

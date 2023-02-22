@@ -47,6 +47,7 @@ class WindowObserver {
 }
 
 let msgsChangedListeners = new Map();
+let remoteContentListeners = new Map();
 
 /* exported convMsgWindow */
 var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
@@ -152,31 +153,44 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
         onMsgHasRemoteContent: new ExtensionCommon.EventManager({
           context,
           name: "convMsgWindow.onMsgHasRemoteContent",
-          register(fire, tabId) {
-            let tabObject = context.extension.tabManager.get(tabId);
-            let contentWin = tabObject.nativeTab.chromeBrowser.contentWindow;
-
+          register(fire, tabId, winId, iframeName) {
             function observer(subject, topic, data) {
               if (topic != "remote-content-blocked") {
                 return;
               }
-              console.log({ data });
-              let listener = remoteContentListeners.get(data);
-              listener?.async();
+              for (let [
+                ,
+                // iframeName,
+                listenerData,
+              ] of remoteContentListeners.entries()) {
+                if (listenerData.tabId != null) {
+                  let tabObject = context.extension.tabManager.get(tabId);
+                  let contentWin =
+                    tabObject.nativeTab.chromeBrowser.contentWindow;
+                  // This should be the correct code, but Thunderbird reports
+                  // the parent browsingContext rather than the iframe.
+                  // See https://bugzilla.mozilla.org/show_bug.cgi?id=1818950
+                  // let contentDoc = contentWin.webBrowser.contentDocument;
+                  // let elements = contentDoc.getElementsByClassName(iframeName);
+                  // if (
+                  //   elements.length &&
+                  //   elements[0]?.browsingContext.id == data
+                  // ) {
+                  //   listenerData.fire.async();
+                  // }
+                  if (contentWin.webBrowser.browsingContext.id == data) {
+                    listenerData.fire.async();
+                  }
+                }
+              }
             }
+
             if (remoteContentListeners.size == 0) {
               Services.obs.addObserver(observer, "remote-content-blocked");
             }
-            // TODO: Gonna need to get the streamed message browser here. Not
-            // just the conversations browser.
-            remoteContentListeners.set(
-              contentWin.webBrowser.browsingContext.id,
-              fire
-            );
+            remoteContentListeners.set(iframeName, { winId, tabId, fire });
             return function () {
-              remoteContentListeners.delete(
-                contentWin.webBrowser.browsingContext.id
-              );
+              remoteContentListeners.delete(iframeName);
               if (remoteContentListeners.size == 0) {
                 Services.obs.removeObserver(observer, "remote-content-blocked");
               }
@@ -217,8 +231,6 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
   }
 };
 
-let remoteContentListeners = new Map();
-let remoteContentWindowListener = null;
 let printListeners = new Set();
 let printWindowListener = null;
 
@@ -253,31 +265,6 @@ function monkeyPatchAllWindows(windowManager, callback, context) {
     });
   }
 }
-
-// TODO: FIX THIS
-// xref https://searchfox.org/comm-central/rev/e14086adbf23a7cc1a4c7e128b5729ce112b9ff9/mail/base/content/msgHdrView.js#497-506
-const remoteContentPatch = (win, id, context) => {
-  // Ok, this is slightly tricky. The C++ code notifies the global msgWindow
-  //  when content has been blocked, and we can't really afford to just
-  //  replace the code, because that would defeat the standard reader (e.g. in
-  //  a new tab). So we must find the message in the conversation and notify
-  //  it if needed.
-
-  win.oldOnMsgHasRemoteContent = win.messageHeaderSink.onMsgHasRemoteContent;
-  win.messageHeaderSink.onMsgHasRemoteContent = async function (
-    msgHdr,
-    contentURI,
-    canOverride
-  ) {
-    let id = (await context.extension.messageManager.convert(msgHdr)).id;
-    for (let listener of remoteContentListeners) {
-      listener.async(id);
-    }
-    // Wicked case: we have the conversation and another tab with a message
-    //  from the conversation in that tab. So to be safe, forward the call.
-    win.oldOnMsgHasRemoteContent(msgHdr, contentURI, canOverride);
-  };
-};
 
 const printPatch = (win, winId, context) => {
   let tabmail = win.document.getElementById("tabmail");

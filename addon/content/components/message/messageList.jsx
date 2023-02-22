@@ -57,6 +57,8 @@ function _MessageList(props) {
             setRef={(ref) => {
               setRef(index, ref);
             }}
+            tabId={props.summary.tabId}
+            winId={props.summary.winId}
           />
         ))}
     </ul>

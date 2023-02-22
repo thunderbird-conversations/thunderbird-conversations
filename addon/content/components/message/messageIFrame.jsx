@@ -176,6 +176,10 @@ export class MessageIFrame extends React.Component {
     this._waitingForDom = false;
   }
 
+  get iframeName() {
+    return `convIframe${this.props.id}`;
+  }
+
   componentDidUpdate(prevProps) {
     let startLoad = false;
     // dueToExpansion is used so that we can indicate if this load is happening
@@ -184,7 +188,7 @@ export class MessageIFrame extends React.Component {
     // else.
     this.dueToExpansion = undefined;
     this.iframe.classList.remove(`convIframe${prevProps.id}`);
-    this.iframe.classList.add(`convIframe${this.props.id}`);
+    this.iframe.classList.add(this.iframeName);
     if (prevProps.id != this.props.id && this.props.expanded) {
       // This is a hack which ensures that the iframe is a minimal height, so
       // that when the message loads, the scroll height is set correctly, rather
@@ -245,7 +249,7 @@ export class MessageIFrame extends React.Component {
     this.iframe.setAttribute("style", "height: 20px; overflow-y: hidden");
     this.iframe.setAttribute("type", "content");
     this.iframe.setAttribute("sandbox", "allow-same-origin");
-    this.iframe.classList.add(`convIframe${this.props.id}`);
+    this.iframe.classList.add(this.iframeName);
     this.div.appendChild(this.iframe);
 
     this.registerListeners();
@@ -285,6 +289,13 @@ export class MessageIFrame extends React.Component {
         capture: true,
       });
       this._domloadListener = this._onDOMLoaded.bind(this);
+      this._remoteContentListener = this._onMsgHasRemoteContent.bind(this);
+      browser.convMsgWindow.onMsgHasRemoteContent.addListener(
+        this._remoteContentListener,
+        this.props.tabId,
+        this.props.winId,
+        this.iframeName
+      );
       if (window.browsingContext) {
         // We don't apply the click listener when in a tab as Thunderbird's
         // click handling already manages that.
@@ -316,7 +327,15 @@ export class MessageIFrame extends React.Component {
     this.iframe.removeEventListener("load", this._loadListener, {
       capture: true,
     });
-    delete this._loadListener;
+    this._loadListener = null;
+    browser.convMsgWindow.onMsgHasRemoteContent.removeListener(
+      this._remoteContentListener,
+      this.props.tabId,
+      this.props.winId,
+      this.iframeName
+    );
+    this._remoteContentListener = null;
+
     if (window.browsingContext?.embedderElement) {
       window.browsingContext.embedderElement.removeEventListener(
         "click",
@@ -558,6 +577,20 @@ export class MessageIFrame extends React.Component {
     this.adjustHeight();
   }
 
+  _onMsgHasRemoteContent() {
+    console.log("HAVE REMOTE CONTENT");
+    this.props.dispatch(
+      messageActions.setHasRemoteContent({
+        // TODO: Not quite right, since we should check this is actually for
+        // this intended frame... maybe. iframeNames don't seem to get refreshed
+        // because we cache the listeners. Maybe need something more generic
+        // especially when switching messages.
+        id: this.props.id,
+        hasRemoteContent: true,
+      })
+    );
+  }
+
   onClickIframe(event) {
     // Only take clicks for this particular iframe.
     if (event.target.ownerDocument.URL != this.iframe.contentDocument.URL) {
@@ -594,4 +627,6 @@ MessageIFrame.propTypes = {
   tenPxFactor: PropTypes.number.isRequired,
   prefs: PropTypes.object.isRequired,
   realFrom: PropTypes.string.isRequired,
+  tabId: PropTypes.number,
+  winId: PropTypes.number,
 };

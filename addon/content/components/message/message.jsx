@@ -430,6 +430,8 @@ export class Message extends React.PureComponent {
               tenPxFactor={this.props.tenPxFactor}
               prefs={this.props.prefs}
               realFrom={this.props.message.realFrom}
+              tabId={this.props.tabId}
+              winId={this.props.winId}
             />
           </ErrorBoundary>
           {this.props.message.expanded &&
@@ -483,4 +485,6 @@ Message.propTypes = {
   prefs: PropTypes.object.isRequired,
   setRef: PropTypes.func.isRequired,
   advanceMessage: PropTypes.func.isRequired,
+  tabId: PropTypes.number,
+  winId: PropTypes.number,
 };

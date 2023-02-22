@@ -180,7 +180,19 @@
           {
             "name": "tabId",
             "type": "number",
-            "description": "The id of the tab."
+            "description": "The id of the tab.",
+            "optional": true
+          },
+          {
+            "name": "winId",
+            "type": "number",
+            "description": "The id of the window.",
+            "optional": true
+          },
+          {
+            "name": "iframeName",
+            "type": "string",
+            "description": "The classname for the iframe"
           }
         ]
       },
