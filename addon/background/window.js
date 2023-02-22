@@ -39,29 +39,6 @@ export class Window {
       this.#tabListeners.delete(tabId);
     });
 
-    // browser.convMsgWindow.onThreadPaneMiddleClick.addListener(
-    //   async (windowId, msgHdrs) => {
-    //     for (const hdr of msgHdrs) {
-    //       const account = await browser.accounts.get(hdr.folder.accountId);
-    //       if (account.type == "nntp" || account.type == "rss") {
-    //         return {};
-    //       }
-    //     }
-    //     const urls = [];
-    //     for (const hdr of msgHdrs) {
-    //       urls.push(await browser.conversations.getMessageUriForId(hdr.id));
-    //     }
-    //     const url = this.makeConversationUrl(urls);
-    //     await browser.conversations.createTab({
-    //       url,
-    //       type: "chromeTab",
-    //     });
-    //     return {
-    //       cancel: true,
-    //     };
-    //   }
-    // );
-
     browser.runtime.onConnect.addListener((port) => {
       this._handlePort(port);
     });

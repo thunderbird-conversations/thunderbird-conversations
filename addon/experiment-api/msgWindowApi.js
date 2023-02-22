@@ -52,7 +52,7 @@ let msgsChangedListeners = new Map();
 var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
   getAPI(context) {
     const { extension } = context;
-    const { messageManager, windowManager } = extension;
+    const { windowManager } = extension;
     return {
       convMsgWindow: {
         async maybeReloadMultiMessage(tabId) {
@@ -124,72 +124,6 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
             return function () {
               threadPane._onItemActivate = threadPane._convOldOnItemActivate;
               delete threadPane._convOldOnItemActivate;
-            };
-          },
-        }).api(),
-        onThreadPaneMiddleClick: new ExtensionCommon.EventManager({
-          context,
-          name: "convMsgWindow.onThreadPaneMiddleClick",
-          register(fire) {
-            const patchMiddleClick = (win, id) => {
-              win.oldTreeOnMouseDown = win.TreeOnMouseDown;
-              win.TreeOnMouseDown = async (event) => {
-                if (
-                  event.target.parentNode.id !== "threadTree" ||
-                  event.button != 1
-                ) {
-                  win.oldTreeOnMouseDown(event);
-                  return;
-                }
-
-                // Middle-click
-                win.ChangeSelectionWithoutContentLoad(
-                  event,
-                  event.target.parentNode,
-                  false
-                );
-
-                let msgHdrs = win.gFolderDisplay.selectedMessages;
-                msgHdrs = msgHdrs.map((hdr) => messageManager.convert(hdr));
-                let result = await fire.async(id, msgHdrs).catch(console.error);
-                if (result?.cancel) {
-                  return;
-                }
-                win.oldTreeOnMouseDown();
-              };
-            };
-
-            const windowObserver = new WindowObserver(
-              windowManager,
-              patchMiddleClick
-            );
-            monkeyPatchAllWindows(windowManager, patchMiddleClick);
-            Services.ww.registerNotification(windowObserver);
-
-            return function () {
-              Services.ww.unregisterNotification(windowObserver);
-              monkeyPatchAllWindows(windowManager, (win, id) => {
-                // Try and ensure that whatever happens, we've cleaned up the
-                // old listener.
-                let folderTree = win.document.getElementById("folderTree");
-                folderTree.removeEventListener(
-                  "mousedown",
-                  win.TreeOnMouseDown,
-                  true
-                );
-                folderTree.removeEventListener(
-                  "mousedown",
-                  win.oldTreeOnMouseDown,
-                  true
-                );
-                win.TreeOnMouseDown = win.oldTreeOnMouseDown;
-                delete win.oldTreeOnMouseDown;
-                folderTree.addEventListener(
-                  "mousedown",
-                  win.TreeOnMouseDown,
-                  true
-                );
-              });
             };
           },
         }).api(),
