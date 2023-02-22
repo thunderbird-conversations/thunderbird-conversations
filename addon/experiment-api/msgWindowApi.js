@@ -374,21 +374,21 @@ const printPatch = (win, winId, context) => {
   win.conversationsPrintController = PrintController;
 };
 
-function isSelectionExpanded(win) {
-  const msgIndex = win.gFolderDisplay
-    ? win.gFolderDisplay.selectedIndices[0]
+function isSelectionExpanded(contentWin) {
+  const msgIndex = contentWin.threadTree.selectedIndices.length
+    ? contentWin.threadTree.selectedIndices[0]
     : -1;
   if (msgIndex >= 0) {
     try {
-      let viewThread = win.gDBView.getThreadContainingIndex(msgIndex);
-      let rootIndex = win.gDBView.findIndexOfMsgHdr(
+      let viewThread = contentWin.gDBView.getThreadContainingIndex(msgIndex);
+      let rootIndex = contentWin.gDBView.findIndexOfMsgHdr(
         viewThread.getChildHdrAt(0),
         false
       );
       if (rootIndex >= 0) {
         return (
-          win.gDBView.isContainer(rootIndex) &&
-          !win.gFolderDisplay.view.isCollapsedThreadAtIndex(rootIndex)
+          contentWin.gDBView.isContainer(rootIndex) &&
+          !contentWin.gViewWrapper.isCollapsedThreadAtIndex(rootIndex)
         );
       }
     } catch (ex) {
@@ -398,20 +398,22 @@ function isSelectionExpanded(win) {
   return false;
 }
 
-function determineIfSelectionIsThreaded(win) {
+function determineIfSelectionIsThreaded(contentWin) {
   // If we're not showing threaded, then we only worry about how many
   // messages are selected.
-  if (!win.gFolderDisplay.view.showThreaded) {
+  if (!contentWin.gViewWrapper.showThreaded) {
     return false;
   }
 
-  return !isSelectionExpanded(win);
+  return !isSelectionExpanded(contentWin);
 }
 
 function summarizeThreadHandler(contentWin, tabId, context) {
   const STUB_URI = "chrome://conversations/content/stub.html";
 
   let threadPane = contentWin.threadPane;
+  let previouslySelectedUris = [];
+  let previousIsSelectionThreaded = null;
 
   // Replace Thunderbird's onSelect with our own, so that we can display
   // our Conversations reader when we need to.
@@ -424,186 +426,125 @@ function summarizeThreadHandler(contentWin, tabId, context) {
       return;
     }
 
-    // TODO: RSS?
-    // TODO: Check if messages span multiple threads & if so, defer to
-    // _oldOnSelect
-    if (contentWin.gDBView.numSelected == 0) {
+    let numSelected = contentWin.gDBView.numSelected;
+    if (numSelected == 0) {
       threadPane._oldOnSelect(event);
       return;
-    }
-    if (contentWin.webBrowser?.documentURI?.spec != STUB_URI) {
-      contentWin.displayWebPage("chrome://conversations/content/stub.html");
+    } else if (
+      // Defer to the Thunderbird method if there's a dummy row selected,
+      // e.g. a grouped by sort header.
+      contentWin.threadTree.selectedIndices.length == 1 &&
+      contentWin.gDBView.getRowProperties(
+        contentWin.threadTree.selectedIndices[0]
+      ) == "dummy"
+    ) {
+      threadPane._oldOnSelect(event);
+      return;
     }
 
     let msgs = [];
     let msgHdrs = contentWin.gDBView.getSelectedMsgHdrs();
 
-    for (let msg of msgHdrs) {
-      if (msgHdrIsRss(msg) || msgHdrIsNntp(msg)) {
-        // If we have any RSS or News messages, defer to Thunderbird's view.
+    let getThreadId = function (msgHdr) {
+      return contentWin.gDBView
+        .getThreadContainingMsgHdr(msgHdr)
+        .getChildHdrAt(0).messageKey;
+    };
+
+    let firstThreadId = getThreadId(msgHdrs[0]);
+    if (msgHdrIsRssOrNews(msgHdrs[0])) {
+      // If we have any RSS or News messages, defer to Thunderbird's view.
+      threadPane._oldOnSelect(event);
+      return;
+    }
+    for (let i = 1; i < msgHdrs.length; i++) {
+      if (
+        msgHdrIsRssOrNews(msgHdrs[i]) ||
+        getThreadId(msgHdrs[i]) != firstThreadId
+      ) {
+        // This is a RSS, News or multi-thread selection, so defer to
+        // Thunderbird's views.
         threadPane._oldOnSelect(event);
         return;
       }
+    }
+
+    if (contentWin.webBrowser?.documentURI?.spec != STUB_URI) {
+      contentWin.displayWebPage("chrome://conversations/content/stub.html");
+    }
+
+    // Should cancel most intempestive view refreshes, but only after we
+    //  made sure the multimessage pane is shown. The logic behind this
+    //  is the conversation in the message pane is already alive, and
+    //  the gloda query is updating messages just fine, so we should not
+    //  worry about messages which are not in the view.
+    let newlySelectedUris = msgHdrs.map((m) => m.folder.getUriForMsg(m));
+    let isSelectionThreaded = determineIfSelectionIsThreaded(contentWin);
+
+    function isSubSetOrEqual(a1, a2) {
+      if (!a1.length || !a2.length || a1.length > a2.length) {
+        return false;
+      }
+
+      return a1.every((v, i) => {
+        return v == a2[i];
+      });
+    }
+
+    // If the selection is still threaded (or still not threaded), then
+    // avoid redisplaying if we're displaying the same set or super-set.
+    //
+    // We avoid redisplay for the same set, as sometimes Thunderbird will
+    // call the selection update twice when it hasn't changed.
+    //
+    // We avoid redisplay for the case when the previous set is a subset
+    // as this can occur when:
+    // - we've received a new message(s), but Gloda hasn't told us about
+    //   it yet, and we pick it up in a future onItemsAddedn notification.
+    // - the user has expended the selection. We won't update the
+    //   expanded state of messages in this case, but that's probably okay
+    //   since the user is probably selecting them to move them or
+    //   something, rather than getting them expanded in the conversation
+    //   view.
+    //
+    // In both cases, we should be safe to avoid regenerating the
+    // conversation. If we find issues, we might need to revisit this
+    // assumption.
+    if (
+      isSubSetOrEqual(previouslySelectedUris, newlySelectedUris) &&
+      previousIsSelectionThreaded == isSelectionThreaded
+    ) {
+      // console.debug(
+      //   "Hey, know what? The selection hasn't changed, so we're good!"
+      // );
+      return;
+    }
+
+    // Remember the previously selected URIs now, so that if we get
+    // a duplicate conversation, we don't try to start rending the same
+    // conversation again whilst the previous one is still in progress.
+    previouslySelectedUris = newlySelectedUris;
+    previousIsSelectionThreaded = isSelectionThreaded;
+
+    for (let msg of msgHdrs) {
       msgs.push(await context.extension.messageManager.convert(msg));
     }
 
-    // TODO : Get this working for mail selection.
-    // WORK out the messages to pass to .async.
     msgsChangedListeners.get(tabId)?.async(msgs);
   };
-
-  //  tabObject.nativeTab.chromeBrowser.ownerGlobal.summarizeThread();
-  // let previouslySelectedUris = [];
-  // let previousIsSelectionThreaded = null;
-
-  // let htmlpane = contentWin.document.getElementById("multiMessageBrowser");
-  // chromeBrowser.ownerGlobal.oldSummarizeThread =
-  //   chromeBrowser.ownerGlobal.summarizeThread;
-  // // This one completely nukes the original summarizeThread function, which is
-  // //  actually the entry point to the original ThreadSummary class.
-  // chromeBrowser.ownerGlobal.summarizeThread = function _summarizeThread_patched(
-  //   aSelectedMessages,
-  //   messageDisplay
-  // ) {
-  //   if (!aSelectedMessages.length) {
-  //     return;
-  //   }
-
-  //   if (!tabObject.nativeTab.messagePaneVisible) {
-  //     // Log.debug("Message pane is hidden, not fetching...");
-  //     return;
-  //   }
-
-  //   let folderDisplay = messageDisplay.folderDisplay;
-  //   let selectedIndices = folderDisplay.selectedIndices;
-  //   if (selectedIndices.length == 1) {
-  //     let dbView = folderDisplay.view.dbView;
-  //     if (dbView.getRowProperties(selectedIndices[0]) == "dummy") {
-  //       // Abort Abort! This is really a multi-message view. Call Thunderbird's
-  //       // viewer instead.
-  //       chromeBrowser.ownerGlobal.summarizeMultipleSelection(
-  //         aSelectedMessages,
-  //         messageDisplay
-  //       );
-  //       return;
-  //     }
-  //   }
-
-  //   chromeBrowser.ownerGlobal.gMessageDisplay.singleMessageDisplay = false;
-
-  //   // Save the newly selected messages as early as possible, so that we
-  //   // definitely have them as soon as stub.html loads.
-  //   let selectedMessages = [...aSelectedMessages];
-
-  //   win.gSummaryFrameManager.loadAndCallback(
-  //     "chrome://conversations/content/stub.html",
-  //     async function (isRefresh) {
-  //       // See issue #673
-  //       if (htmlpane.contentDocument?.body) {
-  //         htmlpane.contentDocument.body.hidden = false;
-  //       }
-
-  //       if (isRefresh) {
-  //         // Invalidate the previous selection
-  //         previouslySelectedUris = [];
-  //         // The DOM window is fresh, it needs an event listener to forward
-  //         //  keyboard shorcuts to the main window when the conversation view
-  //         //  has focus.
-  //         // It's crucial we register a non-capturing event listener here,
-  //         //  otherwise the individual message nodes get no opportunity to do
-  //         //  their own processing.
-  //         htmlpane.contentWindow.addEventListener("keypress", function (event) {
-  //           try {
-  //             win.dispatchEvent(event);
-  //           } catch (e) {
-  //             // Log.debug("We failed to dispatch the event, don't know why...", e);
-  //           }
-  //         });
-  //       }
-
-  //       // Should cancel most intempestive view refreshes, but only after we
-  //       //  made sure the multimessage pane is shown. The logic behind this
-  //       //  is the conversation in the message pane is already alive, and
-  //       //  the gloda query is updating messages just fine, so we should not
-  //       //  worry about messages which are not in the view.
-  //       let newlySelectedUris = aSelectedMessages.map((m) =>
-  //         m.folder.getUriForMsg(m)
-  //       );
-  //       let isSelectionThreaded = determineIfSelectionIsThreaded(win);
-
-  //       function isSubSetOrEqual(a1, a2) {
-  //         if (!a1.length || !a2.length || a1.length > a2.length) {
-  //           return false;
-  //         }
-
-  //         return a1.every((v, i) => {
-  //           return v == a2[i];
-  //         });
-  //       }
-  //       // If the selection is still threaded (or still not threaded), then
-  //       // avoid redisplaying if we're displaying the same set or super-set.
-  //       //
-  //       // We avoid redisplay for the same set, as sometimes Thunderbird will
-  //       // call the selection update twice when it hasn't changed.
-  //       //
-  //       // We avoid redisplay for the case when the previous set is a subset
-  //       // as this can occur when:
-  //       // - we've received a new message(s), but Gloda hasn't told us about
-  //       //   it yet, and we pick it up in a future onItemsAddedn notification.
-  //       // - the user has expended the selection. We won't update the
-  //       //   expanded state of messages in this case, but that's probably okay
-  //       //   since the user is probably selecting them to move them or
-  //       //   something, rather than getting them expanded in the conversation
-  //       //   view.
-  //       //
-  //       // In both cases, we should be safe to avoid regenerating the
-  //       // conversation. If we find issues, we might need to revisit this
-  //       // assumption.
-  //       if (
-  //         isSubSetOrEqual(previouslySelectedUris, newlySelectedUris) &&
-  //         previousIsSelectionThreaded == isSelectionThreaded
-  //       ) {
-  //         // Log.debug(
-  //         //   "Hey, know what? The selection hasn't changed, so we're good!"
-  //         // );
-  //         return;
-  //       }
-  //       // Remember the previously selected URIs now, so that if we get
-  //       // a duplicate conversation, we don't try to start rending the same
-  //       // conversation again whilst the previous one is still in progress.
-  //       previouslySelectedUris = newlySelectedUris;
-  //       previousIsSelectionThreaded = isSelectionThreaded;
-
-  //       let tabmail = win.document.getElementById("tabmail");
-  //       let tabId = context.extension.tabManager.convert(
-  //         tabmail.selectedTab
-  //       ).id;
-  //       let msgs = [];
-  //       for (let m of selectedMessages) {
-  //         msgs.push(await context.extension.messageManager.convert(m));
-  //       }
-  //       msgsChangedListeners.get(tabId)?.async(msgs);
-  //     }
-  //   );
-  // };
 }
 
 /**
- * Tell if a message is an RSS feed item.
+ * Tell if a message is an RSS feed item or a news message.
  *
  * @param {nsIMsgDBHdr} msgHdr The message header
  * @returns {boolean}
  */
-function msgHdrIsRss(msgHdr) {
-  return msgHdr.folder.server instanceof Ci.nsIRssIncomingServer;
-}
+function msgHdrIsRssOrNews(msgHdr) {
+  let server = msgHdr.folder.server;
 
-/**
- * Tell if a message is a NNTP message.
- *
- * @param {nsIMsgDBHdr} msgHdr The message header
- * @returns {boolean}
- */
-function msgHdrIsNntp(msgHdr) {
-  return msgHdr.folder.server instanceof Ci.nsINntpIncomingServer;
+  return (
+    server instanceof Ci.nsIRssIncomingServer ||
+    server instanceof Ci.nsINntpIncomingServer
+  );
 }
