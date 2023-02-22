@@ -26,11 +26,11 @@ module.exports = {
         webextensions: true,
       },
       excludedFiles: [
-        "addon/content/modules/**",
+        "addon/content/modules/browserSim.js",
         "addon/content/stubGlobals.js",
         "addon/experiment-api/**",
       ],
-      files: ["addon/**/*.js*"],
+      files: ["addon/**/*.*js*"],
       parserOptions: {
         sourceType: "module",
       },

@@ -6,18 +6,21 @@
 
 var lazy = {};
 
-XPCOMUtils.defineLazyModuleGetters(this, {
-  BrowserSim: "chrome://conversations/content/modules/browserSim.js",
-  DownloadPaths: "resource://gre/modules/DownloadPaths.jsm",
-  Downloads: "resource://gre/modules/Downloads.jsm",
+ChromeUtils.defineESModuleGetters(this, {
+  DownloadPaths: "resource://gre/modules/DownloadPaths.sys.mjs",
+  Downloads: "resource://gre/modules/Downloads.sys.mjs",
   FileUtils: "resource://gre/modules/FileUtils.sys.mjs",
   GlodaAttrProviders:
-    "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
+    "chrome://conversations/content/modules/GlodaAttrProviders.sys.mjs",
+  PluralForm: "resource://gre/modules/PluralForm.sys.mjs",
+});
+
+XPCOMUtils.defineLazyModuleGetters(this, {
+  BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   MailServices: "resource:///modules/MailServices.jsm",
   makeFriendlyDateAgo: "resource:///modules/TemplateUtils.jsm",
   MsgHdrToMimeMessage: "resource:///modules/gloda/MimeMessage.jsm",
   NetUtil: "resource://gre/modules/NetUtil.jsm",
-  PluralForm: "resource://gre/modules/PluralForm.jsm",
 });
 
 // eslint-disable-next-line mozilla/reject-importGlobalProperties
@@ -56,7 +59,7 @@ function msgUriToMsgHdr(aUri) {
 const conversationModules = [
   // Don't unload these until we can find a way of unloading the attribute
   // providers. Unloading these will break gloda when someone updates.
-  // "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
+  // "chrome://conversations/content/modules/glodaAttrProviders.sys.mjs",
   "chrome://conversations/content/modules/browserSim.js",
 ];
 

@@ -2,8 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-var EXPORTED_SYMBOLS = ["GlodaAttrProviders"];
-
 /*
  * This file contains various attribute providers for Gloda, we're all storing
  *  them in this file. This file acts like a "plugin" for Gloda.
@@ -25,20 +23,12 @@ const { XPCOMUtils } = ChromeUtils.import(
   "resource://gre/modules/XPCOMUtils.jsm"
 );
 
-XPCOMUtils.defineLazyModuleGetters(this, {
-  Gloda: "resource:///modules/gloda/GlodaPublic.jsm",
-});
+const lazy = {};
 
-let GlodaConstants;
-// Thunderbird 105 introduced GlodaConstants.jsm.
-try {
-  GlodaConstants = ChromeUtils.import(
-    "resource:///modules/gloda/GlodaConstants.jsm"
-  ).GlodaConstants;
-} catch (ex) {
-  GlodaConstants = Gloda;
-  // Do nothing.
-}
+XPCOMUtils.defineLazyModuleGetters(lazy, {
+  Gloda: "resource:///modules/gloda/GlodaPublic.jsm",
+  GlodaConstants: "resource:///modules/gloda/GlodaConstants.jsm",
+});
 
 let AlternativeSender = {
   init() {
@@ -46,15 +36,15 @@ let AlternativeSender = {
   },
 
   defineAttributes() {
-    this._alternativeSenderAttribute = Gloda.defineAttribute({
+    this._alternativeSenderAttribute = lazy.Gloda.defineAttribute({
       provider: this,
       extensionName: "bugzilla-alternative-sender",
-      attributeType: GlodaConstants.kAttrDerived,
+      attributeType: lazy.GlodaConstants.kAttrDerived,
       attributeName: "alternativeSender",
       bind: true,
       singular: true,
-      subjectNouns: [GlodaConstants.NOUN_MESSAGE],
-      objectNoun: GlodaConstants.NOUN_STRING,
+      subjectNouns: [lazy.GlodaConstants.NOUN_MESSAGE],
+      objectNoun: lazy.GlodaConstants.NOUN_STRING,
     });
   },
 
@@ -73,7 +63,7 @@ let AlternativeSender = {
       dump(e + "\n" + e.stack + "\n");
     }
 
-    yield GlodaConstants.kWorkDone;
+    yield lazy.GlodaConstants.kWorkDone;
   },
 
   // About to do more special-casing here? Please check out the corresponding
@@ -96,15 +86,15 @@ let ContentType = {
   },
 
   defineAttributes() {
-    this._bugzillaAttribute = Gloda.defineAttribute({
+    this._bugzillaAttribute = lazy.Gloda.defineAttribute({
       provider: this,
       extensionName: "content-type",
-      attributeType: GlodaConstants.kAttrDerived,
+      attributeType: lazy.GlodaConstants.kAttrDerived,
       attributeName: "contentType",
       bind: true,
       singular: true,
-      subjectNouns: [GlodaConstants.NOUN_MESSAGE],
-      objectNoun: GlodaConstants.NOUN_STRING,
+      subjectNouns: [lazy.GlodaConstants.NOUN_MESSAGE],
+      objectNoun: lazy.GlodaConstants.NOUN_STRING,
     });
   },
 
@@ -122,11 +112,11 @@ let ContentType = {
       dump(e + "\n" + e.stack + "\n");
     }
 
-    yield GlodaConstants.kWorkDone;
+    yield lazy.GlodaConstants.kWorkDone;
   },
 };
 
-var GlodaAttrProviders = {
+export var GlodaAttrProviders = {
   init() {
     ContentType.init();
     AlternativeSender.init();
