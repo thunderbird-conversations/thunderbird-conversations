@@ -175,6 +175,13 @@
             "type": "integer",
             "description": "The message id."
           }
+        ],
+        "extraParameters": [
+          {
+            "name": "tabId",
+            "type": "number",
+            "description": "The id of the tab."
+          }
         ]
       },
       {

@@ -95,25 +95,31 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
           register(fire, tabId) {
             let tabObject = context.extension.tabManager.get(tabId);
             let contentWin = tabObject.nativeTab.chromeBrowser.contentWindow;
-            let threadPane = contentWin.threadPane;
+            let threadPane;
 
-            threadPane._convOldOnItemActivate = threadPane._onItemActivate;
-            threadPane._onItemActivate = (event) => {
-              event.preventDefault();
-              event.stopPropagation();
+            waitForWindow(tabObject.nativeTab.chromeBrowser.contentWindow).then(
+              () => {
+                threadPane = contentWin.threadPane;
 
-              (async () => {
-                let msgHdrs = contentWin.gDBView.getSelectedMsgHdrs();
-                let msgs = msgHdrs.map((m) =>
-                  context.extension.messageManager.convert(m)
-                );
-                let result = await fire.async(tabId, msgs);
-                if (result?.cancel) {
-                  return;
-                }
-                contentWin.threadPane._convOldOnItemActivate(event);
-              })();
-            };
+                threadPane._convOldOnItemActivate = threadPane._onItemActivate;
+                threadPane._onItemActivate = (event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+
+                  (async () => {
+                    let msgHdrs = contentWin.gDBView.getSelectedMsgHdrs();
+                    let msgs = msgHdrs.map((m) =>
+                      context.extension.messageManager.convert(m)
+                    );
+                    let result = await fire.async(tabId, msgs);
+                    if (result?.cancel) {
+                      return;
+                    }
+                    contentWin.threadPane._convOldOnItemActivate(event);
+                  })();
+                };
+              }
+            );
 
             return function () {
               threadPane._onItemActivate = threadPane._convOldOnItemActivate;
@@ -197,7 +203,7 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
             // TODO: How to wait for tab loaded?
             // Probably need to wait for the nativeTab to finish loading?
             // Or maybe a browser underneath it?
-            waitForWindow(tabObject.nativeTab.chromeBrowser.ownerGlobal).then(
+            waitForWindow(tabObject.nativeTab.chromeBrowser.contentWindow).then(
               () => {
                 summarizeThreadHandler(contentWin, tabId, context);
               }
@@ -206,45 +212,40 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
               let threadPane = contentWin.threadPane;
               threadPane._onSelect = threadPane._oldOnSelect;
               delete threadPane._oldOnSelect;
-              // Services.ww.unregisterNotification(windowObserver);
-              // monkeyPatchAllWindows(windowManager, (win, id) => {
-              //   for (const undo of win.conversationUndoFuncs) {
-              //     undo();
-              //   }
-              //   win.summarizeThread = win.oldSummarizeThread;
-              //   delete win.oldSummarizeThread;
-              //   // Fake updating the selection to get the message panes in the
-              //   // correct states for Conversations having been removed.
-              //   win.document
-              //     .getElementById("threadTree")
-              //     .view.selectionChanged();
-              // });
             };
           },
         }).api(),
         onMsgHasRemoteContent: new ExtensionCommon.EventManager({
           context,
           name: "convMsgWindow.onMsgHasRemoteContent",
-          register(fire) {
-            // if (remoteContentListeners.size == 0) {
-            //   remoteContentWindowListener = new WindowObserver(
-            //     windowManager,
-            //     remoteContentPatch,
-            //     context
-            //   );
-            //   monkeyPatchAllWindows(windowManager, remoteContentPatch, context);
-            //   Services.ww.registerNotification(remoteContentWindowListener);
-            // }
-            // remoteContentListeners.add(fire);
+          register(fire, tabId) {
+            let tabObject = context.extension.tabManager.get(tabId);
+            let contentWin = tabObject.nativeTab.chromeBrowser.contentWindow;
+
+            function observer(subject, topic, data) {
+              if (topic != "remote-content-blocked") {
+                return;
+              }
+              console.log({ data });
+              let listener = remoteContentListeners.get(data);
+              listener?.async();
+            }
+            if (remoteContentListeners.size == 0) {
+              Services.obs.addObserver(observer, "remote-content-blocked");
+            }
+            // TODO: Gonna need to get the streamed message browser here. Not
+            // just the conversations browser.
+            remoteContentListeners.set(
+              contentWin.webBrowser.browsingContext.id,
+              fire
+            );
             return function () {
-              //   remoteContentListeners.delete(fire);
-              //   if (remoteContentListeners.size == 0) {
-              //     Services.ww.unregisterNotification(remoteContentWindowListener);
-              //     monkeyPatchAllWindows(windowManager, (win, id) => {
-              //       win.messageHeaderSink.onMsgHasRemoteContent =
-              //         win.oldOnMsgHasRemoteContent;
-              //     });
-              //   }
+              remoteContentListeners.delete(
+                contentWin.webBrowser.browsingContext.id
+              );
+              if (remoteContentListeners.size == 0) {
+                Services.obs.removeObserver(observer, "remote-content-blocked");
+              }
             };
           },
         }).api(),
@@ -282,7 +283,7 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
   }
 };
 
-let remoteContentListeners = new Set();
+let remoteContentListeners = new Map();
 let remoteContentWindowListener = null;
 let printListeners = new Set();
 let printWindowListener = null;
@@ -293,6 +294,8 @@ function getWindowFromId(windowManager, context, id) {
     : Services.wm.getMostRecentWindow("mail:3pane");
 }
 
+// Only needed until https://bugzilla.mozilla.org/show_bug.cgi?id=1817872 is
+// resolved.
 function waitForWindow(win) {
   return new Promise((resolve) => {
     if (win.document.readyState == "complete") {
