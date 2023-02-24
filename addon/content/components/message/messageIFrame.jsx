@@ -340,7 +340,9 @@ export class MessageIFrame extends React.Component {
       // They should be doing something like height="calc(100% - n)".
       // It is unclear at this time if this is a Gecko issue, or a general
       // standards issue. See #1517 for more details.
-      const scrollHeight = iframeDoc.documentElement.scrollHeight;
+      // We also add a +3 to try and avoid some emails getting scrollbars
+      // at all.
+      const scrollHeight = iframeDoc.documentElement.scrollHeight + 3;
       this.iframe.style.height = scrollHeight + "px";
 
       // So now we might overflow horizontally, which causes a horizontal
@@ -352,7 +354,7 @@ export class MessageIFrame extends React.Component {
       // greater
       if (iframeDoc.body.scrollWidth > iframeExternalWidth) {
         this.iframe.style.height =
-          iframeDoc.documentElement.scrollHeight + 20 + "px";
+          iframeDoc.documentElement.scrollHeight + 23 + "px";
       }
     };
     try {
