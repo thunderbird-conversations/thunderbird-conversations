@@ -80,41 +80,6 @@ class _BrowserSim {
     this.#contextReceived = null;
   }
 
-  getBrowser() {
-    if (this._browser) {
-      return this._browser;
-    }
-    let { extension } = this._context;
-    const browser = {};
-    const self = this;
-    for (const apiName of SUPPORTED_BASE_APIS) {
-      if (apiName == "i18n") {
-        let api = extension.apiManager.getAPI(
-          apiName,
-          extension,
-          "addon_parent"
-        );
-        browser[apiName] = this._implementation(extension, api, apiName);
-      } else {
-        // To use the extension.apiManager functionality here, we'd have to
-        // make getBrowser an async function. I don't really want to do that
-        // at this time as that's different to the actual API, so take the
-        // slightly more expensive route of passing everything back through the
-        // experiment API.
-        // const asyncAPI = await extension.apiManager.asyncGetAPI(apiName, extension, "addon_parent");
-        // return implementation(asyncAPI);
-        const subApiHandler = {
-          get(obj, prop) {
-            return self._browserListener.bind(null, apiName, prop);
-          },
-        };
-        browser[apiName] = new Proxy({}, subApiHandler);
-      }
-    }
-    this._browser = browser;
-    return browser;
-  }
-
   // Async version of getBrowser that we can use in stub.html and other places
   // we can do async directly rather than going back across the webextension
   // APIs.

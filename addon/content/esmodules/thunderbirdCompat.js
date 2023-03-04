@@ -187,7 +187,6 @@ if (!browser.conversations) {
     send(details) {
       console.log(details);
     },
-    async startup() {},
     async getLocaleDirection() {
       // RTL languages taken from https://github.com/shadiabuhilal/rtl-detect/blob/master/lib/rtl-detect.js
       const RTL_LANGUAGES = [

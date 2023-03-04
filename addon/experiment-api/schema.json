@@ -34,13 +34,6 @@
         ]
       },
       {
-        "name": "startup",
-        "type": "function",
-        "description": "Temporary. Does the necessary work to start conversations",
-        "async": true,
-        "parameters": []
-      },
-      {
         "name": "getLocaleDirection",
         "type": "function",
         "description": "Temporary. Gets the current locale direction.",

@@ -30,14 +30,6 @@ describe("Prefs tests", () => {
       });
     });
 
-    test("Should call startup", async () => {
-      let spy = jest.spyOn(browser.conversations, "startup");
-
-      await prefs.init();
-
-      expect(spy).toHaveBeenCalled();
-    });
-
     test("Should upgrade older preferences", async () => {
       let newPrefs = {
         ...kPrefDefaults,

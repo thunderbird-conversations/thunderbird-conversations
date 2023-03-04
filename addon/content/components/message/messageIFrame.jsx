@@ -578,7 +578,6 @@ export class MessageIFrame extends React.Component {
   }
 
   _onMsgHasRemoteContent() {
-    console.log("HAVE REMOTE CONTENT");
     this.props.dispatch(
       messageActions.setHasRemoteContent({
         // TODO: Not quite right, since we should check this is actually for

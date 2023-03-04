@@ -74,72 +74,8 @@ const conversationModules = [
 
 const kAllowRemoteContent = 2;
 
-function monkeyPatchWindow(win, windowId) {
-  // Let the stub know we've finished starting.
-  win.conversationsFinishedStartup = true;
-}
-
 function msgHdrGetUri(aMsg) {
   return aMsg.folder.getUriForMsg(aMsg);
-}
-
-/**
- * Handles observing updates on windows.
- */
-class ApiWindowObserver {
-  constructor(windowManager, callback) {
-    this._windowManager = windowManager;
-    this._callback = callback;
-  }
-
-  observe(subject, topic, data) {
-    if (topic != "domwindowopened") {
-      return;
-    }
-    let win;
-    if (subject && "QueryInterface" in subject) {
-      // Supports pre-TB 70.
-      win = subject.QueryInterface(Ci.nsIDOMWindow).window;
-    } else {
-      win = subject;
-    }
-    apiWaitForWindow(win).then(() => {
-      if (
-        win.document.location != "chrome://messenger/content/messenger.xul" &&
-        win.document.location != "chrome://messenger/content/messenger.xhtml"
-      ) {
-        return;
-      }
-      this._callback(
-        subject.window,
-        this._windowManager.getWrapper(subject.window).id
-      );
-    });
-  }
-}
-
-function apiWaitForWindow(win) {
-  return new Promise((resolve) => {
-    if (win.document.readyState == "complete") {
-      resolve();
-    } else {
-      win.addEventListener(
-        "load",
-        () => {
-          resolve();
-        },
-        { once: true }
-      );
-    }
-  });
-}
-
-function apiMonkeyPatchAllWindows(windowManager, callback) {
-  for (const win of Services.wm.getEnumerator("mail:3pane")) {
-    apiWaitForWindow(win).then(() => {
-      callback(win, windowManager.getWrapper(win).id);
-    });
-  }
 }
 
 function getAttachmentInfo(win, msgUri, attachment) {
@@ -156,8 +92,6 @@ function getAttachmentInfo(win, msgUri, attachment) {
   }
   return attInfo;
 }
-
-let apiWindowObserver;
 
 function findAttachment(msgHdr, partName) {
   return new Promise((resolve) => {
@@ -193,10 +127,6 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
       return;
     }
 
-    if (apiWindowObserver) {
-      Services.ww.unregisterNotification(apiWindowObserver);
-    }
-
     BrowserSim.setBrowserListener(null);
 
     for (const module of conversationModules) {
@@ -210,24 +140,8 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
   }
   getAPI(context) {
     const { extension } = context;
-    const { windowManager } = extension;
     return {
       conversations: {
-        async startup() {
-          try {
-            // Patch all existing windows when the UI is built; all locales should have been loaded here
-            // Hook in the embedding and gloda attribute providers.
-            GlodaAttrProviders.init();
-          } catch (ex) {
-            console.error(ex);
-          }
-          apiMonkeyPatchAllWindows(windowManager, monkeyPatchWindow);
-          apiWindowObserver = new ApiWindowObserver(
-            windowManager,
-            monkeyPatchWindow
-          );
-          Services.ww.registerNotification(apiWindowObserver);
-        },
         async getCorePref(name) {
           try {
             // There are simpler ways to do this, but at the moment it gives
@@ -981,6 +895,14 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           context,
           name: "conversations.onCallAPI",
           register(fire) {
+            // This is called on startup, so hook in the gloda attribute
+            // providers.
+            try {
+              GlodaAttrProviders.init();
+            } catch (ex) {
+              console.error(ex);
+            }
+
             function callback(apiName, apiItem, ...args) {
               return fire.async(apiName, apiItem, args);
             }

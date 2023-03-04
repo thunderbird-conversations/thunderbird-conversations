@@ -119,33 +119,6 @@ export const controllerActions = {
         console.debug(`Initializing ${isInTab ? "tab" : "message pane"} view.`);
       }
 
-      if (!isInTab) {
-        let mainWindow = isStandalone
-          ? window.browsingContext.topChromeWindow.opener
-          : window.browsingContext.topChromeWindow;
-        if (!mainWindow.conversationsFinishedStartup) {
-          await new Promise((resolve, reject) => {
-            let tries = 0;
-            function checkStarted() {
-              if (mainWindow.conversationsFinishedStartup) {
-                resolve();
-              } else {
-                // Wait up to 10 seconds, if it is that slow we're in trouble.
-                if (tries >= 100) {
-                  console.error(
-                    "Failed waiting for monkeypatch to finish startup"
-                  );
-                  reject();
-                  return;
-                }
-                tries++;
-                setTimeout(checkStarted, 100);
-              }
-            }
-            checkStarted();
-          });
-        }
-      }
       await dispatch(controllerActions.initializeMessageThread({ params }));
     };
   },

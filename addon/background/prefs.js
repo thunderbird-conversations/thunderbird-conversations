@@ -44,8 +44,6 @@ export class Prefs {
           results.preferences[prefName] = kPrefDefaults[prefName];
         }
       }
-      // Let the backend know we've started.
-      await browser.conversations.startup();
 
       if (updatePrefs) {
         try {
