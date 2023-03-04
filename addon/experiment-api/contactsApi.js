@@ -90,29 +90,6 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
             beginNewProperties.windowId
           );
 
-          // Proxy for > Thunderbird 101.
-          if ("AskUser" in Ci.nsIMsgCompSendFormat) {
-            const window = getWindowFromId(
-              windowManager,
-              context,
-              beginNewProperties.windowId
-            );
-            const args = {};
-            if (beginNewProperties.email !== null) {
-              args.primaryEmail = beginNewProperties.email;
-            }
-            if (beginNewProperties.displayName !== null) {
-              args.displayName = beginNewProperties.displayName;
-            }
-            window.openDialog(
-              "chrome://messenger/content/addressbook/abNewCardDialog.xhtml",
-              "",
-              "chrome,resizable=no,titlebar,modal,centerscreen",
-              args
-            );
-            return;
-          }
-
           window.toAddressBook({
             action: "create",
             vCard: `BEGIN:VCARD\r\nFN:${beginNewProperties.displayName}\r\nEMAIL:${beginNewProperties.email}\r\nEND:VCARD\r\n`,
@@ -129,21 +106,6 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
           );
           if (!contact) {
             console.error("Could not find contact to load");
-            return;
-          }
-
-          // Proxy for > Thunderbird 101.
-          if ("AskUser" in Ci.nsIMsgCompSendFormat) {
-            const args = {
-              abURI: MailServices.ab.getDirectoryFromUID(contact.directoryUID),
-              card: contact.item,
-            };
-            window.openDialog(
-              "chrome://messenger/content/addressbook/abEditCardDialog.xhtml",
-              "",
-              "chrome,modal,resizable=no,centerscreen",
-              args
-            );
             return;
           }
 

@@ -153,7 +153,6 @@ export class Window {
     ) {
       case 0: // fall-through
       case 1: {
-        // Thunderbird 91
         browser.convMsgWindow.openNewWindow(
           "chrome://conversations/content/stubWrapper.xhtml",
           this.getQueryString(urls) + "&standalone=1"
