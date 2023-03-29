@@ -300,7 +300,19 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           if (!msgHdr) {
             throw new Error("Could not find message");
           }
-          win.ViewPageSource([msgHdr.folder.getUriForMsg(msgHdr)]);
+          // We don't need to supply a nsIMsgWindow here, the window is only
+          // used for news messages, and probably wouldn't be used for view
+          // source at all.
+          let url = MailServices.mailSession.ConvertMsgURIToMsgURL(
+            msgHdrGetUri(msgHdr),
+            null
+          );
+          win.openDialog(
+            "chrome://messenger/content/viewSource.xhtml",
+            "_blank",
+            "all,dialog=no",
+            { URL: url }
+          );
         },
         async openInClassic(id) {
           const win = Services.wm.getMostRecentWindow("mail:3pane");
