@@ -457,7 +457,9 @@ function summarizeThreadHandler(contentWin, tabId, context) {
     }
 
     if (contentWin.webBrowser?.documentURI?.spec != STUB_URI) {
-      contentWin.displayWebPage("chrome://conversations/content/stub.html");
+      contentWin.messagePane.displayWebPage(
+        "chrome://conversations/content/stub.html"
+      );
     }
 
     // Should cancel most intempestive view refreshes, but only after we
