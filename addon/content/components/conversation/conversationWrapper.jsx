@@ -50,6 +50,13 @@ class _ConversationWrapper extends React.PureComponent {
   }
 
   render() {
+    if (this.props.messageNotFound) {
+      return (
+        <React.Fragment>
+          {browser.i18n.getMessage("message.movedOrDeletedConversation")}
+        </React.Fragment>
+      );
+    }
     return (
       <React.Fragment>
         <div id="popup-container"></div>
@@ -63,12 +70,14 @@ class _ConversationWrapper extends React.PureComponent {
 
 _ConversationWrapper.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  messageNotFound: PropTypes.bool.isRequired,
   tweakChrome: PropTypes.bool.isRequired,
   OS: PropTypes.string,
 };
 
 export const ConversationWrapper = ReactRedux.connect((state) => {
   return {
+    messageNotFound: state.summary.messageNotFound,
     tweakChrome: !!state.summary.prefs && state.summary.prefs.tweakChrome,
     OS: state.summary.OS,
   };

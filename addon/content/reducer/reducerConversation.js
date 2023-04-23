@@ -14,7 +14,7 @@ import { mergeContactDetails, getContactPhotos } from "./contacts.js";
 import { messageActions } from "./reducerMessages.js";
 import { MessageEnricher } from "./messageEnricher.js";
 import { quickReplySlice } from "./reducerQuickReply.js";
-import { summaryActions } from "./reducerSummary.js";
+import { summarySlice } from "./reducerSummary.js";
 
 const sortMessages = (m1, m2) => m1.date - m2.date;
 
@@ -87,12 +87,15 @@ export const conversationActions = {
       );
 
       if (!msgIds.length) {
-        // TODO: Add a better error message.
         console.error("Could not find any messages to load");
-        document.getElementById("messageList").textContent =
-          browser.i18n.getMessage("message.movedOrDeletedConversation");
+        await dispatch(
+          summarySlice.actions.setMessagesNotFound({ notFound: true })
+        );
         return;
       }
+      await dispatch(
+        summarySlice.actions.setMessagesNotFound({ notFound: false })
+      );
 
       currentQueryListener = (event) => {
         if (event.initial) {
@@ -180,7 +183,7 @@ export const conversationActions = {
         summary.loading = false;
         summary.subject = enrichedMsgs[enrichedMsgs.length - 1]?.subject;
 
-        await dispatch(summaryActions.replaceSummaryDetails(summary));
+        await dispatch(summarySlice.actions.replaceSummaryDetails(summary));
 
         await dispatch(
           messageActions.replaceConversation({ messages: enrichedMsgs })

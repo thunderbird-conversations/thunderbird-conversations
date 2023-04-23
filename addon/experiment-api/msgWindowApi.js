@@ -456,6 +456,9 @@ function summarizeThreadHandler(contentWin, tabId, context) {
       }
     }
 
+    // As a message will now have been displayed, don't keep the start page open.
+    contentWin.messagePane._keepStartPageOpen = false;
+
     if (contentWin.webBrowser?.documentURI?.spec != STUB_URI) {
       contentWin.messagePane.displayWebPage(
         "chrome://conversations/content/stub.html"
