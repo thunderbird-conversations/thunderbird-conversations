@@ -76,7 +76,6 @@ module.exports = {
   rules: {
     "jsdoc/check-tag-names": "error",
     "jsdoc/check-types": "error",
-    "jsdoc/newline-after-description": "error",
     "jsdoc/no-undefined-types": ["error", { definedTypes: ["MessageHeader"] }],
     "jsdoc/require-jsdoc": [
       "error",
@@ -89,6 +88,7 @@ module.exports = {
     "jsdoc/require-returns": "off",
     "jsdoc/require-returns-description": "off",
     "jsdoc/require-returns-type": "error",
+    "jsdoc/tag-lines": ["error", "never", { startLines: 1 }],
     "jsdoc/valid-types": "error",
     // We want to check the global scope everywhere.
     "no-unused-vars": [
