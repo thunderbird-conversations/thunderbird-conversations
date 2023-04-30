@@ -828,7 +828,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           let docShell = messageIframe.contentWindow.docShell;
           docShell.appType = Ci.nsIDocShell.APP_TYPE_MAIL;
 
-          msgService.DisplayMessage(
+          msgService.loadMessage(
             uri + "&markRead=false",
             docShell,
             win.msgWindow,

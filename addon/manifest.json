@@ -3,7 +3,7 @@
   "applications": {
     "gecko": {
       "id": "gconversation@xulforum.org",
-      "strict_min_version": "111.0a1",
+      "strict_min_version": "114.0a1",
       "strict_max_version": "114.0a1"
     }
   },
