@@ -159,8 +159,7 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
                 return;
               }
               for (let [
-                ,
-                // iframeName,
+                iframeName,
                 listenerData,
               ] of remoteContentListeners.entries()) {
                 if (listenerData.tabId != null) {
@@ -170,15 +169,12 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
                   // This should be the correct code, but Thunderbird reports
                   // the parent browsingContext rather than the iframe.
                   // See https://bugzilla.mozilla.org/show_bug.cgi?id=1818950
-                  // let contentDoc = contentWin.webBrowser.contentDocument;
-                  // let elements = contentDoc.getElementsByClassName(iframeName);
-                  // if (
-                  //   elements.length &&
-                  //   elements[0]?.browsingContext.id == data
-                  // ) {
-                  //   listenerData.fire.async();
-                  // }
-                  if (contentWin.webBrowser.browsingContext.id == data) {
+                  let contentDoc = contentWin.webBrowser.contentDocument;
+                  let elements = contentDoc.getElementsByClassName(iframeName);
+                  if (
+                    elements.length &&
+                    elements[0]?.browsingContext.id == data
+                  ) {
                     listenerData.fire.async();
                   }
                 }

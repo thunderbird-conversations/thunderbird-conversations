@@ -266,7 +266,10 @@ export const messageActions = {
     return async (dispatch) => {
       await browser.conversations.showRemoteContent(id);
       await dispatch(
-        messagesSlice.actions.setHasRemoteContent({ hasRemoteContent: false })
+        messagesSlice.actions.setHasRemoteContent({
+          id,
+          hasRemoteContent: false,
+        })
       );
     };
   },
@@ -274,7 +277,10 @@ export const messageActions = {
     return async (dispatch) => {
       await browser.conversations.alwaysShowRemoteContent(realFrom);
       await dispatch(
-        messagesSlice.actions.setHasRemoteContent({ hasRemoteContent: false })
+        messagesSlice.actions.setHasRemoteContent({
+          id,
+          hasRemoteContent: false,
+        })
       );
     };
   },

@@ -189,6 +189,7 @@ export class MessageIFrame extends React.Component {
     this.dueToExpansion = undefined;
     this.iframe.classList.remove(`convIframe${prevProps.id}`);
     this.iframe.classList.add(this.iframeName);
+    this.reRegisterContentListener(`convIframe${prevProps.id}`);
     if (prevProps.id != this.props.id && this.props.expanded) {
       // This is a hack which ensures that the iframe is a minimal height, so
       // that when the message loads, the scroll height is set correctly, rather
@@ -280,6 +281,25 @@ export class MessageIFrame extends React.Component {
       this.loading = false;
     }
     this.unregisterListeners();
+  }
+
+  reRegisterContentListener(previousFrameName) {
+    if (this._remoteContentListener) {
+      browser.convMsgWindow.onMsgHasRemoteContent.removeListener(
+        this._remoteContentListener,
+        this.props.tabId,
+        this.props.winId,
+        previousFrameName
+      );
+      this._remoteContentListener = null;
+    }
+    this._remoteContentListener = this._onMsgHasRemoteContent.bind(this);
+    browser.convMsgWindow.onMsgHasRemoteContent.addListener(
+      this._remoteContentListener,
+      this.props.tabId,
+      this.props.winId,
+      this.iframeName
+    );
   }
 
   registerListeners() {
