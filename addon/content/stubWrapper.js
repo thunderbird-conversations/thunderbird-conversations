@@ -28,7 +28,9 @@ window.addEventListener(
     );
 
     browser.loadURI(
-      `chrome://conversations/content/stub.html${window.arguments[0].params}`,
+      Services.io.newURI(
+        `chrome://conversations/content/stub.html${window.arguments[0].params}`
+      ),
       {
         triggeringPrincipal:
           Services.scriptSecurityManager.getSystemPrincipal(),
