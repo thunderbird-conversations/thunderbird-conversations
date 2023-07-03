@@ -114,38 +114,6 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
             card: contact.item,
           });
         },
-        async getPhotoUrl(contactId) {
-          let contact = addressBookManager.findContactById(contactId);
-          if (!contact) {
-            return null;
-          }
-
-          let photoName = contact.item.getProperty("PhotoName", "");
-          if (photoName) {
-            let path = PathUtils.join(
-              PathUtils.profileDir,
-              "Photos",
-              photoName
-            );
-
-            let buffer = await IOUtils.read(path);
-            let data = btoa(String.fromCharCode.apply(null, buffer));
-
-            let type;
-            if (data.startsWith("iVBO")) {
-              // The first 3 bytes say this image is PNG.
-              type = "png";
-            } else if (data.startsWith("/9j/")) {
-              // The first 3 bytes say this image is JPEG.
-              type = "jpeg";
-            } else {
-              throw new Error("Unsupported image format");
-            }
-            return `data:image/${type};base64,${data}`;
-          }
-
-          return null;
-        },
         async showMessagesInvolving(options) {
           const window = getWindowFromId(
             windowManager,
