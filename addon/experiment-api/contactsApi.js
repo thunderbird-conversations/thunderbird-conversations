@@ -9,9 +9,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   MailServices: "resource:///modules/MailServices.jsm",
 });
 
-// eslint-disable-next-line mozilla/reject-importGlobalProperties
-XPCOMUtils.defineLazyGlobalGetters(this, ["btoa", "IOUtils", "PathUtils"]);
-
 /**
  * @typedef nsIMsgFolder
  * @see https://searchfox.org/comm-central/rev/9d9fac50cddfd9606a51c4ec3059728c33d58028/mailnews/base/public/nsIMsgFolder.idl
