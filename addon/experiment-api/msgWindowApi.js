@@ -60,6 +60,24 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
   getAPI(context) {
     const { extension } = context;
     const { windowManager } = extension;
+
+    function observer(subject, topic, data) {
+      if (topic != "remote-content-blocked") {
+        return;
+      }
+      for (let [iframeName, listenerData] of remoteContentListeners.entries()) {
+        if (listenerData.tabId != null) {
+          let tabObject = context.extension.tabManager.get(listenerData.tabId);
+          let contentWin = tabObject.nativeTab.chromeBrowser.contentWindow;
+          let contentDoc = contentWin.multiMessageBrowser.contentDocument;
+          let elements = contentDoc.getElementsByClassName(iframeName);
+          if (elements.length && elements[0]?.browsingContext.id == data) {
+            listenerData.fire.async();
+          }
+        }
+      }
+    }
+
     return {
       convMsgWindow: {
         async maybeReloadMultiMessage(tabId) {
@@ -160,34 +178,6 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
           context,
           name: "convMsgWindow.onMsgHasRemoteContent",
           register(fire, tabId, winId, iframeName) {
-            function observer(subject, topic, data) {
-              if (topic != "remote-content-blocked") {
-                return;
-              }
-              for (let [
-                iframeName,
-                listenerData,
-              ] of remoteContentListeners.entries()) {
-                if (listenerData.tabId != null) {
-                  let tabObject = context.extension.tabManager.get(tabId);
-                  let contentWin =
-                    tabObject.nativeTab.chromeBrowser.contentWindow;
-                  // This should be the correct code, but Thunderbird reports
-                  // the parent browsingContext rather than the iframe.
-                  // See https://bugzilla.mozilla.org/show_bug.cgi?id=1818950
-                  let contentDoc =
-                    contentWin.multiMessageBrowser.contentDocument;
-                  let elements = contentDoc.getElementsByClassName(iframeName);
-                  if (
-                    elements.length &&
-                    elements[0]?.browsingContext.id == data
-                  ) {
-                    listenerData.fire.async();
-                  }
-                }
-              }
-            }
-
             if (remoteContentListeners.size == 0) {
               Services.obs.addObserver(observer, "remote-content-blocked");
             }
