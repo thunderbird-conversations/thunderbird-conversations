@@ -125,11 +125,12 @@ export const controllerActions = {
 
   initializeMessageThread({ params }) {
     return async (dispatch, getState) => {
-      if (getState().summary.isInTab) {
+      let state = getState();
+      if (state.summary.isInTab) {
         setupConversationInTab(params, dispatch).catch(console.error);
       } else {
         let msgIds = await browser.messageDisplay.getDisplayedMessages(
-          getState().summary.tabId
+          state.summary.tabId
         );
 
         dispatch(

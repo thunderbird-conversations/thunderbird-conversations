@@ -814,10 +814,11 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
                   iframeClass
                 )[0];
             } else {
-              let webBrowser =
-                tabObject.nativeTab.chromeBrowser.contentWindow.webBrowser;
+              let multiMessageBrowser =
+                tabObject.nativeTab.chromeBrowser.contentWindow
+                  .multiMessageBrowser;
               messageIframe =
-                webBrowser.contentDocument.getElementsByClassName(
+                multiMessageBrowser.contentDocument.getElementsByClassName(
                   iframeClass
                 )[0];
             }

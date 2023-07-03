@@ -9,3 +9,7 @@ ChromeUtils.defineModuleGetter(
   "BrowserSim",
   "chrome://conversations/content/modules/browserSim.js"
 );
+
+this.gMessageSummary = {
+  clear() {},
+};
