@@ -11,9 +11,7 @@ import PropTypes from "prop-types";
 
 export function QuickReply({ id, multipleRecipients, recipientsIncludeLists }) {
   const dispatch = ReactRedux.useDispatch();
-  const { quickReplyState } = ReactRedux.useSelector((state) => ({
-    quickReplyState: state.quickReply,
-  }));
+  const quickReplyState = ReactRedux.useSelector((state) => state.quickReply);
 
   function expand(event) {
     if (event.currentTarget.classList.contains("replyList")) {

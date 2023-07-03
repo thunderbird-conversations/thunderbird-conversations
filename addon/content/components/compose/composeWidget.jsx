@@ -10,9 +10,7 @@ import PropTypes from "prop-types";
 
 export function ComposeWidget({ discard }) {
   const dispatch = ReactRedux.useDispatch();
-  const { composeState } = ReactRedux.useSelector((state) => ({
-    composeState: state.compose,
-  }));
+  const composeState = ReactRedux.useSelector((state) => state.compose);
   const bodyInput = React.createRef();
   const subjectInput = React.createRef();
 
