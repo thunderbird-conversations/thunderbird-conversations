@@ -83,7 +83,7 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
         async maybeReloadMultiMessage(tabId) {
           let tabObject = context.extension.tabManager.get(tabId);
           let contentWin = tabObject.nativeTab.chromeBrowser.contentWindow;
-          contentWin.maybeReloadMultiMessage?.reload();
+          contentWin.multiMessageBrowser?.reload();
         },
         async openNewWindow(url, params) {
           const win = getWindowFromId();

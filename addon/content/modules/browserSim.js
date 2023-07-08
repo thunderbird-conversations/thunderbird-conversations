@@ -178,36 +178,25 @@ class _BrowserSim {
 
   getTabId(win, docWin) {
     let tabmail = win.document.getElementById("tabmail");
-    // We assume for now (certainly TB 91) that we can get the current
-    // multi-message browser and that will be in the expected tab. This generally
-    // as the multi-message browser is shared across tabs, however, we should
-    // see if we can find a way to get the browser for the current document
-    // window (docWin), and avoid the winodw lookup altogether.
-    //
-    // Alternately, we need to complete the switch to loading as a WebExtension
-    // page, but that's a lot more work at the moment.
 
-    // TODO: Thunderbird's 91.x getTabForBrowser is broken in the case of the
-    // multimessage pane (bug 1767586). Work around that here.
-    let browser =
-      docWin.browsingContext?.embedderElement || docWin.frameElement;
-    let tab;
-    if (
-      browser?.id == "multimessage" &&
-      tabmail.selectedTab.mode.tabType.name == "mail"
-    ) {
-      tab = tabmail.currentTabInfo;
-    } else {
+    // Assume first we're in a three-pane tab.
+    let threePaneBrowser =
+      docWin.browsingContext?.embedderElement?.ownerDocument?.ownerGlobal
+        ?.browsingContext?.embedderElement;
+    let tab = tabmail.tabInfo.find((t) => t.chromeBrowser == threePaneBrowser);
+
+    if (tab?.mode.name != "mail3PaneTab") {
+      // Are we in a tab instead?
       tab = tabmail.getTabForBrowser(
         docWin.browsingContext?.embedderElement || docWin.frameElement
       );
     }
     if (!tab) {
-      // We are probably in a window all by ourselves in Thunderbird 91,
-      // fallback to getting the selected tab.
-      //
-      // To fix this properly we'll need to be able to drop 91 and load
-      // messages in a content tab but in its own window.
+      // We are probably in a window all by ourselves fallback to getting the
+      // selected tab.
+
+      // Ideally we'd be loading a message in a content tab on its own, but
+      // Thunderbird doesn't allow that yet.
       tab = tabmail.selectedTab;
     }
     return this.#context.extension.tabManager.convert(tab).id;
