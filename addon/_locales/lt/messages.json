@@ -3,719 +3,673 @@
     "message": "Thunderbird Conversations",
     "description": "Name of the extension."
   },
-
   "extensionDescription": {
     "message": "Brings a conversation view to a Thunderbird near you!",
     "description": "Description of the extension."
   },
-
   "options.expand_who": {
     "message": "By default, expand:",
     "description": "Options - label for which messages should be expanded."
   },
-
   "options.expand_auto": {
     "message": "Automatic",
     "description": "Options - label for automatically expanding messages."
   },
-
   "options.expand_auto.tooltip": {
     "message": "If the thread is collapsed, expand all unread messages or the last message. If it is expanded, only expand the selected message in the message list.",
     "description": "Options - tooltip for automatically expanding messages."
   },
-
   "options.expand_none": {
     "message": "No messages",
     "description": "Options - label for not expanding messages."
   },
-
   "options.expand_all": {
     "message": "All messages",
     "description": "Options - label for expanding all messages."
   },
-
   "options.quoting_title": {
     "message": "Quoted text",
     "description": "Options - title for quoted text."
   },
-
   "options.quoting_desc": {
     "message": "Quotes higher than this number of lines will be collapsed.",
     "description": "Options - description for quoted text."
   },
-
   "options.hide_sigs_title": {
     "message": "Hide Signatures",
     "description": "Options - title for hiding signatures."
   },
-
   "options.hide_sigs_desc": {
     "message": "Whether signatures are collapsed by default.",
     "description": "Options - description for hiding signatures."
   },
-
   "options.friendly_date_title": {
     "message": "No friendly dates",
     "description": "Options - title for if to show friendly dates."
   },
-
   "options.friendly_date_desc": {
     "message": "In the top right corner, use \"normal\" dates, just like the message list, instead of \"yesterday\" and others.",
     "description": "Options - description for if to show friendly dates."
   },
-
   "options.tweak_chrome_title": {
     "message": "Tweak chrome fonts",
     "description": "Options - title for tweaking chrome fonts."
   },
-
   "options.tweak_chrome_desc": {
     "message": "Scale down the font size for the conversation chrome (recommended, requires restart).",
     "description": "Options - description for tweaking chrome fonts."
   },
-
   "options.tweak_bodies_title": {
     "message": "Tweak body fonts",
     "description": "Options - title for tweaking message body fonts."
   },
-
   "options.tweak_bodies_desc": {
     "message": "Tweak the fonts in the message bodies to make them consistent with the outer font (recommended, requires restart).",
     "description": "Options - description for tweaking message body fonts."
   },
-
   "options.operate_on_conversations_title": {
     "message": "Archive/delete behavior",
     "description": "Options - title for archive/delete behavior."
   },
-
   "options.operate_on_conversations_desc": {
     "message": "Toolbar buttons should archive and delete the entire conversation, not just selected messages.",
     "description": "Options - description for archive/delete behavior."
   },
-
   "options.extra_attachments_title": {
     "message": "I love attachments",
     "description": "Options - title for attachment settings."
   },
-
   "options.extra_attachments_desc": {
     "message": "In some corner cases, Thunderbird will fail to recognize some attachments. This option allows you to workaround the Thunderbird bug, and makes sure we try to display as many attachments as we can. Use in combination with the Show All Body Parts addon.",
     "description": "Options - description for attachment settings."
   },
-
   "options.compose_in_tab_title": {
     "message": "Hidden composition window",
     "description": "Options - title for hidden compose window enabling."
   },
-
   "options.compose_in_tab_desc": {
     "message": "Ctrl-Shift-N opens the hidden, unsupported composition window in a new tab",
     "description": "Options - description for hidden compose window enabling."
   },
-
   "options.debugging_title": {
     "message": "Debugging",
     "description": "Options - title for debugging setting."
   },
-
   "options.debugging_desc": {
     "message": "Enable debug output in the system console and the error console. This will generate a lot of messages.",
     "description": "Options - description for debugging setting."
   },
-
   "assistant.title": {
     "message": "Pirmo paleidimo padėjėjas",
     "description": "The document title of the assistant page."
   },
-
   "assistant.working": {
     "message": "Vykdoma...",
     "description": "An indication that the assistant is working."
   },
-
   "assistant.apply": {
     "message": "Pritaikyti pakeitimus",
     "description": "The apply button title for the assistant."
   },
-
   "assistant.actionEnableGloda": {
     "message": "Įsitikinkite jog Globali paieška ir indeksavimas yra įjungti.",
     "description": "Option text for enabling Gloda."
   },
-
   "assistant.actionOfflineDownload": {
     "message": "„Gauti laiškai“ ir „Išsiųsti laiškai“ yra sinchronizuoti darbui atsijungus (labai rekomenduotina).",
     "description": "Option text for allowing offline download."
   },
-
   "assistant.actionEnsureMessagePaneVisible": {
     "message": "Įsitikinkite jog laiškų skydelis matomas.",
     "description": "Option text for ensuring the message pane is visible."
   },
-
   "assistant.settings2": {
     "message": "Jei vėliau norėsite įjungti daugiau parinkčių, galėsite pasiekti šį vedlį per papildinių nustatymų meniu, „papildoma“ skyriuj.",
     "description": "Paragraph informing users of the ability to change settings later."
   },
-
   "gallery.messageMovedOrDeleted": {
     "message": "Deja galerijos peržiūros parodyti neįmanoma, nes pranešimai buvo perkelti arba pašalinti.",
     "description": "Message displayed if the email that the gallery is trying to view cannot be found."
   },
-
   "gallery.title": {
     "message": "Galerijos peržiūra: $1",
     "description": "The tab title for the image gallery"
   },
-
   "options.start_setup_assistant": {
     "message": "Paleisti nustatymo padėjėją",
     "description": "Title of the button to open the setup assistant."
   },
-
   "message.movedOrDeletedConversation": {
     "message": "Deja šio pokalbio parodyti neįmanoma, nes pranešimai buvo perkelti arba pašalinti.",
     "description": "Error message for the conversation tab"
   },
-
   "contact.copyEmailTooltip": {
     "message": "Kopijuoti el. pašto adresą į iškarpinę",
     "description": "Tooltip shown on the copy email to clipboard button"
   },
-
   "contact.createFilterTooltip": {
     "message": "sukurti filtrą šiam siuntėjui",
     "description": "Tooltip shown on the create filter for contact button"
   },
-
   "contact.addContactTooltip": {
     "message": "Pridėti šį į adresų knygelę",
     "description": "Tooltip shown on the add contact button"
   },
-
   "contact.editContactTooltip": {
     "message": "Taisyti adresatą adresų knygelėje",
     "description": "Tooltip shown on the edit contact button"
   },
-
   "contact.sendEmailTooltip": {
     "message": "siųsti el. laišką",
     "description": "Tooltip shown on the send email button"
   },
-
   "contact.recentConversationsTooltip": {
     "message": "naujausi pokalbiai",
     "description": "Tooltip shown on the recent conversations button"
   },
-
   "message.archive.tooltip": {
     "message": "Archyvuoti šį pokalbį",
     "description": "Tooltip for the archive button in the conversation header"
   },
-
   "message.detach.tooltip": {
     "message": "Rodyti šį pokalbį naujoje kortelėje",
     "description": "Tooltip for the detach to new tab button in the conversation header"
   },
-
   "message.expand.tooltip": {
     "message": "Išskleisti/Suskleisti visus laiškus",
     "description": "Tooltip for the expand button in the conversation header"
   },
-
   "message.forwardConversation": {
     "message": "Persiųsti šį pokalbį",
     "description": "The link text for forwarding a conversation"
   },
-
   "message.junk.tooltip": {
     "message": "Pažymėti kaip brukalą",
     "description": "Tooltip for the junk button in the conversation header"
   },
-
   "message.loading": {
     "message": "Įkraunama...",
     "description": "Displayed when the message is loading"
   },
-
   "message.printConversation": {
     "message": "Spausdinti šį pokalbį",
     "description": "The link text for printing a conversation"
   },
-
   "message.read.tooltip": {
     "message": "Perjungti visų laiškų būseną kaip skaityti/neskaityti",
     "description": "Tooltip for the mark as read button in the conversation header"
   },
-
   "message.trash.tooltip": {
     "message": "Pašalinti šį pokalbį",
     "description": "Tooltip for the trash button in the conversation header"
   },
-
   "message.noSubject": {
     "message": "(no subject)",
     "description": "Displayed when a message has no subject"
   },
-
   "message.showDetails.tooltip": {
     "message": "išsamiau",
     "description": "Tooltip for showing message header details"
   },
-
   "message.hideDetails.tooltip": {
     "message": "slėpti detales",
     "description": "Tooltip for hiding message header details"
   },
-
   "message.moreMenu.tooltip": {
     "message": "daugiau",
     "description": "Tooltip for the more menu"
   },
-
   "action.archive": {
     "message": "archyvuoti šį laišką",
     "description": "Archive button name in the message more menu"
   },
-
   "action.delete": {
     "message": "ištrinti šį laišką",
     "description": "Delete button name in the message more menu"
   },
-
   "action.viewClassic": {
     "message": "peržiūrėti naudojant įprastą skaityklę",
     "description": "Show in classic view button name in the message more menu"
   },
-
   "action.viewSource": {
     "message": "peržiūrėti laiško pradinį kodą",
     "description": "View source button name in the message more menu"
   },
-
   "notification.scamMsg": {
     "message": "Šis laiškas gali būti apgaulė:",
     "description": "Notification message shown for a junk/scam message"
   },
-
   "notification.ignoreScamWarning": {
     "message": "nepaisyti įspėjimo",
     "description": "Button title to ignore a junk/scam message"
   },
-
   "notification.junkMsg": {
     "message": "Tai yra brukalas",
     "description": "Notification message shown for junk messages"
   },
-
   "notification.notJunk": {
     "message": "Ne brukalas",
     "description": "Button title to mark as not junk"
   },
-
   "notification.isOutboxMsg": {
     "message": "Tai yra neišsiųstas laiškas.",
     "description": "Notification message shown for a message in the outbox"
   },
-
   "notification.sendUnsent": {
     "message": "Siųsti neišsiųstus laiškus dabar?",
     "description": "Button title to send a message in the outbox"
   },
-
   "notification.remoteContentBlockedMsg": {
     "message": "Nutolęs turinys buvo paslėptas:",
     "description": "Notification message shown when remote content is blocked"
   },
-
   "notification.showRemote": {
     "message": "rodyti nutolusį turinį",
     "description": "Button title to show remote content"
   },
-
   "notification.alwaysShowRemote": {
     "message": "visada rodyti nutolusį turinį iš $fromEmail$",
     "description": "Button title to always show remote content.",
     "placeholders": {
-      "fromEmail": {
-        "content": "$1",
-        "example": "me@example.com"
-      }
+      "fromEmail": { "content": "$1", "example": "me@example.com" }
     }
   },
-
   "action.editDraft": {
     "message": "taisyti juodraštį",
     "description": "Edit draft button name in the message more menu"
   },
-
   "action.reply": {
     "message": "atsakyti",
     "description": "Reply button name in the message more menu"
   },
-
   "action.replyAll": {
     "message": "atsakyti visiems",
     "description": "Reply all button name in the message more menu"
   },
-
   "action.replyList": {
     "message": "atsakyti sąrašui",
     "description": "Reply list button name in the message more menu"
   },
-
   "action.editNew": {
     "message": "redaguoti kaip naują",
     "description": "Edit as new button name in the message more menu"
   },
-
   "action.forward": {
     "message": "persiųsti",
     "description": "Forward button name in the message more menu"
   },
-
   "message.fromHeader": {
     "message": "nuo:",
     "description": "Header name displayed for the from field"
   },
-
   "message.toHeader": {
     "message": "kam:",
     "description": "Header name displayed for the to field"
   },
-
   "message.ccHeader": {
     "message": "cc:",
     "description": "Header name displayed for the cc field"
   },
-
   "header.to": {
     "message": "kam",
     "description": "Used in the header, inserted in 'from me to you'."
   },
-
   "tags.jumpToFolder.tooltip": {
     "message": "Peršokti į šį aplanką",
     "description": "Tooltip for the jump to folder tag."
   },
-
   "tags.inFolder": {
     "message": "Į $folderName$",
     "description": "Folder indication for the jump to folder tag.",
-    "placeholders": {
-      "folderName": {
-        "content": "$1",
-        "example": "Sent"
-      }
-    }
+    "placeholders": { "folderName": { "content": "$1", "example": "Sent" } }
   },
-
   "attachments.downloadAll.tooltip": {
     "message": "išsaugoti visus",
     "description": "Tooltip for the download all attachments button."
   },
-
   "attachments.gallery.tooltip": {
     "message": "galerijos vaizdas",
     "description": "Tooltip for the view attachments in gallery button."
   },
-
   "attachments.preview.tooltip": {
     "message": "peržiūra",
     "description": "Tooltip displayed for the preview button of an attachment."
   },
-
   "attachments.open.tooltip": {
     "message": "atverti",
     "description": "Tooltip displayed for the preview button of an attachment."
   },
-
   "attachments.viewAttachment.tooltip": {
     "message": "Peržiūrėti šį priedą naujoje kortelėje",
     "description": "Tooltip displayed for an attachment that can be previewed in a tab."
   },
-
   "attachments.download.tooltip": {
     "message": "išsaugoti",
     "description": "Tooltip displayed for the download button of an attachment."
   },
-
   "messageBody.hideQuotedText": {
     "message": "slėpti cituojamą tekstą",
     "description": "String displayed in a message body to collapse the quoted text."
   },
-
   "messageBody.showQuotedText": {
     "message": "rodyti cituojamą tekstą",
     "description": "String displayed in a message body to expand the quoted text."
   },
-
   "messageBody.hideSigText": {
     "message": "hide signature",
     "description": "String displayed in a message body to collapse the signature."
   },
-
   "messageBody.showSigText": {
     "message": "show signature",
     "description": "String displayed in a message body to expand the signature."
   },
-
   "header.commaSeparator": {
     "message": ",",
     "description": "This is used in messages, for the recipients, and the 'between' column as well. In English, space after the comma."
   },
-
   "header.andSeparator": {
     "message": "ir",
     "description": "This is used in messages, for the recipients, and the 'between' column as well. In English, space after and before « and »."
   },
-
   "attachments.context.detach": {
     "message": "Atsegti priedą",
     "description": "Context menu item to detach an attachment."
   },
-
   "attachments.context.delete": {
     "message": "Ištrinti priedą",
     "description": "Context menu item to delete an attachment."
   },
-
   "pluralForm": {
     "message": "6",
     "description": "Please make sure you read and understood https://developer.mozilla.org/en/Localization_and_Plurals. pluralForm corresponds to the 'pluralRule' variable that's described in the page, it's just a mistake if the name doesn't match the MDC page."
   },
-
   "attachments.numAttachments": {
     "message": "vienas priedas;$num$ priedų;$num$ priedai",
     "description": "The description used for how many attachments there are. This should take the form of a plural form, see also 'pluralForm'.",
-    "placeholders": {
-      "num": {
-        "content": "$1",
-        "example": "2"
-      }
-    }
+    "placeholders": { "num": { "content": "$1", "example": "2" } }
   },
-
   "message.meFromMeToSomeone": {
     "message": "Aš",
     "description": "One of four different strings are required to accomodate some languages which have specific declensions."
   },
-
   "message.meFromSomeoneToMe": {
     "message": "Aš",
     "description": "One of four different strings are required to accomodate some languages which have specific declensions."
   },
-
   "message.meBetweenMeAndSomeone": {
     "message": "Aš",
     "description": "One of four different strings are required to accomodate some languages which have specific declensions."
   },
-
   "message.meBetweenSomeoneAndMe": {
     "message": "Aš",
     "description": "One of four different strings are required to accomodate some languages which have specific declensions."
   },
-
   "message.headerSubject": {
     "message": "tema",
     "description": "Name for the Subject header that is displayed when you click the show details button."
   },
-
   "message.headerDate": {
     "message": "data",
     "description": "Name for the Date header that is displayed when you click the show details button."
   },
-
   "message.headerFolder": {
     "message": "aplankas",
     "description": "Name for the Folder header that is displayed when you click the show details button."
   },
-
   "involvingTabTitle": {
     "message": "Susiję laiškai $contactName$",
     "description": "This is used when we click on the \"recent conversations\" button in a contact tooltip. This is the title of the tab that opens.",
     "placeholders": {
-      "contactName": {
-        "content": "$1",
-        "example": "John Smith"
-      }
+      "contactName": { "content": "$1", "example": "John Smith" }
     }
   },
-
   "compose.confirmDiscard": {
     "message": "Ar tikrai norite nepaisyti šio pranešimo?",
     "description": "Confirmation message when discarding a compose draft."
   },
-
   "compose.attachFiles": {
     "message": "Pridėti failą(-us)",
     "description": "Title of the file picker to attach files to a compose draft."
   },
-
   "compose.attachedMessage": {
     "message": "Pridėtas pranešimas.eml",
     "description": "The filename name to use for an attachment when attaching an email."
   },
-
   "compose.attachment": {
     "message": "Priedas",
     "description": "Attachment header when composing a draft."
   },
-
   "attachments.sizeUnknown": {
     "message": "nežinomas dydis",
     "description": "The message displayed when an attachment size is unknown."
   },
-
   "compose.sendAnEmptyMessage": {
     "message": "Siųsti tuščią laišką?",
     "description": "Confirmation message for sending an empty email."
   },
-
   "compose.sendingMessage": {
     "message": "Siunčiamas laiškas...",
     "description": "Information text when sending an email."
   },
-
   "compose.messageSendingSuccess": {
     "message": "Laiškas $msgId$ išsiųstas sėkmingai",
     "description": "Information text for email sent success.",
-    "placeholders": {
-      "msgId": {
-        "content": "$1",
-        "example": "1234"
-      }
-    }
+    "placeholders": { "msgId": { "content": "$1", "example": "1234" } }
   },
-
   "compose.couldntSendTheMessage": {
     "message": "Laiško išsiųsti nepavyko.",
     "description": "Information text for when sending email failed."
   },
-
   "conversation.forwardFillInText": {
     "message": "Štai pokalbis kuris, mano nuomone, turėtų tave sudominti!",
     "description": "Text displayed when a conversation is forwarded."
   },
-
   "compose.messageSendingCanceled": {
     "message": "Laiško siuntimas atšauktas.",
     "description": "Information text when sending email was canceled."
   },
-
   "enigmail.attachmentsNotEncrypted": {
     "message": "Attachments will not be encrypted using inline-PGP.\nInstead send message using PGP/MIME?",
     "description": "For the enigmail plugin to indicate attachments are not encrypted on sending."
   },
-
   "compose.write": {
     "message": "Rašyti...",
     "description": "Document title for composing an email in a new tab."
   },
-
   "between.columnName": {
     "message": "Tarp",
     "description": "The displayed name of the between column."
   },
-
   "between.columnTooltip": {
     "message": "Paspauskite norėdami rikiuoti pagal dalyvius",
     "description": "The tooltip of the between column."
   },
-
   "message.at": {
     "message": "at",
     "description": "Used for concatenation of two strings, e.g. John Doe at http://bugzilla.mozilla.org"
   },
-
   "enigmail.messageSigned": {
     "message": "pasirašytas",
     "description": "Tag description displayed when a message is signed."
   },
-
   "enigmail.messageSignedLong": {
     "message": "Šis laiškas buvo pasirašytas",
     "description": "Tooltip displayed when a signature is good and verified."
   },
-
   "enigmail.messageDecrypted": {
     "message": "iššifruotas",
     "description": "Tag description displayed when a message has been decrypted."
   },
-
   "enigmail.messageDecryptedLong": {
     "message": "Prieš peržiūrint, šis laiškas buvo iššifruotas",
     "description": "Tooltip displayed when a message has been decrypted."
   },
-
   "compose.addCc": {
     "message": "pridėti cc",
     "description": "Link to click to add a cc when composing messages."
   },
-
   "compose.addBcc": {
     "message": "pridėti bcc",
     "description": "Link to click to add bcc when composing messages."
   },
-
   "compose.addAttachment": {
     "message": "pridėti priedų",
     "description": "Link to add an attachment when composing messages."
   },
-
   "compose.removeAttachment": {
     "message": "pašalinti",
     "description": "Link to remove an attachment when composing messages."
   },
-
   "compose.fieldBcc": {
     "message": "bcc:",
     "description": "Field name for the bcc field when composing messages."
   },
-
   "compose.fieldSubject": {
     "message": "tema:",
     "description": "Field name for the subject field when composing messages."
   },
-
   "compose.editField": {
     "message": "taisyti",
     "description": "Link title to edit a particular field when composing messages."
   },
-
   "compose.send": {
     "message": "siųsti",
     "description": "Button name to send a message."
   },
-
   "compose.sendArchive": {
     "message": "siųsti ir archyvuoti",
     "description": "Button name to send and archive a message."
   },
-
   "compose.save": {
     "message": "saugoti",
     "description": "Button name to save a message as draft."
   },
-
   "compose.discard": {
     "message": "atmesti",
     "description": "Button name to discard a message draft."
   },
-
   "compose.mostFrequentContacts": {
     "message": "Dažniausiai naudojami adresai:",
     "description": "Field name for showing the most frequently used contacts."
   },
-
   "compose.showMore": {
     "message": "show more…",
     "description": "Show more link for showing more contacts."
   },
-
   "enigmail.unknownGood": {
     "message": "nežinomas geras parašas",
     "description": "Tooltip displayed when a signature is good but unverified."
+  },
+  "calendar.imipAcceptButton.label": {
+    "message": "Priimti",
+    "description": "Calendar invite accept button."
+  },
+  "calendar.imipAcceptButton.tooltip": {
+    "message": "Priimti kvietimą į įvykį",
+    "description": "Calendar invite accept button tooltip."
+  },
+  "calendar.imipAcceptRecurrencesButton.label": {
+    "message": "Priimti visus",
+    "description": "Calendar invite accept button."
+  },
+  "calendar.imipAcceptRecurrencesButton.tooltip": {
+    "message": "Priimti kvietimą į visus įvykio pasikartojimus",
+    "description": "Calendar invite accept button tooltip."
+  },
+  "calendar.imipAddButton.label": {
+    "message": "Pridėti",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipAddButton.tooltip": {
+    "message": "Pridėti įvykį į kalendorių",
+    "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imipDeclineButton.label": {
+    "message": "Atmesti",
+    "description": "Calendar invite decline button."
+  },
+  "calendar.imipDeclineButton.tooltip": {
+    "message": "Nepriimti kvietimo į įvykį",
+    "description": "Calendar invite decline button tooltip."
+  },
+  "calendar.imipDeclineRecurrencesButton.label": {
+    "message": "Atmesti visus",
+    "description": "Calendar invite decline button."
+  },
+  "calendar.imipDeclineRecurrencesButton.tooltip": {
+    "message": "Nepriimti kvietimo į visus įvykio pasikartojimus",
+    "description": "Calendar invite decline button tooltip."
+  },
+  "calendar.imipDeclineCounterButton.label": {
+    "message": "Atmesti",
+    "description": "Calendar invite decline button."
+  },
+  "calendar.imipDeclineCounterButton.tooltip": {
+    "message": "Atmesti alternatyvų pasiūlymą",
+    "description": "Calendar invite decline button tooltip."
+  },
+  "calendar.imipDeleteButton.label": {
+    "message": "Pašalinti",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipDeleteButton.tooltip": {
+    "message": "Pašalinti iš kalendoriaus",
+    "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imipDetailsButton.label": {
+    "message": "Išsamiau…",
+    "description": "Calendar invite details button."
+  },
+  "calendar.imipDetailsButton.tooltip": {
+    "message": "Rodyti išsamesnę įvykio informaciją",
+    "description": "Calendar invite details button tooltip."
+  },
+  "calendar.imipReconfirmButton.label": {
+    "message": "Pakartotinai patvirtinti",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipReconfirmButton.tooltip": {
+    "message": "Nusiųsti pakartotinį patvirtinimą įvykio organizatoriui",
+    "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imipRescheduleButton.label": {
+    "message": "Perplanuoti",
+    "description": "Calendar invite tentative button."
+  },
+  "calendar.imipRescheduleButton.tooltip": {
+    "message": "Perplanuoti įvykį",
+    "description": "Calendar invite tentative button tooltip."
+  },
+  "calendar.imipTentativeButton.label": {
+    "message": "Priimti preliminariai",
+    "description": "Calendar invite tentative button."
+  },
+  "calendar.imipTentativeButton.tooltip": {
+    "message": "Preliminariai priimti kvietimą į įvykį",
+    "description": "Calendar invite tentative button tooltip."
+  },
+  "calendar.imipTentativeRecurrencesButton.label": {
+    "message": "Visus priimti preliminariai",
+    "description": "Calendar invite tentative button."
+  },
+  "calendar.imipTentativeRecurrencesButton.tooltip": {
+    "message": "Preliminariai priimti kvietimą į visus įvykio pasikartojimus",
+    "description": "Calendar invite tentative button tooltip."
+  },
+  "calendar.imipUpdateButton.label": {
+    "message": "Priimti",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipUpdateButton.tooltip": {
+    "message": "Priimti",
+    "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imipGoToCalendarButton.label": {
+    "message": "Kalendorius",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipGoToCalendarButton.tooltip": {
+    "message": "Atverti kalendoriaus kortelę",
+    "description": "Calendar invite update button tooltip."
   }
 }

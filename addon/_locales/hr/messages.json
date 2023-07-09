@@ -3,719 +3,673 @@
     "message": "Thunderbird Conversations",
     "description": "Name of the extension."
   },
-
   "extensionDescription": {
     "message": "Brings a conversation view to a Thunderbird near you!",
     "description": "Description of the extension."
   },
-
   "options.expand_who": {
     "message": "Zadano proširi:",
     "description": "Options - label for which messages should be expanded."
   },
-
   "options.expand_auto": {
     "message": "Automatski",
     "description": "Options - label for automatically expanding messages."
   },
-
   "options.expand_auto.tooltip": {
     "message": "If the thread is collapsed, expand all unread messages or the last message. If it is expanded, only expand the selected message in the message list.",
     "description": "Options - tooltip for automatically expanding messages."
   },
-
   "options.expand_none": {
     "message": "Nijednu poruku",
     "description": "Options - label for not expanding messages."
   },
-
   "options.expand_all": {
     "message": "Sve poruke",
     "description": "Options - label for expanding all messages."
   },
-
   "options.quoting_title": {
     "message": "Citirani tekst",
     "description": "Options - title for quoted text."
   },
-
   "options.quoting_desc": {
     "message": "Citati duži od ovog broja linija bit će sažeti.",
     "description": "Options - description for quoted text."
   },
-
   "options.hide_sigs_title": {
     "message": "Sakrij potpise",
     "description": "Options - title for hiding signatures."
   },
-
   "options.hide_sigs_desc": {
     "message": "Hoće li potpisi biti sakriveni prema zadanim postavkama.",
     "description": "Options - description for hiding signatures."
   },
-
   "options.friendly_date_title": {
     "message": "Bez prijateljskih potpisa",
     "description": "Options - title for if to show friendly dates."
   },
-
   "options.friendly_date_desc": {
     "message": "U gornjem desnom kutu koristi \"normalne\" datume, kao u popisu poruka, umjesto \"jučer\" i sličnog.",
     "description": "Options - description for if to show friendly dates."
   },
-
   "options.tweak_chrome_title": {
     "message": "Tweak chrome fonts",
     "description": "Options - title for tweaking chrome fonts."
   },
-
   "options.tweak_chrome_desc": {
     "message": "Scale down the font size for the conversation chrome (recommended, requires restart).",
     "description": "Options - description for tweaking chrome fonts."
   },
-
   "options.tweak_bodies_title": {
     "message": "Tweak body fonts",
     "description": "Options - title for tweaking message body fonts."
   },
-
   "options.tweak_bodies_desc": {
     "message": "Tweak the fonts in the message bodies to make them consistent with the outer font (recommended, requires restart).",
     "description": "Options - description for tweaking message body fonts."
   },
-
   "options.operate_on_conversations_title": {
     "message": "Ponašanje arhiviranja/brisanja",
     "description": "Options - title for archive/delete behavior."
   },
-
   "options.operate_on_conversations_desc": {
     "message": "Tipke alatne trake trebaju arhivirati i brisati cijeli razgovor, ne samo odabrane poruke.",
     "description": "Options - description for archive/delete behavior."
   },
-
   "options.extra_attachments_title": {
     "message": "Volim priložene datoteke",
     "description": "Options - title for attachment settings."
   },
-
   "options.extra_attachments_desc": {
     "message": "In some corner cases, Thunderbird will fail to recognize some attachments. This option allows you to workaround the Thunderbird bug, and makes sure we try to display as many attachments as we can. Use in combination with the Show All Body Parts addon.",
     "description": "Options - description for attachment settings."
   },
-
   "options.compose_in_tab_title": {
     "message": "Sakriveni prozor za pisanje",
     "description": "Options - title for hidden compose window enabling."
   },
-
   "options.compose_in_tab_desc": {
     "message": "Ctrl-Shift-N otvara sakriveni, nepodržati prozor za stvaranje u novoj kartici",
     "description": "Options - description for hidden compose window enabling."
   },
-
   "options.debugging_title": {
     "message": "Uklanjanje grešaka",
     "description": "Options - title for debugging setting."
   },
-
   "options.debugging_desc": {
     "message": "Enable debug output in the system console and the error console. This will generate a lot of messages.",
     "description": "Options - description for debugging setting."
   },
-
   "assistant.title": {
     "message": "Prvo pokrenite čarobnjaka",
     "description": "The document title of the assistant page."
   },
-
   "assistant.working": {
     "message": "Obrada...",
     "description": "An indication that the assistant is working."
   },
-
   "assistant.apply": {
     "message": "Primijeni promjene",
     "description": "The apply button title for the assistant."
   },
-
   "assistant.actionEnableGloda": {
     "message": "Provjerite je li globalno pretraživanje i indeksiranje uključeno.",
     "description": "Option text for enabling Gloda."
   },
-
   "assistant.actionOfflineDownload": {
     "message": "Primljena pošta i Poslano sinkronizira se za izvanmrežnu pohranu (izrazito preporučeno).",
     "description": "Option text for allowing offline download."
   },
-
   "assistant.actionEnsureMessagePaneVisible": {
     "message": "Provjerite je li okno poruka vidljivo.",
     "description": "Option text for ensuring the message pane is visible."
   },
-
   "assistant.settings2": {
     "message": "Ukoliko želite promijeniti neke postavke kasnije, možete pristupiti ovom čarobnjaku kroz postavke dodatka, pod odjeljkom \"Napredno\".",
     "description": "Paragraph informing users of the ability to change settings later."
   },
-
   "gallery.messageMovedOrDeleted": {
     "message": "Ne možemo prikazati ovu galeriju jer su poruke premještene ili obrisane.",
     "description": "Message displayed if the email that the gallery is trying to view cannot be found."
   },
-
   "gallery.title": {
     "message": "Prikaz galerije za: $1",
     "description": "The tab title for the image gallery"
   },
-
   "options.start_setup_assistant": {
     "message": "Pokreni čarobnjaka za postavke",
     "description": "Title of the button to open the setup assistant."
   },
-
   "message.movedOrDeletedConversation": {
     "message": "Ne možemo prikazati ovaj razgovor jer su poruke premještene ili obrisane.",
     "description": "Error message for the conversation tab"
   },
-
   "contact.copyEmailTooltip": {
     "message": "Kopiraj adresu e-pošte u međuspremnik",
     "description": "Tooltip shown on the copy email to clipboard button"
   },
-
   "contact.createFilterTooltip": {
     "message": "stvori filter za pošiljatelja",
     "description": "Tooltip shown on the create filter for contact button"
   },
-
   "contact.addContactTooltip": {
     "message": "Dodaj u adresar",
     "description": "Tooltip shown on the add contact button"
   },
-
   "contact.editContactTooltip": {
     "message": "Uredi kontakt u adresaru",
     "description": "Tooltip shown on the edit contact button"
   },
-
   "contact.sendEmailTooltip": {
     "message": "pošalji e-poštu",
     "description": "Tooltip shown on the send email button"
   },
-
   "contact.recentConversationsTooltip": {
     "message": "nedavni razgovori",
     "description": "Tooltip shown on the recent conversations button"
   },
-
   "message.archive.tooltip": {
     "message": "Arhiviraj ovaj razgovor",
     "description": "Tooltip for the archive button in the conversation header"
   },
-
   "message.detach.tooltip": {
     "message": "Prikaži ovaj razgovor u novoj kartici",
     "description": "Tooltip for the detach to new tab button in the conversation header"
   },
-
   "message.expand.tooltip": {
     "message": "Proširi/skupi sve poruke",
     "description": "Tooltip for the expand button in the conversation header"
   },
-
   "message.forwardConversation": {
     "message": "Proslijedi ovaj razgovor",
     "description": "The link text for forwarding a conversation"
   },
-
   "message.junk.tooltip": {
     "message": "Označi ovu poruku kao neželjenu",
     "description": "Tooltip for the junk button in the conversation header"
   },
-
   "message.loading": {
     "message": "Učitavanje...",
     "description": "Displayed when the message is loading"
   },
-
   "message.printConversation": {
     "message": "Ispiši ovaj razgovor",
     "description": "The link text for printing a conversation"
   },
-
   "message.read.tooltip": {
     "message": "Označi sve poruke pročitanim/nepročitanim",
     "description": "Tooltip for the mark as read button in the conversation header"
   },
-
   "message.trash.tooltip": {
     "message": "Obriši ovaj razgovor",
     "description": "Tooltip for the trash button in the conversation header"
   },
-
   "message.noSubject": {
     "message": "(bez predmeta)",
     "description": "Displayed when a message has no subject"
   },
-
   "message.showDetails.tooltip": {
     "message": "prikaži detalje",
     "description": "Tooltip for showing message header details"
   },
-
   "message.hideDetails.tooltip": {
     "message": "sakrij detalje",
     "description": "Tooltip for hiding message header details"
   },
-
   "message.moreMenu.tooltip": {
     "message": "više",
     "description": "Tooltip for the more menu"
   },
-
   "action.archive": {
     "message": "arhiviraj ovu poruku",
     "description": "Archive button name in the message more menu"
   },
-
   "action.delete": {
     "message": "obriši ovu poruku",
     "description": "Delete button name in the message more menu"
   },
-
   "action.viewClassic": {
     "message": "prikaži koristeći klasični čitač",
     "description": "Show in classic view button name in the message more menu"
   },
-
   "action.viewSource": {
     "message": "prikaži izvorni kod poruke",
     "description": "View source button name in the message more menu"
   },
-
   "notification.scamMsg": {
     "message": "Ova poruka je možda prevara:",
     "description": "Notification message shown for a junk/scam message"
   },
-
   "notification.ignoreScamWarning": {
     "message": "ignoriraj upozorenje",
     "description": "Button title to ignore a junk/scam message"
   },
-
   "notification.junkMsg": {
     "message": "Ovo je neželjena pošta",
     "description": "Notification message shown for junk messages"
   },
-
   "notification.notJunk": {
     "message": "Nije neželjena pošta",
     "description": "Button title to mark as not junk"
   },
-
   "notification.isOutboxMsg": {
     "message": "Ova poruka nije poslana.",
     "description": "Notification message shown for a message in the outbox"
   },
-
   "notification.sendUnsent": {
     "message": "Pošalji neposlane poruke sada?",
     "description": "Button title to send a message in the outbox"
   },
-
   "notification.remoteContentBlockedMsg": {
     "message": "Vanjski sadržaj je skriven:",
     "description": "Notification message shown when remote content is blocked"
   },
-
   "notification.showRemote": {
     "message": "prikaži vanjski sadržaj",
     "description": "Button title to show remote content"
   },
-
   "notification.alwaysShowRemote": {
     "message": "uvijek prikaži vanjski sadržaj od $fromEmail$",
     "description": "Button title to always show remote content.",
     "placeholders": {
-      "fromEmail": {
-        "content": "$1",
-        "example": "me@example.com"
-      }
+      "fromEmail": { "content": "$1", "example": "me@example.com" }
     }
   },
-
   "action.editDraft": {
     "message": "uredi skicu",
     "description": "Edit draft button name in the message more menu"
   },
-
   "action.reply": {
     "message": "odgovori",
     "description": "Reply button name in the message more menu"
   },
-
   "action.replyAll": {
     "message": "odgovori svima",
     "description": "Reply all button name in the message more menu"
   },
-
   "action.replyList": {
     "message": "odgovori na popis",
     "description": "Reply list button name in the message more menu"
   },
-
   "action.editNew": {
     "message": "uredi kao novo",
     "description": "Edit as new button name in the message more menu"
   },
-
   "action.forward": {
     "message": "proslijedi",
     "description": "Forward button name in the message more menu"
   },
-
   "message.fromHeader": {
     "message": "šalje:",
     "description": "Header name displayed for the from field"
   },
-
   "message.toHeader": {
     "message": "prima:",
     "description": "Header name displayed for the to field"
   },
-
   "message.ccHeader": {
     "message": "kopija:",
     "description": "Header name displayed for the cc field"
   },
-
   "header.to": {
     "message": "prima",
     "description": "Used in the header, inserted in 'from me to you'."
   },
-
   "tags.jumpToFolder.tooltip": {
     "message": "Idi na ovu mapu",
     "description": "Tooltip for the jump to folder tag."
   },
-
   "tags.inFolder": {
     "message": "U $folderName$",
     "description": "Folder indication for the jump to folder tag.",
-    "placeholders": {
-      "folderName": {
-        "content": "$1",
-        "example": "Sent"
-      }
-    }
+    "placeholders": { "folderName": { "content": "$1", "example": "Sent" } }
   },
-
   "attachments.downloadAll.tooltip": {
     "message": "spremi sve",
     "description": "Tooltip for the download all attachments button."
   },
-
   "attachments.gallery.tooltip": {
     "message": "galerijski prikaz",
     "description": "Tooltip for the view attachments in gallery button."
   },
-
   "attachments.preview.tooltip": {
     "message": "pregled",
     "description": "Tooltip displayed for the preview button of an attachment."
   },
-
   "attachments.open.tooltip": {
     "message": "otvori",
     "description": "Tooltip displayed for the preview button of an attachment."
   },
-
   "attachments.viewAttachment.tooltip": {
     "message": "Prikaži ovaj privitak u novoj kartici",
     "description": "Tooltip displayed for an attachment that can be previewed in a tab."
   },
-
   "attachments.download.tooltip": {
     "message": "spremi",
     "description": "Tooltip displayed for the download button of an attachment."
   },
-
   "messageBody.hideQuotedText": {
     "message": "sakrij citirani tekst",
     "description": "String displayed in a message body to collapse the quoted text."
   },
-
   "messageBody.showQuotedText": {
     "message": "prikaži citirani tekst",
     "description": "String displayed in a message body to expand the quoted text."
   },
-
   "messageBody.hideSigText": {
     "message": "sakrij potpis",
     "description": "String displayed in a message body to collapse the signature."
   },
-
   "messageBody.showSigText": {
     "message": "prikaži potpis",
     "description": "String displayed in a message body to expand the signature."
   },
-
   "header.commaSeparator": {
     "message": ",",
     "description": "This is used in messages, for the recipients, and the 'between' column as well. In English, space after the comma."
   },
-
   "header.andSeparator": {
     "message": " i ",
     "description": "This is used in messages, for the recipients, and the 'between' column as well. In English, space after and before « and »."
   },
-
   "attachments.context.detach": {
     "message": "Odvoji privitak",
     "description": "Context menu item to detach an attachment."
   },
-
   "attachments.context.delete": {
     "message": "Obriši privitak",
     "description": "Context menu item to delete an attachment."
   },
-
   "pluralForm": {
     "message": "7",
     "description": "Please make sure you read and understood https://developer.mozilla.org/en/Localization_and_Plurals. pluralForm corresponds to the 'pluralRule' variable that's described in the page, it's just a mistake if the name doesn't match the MDC page."
   },
-
   "attachments.numAttachments": {
     "message": "jedan privitak;$num$ privitka;$num$ privitaka",
     "description": "The description used for how many attachments there are. This should take the form of a plural form, see also 'pluralForm'.",
-    "placeholders": {
-      "num": {
-        "content": "$1",
-        "example": "2"
-      }
-    }
+    "placeholders": { "num": { "content": "$1", "example": "2" } }
   },
-
   "message.meFromMeToSomeone": {
     "message": "Ja",
     "description": "One of four different strings are required to accomodate some languages which have specific declensions."
   },
-
   "message.meFromSomeoneToMe": {
     "message": "Ja",
     "description": "One of four different strings are required to accomodate some languages which have specific declensions."
   },
-
   "message.meBetweenMeAndSomeone": {
     "message": "Ja",
     "description": "One of four different strings are required to accomodate some languages which have specific declensions."
   },
-
   "message.meBetweenSomeoneAndMe": {
     "message": "Ja",
     "description": "One of four different strings are required to accomodate some languages which have specific declensions."
   },
-
   "message.headerSubject": {
     "message": "predmet",
     "description": "Name for the Subject header that is displayed when you click the show details button."
   },
-
   "message.headerDate": {
     "message": "datum",
     "description": "Name for the Date header that is displayed when you click the show details button."
   },
-
   "message.headerFolder": {
     "message": "mapa",
     "description": "Name for the Folder header that is displayed when you click the show details button."
   },
-
   "involvingTabTitle": {
     "message": "Uključen u porukama: $contactName$",
     "description": "This is used when we click on the \"recent conversations\" button in a contact tooltip. This is the title of the tab that opens.",
     "placeholders": {
-      "contactName": {
-        "content": "$1",
-        "example": "John Smith"
-      }
+      "contactName": { "content": "$1", "example": "John Smith" }
     }
   },
-
   "compose.confirmDiscard": {
     "message": "Jeste li sigurni da želite odbaciti ovu poruku?",
     "description": "Confirmation message when discarding a compose draft."
   },
-
   "compose.attachFiles": {
     "message": "Priloži datoteku(e)",
     "description": "Title of the file picker to attach files to a compose draft."
   },
-
   "compose.attachedMessage": {
     "message": "Priložena Message.eml",
     "description": "The filename name to use for an attachment when attaching an email."
   },
-
   "compose.attachment": {
     "message": "Prilog",
     "description": "Attachment header when composing a draft."
   },
-
   "attachments.sizeUnknown": {
     "message": "veličina nepoznata",
     "description": "The message displayed when an attachment size is unknown."
   },
-
   "compose.sendAnEmptyMessage": {
     "message": "Poslati praznu poruku?",
     "description": "Confirmation message for sending an empty email."
   },
-
   "compose.sendingMessage": {
     "message": "Slanje poruke…",
     "description": "Information text when sending an email."
   },
-
   "compose.messageSendingSuccess": {
     "message": "Poruka $msgId$ uspješno poslana",
     "description": "Information text for email sent success.",
-    "placeholders": {
-      "msgId": {
-        "content": "$1",
-        "example": "1234"
-      }
-    }
+    "placeholders": { "msgId": { "content": "$1", "example": "1234" } }
   },
-
   "compose.couldntSendTheMessage": {
     "message": "Nije moguće poslati poruku.",
     "description": "Information text for when sending email failed."
   },
-
   "conversation.forwardFillInText": {
     "message": "Mislim da će ti ovaj razgovor biti zanimljiv!",
     "description": "Text displayed when a conversation is forwarded."
   },
-
   "compose.messageSendingCanceled": {
     "message": "Slanje poruke je otkazano.",
     "description": "Information text when sending email was canceled."
   },
-
   "enigmail.attachmentsNotEncrypted": {
     "message": "Privitci neće biti kriptirani koristeći umetnuti-PGP.\nUmjesto toga poslati poruku koristeći PGP/MIME?",
     "description": "For the enigmail plugin to indicate attachments are not encrypted on sending."
   },
-
   "compose.write": {
     "message": "Pisanje...",
     "description": "Document title for composing an email in a new tab."
   },
-
   "between.columnName": {
     "message": "Između",
     "description": "The displayed name of the between column."
   },
-
   "between.columnTooltip": {
     "message": "Kliknite za sortiranje prema sudionicima",
     "description": "The tooltip of the between column."
   },
-
   "message.at": {
     "message": "na",
     "description": "Used for concatenation of two strings, e.g. John Doe at http://bugzilla.mozilla.org"
   },
-
   "enigmail.messageSigned": {
     "message": "potpisana",
     "description": "Tag description displayed when a message is signed."
   },
-
   "enigmail.messageSignedLong": {
     "message": "Ova poruka je potpisana",
     "description": "Tooltip displayed when a signature is good and verified."
   },
-
   "enigmail.messageDecrypted": {
     "message": "dekodirana",
     "description": "Tag description displayed when a message has been decrypted."
   },
-
   "enigmail.messageDecryptedLong": {
     "message": "Ova poruka je dekodirana prije prikazivanja",
     "description": "Tooltip displayed when a message has been decrypted."
   },
-
   "compose.addCc": {
     "message": "dodaj cc",
     "description": "Link to click to add a cc when composing messages."
   },
-
   "compose.addBcc": {
     "message": "dodaj bcc",
     "description": "Link to click to add bcc when composing messages."
   },
-
   "compose.addAttachment": {
     "message": "dodaj privitke",
     "description": "Link to add an attachment when composing messages."
   },
-
   "compose.removeAttachment": {
     "message": "ukloni",
     "description": "Link to remove an attachment when composing messages."
   },
-
   "compose.fieldBcc": {
     "message": "skrivena kopija:",
     "description": "Field name for the bcc field when composing messages."
   },
-
   "compose.fieldSubject": {
     "message": "predmet:",
     "description": "Field name for the subject field when composing messages."
   },
-
   "compose.editField": {
     "message": "uredi",
     "description": "Link title to edit a particular field when composing messages."
   },
-
   "compose.send": {
     "message": "pošalji",
     "description": "Button name to send a message."
   },
-
   "compose.sendArchive": {
     "message": "pošalji i arhiviraj",
     "description": "Button name to send and archive a message."
   },
-
   "compose.save": {
     "message": "spremi",
     "description": "Button name to save a message as draft."
   },
-
   "compose.discard": {
     "message": "zanemari",
     "description": "Button name to discard a message draft."
   },
-
   "compose.mostFrequentContacts": {
     "message": "Kontakti kojima ste najčešće pisali:",
     "description": "Field name for showing the most frequently used contacts."
   },
-
   "compose.showMore": {
     "message": "prikaži više…",
     "description": "Show more link for showing more contacts."
   },
-
   "enigmail.unknownGood": {
     "message": "nepoznati dobar potpis",
     "description": "Tooltip displayed when a signature is good but unverified."
+  },
+  "calendar.imipAcceptButton.label": {
+    "message": "Prihvati",
+    "description": "Calendar invite accept button."
+  },
+  "calendar.imipAcceptButton.tooltip": {
+    "message": "Prihvati poziv na događaj",
+    "description": "Calendar invite accept button tooltip."
+  },
+  "calendar.imipAcceptRecurrencesButton.label": {
+    "message": "Prihvati sve",
+    "description": "Calendar invite accept button."
+  },
+  "calendar.imipAcceptRecurrencesButton.tooltip": {
+    "message": "Prihvati poziv za sva ponavljanja događaja",
+    "description": "Calendar invite accept button tooltip."
+  },
+  "calendar.imipAddButton.label": {
+    "message": "Dodaj",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipAddButton.tooltip": {
+    "message": "Dodaj događaj u kalendar",
+    "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imipDeclineButton.label": {
+    "message": "Odbij",
+    "description": "Calendar invite decline button."
+  },
+  "calendar.imipDeclineButton.tooltip": {
+    "message": "Odbij poziv na događaj",
+    "description": "Calendar invite decline button tooltip."
+  },
+  "calendar.imipDeclineRecurrencesButton.label": {
+    "message": "Odbij sve",
+    "description": "Calendar invite decline button."
+  },
+  "calendar.imipDeclineRecurrencesButton.tooltip": {
+    "message": "Odbij poziv za sva ponavljanja događaja",
+    "description": "Calendar invite decline button tooltip."
+  },
+  "calendar.imipDeclineCounterButton.label": {
+    "message": "Odbij",
+    "description": "Calendar invite decline button."
+  },
+  "calendar.imipDeclineCounterButton.tooltip": {
+    "message": "Odbij protuprijedlog",
+    "description": "Calendar invite decline button tooltip."
+  },
+  "calendar.imipDeleteButton.label": {
+    "message": "Obriši",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipDeleteButton.tooltip": {
+    "message": "Obriši iz kalendara",
+    "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imipDetailsButton.label": {
+    "message": "Detalji…",
+    "description": "Calendar invite details button."
+  },
+  "calendar.imipDetailsButton.tooltip": {
+    "message": "Prikaži detalje događaja",
+    "description": "Calendar invite details button tooltip."
+  },
+  "calendar.imipReconfirmButton.label": {
+    "message": "Ponovno potvrdi",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipReconfirmButton.tooltip": {
+    "message": "Šalje ponovnu potvrdu organizatoru",
+    "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imipRescheduleButton.label": {
+    "message": "Ponovno zakaži",
+    "description": "Calendar invite tentative button."
+  },
+  "calendar.imipRescheduleButton.tooltip": {
+    "message": "Ponovno zakaži događaj",
+    "description": "Calendar invite tentative button tooltip."
+  },
+  "calendar.imipTentativeButton.label": {
+    "message": "Privremeno",
+    "description": "Calendar invite tentative button."
+  },
+  "calendar.imipTentativeButton.tooltip": {
+    "message": "Privremeno prihvati poziv na događaj",
+    "description": "Calendar invite tentative button tooltip."
+  },
+  "calendar.imipTentativeRecurrencesButton.label": {
+    "message": "Sve privremeno",
+    "description": "Calendar invite tentative button."
+  },
+  "calendar.imipTentativeRecurrencesButton.tooltip": {
+    "message": "Privremeno prihvati poziv za sva ponavljanja događaja",
+    "description": "Calendar invite tentative button tooltip."
+  },
+  "calendar.imipUpdateButton.label": {
+    "message": "Prihvati",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipUpdateButton.tooltip": {
+    "message": "Prihvati",
+    "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imipGoToCalendarButton.label": {
+    "message": "Kalendar",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipGoToCalendarButton.tooltip": {
+    "message": "Idi na karticu kalendara",
+    "description": "Calendar invite update button tooltip."
   }
 }

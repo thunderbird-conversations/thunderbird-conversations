@@ -355,14 +355,40 @@ function setupListeners(dispatch, getState) {
     }
   }
 
-  let tabId = getState().summary.tabId;
+  function invitesListener({ msgId, notification }) {
+    let notificationDetails = { ...notification, buttons: [] };
 
+    for (let button of notification.buttons) {
+      notificationDetails.buttons.push({
+        ...button,
+        textContent:
+          browser.i18n.getMessage(`calendar.${button.id}.label`) ?? "",
+        tooltiptext:
+          browser.i18n.getMessage(`calendar.${button.id}.tooltip`) ?? "",
+      });
+    }
+
+    dispatch(
+      messageActions.msgShowNotification({
+        msgData: { id: msgId, notification: notificationDetails },
+      })
+    );
+  }
+
+  let state = getState();
+  let tabId = state.summary.tabId;
+  let winId = state.summary.isStandalone ? state.summary.windowId : undefined;
   browser.convMsgWindow.onSelectedMessagesChanged.addListener(
     msgSelectionChanged,
     tabId
   );
   browser.messageDisplay.onMessagesDisplayed.addListener(
     selectionChangedListener
+  );
+  browser.convCalendar.onListenForInvites.addListener(
+    invitesListener,
+    winId,
+    tabId
   );
 
   let updateSecurityStatusListener = onUpdateSecurityStatus.bind(
@@ -382,6 +408,12 @@ function setupListeners(dispatch, getState) {
   unloadListeners = () => {
     unloadListeners = null;
     window.removeEventListener("unload", unloadListeners, { once: true });
+
+    browser.convCalendar.onListenForInvites.removeListener(
+      invitesListener,
+      winId,
+      tabId
+    );
 
     browser.convMsgWindow.onSelectedMessagesChanged.removeListener(
       msgSelectionChanged,

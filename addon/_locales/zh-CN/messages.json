@@ -3,719 +3,673 @@
     "message": "Thunderbird Conversations",
     "description": "Name of the extension."
   },
-
   "extensionDescription": {
     "message": "按邮件话题集中显示相关邮件（包括你自己发出的邮件）, 同Gmail目前的邮件显示方式一致",
     "description": "Description of the extension."
   },
-
   "options.expand_who": {
     "message": "默认：展开",
     "description": "Options - label for which messages should be expanded."
   },
-
   "options.expand_auto": {
     "message": "自动",
     "description": "Options - label for automatically expanding messages."
   },
-
   "options.expand_auto.tooltip": {
     "message": "如果折叠会话，则显示所有未读邮件或最后一封邮件。如果展开会话，仅展开邮件列表中的指定邮件.",
     "description": "Options - tooltip for automatically expanding messages."
   },
-
   "options.expand_none": {
     "message": "没有邮件",
     "description": "Options - label for not expanding messages."
   },
-
   "options.expand_all": {
     "message": "所有邮件",
     "description": "Options - label for expanding all messages."
   },
-
   "options.quoting_title": {
     "message": "引用文本",
     "description": "Options - title for quoted text."
   },
-
   "options.quoting_desc": {
     "message": "多余此行数的引用文本将隐藏（折叠）.",
     "description": "Options - description for quoted text."
   },
-
   "options.hide_sigs_title": {
     "message": "Hide Signatures",
     "description": "Options - title for hiding signatures."
   },
-
   "options.hide_sigs_desc": {
     "message": "Whether signatures are collapsed by default.",
     "description": "Options - description for hiding signatures."
   },
-
   "options.friendly_date_title": {
     "message": "日期",
     "description": "Options - title for if to show friendly dates."
   },
-
   "options.friendly_date_desc": {
     "message": "在右上角，如同在邮件列表中一致，使用\"普通\"日期，而不是使用\"昨天\"之类.",
     "description": "Options - description for if to show friendly dates."
   },
-
   "options.tweak_chrome_title": {
     "message": "调整Chrome字体",
     "description": "Options - title for tweaking chrome fonts."
   },
-
   "options.tweak_chrome_desc": {
     "message": "减小会话列表的字体大小（推荐，需要重启）.",
     "description": "Options - description for tweaking chrome fonts."
   },
-
   "options.tweak_bodies_title": {
     "message": "调整正文字体",
     "description": "Options - title for tweaking message body fonts."
   },
-
   "options.tweak_bodies_desc": {
     "message": "调整邮件正文的字体以确保与外部字体相一致（推荐，需要重启）.",
     "description": "Options - description for tweaking message body fonts."
   },
-
   "options.operate_on_conversations_title": {
     "message": "工具条按钮",
     "description": "Options - title for archive/delete behavior."
   },
-
   "options.operate_on_conversations_desc": {
     "message": "工具条上的按钮归档并删除整个邮件回话，而不仅包括选中的邮件",
     "description": "Options - description for archive/delete behavior."
   },
-
   "options.extra_attachments_title": {
     "message": "附件",
     "description": "Options - title for attachment settings."
   },
-
   "options.extra_attachments_desc": {
     "message": "在某些情况下，Thunderbird可能会无法识别某些附件。此设置项允许您可以跟踪Thunderbird缺陷，以确认已尽可能多的显示了附件。可与Show All Body Parts联合使用本设置项.",
     "description": "Options - description for attachment settings."
   },
-
   "options.compose_in_tab_title": {
     "message": "隐藏邮件编写窗口",
     "description": "Options - title for hidden compose window enabling."
   },
-
   "options.compose_in_tab_desc": {
     "message": "Ctrl-Shift-N 在新页面中打开隐藏的、为支持的邮件编写窗口",
     "description": "Options - description for hidden compose window enabling."
   },
-
   "options.debugging_title": {
     "message": "调试",
     "description": "Options - title for debugging setting."
   },
-
   "options.debugging_desc": {
     "message": "调试信息输出到系统终端和错误终端。本操作将可能产生大量信息.",
     "description": "Options - description for debugging setting."
   },
-
   "assistant.title": {
     "message": "首次运行向导",
     "description": "The document title of the assistant page."
   },
-
   "assistant.working": {
     "message": "操作中……",
     "description": "An indication that the assistant is working."
   },
-
   "assistant.apply": {
     "message": "应用",
     "description": "The apply button title for the assistant."
   },
-
   "assistant.actionEnableGloda": {
     "message": "请确认全局检索和索引已经激活",
     "description": "Option text for enabling Gloda."
   },
-
   "assistant.actionOfflineDownload": {
     "message": "收件箱和已发邮件箱相同步使用离线存储(强烈推荐).",
     "description": "Option text for allowing offline download."
   },
-
   "assistant.actionEnsureMessagePaneVisible": {
     "message": "请确认邮件面板可见。",
     "description": "Option text for ensuring the message pane is visible."
   },
-
   "assistant.settings2": {
     "message": "如果需要再次调整其他设置，可以从本插件的选项页中“高级”栏目中访问本设置向导",
     "description": "Paragraph informing users of the ability to change settings later."
   },
-
   "gallery.messageMovedOrDeleted": {
     "message": "无法显示画廊视图：邮件已经被移动或删除.",
     "description": "Message displayed if the email that the gallery is trying to view cannot be found."
   },
-
   "gallery.title": {
     "message": "画廊视图: $1",
     "description": "The tab title for the image gallery"
   },
-
   "options.start_setup_assistant": {
     "message": "启动安装助手",
     "description": "Title of the button to open the setup assistant."
   },
-
   "message.movedOrDeletedConversation": {
     "message": "无法显示此会话：邮件已经被移动或删除.",
     "description": "Error message for the conversation tab"
   },
-
   "contact.copyEmailTooltip": {
     "message": "复制邮件地址到剪贴板",
     "description": "Tooltip shown on the copy email to clipboard button"
   },
-
   "contact.createFilterTooltip": {
     "message": "为此邮件发送人创建过滤器",
     "description": "Tooltip shown on the create filter for contact button"
   },
-
   "contact.addContactTooltip": {
     "message": "添加到地址簿",
     "description": "Tooltip shown on the add contact button"
   },
-
   "contact.editContactTooltip": {
     "message": "编辑地址簿中的联系人信息",
     "description": "Tooltip shown on the edit contact button"
   },
-
   "contact.sendEmailTooltip": {
     "message": "发送邮件",
     "description": "Tooltip shown on the send email button"
   },
-
   "contact.recentConversationsTooltip": {
     "message": "最近的会话",
     "description": "Tooltip shown on the recent conversations button"
   },
-
   "message.archive.tooltip": {
     "message": "将此次会话进行归档",
     "description": "Tooltip for the archive button in the conversation header"
   },
-
   "message.detach.tooltip": {
     "message": "在新标签页中显示会话",
     "description": "Tooltip for the detach to new tab button in the conversation header"
   },
-
   "message.expand.tooltip": {
     "message": "展开/折叠所有邮件",
     "description": "Tooltip for the expand button in the conversation header"
   },
-
   "message.forwardConversation": {
     "message": "转发此会话",
     "description": "The link text for forwarding a conversation"
   },
-
   "message.junk.tooltip": {
     "message": "将此邮件标记为垃圾邮件",
     "description": "Tooltip for the junk button in the conversation header"
   },
-
   "message.loading": {
     "message": "加载中……",
     "description": "Displayed when the message is loading"
   },
-
   "message.printConversation": {
     "message": "打印此会话",
     "description": "The link text for printing a conversation"
   },
-
   "message.read.tooltip": {
     "message": "将所有邮件标记为已读/未读",
     "description": "Tooltip for the mark as read button in the conversation header"
   },
-
   "message.trash.tooltip": {
     "message": "删除此次会话",
     "description": "Tooltip for the trash button in the conversation header"
   },
-
   "message.noSubject": {
     "message": "(no subject)",
     "description": "Displayed when a message has no subject"
   },
-
   "message.showDetails.tooltip": {
     "message": "显示详情",
     "description": "Tooltip for showing message header details"
   },
-
   "message.hideDetails.tooltip": {
     "message": "隐藏细节",
     "description": "Tooltip for hiding message header details"
   },
-
   "message.moreMenu.tooltip": {
     "message": "更多",
     "description": "Tooltip for the more menu"
   },
-
   "action.archive": {
     "message": "归档邮件",
     "description": "Archive button name in the message more menu"
   },
-
   "action.delete": {
     "message": "删除邮件",
     "description": "Delete button name in the message more menu"
   },
-
   "action.viewClassic": {
     "message": "使用经典阅读器阅读",
     "description": "Show in classic view button name in the message more menu"
   },
-
   "action.viewSource": {
     "message": "查看邮件源码",
     "description": "View source button name in the message more menu"
   },
-
   "notification.scamMsg": {
     "message": "此邮件可能为欺诈邮件:",
     "description": "Notification message shown for a junk/scam message"
   },
-
   "notification.ignoreScamWarning": {
     "message": "忽略告警",
     "description": "Button title to ignore a junk/scam message"
   },
-
   "notification.junkMsg": {
     "message": "垃圾邮件",
     "description": "Notification message shown for junk messages"
   },
-
   "notification.notJunk": {
     "message": "非垃圾邮件",
     "description": "Button title to mark as not junk"
   },
-
   "notification.isOutboxMsg": {
     "message": "有一封未发送的邮件.",
     "description": "Notification message shown for a message in the outbox"
   },
-
   "notification.sendUnsent": {
     "message": "现在发送所有未发送的邮件吗?",
     "description": "Button title to send a message in the outbox"
   },
-
   "notification.remoteContentBlockedMsg": {
     "message": "远程内容已经隐藏",
     "description": "Notification message shown when remote content is blocked"
   },
-
   "notification.showRemote": {
     "message": "显示远程内容",
     "description": "Button title to show remote content"
   },
-
   "notification.alwaysShowRemote": {
     "message": "总是显示来自 $fromEmail$ 的远程内容",
     "description": "Button title to always show remote content.",
     "placeholders": {
-      "fromEmail": {
-        "content": "$1",
-        "example": "me@example.com"
-      }
+      "fromEmail": { "content": "$1", "example": "me@example.com" }
     }
   },
-
   "action.editDraft": {
     "message": "编辑草稿",
     "description": "Edit draft button name in the message more menu"
   },
-
   "action.reply": {
     "message": "回复",
     "description": "Reply button name in the message more menu"
   },
-
   "action.replyAll": {
     "message": "全部回复",
     "description": "Reply all button name in the message more menu"
   },
-
   "action.replyList": {
     "message": "回复至邮件列表",
     "description": "Reply list button name in the message more menu"
   },
-
   "action.editNew": {
     "message": "按新邮件编辑",
     "description": "Edit as new button name in the message more menu"
   },
-
   "action.forward": {
     "message": "转发",
     "description": "Forward button name in the message more menu"
   },
-
   "message.fromHeader": {
     "message": "来此",
     "description": "Header name displayed for the from field"
   },
-
   "message.toHeader": {
     "message": "到:",
     "description": "Header name displayed for the to field"
   },
-
   "message.ccHeader": {
     "message": "抄送:",
     "description": "Header name displayed for the cc field"
   },
-
   "header.to": {
     "message": "至",
     "description": "Used in the header, inserted in 'from me to you'."
   },
-
   "tags.jumpToFolder.tooltip": {
     "message": "跳转到此文件夹",
     "description": "Tooltip for the jump to folder tag."
   },
-
   "tags.inFolder": {
     "message": "在 $folderName$ 中",
     "description": "Folder indication for the jump to folder tag.",
-    "placeholders": {
-      "folderName": {
-        "content": "$1",
-        "example": "Sent"
-      }
-    }
+    "placeholders": { "folderName": { "content": "$1", "example": "Sent" } }
   },
-
   "attachments.downloadAll.tooltip": {
     "message": "全部保存",
     "description": "Tooltip for the download all attachments button."
   },
-
   "attachments.gallery.tooltip": {
     "message": "画廊视图",
     "description": "Tooltip for the view attachments in gallery button."
   },
-
   "attachments.preview.tooltip": {
     "message": "预览",
     "description": "Tooltip displayed for the preview button of an attachment."
   },
-
   "attachments.open.tooltip": {
     "message": "打开",
     "description": "Tooltip displayed for the preview button of an attachment."
   },
-
   "attachments.viewAttachment.tooltip": {
     "message": "在新页面中查看此附件",
     "description": "Tooltip displayed for an attachment that can be previewed in a tab."
   },
-
   "attachments.download.tooltip": {
     "message": "保存",
     "description": "Tooltip displayed for the download button of an attachment."
   },
-
   "messageBody.hideQuotedText": {
     "message": "隐藏所引文字",
     "description": "String displayed in a message body to collapse the quoted text."
   },
-
   "messageBody.showQuotedText": {
     "message": "显示所引文字",
     "description": "String displayed in a message body to expand the quoted text."
   },
-
   "messageBody.hideSigText": {
     "message": "hide signature",
     "description": "String displayed in a message body to collapse the signature."
   },
-
   "messageBody.showSigText": {
     "message": "show signature",
     "description": "String displayed in a message body to expand the signature."
   },
-
   "header.commaSeparator": {
     "message": ",",
     "description": "This is used in messages, for the recipients, and the 'between' column as well. In English, space after the comma."
   },
-
   "header.andSeparator": {
     "message": "与",
     "description": "This is used in messages, for the recipients, and the 'between' column as well. In English, space after and before « and »."
   },
-
   "attachments.context.detach": {
     "message": "分离附件",
     "description": "Context menu item to detach an attachment."
   },
-
   "attachments.context.delete": {
     "message": "删除附件",
     "description": "Context menu item to delete an attachment."
   },
-
   "pluralForm": {
     "message": "0",
     "description": "Please make sure you read and understood https://developer.mozilla.org/en/Localization_and_Plurals. pluralForm corresponds to the 'pluralRule' variable that's described in the page, it's just a mistake if the name doesn't match the MDC page."
   },
-
   "attachments.numAttachments": {
     "message": "$num$ 附件",
     "description": "The description used for how many attachments there are. This should take the form of a plural form, see also 'pluralForm'.",
-    "placeholders": {
-      "num": {
-        "content": "$1",
-        "example": "2"
-      }
-    }
+    "placeholders": { "num": { "content": "$1", "example": "2" } }
   },
-
   "message.meFromMeToSomeone": {
     "message": "我",
     "description": "One of four different strings are required to accomodate some languages which have specific declensions."
   },
-
   "message.meFromSomeoneToMe": {
     "message": "我",
     "description": "One of four different strings are required to accomodate some languages which have specific declensions."
   },
-
   "message.meBetweenMeAndSomeone": {
     "message": "我",
     "description": "One of four different strings are required to accomodate some languages which have specific declensions."
   },
-
   "message.meBetweenSomeoneAndMe": {
     "message": "我",
     "description": "One of four different strings are required to accomodate some languages which have specific declensions."
   },
-
   "message.headerSubject": {
     "message": "标题",
     "description": "Name for the Subject header that is displayed when you click the show details button."
   },
-
   "message.headerDate": {
     "message": "日期",
     "description": "Name for the Date header that is displayed when you click the show details button."
   },
-
   "message.headerFolder": {
     "message": "目录",
     "description": "Name for the Folder header that is displayed when you click the show details button."
   },
-
   "involvingTabTitle": {
     "message": "相关邮件：$contactName$",
     "description": "This is used when we click on the \"recent conversations\" button in a contact tooltip. This is the title of the tab that opens.",
     "placeholders": {
-      "contactName": {
-        "content": "$1",
-        "example": "John Smith"
-      }
+      "contactName": { "content": "$1", "example": "John Smith" }
     }
   },
-
   "compose.confirmDiscard": {
     "message": "确实要丢弃此邮件吗?",
     "description": "Confirmation message when discarding a compose draft."
   },
-
   "compose.attachFiles": {
     "message": "附加的文件",
     "description": "Title of the file picker to attach files to a compose draft."
   },
-
   "compose.attachedMessage": {
     "message": "附加的邮件",
     "description": "The filename name to use for an attachment when attaching an email."
   },
-
   "compose.attachment": {
     "message": "附件",
     "description": "Attachment header when composing a draft."
   },
-
   "attachments.sizeUnknown": {
     "message": "未知大小",
     "description": "The message displayed when an attachment size is unknown."
   },
-
   "compose.sendAnEmptyMessage": {
     "message": "要发送空邮件吗?",
     "description": "Confirmation message for sending an empty email."
   },
-
   "compose.sendingMessage": {
     "message": "发送邮件中…",
     "description": "Information text when sending an email."
   },
-
   "compose.messageSendingSuccess": {
     "message": "邮件$msgId$已经发送成功",
     "description": "Information text for email sent success.",
-    "placeholders": {
-      "msgId": {
-        "content": "$1",
-        "example": "1234"
-      }
-    }
+    "placeholders": { "msgId": { "content": "$1", "example": "1234" } }
   },
-
   "compose.couldntSendTheMessage": {
     "message": "无法发送邮件.",
     "description": "Information text for when sending email failed."
   },
-
   "conversation.forwardFillInText": {
     "message": "您可能感兴趣的邮件会话.",
     "description": "Text displayed when a conversation is forwarded."
   },
-
   "compose.messageSendingCanceled": {
     "message": "已取消发送邮件.",
     "description": "Information text when sending email was canceled."
   },
-
   "enigmail.attachmentsNotEncrypted": {
     "message": "附件将不会使用 inline-PGP 加密.\n要使用 PGP/MIME 发送邮件吗?",
     "description": "For the enigmail plugin to indicate attachments are not encrypted on sending."
   },
-
   "compose.write": {
     "message": "撰写...",
     "description": "Document title for composing an email in a new tab."
   },
-
   "between.columnName": {
     "message": "Between",
     "description": "The displayed name of the between column."
   },
-
   "between.columnTooltip": {
     "message": "点击按参与方排序",
     "description": "The tooltip of the between column."
   },
-
   "message.at": {
     "message": "在",
     "description": "Used for concatenation of two strings, e.g. John Doe at http://bugzilla.mozilla.org"
   },
-
   "enigmail.messageSigned": {
     "message": "已签名",
     "description": "Tag description displayed when a message is signed."
   },
-
   "enigmail.messageSignedLong": {
     "message": "本邮件已被签名",
     "description": "Tooltip displayed when a signature is good and verified."
   },
-
   "enigmail.messageDecrypted": {
     "message": "解密",
     "description": "Tag description displayed when a message has been decrypted."
   },
-
   "enigmail.messageDecryptedLong": {
     "message": "本邮件在显示前已解密",
     "description": "Tooltip displayed when a message has been decrypted."
   },
-
   "compose.addCc": {
     "message": "添加抄送",
     "description": "Link to click to add a cc when composing messages."
   },
-
   "compose.addBcc": {
     "message": "添加密送",
     "description": "Link to click to add bcc when composing messages."
   },
-
   "compose.addAttachment": {
     "message": "添加附件",
     "description": "Link to add an attachment when composing messages."
   },
-
   "compose.removeAttachment": {
     "message": "删除附件",
     "description": "Link to remove an attachment when composing messages."
   },
-
   "compose.fieldBcc": {
     "message": "密送:",
     "description": "Field name for the bcc field when composing messages."
   },
-
   "compose.fieldSubject": {
     "message": "主题:",
     "description": "Field name for the subject field when composing messages."
   },
-
   "compose.editField": {
     "message": "编辑",
     "description": "Link title to edit a particular field when composing messages."
   },
-
   "compose.send": {
     "message": "发送",
     "description": "Button name to send a message."
   },
-
   "compose.sendArchive": {
     "message": "发送并归档",
     "description": "Button name to send and archive a message."
   },
-
   "compose.save": {
     "message": "保存",
     "description": "Button name to save a message as draft."
   },
-
   "compose.discard": {
     "message": "不保存",
     "description": "Button name to discard a message draft."
   },
-
   "compose.mostFrequentContacts": {
     "message": "最常使用的邮件联系地址:",
     "description": "Field name for showing the most frequently used contacts."
   },
-
   "compose.showMore": {
     "message": "显示更多...",
     "description": "Show more link for showing more contacts."
   },
-
   "enigmail.unknownGood": {
     "message": "未知的有效签名",
     "description": "Tooltip displayed when a signature is good but unverified."
+  },
+  "calendar.imipAcceptButton.label": {
+    "message": "接受",
+    "description": "Calendar invite accept button."
+  },
+  "calendar.imipAcceptButton.tooltip": {
+    "message": "接受事件邀请",
+    "description": "Calendar invite accept button tooltip."
+  },
+  "calendar.imipAcceptRecurrencesButton.label": {
+    "message": "全部接受",
+    "description": "Calendar invite accept button."
+  },
+  "calendar.imipAcceptRecurrencesButton.tooltip": {
+    "message": "接受该事件的每次邀请",
+    "description": "Calendar invite accept button tooltip."
+  },
+  "calendar.imipAddButton.label": {
+    "message": "添加",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipAddButton.tooltip": {
+    "message": "添加事件到日历",
+    "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imipDeclineButton.label": {
+    "message": "谢绝",
+    "description": "Calendar invite decline button."
+  },
+  "calendar.imipDeclineButton.tooltip": {
+    "message": "拒绝事件邀请",
+    "description": "Calendar invite decline button tooltip."
+  },
+  "calendar.imipDeclineRecurrencesButton.label": {
+    "message": "全部拒绝",
+    "description": "Calendar invite decline button."
+  },
+  "calendar.imipDeclineRecurrencesButton.tooltip": {
+    "message": "拒绝该事件的每次邀请",
+    "description": "Calendar invite decline button tooltip."
+  },
+  "calendar.imipDeclineCounterButton.label": {
+    "message": "拒绝",
+    "description": "Calendar invite decline button."
+  },
+  "calendar.imipDeclineCounterButton.tooltip": {
+    "message": "拒绝计数提案",
+    "description": "Calendar invite decline button tooltip."
+  },
+  "calendar.imipDeleteButton.label": {
+    "message": "删除",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipDeleteButton.tooltip": {
+    "message": "从日历中删除",
+    "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imipDetailsButton.label": {
+    "message": "详细信息…",
+    "description": "Calendar invite details button."
+  },
+  "calendar.imipDetailsButton.tooltip": {
+    "message": "显示事件详情",
+    "description": "Calendar invite details button tooltip."
+  },
+  "calendar.imipReconfirmButton.label": {
+    "message": "重新确认",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipReconfirmButton.tooltip": {
+    "message": "发送一个再次确认到组织者",
+    "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imipRescheduleButton.label": {
+    "message": "重新安排",
+    "description": "Calendar invite tentative button."
+  },
+  "calendar.imipRescheduleButton.tooltip": {
+    "message": "重新安排该事件",
+    "description": "Calendar invite tentative button tooltip."
+  },
+  "calendar.imipTentativeButton.label": {
+    "message": "暂定",
+    "description": "Calendar invite tentative button."
+  },
+  "calendar.imipTentativeButton.tooltip": {
+    "message": "暂时接受事件邀请",
+    "description": "Calendar invite tentative button tooltip."
+  },
+  "calendar.imipTentativeRecurrencesButton.label": {
+    "message": "暂定全部",
+    "description": "Calendar invite tentative button."
+  },
+  "calendar.imipTentativeRecurrencesButton.tooltip": {
+    "message": "暂时接受该事件的每次邀请",
+    "description": "Calendar invite tentative button tooltip."
+  },
+  "calendar.imipUpdateButton.label": {
+    "message": "接受",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipUpdateButton.tooltip": {
+    "message": "接受",
+    "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imipGoToCalendarButton.label": {
+    "message": "日历",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipGoToCalendarButton.tooltip": {
+    "message": "前往日历选项卡",
+    "description": "Calendar invite update button tooltip."
   }
 }

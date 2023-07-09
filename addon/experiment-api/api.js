@@ -643,7 +643,9 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           let uri = msgHdr.folder.getUriForMsg(msgHdr);
           let msgService = MailServices.messageServiceFromURI(uri);
           let docShell = messageIframe.contentWindow.docShell;
+
           docShell.appType = Ci.nsIDocShell.APP_TYPE_MAIL;
+          messageIframe.setAttribute("uri", uri);
 
           msgService.loadMessage(
             uri + "&markRead=false",

@@ -3,719 +3,673 @@
     "message": "Thunderbird Conversations",
     "description": "Name of the extension."
   },
-
   "extensionDescription": {
     "message": "Brings a conversation view to a Thunderbird near you!",
     "description": "Description of the extension."
   },
-
   "options.expand_who": {
     "message": "By default, expand:",
     "description": "Options - label for which messages should be expanded."
   },
-
   "options.expand_auto": {
     "message": "Automatic",
     "description": "Options - label for automatically expanding messages."
   },
-
   "options.expand_auto.tooltip": {
     "message": "If the thread is collapsed, expand all unread messages or the last message. If it is expanded, only expand the selected message in the message list.",
     "description": "Options - tooltip for automatically expanding messages."
   },
-
   "options.expand_none": {
     "message": "No messages",
     "description": "Options - label for not expanding messages."
   },
-
   "options.expand_all": {
     "message": "All messages",
     "description": "Options - label for expanding all messages."
   },
-
   "options.quoting_title": {
     "message": "Quoted text",
     "description": "Options - title for quoted text."
   },
-
   "options.quoting_desc": {
     "message": "Quotes higher than this number of lines will be collapsed.",
     "description": "Options - description for quoted text."
   },
-
   "options.hide_sigs_title": {
     "message": "Hide Signatures",
     "description": "Options - title for hiding signatures."
   },
-
   "options.hide_sigs_desc": {
     "message": "Whether signatures are collapsed by default.",
     "description": "Options - description for hiding signatures."
   },
-
   "options.friendly_date_title": {
     "message": "No friendly dates",
     "description": "Options - title for if to show friendly dates."
   },
-
   "options.friendly_date_desc": {
     "message": "In the top right corner, use \"normal\" dates, just like the message list, instead of \"yesterday\" and others.",
     "description": "Options - description for if to show friendly dates."
   },
-
   "options.tweak_chrome_title": {
     "message": "Tweak chrome fonts",
     "description": "Options - title for tweaking chrome fonts."
   },
-
   "options.tweak_chrome_desc": {
     "message": "Scale down the font size for the conversation chrome (recommended, requires restart).",
     "description": "Options - description for tweaking chrome fonts."
   },
-
   "options.tweak_bodies_title": {
     "message": "Tweak body fonts",
     "description": "Options - title for tweaking message body fonts."
   },
-
   "options.tweak_bodies_desc": {
     "message": "Tweak the fonts in the message bodies to make them consistent with the outer font (recommended, requires restart).",
     "description": "Options - description for tweaking message body fonts."
   },
-
   "options.operate_on_conversations_title": {
     "message": "Archive/delete behavior",
     "description": "Options - title for archive/delete behavior."
   },
-
   "options.operate_on_conversations_desc": {
     "message": "Toolbar buttons should archive and delete the entire conversation, not just selected messages.",
     "description": "Options - description for archive/delete behavior."
   },
-
   "options.extra_attachments_title": {
     "message": "I love attachments",
     "description": "Options - title for attachment settings."
   },
-
   "options.extra_attachments_desc": {
     "message": "In some corner cases, Thunderbird will fail to recognize some attachments. This option allows you to workaround the Thunderbird bug, and makes sure we try to display as many attachments as we can. Use in combination with the Show All Body Parts addon.",
     "description": "Options - description for attachment settings."
   },
-
   "options.compose_in_tab_title": {
     "message": "Hidden composition window",
     "description": "Options - title for hidden compose window enabling."
   },
-
   "options.compose_in_tab_desc": {
     "message": "Ctrl-Shift-N opens the hidden, unsupported composition window in a new tab",
     "description": "Options - description for hidden compose window enabling."
   },
-
   "options.debugging_title": {
     "message": "Debugging",
     "description": "Options - title for debugging setting."
   },
-
   "options.debugging_desc": {
     "message": "Enable debug output in the system console and the error console. This will generate a lot of messages.",
     "description": "Options - description for debugging setting."
   },
-
   "assistant.title": {
     "message": "Lehen abiarazpeneko laguntzailea",
     "description": "The document title of the assistant page."
   },
-
   "assistant.working": {
     "message": "Lanean...",
     "description": "An indication that the assistant is working."
   },
-
   "assistant.apply": {
     "message": "Aplikatu aldaketak",
     "description": "The apply button title for the assistant."
   },
-
   "assistant.actionEnableGloda": {
     "message": "Bilaketa orokorra eta indexatzailea gaituak egon behar dute.",
     "description": "Option text for enabling Gloda."
   },
-
   "assistant.actionOfflineDownload": {
     "message": "Lineaz kanpoko sarrera eta bidalitakoen karpetak sinkronizatuak (oso gomendatua).",
     "description": "Option text for allowing offline download."
   },
-
   "assistant.actionEnsureMessagePaneVisible": {
     "message": "Ziurtatu mezuen panela ikusgai dagoela.",
     "description": "Option text for ensuring the message pane is visible."
   },
-
   "assistant.settings2": {
     "message": "Gerora aukera gehiago gaitu nahi izanez gero, laguntzaile hau abiarazi ahal duzu gehigarrien kudeatzaileko aukeretatik, \"Aurreratuak\" atalean.",
     "description": "Paragraph informing users of the ability to change settings later."
   },
-
   "gallery.messageMovedOrDeleted": {
     "message": "Barkaiguzu, hizketaldi hau ezin dizugu erakutsi, mezua mugitua edo ezabatua izan baita.",
     "description": "Message displayed if the email that the gallery is trying to view cannot be found."
   },
-
   "gallery.title": {
     "message": "Galeria ikuspegia: $1",
     "description": "The tab title for the image gallery"
   },
-
   "options.start_setup_assistant": {
     "message": "Hasi konfigurazio-laguntzailea",
     "description": "Title of the button to open the setup assistant."
   },
-
   "message.movedOrDeletedConversation": {
     "message": "Barkaiguzu, hizketaldi hau ezin dizugu erakutsi, mezuak mugituak edo ezabatuak izan baitira.",
     "description": "Error message for the conversation tab"
   },
-
   "contact.copyEmailTooltip": {
     "message": "Kopiatu eposta helbidea arbelera",
     "description": "Tooltip shown on the copy email to clipboard button"
   },
-
   "contact.createFilterTooltip": {
     "message": "sortu iragazkia...",
     "description": "Tooltip shown on the create filter for contact button"
   },
-
   "contact.addContactTooltip": {
     "message": "Gehitu helbide-liburuan",
     "description": "Tooltip shown on the add contact button"
   },
-
   "contact.editContactTooltip": {
     "message": "Editatu kontaktua helbide-liburuan",
     "description": "Tooltip shown on the edit contact button"
   },
-
   "contact.sendEmailTooltip": {
     "message": "Idatzi mezua honi",
     "description": "Tooltip shown on the send email button"
   },
-
   "contact.recentConversationsTooltip": {
     "message": "Azken hizketaldiak",
     "description": "Tooltip shown on the recent conversations button"
   },
-
   "message.archive.tooltip": {
     "message": "Artxibatu hizketaldi hau",
     "description": "Tooltip for the archive button in the conversation header"
   },
-
   "message.detach.tooltip": {
     "message": "Ikusi hizketaldi hau fitxa berrian",
     "description": "Tooltip for the detach to new tab button in the conversation header"
   },
-
   "message.expand.tooltip": {
     "message": "Zabaldu/Tolestu mezu guztiak",
     "description": "Tooltip for the expand button in the conversation header"
   },
-
   "message.forwardConversation": {
     "message": "Aurrera hizketaldi hau",
     "description": "The link text for forwarding a conversation"
   },
-
   "message.junk.tooltip": {
     "message": "Mezu hau zabor-postara",
     "description": "Tooltip for the junk button in the conversation header"
   },
-
   "message.loading": {
     "message": "Kargatzen...",
     "description": "Displayed when the message is loading"
   },
-
   "message.printConversation": {
     "message": "Inprimatu hizketaldi hau",
     "description": "The link text for printing a conversation"
   },
-
   "message.read.tooltip": {
     "message": "Aldatu irakurrita/irakurri gabe mezu guztiak",
     "description": "Tooltip for the mark as read button in the conversation header"
   },
-
   "message.trash.tooltip": {
     "message": "Ezabatu hizketaldi hau",
     "description": "Tooltip for the trash button in the conversation header"
   },
-
   "message.noSubject": {
     "message": "(no subject)",
     "description": "Displayed when a message has no subject"
   },
-
   "message.showDetails.tooltip": {
     "message": "Xehetasunak ikusi",
     "description": "Tooltip for showing message header details"
   },
-
   "message.hideDetails.tooltip": {
     "message": "Gorde zehaztasunak",
     "description": "Tooltip for hiding message header details"
   },
-
   "message.moreMenu.tooltip": {
     "message": "gehiago",
     "description": "Tooltip for the more menu"
   },
-
   "action.archive": {
     "message": "artxibatu mezu hau",
     "description": "Archive button name in the message more menu"
   },
-
   "action.delete": {
     "message": "ezabatu mezu hau",
     "description": "Delete button name in the message more menu"
   },
-
   "action.viewClassic": {
     "message": "irakurri mezuak betiko erara",
     "description": "Show in classic view button name in the message more menu"
   },
-
   "action.viewSource": {
     "message": "ikusi mezuaren jatorria",
     "description": "View source button name in the message more menu"
   },
-
   "notification.scamMsg": {
     "message": "Mezu hau iruzurra izan daiteke:",
     "description": "Notification message shown for a junk/scam message"
   },
-
   "notification.ignoreScamWarning": {
     "message": "ezikusi abisua",
     "description": "Button title to ignore a junk/scam message"
   },
-
   "notification.junkMsg": {
     "message": "Zabor-posta da hau",
     "description": "Notification message shown for junk messages"
   },
-
   "notification.notJunk": {
     "message": "Ez da zabor-posta",
     "description": "Button title to mark as not junk"
   },
-
   "notification.isOutboxMsg": {
     "message": "Bidali gabeko mezu bat da hau.",
     "description": "Notification message shown for a message in the outbox"
   },
-
   "notification.sendUnsent": {
     "message": "Orain bidali gabekoa bidali nahi?",
     "description": "Button title to send a message in the outbox"
   },
-
   "notification.remoteContentBlockedMsg": {
     "message": "Urruneko edukia ezkutatu egin da:",
     "description": "Notification message shown when remote content is blocked"
   },
-
   "notification.showRemote": {
     "message": "ikus urruneko edukia",
     "description": "Button title to show remote content"
   },
-
   "notification.alwaysShowRemote": {
     "message": "$fromEmail$ bidaltzailearen urruneko edukia beti bistaratu",
     "description": "Button title to always show remote content.",
     "placeholders": {
-      "fromEmail": {
-        "content": "$1",
-        "example": "me@example.com"
-      }
+      "fromEmail": { "content": "$1", "example": "me@example.com" }
     }
   },
-
   "action.editDraft": {
     "message": "editatu zirriborroa",
     "description": "Edit draft button name in the message more menu"
   },
-
   "action.reply": {
     "message": "erantzun",
     "description": "Reply button name in the message more menu"
   },
-
   "action.replyAll": {
     "message": "erantzun denei",
     "description": "Reply all button name in the message more menu"
   },
-
   "action.replyList": {
     "message": "erantzun zerrendari",
     "description": "Reply list button name in the message more menu"
   },
-
   "action.editNew": {
     "message": "editatu berri gisa",
     "description": "Edit as new button name in the message more menu"
   },
-
   "action.forward": {
     "message": "birbidali",
     "description": "Forward button name in the message more menu"
   },
-
   "message.fromHeader": {
     "message": "Nork:",
     "description": "Header name displayed for the from field"
   },
-
   "message.toHeader": {
     "message": "Nori:",
     "description": "Header name displayed for the to field"
   },
-
   "message.ccHeader": {
     "message": "cc:",
     "description": "Header name displayed for the cc field"
   },
-
   "header.to": {
     "message": "nori",
     "description": "Used in the header, inserted in 'from me to you'."
   },
-
   "tags.jumpToFolder.tooltip": {
     "message": "karpeta honetara etorri",
     "description": "Tooltip for the jump to folder tag."
   },
-
   "tags.inFolder": {
     "message": "$folderName$ karpetan",
     "description": "Folder indication for the jump to folder tag.",
-    "placeholders": {
-      "folderName": {
-        "content": "$1",
-        "example": "Sent"
-      }
-    }
+    "placeholders": { "folderName": { "content": "$1", "example": "Sent" } }
   },
-
   "attachments.downloadAll.tooltip": {
     "message": "gorde dena",
     "description": "Tooltip for the download all attachments button."
   },
-
   "attachments.gallery.tooltip": {
     "message": "galeria ikuspegia",
     "description": "Tooltip for the view attachments in gallery button."
   },
-
   "attachments.preview.tooltip": {
     "message": "Aurrebista",
     "description": "Tooltip displayed for the preview button of an attachment."
   },
-
   "attachments.open.tooltip": {
     "message": "ireki",
     "description": "Tooltip displayed for the preview button of an attachment."
   },
-
   "attachments.viewAttachment.tooltip": {
     "message": "Eranskin hau fitxa berrian ikusi",
     "description": "Tooltip displayed for an attachment that can be previewed in a tab."
   },
-
   "attachments.download.tooltip": {
     "message": "gorde",
     "description": "Tooltip displayed for the download button of an attachment."
   },
-
   "messageBody.hideQuotedText": {
     "message": "Gorde aipatutako testua",
     "description": "String displayed in a message body to collapse the quoted text."
   },
-
   "messageBody.showQuotedText": {
     "message": "Erakutsi aipatutako testua",
     "description": "String displayed in a message body to expand the quoted text."
   },
-
   "messageBody.hideSigText": {
     "message": "gorde sinadura",
     "description": "String displayed in a message body to collapse the signature."
   },
-
   "messageBody.showSigText": {
     "message": "erakutsi sinadura",
     "description": "String displayed in a message body to expand the signature."
   },
-
   "header.commaSeparator": {
     "message": "\u0020",
     "description": "This is used in messages, for the recipients, and the 'between' column as well. In English, space after the comma."
   },
-
   "header.andSeparator": {
     "message": "\u0020 eta \u0020",
     "description": "This is used in messages, for the recipients, and the 'between' column as well. In English, space after and before « and »."
   },
-
   "attachments.context.detach": {
     "message": "Askatu eranskina",
     "description": "Context menu item to detach an attachment."
   },
-
   "attachments.context.delete": {
     "message": "Ezabatu eranskina",
     "description": "Context menu item to delete an attachment."
   },
-
   "pluralForm": {
     "message": "1",
     "description": "Please make sure you read and understood https://developer.mozilla.org/en/Localization_and_Plurals. pluralForm corresponds to the 'pluralRule' variable that's described in the page, it's just a mistake if the name doesn't match the MDC page."
   },
-
   "attachments.numAttachments": {
     "message": "Eranskin bat;$num$ eranskin",
     "description": "The description used for how many attachments there are. This should take the form of a plural form, see also 'pluralForm'.",
-    "placeholders": {
-      "num": {
-        "content": "$1",
-        "example": "2"
-      }
-    }
+    "placeholders": { "num": { "content": "$1", "example": "2" } }
   },
-
   "message.meFromMeToSomeone": {
     "message": "Ni",
     "description": "One of four different strings are required to accomodate some languages which have specific declensions."
   },
-
   "message.meFromSomeoneToMe": {
     "message": "Ni",
     "description": "One of four different strings are required to accomodate some languages which have specific declensions."
   },
-
   "message.meBetweenMeAndSomeone": {
     "message": "Ni",
     "description": "One of four different strings are required to accomodate some languages which have specific declensions."
   },
-
   "message.meBetweenSomeoneAndMe": {
     "message": "Ni",
     "description": "One of four different strings are required to accomodate some languages which have specific declensions."
   },
-
   "message.headerSubject": {
     "message": "gaia",
     "description": "Name for the Subject header that is displayed when you click the show details button."
   },
-
   "message.headerDate": {
     "message": "eguna",
     "description": "Name for the Date header that is displayed when you click the show details button."
   },
-
   "message.headerFolder": {
     "message": "karpeta",
     "description": "Name for the Folder header that is displayed when you click the show details button."
   },
-
   "involvingTabTitle": {
     "message": "$contactName$-ri buruzko mezuak",
     "description": "This is used when we click on the \"recent conversations\" button in a contact tooltip. This is the title of the tab that opens.",
     "placeholders": {
-      "contactName": {
-        "content": "$1",
-        "example": "John Smith"
-      }
+      "contactName": { "content": "$1", "example": "John Smith" }
     }
   },
-
   "compose.confirmDiscard": {
     "message": "Ziur zaude mezu hau baztertu nahi duzula?",
     "description": "Confirmation message when discarding a compose draft."
   },
-
   "compose.attachFiles": {
     "message": "Erantsi fitxategia(k)",
     "description": "Title of the file picker to attach files to a compose draft."
   },
-
   "compose.attachedMessage": {
     "message": "Erantsi mezua.eml",
     "description": "The filename name to use for an attachment when attaching an email."
   },
-
   "compose.attachment": {
     "message": "Eranskina",
     "description": "Attachment header when composing a draft."
   },
-
   "attachments.sizeUnknown": {
     "message": "Tamaina ezezaguna",
     "description": "The message displayed when an attachment size is unknown."
   },
-
   "compose.sendAnEmptyMessage": {
     "message": "Mezu hutsa bidali?",
     "description": "Confirmation message for sending an empty email."
   },
-
   "compose.sendingMessage": {
     "message": "mezua bidaltzen...",
     "description": "Information text when sending an email."
   },
-
   "compose.messageSendingSuccess": {
     "message": "$msgId$ mezua ondo bidali da",
     "description": "Information text for email sent success.",
-    "placeholders": {
-      "msgId": {
-        "content": "$1",
-        "example": "1234"
-      }
-    }
+    "placeholders": { "msgId": { "content": "$1", "example": "1234" } }
   },
-
   "compose.couldntSendTheMessage": {
     "message": "ezin izan da mezua bidali.",
     "description": "Information text for when sending email failed."
   },
-
   "conversation.forwardFillInText": {
     "message": "Hizketaldi hau interesgarria izango zaizula iruditu zait.",
     "description": "Text displayed when a conversation is forwarded."
   },
-
   "compose.messageSendingCanceled": {
     "message": "Mezu bidalketa bertan behera utzi da.",
     "description": "Information text when sending email was canceled."
   },
-
   "enigmail.attachmentsNotEncrypted": {
     "message": "Eranskinak ez dira enkriptatuko inline-PGP erabiliz.\nHonen ordez bidali PGP/MIME erabiliz?",
     "description": "For the enigmail plugin to indicate attachments are not encrypted on sending."
   },
-
   "compose.write": {
     "message": "Idatzi...",
     "description": "Document title for composing an email in a new tab."
   },
-
   "between.columnName": {
     "message": "artean",
     "description": "The displayed name of the between column."
   },
-
   "between.columnTooltip": {
     "message": "Klik partaideen arabera ordenatzeko",
     "description": "The tooltip of the between column."
   },
-
   "message.at": {
     "message": "-",
     "description": "Used for concatenation of two strings, e.g. John Doe at http://bugzilla.mozilla.org"
   },
-
   "enigmail.messageSigned": {
     "message": "Sinatua",
     "description": "Tag description displayed when a message is signed."
   },
-
   "enigmail.messageSignedLong": {
     "message": "Mezu hau sinatua izan da.",
     "description": "Tooltip displayed when a signature is good and verified."
   },
-
   "enigmail.messageDecrypted": {
     "message": "Dezifratua",
     "description": "Tag description displayed when a message has been decrypted."
   },
-
   "enigmail.messageDecryptedLong": {
     "message": "Mezu hau erakutsi aurretik dezifratu egin da.",
     "description": "Tooltip displayed when a message has been decrypted."
   },
-
   "compose.addCc": {
     "message": "gehitu kopia eremura",
     "description": "Link to click to add a cc when composing messages."
   },
-
   "compose.addBcc": {
     "message": "gehitu ezkutuko kopia eremura",
     "description": "Link to click to add bcc when composing messages."
   },
-
   "compose.addAttachment": {
     "message": "gehitu eranskinak",
     "description": "Link to add an attachment when composing messages."
   },
-
   "compose.removeAttachment": {
     "message": "ezabatu",
     "description": "Link to remove an attachment when composing messages."
   },
-
   "compose.fieldBcc": {
     "message": "bcc:",
     "description": "Field name for the bcc field when composing messages."
   },
-
   "compose.fieldSubject": {
     "message": "gaia:",
     "description": "Field name for the subject field when composing messages."
   },
-
   "compose.editField": {
     "message": "editatu",
     "description": "Link title to edit a particular field when composing messages."
   },
-
   "compose.send": {
     "message": "bidali",
     "description": "Button name to send a message."
   },
-
   "compose.sendArchive": {
     "message": "bidali eta artxibatu",
     "description": "Button name to send and archive a message."
   },
-
   "compose.save": {
     "message": "gorde",
     "description": "Button name to save a message as draft."
   },
-
   "compose.discard": {
     "message": "baztertu",
     "description": "Button name to discard a message draft."
   },
-
   "compose.mostFrequentContacts": {
     "message": "Posta gehien bidalitakoen helbideak:",
     "description": "Field name for showing the most frequently used contacts."
   },
-
   "compose.showMore": {
     "message": "Erakutsi gehiago...",
     "description": "Show more link for showing more contacts."
   },
-
   "enigmail.unknownGood": {
     "message": "Sinadura ezezaguna",
     "description": "Tooltip displayed when a signature is good but unverified."
+  },
+  "calendar.imipAcceptButton.label": {
+    "message": "Onartu",
+    "description": "Calendar invite accept button."
+  },
+  "calendar.imipAcceptButton.tooltip": {
+    "message": "Onartu gonbidapena",
+    "description": "Calendar invite accept button tooltip."
+  },
+  "calendar.imipAcceptRecurrencesButton.label": {
+    "message": "Onartu guztiak",
+    "description": "Calendar invite accept button."
+  },
+  "calendar.imipAcceptRecurrencesButton.tooltip": {
+    "message": "Onartu gonbidapena gertaeraren agerpen guztietarako",
+    "description": "Calendar invite accept button tooltip."
+  },
+  "calendar.imipAddButton.label": {
+    "message": "Gehitu",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipAddButton.tooltip": {
+    "message": "Gehitu gertaera egutegira",
+    "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imipDeclineButton.label": {
+    "message": "Baztertu",
+    "description": "Calendar invite decline button."
+  },
+  "calendar.imipDeclineButton.tooltip": {
+    "message": "Baztertu gonbidapena",
+    "description": "Calendar invite decline button tooltip."
+  },
+  "calendar.imipDeclineRecurrencesButton.label": {
+    "message": "Baztertu guztiak",
+    "description": "Calendar invite decline button."
+  },
+  "calendar.imipDeclineRecurrencesButton.tooltip": {
+    "message": "Baztertu gonbidapena gertaeraren agerpen guztietarako",
+    "description": "Calendar invite decline button tooltip."
+  },
+  "calendar.imipDeclineCounterButton.label": {
+    "message": "Baztertu",
+    "description": "Calendar invite decline button."
+  },
+  "calendar.imipDeclineCounterButton.tooltip": {
+    "message": "Baztertu kontraproposamena",
+    "description": "Calendar invite decline button tooltip."
+  },
+  "calendar.imipDeleteButton.label": {
+    "message": "Ezabatu",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipDeleteButton.tooltip": {
+    "message": "Ezabatu egutegitik",
+    "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imipDetailsButton.label": {
+    "message": "Xehetasunak…",
+    "description": "Calendar invite details button."
+  },
+  "calendar.imipDetailsButton.tooltip": {
+    "message": "Erakutsi gertaeraren xehetasunak",
+    "description": "Calendar invite details button tooltip."
+  },
+  "calendar.imipReconfirmButton.label": {
+    "message": "Birberretsi",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipReconfirmButton.tooltip": {
+    "message": "Birberrespena bidaltzen dio antolatzaileari",
+    "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imipRescheduleButton.label": {
+    "message": "Berrantolatu",
+    "description": "Calendar invite tentative button."
+  },
+  "calendar.imipRescheduleButton.tooltip": {
+    "message": "Gertaera berrantolatu",
+    "description": "Calendar invite tentative button tooltip."
+  },
+  "calendar.imipTentativeButton.label": {
+    "message": "Behin-behinekoa",
+    "description": "Calendar invite tentative button."
+  },
+  "calendar.imipTentativeButton.tooltip": {
+    "message": "Onartu gonbidapena behin-behinean",
+    "description": "Calendar invite tentative button tooltip."
+  },
+  "calendar.imipTentativeRecurrencesButton.label": {
+    "message": "Behin-behinekoak guztiak",
+    "description": "Calendar invite tentative button."
+  },
+  "calendar.imipTentativeRecurrencesButton.tooltip": {
+    "message": "Onartu behin-behinean gonbidapena gertaeraren agerpen guztietarako",
+    "description": "Calendar invite tentative button tooltip."
+  },
+  "calendar.imipUpdateButton.label": {
+    "message": "Onartu",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipUpdateButton.tooltip": {
+    "message": "Onartu",
+    "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imipGoToCalendarButton.label": {
+    "message": "Egutegia",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipGoToCalendarButton.tooltip": {
+    "message": "Joan egutegi fitxara",
+    "description": "Calendar invite update button tooltip."
   }
 }

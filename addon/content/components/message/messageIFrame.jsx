@@ -190,6 +190,13 @@ export class MessageIFrame extends React.Component {
     this.iframe.classList.remove(`convIframe${prevProps.id}`);
     this.iframe.classList.add(this.iframeName);
     this.reRegisterContentListener(`convIframe${prevProps.id}`);
+    if (prevProps.id != this.props.id) {
+      this.props.dispatch(
+        summaryActions.messageUnloaded({
+          msgId: prevProps.id,
+        })
+      );
+    }
     if (prevProps.id != this.props.id && this.props.expanded) {
       // This is a hack which ensures that the iframe is a minimal height, so
       // that when the message loads, the scroll height is set correctly, rather

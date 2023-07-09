@@ -3,719 +3,673 @@
     "message": "Thunderbird Conversations",
     "description": "Name of the extension."
   },
-
   "extensionDescription": {
     "message": "Brings a conversation view to a Thunderbird near you!",
     "description": "Description of the extension."
   },
-
   "options.expand_who": {
     "message": "By default, expand:",
     "description": "Options - label for which messages should be expanded."
   },
-
   "options.expand_auto": {
     "message": "Automatic",
     "description": "Options - label for automatically expanding messages."
   },
-
   "options.expand_auto.tooltip": {
     "message": "If the thread is collapsed, expand all unread messages or the last message. If it is expanded, only expand the selected message in the message list.",
     "description": "Options - tooltip for automatically expanding messages."
   },
-
   "options.expand_none": {
     "message": "No messages",
     "description": "Options - label for not expanding messages."
   },
-
   "options.expand_all": {
     "message": "All messages",
     "description": "Options - label for expanding all messages."
   },
-
   "options.quoting_title": {
     "message": "Quoted text",
     "description": "Options - title for quoted text."
   },
-
   "options.quoting_desc": {
     "message": "Quotes higher than this number of lines will be collapsed.",
     "description": "Options - description for quoted text."
   },
-
   "options.hide_sigs_title": {
     "message": "Hide Signatures",
     "description": "Options - title for hiding signatures."
   },
-
   "options.hide_sigs_desc": {
     "message": "Whether signatures are collapsed by default.",
     "description": "Options - description for hiding signatures."
   },
-
   "options.friendly_date_title": {
     "message": "No friendly dates",
     "description": "Options - title for if to show friendly dates."
   },
-
   "options.friendly_date_desc": {
     "message": "In the top right corner, use \"normal\" dates, just like the message list, instead of \"yesterday\" and others.",
     "description": "Options - description for if to show friendly dates."
   },
-
   "options.tweak_chrome_title": {
     "message": "Tweak chrome fonts",
     "description": "Options - title for tweaking chrome fonts."
   },
-
   "options.tweak_chrome_desc": {
     "message": "Scale down the font size for the conversation chrome (recommended, requires restart).",
     "description": "Options - description for tweaking chrome fonts."
   },
-
   "options.tweak_bodies_title": {
     "message": "Tweak body fonts",
     "description": "Options - title for tweaking message body fonts."
   },
-
   "options.tweak_bodies_desc": {
     "message": "Tweak the fonts in the message bodies to make them consistent with the outer font (recommended, requires restart).",
     "description": "Options - description for tweaking message body fonts."
   },
-
   "options.operate_on_conversations_title": {
     "message": "Archive/delete behavior",
     "description": "Options - title for archive/delete behavior."
   },
-
   "options.operate_on_conversations_desc": {
     "message": "Toolbar buttons should archive and delete the entire conversation, not just selected messages.",
     "description": "Options - description for archive/delete behavior."
   },
-
   "options.extra_attachments_title": {
     "message": "I love attachments",
     "description": "Options - title for attachment settings."
   },
-
   "options.extra_attachments_desc": {
     "message": "In some corner cases, Thunderbird will fail to recognize some attachments. This option allows you to workaround the Thunderbird bug, and makes sure we try to display as many attachments as we can. Use in combination with the Show All Body Parts addon.",
     "description": "Options - description for attachment settings."
   },
-
   "options.compose_in_tab_title": {
     "message": "Hidden composition window",
     "description": "Options - title for hidden compose window enabling."
   },
-
   "options.compose_in_tab_desc": {
     "message": "Ctrl-Shift-N opens the hidden, unsupported composition window in a new tab",
     "description": "Options - description for hidden compose window enabling."
   },
-
   "options.debugging_title": {
     "message": "Debugging",
     "description": "Options - title for debugging setting."
   },
-
   "options.debugging_desc": {
     "message": "Enable debug output in the system console and the error console. This will generate a lot of messages.",
     "description": "Options - description for debugging setting."
   },
-
   "assistant.title": {
     "message": "Asistente da primeira vez",
     "description": "The document title of the assistant page."
   },
-
   "assistant.working": {
     "message": "Working...",
     "description": "An indication that the assistant is working."
   },
-
   "assistant.apply": {
     "message": "Aplicar os cambios",
     "description": "The apply button title for the assistant."
   },
-
   "assistant.actionEnableGloda": {
     "message": "Make sure Global Search and Indexer is enabled.",
     "description": "Option text for enabling Gloda."
   },
-
   "assistant.actionOfflineDownload": {
     "message": "Inbox and Sent are synchronized for offline storage (strongly recommended).",
     "description": "Option text for allowing offline download."
   },
-
   "assistant.actionEnsureMessagePaneVisible": {
     "message": "Make sure the message pane is visible.",
     "description": "Option text for ensuring the message pane is visible."
   },
-
   "assistant.settings2": {
     "message": "Should you wish to enable more options later, you can access this wizard through the addon's preferences, under the \"advanced\" section.",
     "description": "Paragraph informing users of the ability to change settings later."
   },
-
   "gallery.messageMovedOrDeleted": {
     "message": "Desculpe, mais non é posíbel mostrar esta vista de galería porque a mensaxe foi movida ou eliminada.",
     "description": "Message displayed if the email that the gallery is trying to view cannot be found."
   },
-
   "gallery.title": {
     "message": "Vista da galería de: $1",
     "description": "The tab title for the image gallery"
   },
-
   "options.start_setup_assistant": {
     "message": "Iniciar o asistente de configuración",
     "description": "Title of the button to open the setup assistant."
   },
-
   "message.movedOrDeletedConversation": {
     "message": "Desculpe, mais non é posíbel mostrar esta conversa porque as mensaxes foron movidas ou eliminadas.",
     "description": "Error message for the conversation tab"
   },
-
   "contact.copyEmailTooltip": {
     "message": "Copiar o enderezo de correo ao portapapeis",
     "description": "Tooltip shown on the copy email to clipboard button"
   },
-
   "contact.createFilterTooltip": {
     "message": "crear un filtro para o remitente",
     "description": "Tooltip shown on the create filter for contact button"
   },
-
   "contact.addContactTooltip": {
     "message": "Engadir ao caderno de enderezos",
     "description": "Tooltip shown on the add contact button"
   },
-
   "contact.editContactTooltip": {
     "message": "Editar o contacto no caderno de enderezos",
     "description": "Tooltip shown on the edit contact button"
   },
-
   "contact.sendEmailTooltip": {
     "message": "enviar o correo",
     "description": "Tooltip shown on the send email button"
   },
-
   "contact.recentConversationsTooltip": {
     "message": "conversas recentes",
     "description": "Tooltip shown on the recent conversations button"
   },
-
   "message.archive.tooltip": {
     "message": "Arquivar esta conversa",
     "description": "Tooltip for the archive button in the conversation header"
   },
-
   "message.detach.tooltip": {
     "message": "Mostrar esta conversa nunha lapela nova",
     "description": "Tooltip for the detach to new tab button in the conversation header"
   },
-
   "message.expand.tooltip": {
     "message": "Expandir/recoller todas as mensaxes",
     "description": "Tooltip for the expand button in the conversation header"
   },
-
   "message.forwardConversation": {
     "message": "Encamiñar esta conversa",
     "description": "The link text for forwarding a conversation"
   },
-
   "message.junk.tooltip": {
     "message": "Junk this message",
     "description": "Tooltip for the junk button in the conversation header"
   },
-
   "message.loading": {
     "message": "A cargar...",
     "description": "Displayed when the message is loading"
   },
-
   "message.printConversation": {
     "message": "Imprimir esta conversa",
     "description": "The link text for printing a conversation"
   },
-
   "message.read.tooltip": {
     "message": "Toggle read/unread all messages",
     "description": "Tooltip for the mark as read button in the conversation header"
   },
-
   "message.trash.tooltip": {
     "message": "Eliminar esta conversa",
     "description": "Tooltip for the trash button in the conversation header"
   },
-
   "message.noSubject": {
     "message": "(no subject)",
     "description": "Displayed when a message has no subject"
   },
-
   "message.showDetails.tooltip": {
     "message": "mostrar os detalles",
     "description": "Tooltip for showing message header details"
   },
-
   "message.hideDetails.tooltip": {
     "message": "agochar os detalles",
     "description": "Tooltip for hiding message header details"
   },
-
   "message.moreMenu.tooltip": {
     "message": "máis",
     "description": "Tooltip for the more menu"
   },
-
   "action.archive": {
     "message": "arquivar esta mensaxe",
     "description": "Archive button name in the message more menu"
   },
-
   "action.delete": {
     "message": "eliminar esta mensaxe",
     "description": "Delete button name in the message more menu"
   },
-
   "action.viewClassic": {
     "message": "ver usando o visor clásico",
     "description": "Show in classic view button name in the message more menu"
   },
-
   "action.viewSource": {
     "message": "ver o código fonte da mensaxe",
     "description": "View source button name in the message more menu"
   },
-
   "notification.scamMsg": {
     "message": "Esta mensaxe pode ser un timo:",
     "description": "Notification message shown for a junk/scam message"
   },
-
   "notification.ignoreScamWarning": {
     "message": "ignorar a advertencia",
     "description": "Button title to ignore a junk/scam message"
   },
-
   "notification.junkMsg": {
     "message": "Isto é correo lixo",
     "description": "Notification message shown for junk messages"
   },
-
   "notification.notJunk": {
     "message": "Non é correo lixo",
     "description": "Button title to mark as not junk"
   },
-
   "notification.isOutboxMsg": {
     "message": "Esta é unha mensaxe sen enviar.",
     "description": "Notification message shown for a message in the outbox"
   },
-
   "notification.sendUnsent": {
     "message": "Enviar agora as mensaxes non enviadas?",
     "description": "Button title to send a message in the outbox"
   },
-
   "notification.remoteContentBlockedMsg": {
     "message": "O contido remoto estaba agochado:",
     "description": "Notification message shown when remote content is blocked"
   },
-
   "notification.showRemote": {
     "message": "mostrar o contido remoto",
     "description": "Button title to show remote content"
   },
-
   "notification.alwaysShowRemote": {
     "message": "mostrar sempre o contido remoto procedente de $fromEmail$",
     "description": "Button title to always show remote content.",
     "placeholders": {
-      "fromEmail": {
-        "content": "$1",
-        "example": "me@example.com"
-      }
+      "fromEmail": { "content": "$1", "example": "me@example.com" }
     }
   },
-
   "action.editDraft": {
     "message": "editar o borrador",
     "description": "Edit draft button name in the message more menu"
   },
-
   "action.reply": {
     "message": "responder",
     "description": "Reply button name in the message more menu"
   },
-
   "action.replyAll": {
     "message": "responder a todos",
     "description": "Reply all button name in the message more menu"
   },
-
   "action.replyList": {
     "message": "responder á lista",
     "description": "Reply list button name in the message more menu"
   },
-
   "action.editNew": {
     "message": "editar como nova",
     "description": "Edit as new button name in the message more menu"
   },
-
   "action.forward": {
     "message": "encamiñar",
     "description": "Forward button name in the message more menu"
   },
-
   "message.fromHeader": {
     "message": "de:",
     "description": "Header name displayed for the from field"
   },
-
   "message.toHeader": {
     "message": "para:",
     "description": "Header name displayed for the to field"
   },
-
   "message.ccHeader": {
     "message": "copia:",
     "description": "Header name displayed for the cc field"
   },
-
   "header.to": {
     "message": "para",
     "description": "Used in the header, inserted in 'from me to you'."
   },
-
   "tags.jumpToFolder.tooltip": {
     "message": "Pasar a este cartafol",
     "description": "Tooltip for the jump to folder tag."
   },
-
   "tags.inFolder": {
     "message": "En $folderName$",
     "description": "Folder indication for the jump to folder tag.",
-    "placeholders": {
-      "folderName": {
-        "content": "$1",
-        "example": "Sent"
-      }
-    }
+    "placeholders": { "folderName": { "content": "$1", "example": "Sent" } }
   },
-
   "attachments.downloadAll.tooltip": {
     "message": "gardar todo",
     "description": "Tooltip for the download all attachments button."
   },
-
   "attachments.gallery.tooltip": {
     "message": "vista de galería",
     "description": "Tooltip for the view attachments in gallery button."
   },
-
   "attachments.preview.tooltip": {
     "message": "vista previa",
     "description": "Tooltip displayed for the preview button of an attachment."
   },
-
   "attachments.open.tooltip": {
     "message": "abrir",
     "description": "Tooltip displayed for the preview button of an attachment."
   },
-
   "attachments.viewAttachment.tooltip": {
     "message": "Ver este anexo nunha lapela nova",
     "description": "Tooltip displayed for an attachment that can be previewed in a tab."
   },
-
   "attachments.download.tooltip": {
     "message": "gardar",
     "description": "Tooltip displayed for the download button of an attachment."
   },
-
   "messageBody.hideQuotedText": {
     "message": "agochar o texto citado",
     "description": "String displayed in a message body to collapse the quoted text."
   },
-
   "messageBody.showQuotedText": {
     "message": "mostrar o texto citado",
     "description": "String displayed in a message body to expand the quoted text."
   },
-
   "messageBody.hideSigText": {
     "message": "agochar a sinatura",
     "description": "String displayed in a message body to collapse the signature."
   },
-
   "messageBody.showSigText": {
     "message": "mostrar a sinatura",
     "description": "String displayed in a message body to expand the signature."
   },
-
   "header.commaSeparator": {
     "message": ",\u0020",
     "description": "This is used in messages, for the recipients, and the 'between' column as well. In English, space after the comma."
   },
-
   "header.andSeparator": {
     "message": "\u0020and\u0020",
     "description": "This is used in messages, for the recipients, and the 'between' column as well. In English, space after and before « and »."
   },
-
   "attachments.context.detach": {
     "message": "Separar anexo",
     "description": "Context menu item to detach an attachment."
   },
-
   "attachments.context.delete": {
     "message": "Eliminar anexo",
     "description": "Context menu item to delete an attachment."
   },
-
   "pluralForm": {
     "message": "1",
     "description": "Please make sure you read and understood https://developer.mozilla.org/en/Localization_and_Plurals. pluralForm corresponds to the 'pluralRule' variable that's described in the page, it's just a mistake if the name doesn't match the MDC page."
   },
-
   "attachments.numAttachments": {
     "message": "un anexo;$num$ anexos",
     "description": "The description used for how many attachments there are. This should take the form of a plural form, see also 'pluralForm'.",
-    "placeholders": {
-      "num": {
-        "content": "$1",
-        "example": "2"
-      }
-    }
+    "placeholders": { "num": { "content": "$1", "example": "2" } }
   },
-
   "message.meFromMeToSomeone": {
     "message": "Eu",
     "description": "One of four different strings are required to accomodate some languages which have specific declensions."
   },
-
   "message.meFromSomeoneToMe": {
     "message": "A min",
     "description": "One of four different strings are required to accomodate some languages which have specific declensions."
   },
-
   "message.meBetweenMeAndSomeone": {
     "message": "Comigo",
     "description": "One of four different strings are required to accomodate some languages which have specific declensions."
   },
-
   "message.meBetweenSomeoneAndMe": {
     "message": "Comigo",
     "description": "One of four different strings are required to accomodate some languages which have specific declensions."
   },
-
   "message.headerSubject": {
     "message": "asunto",
     "description": "Name for the Subject header that is displayed when you click the show details button."
   },
-
   "message.headerDate": {
     "message": "data",
     "description": "Name for the Date header that is displayed when you click the show details button."
   },
-
   "message.headerFolder": {
     "message": "cartafol",
     "description": "Name for the Folder header that is displayed when you click the show details button."
   },
-
   "involvingTabTitle": {
     "message": "Mensaxes que inclúan a $contactName$",
     "description": "This is used when we click on the \"recent conversations\" button in a contact tooltip. This is the title of the tab that opens.",
     "placeholders": {
-      "contactName": {
-        "content": "$1",
-        "example": "John Smith"
-      }
+      "contactName": { "content": "$1", "example": "John Smith" }
     }
   },
-
   "compose.confirmDiscard": {
     "message": "Confirma que desexa desbotar esta mensaxe?",
     "description": "Confirmation message when discarding a compose draft."
   },
-
   "compose.attachFiles": {
     "message": "Engadir ficheiro(s)",
     "description": "Title of the file picker to attach files to a compose draft."
   },
-
   "compose.attachedMessage": {
     "message": "Attached Message.eml",
     "description": "The filename name to use for an attachment when attaching an email."
   },
-
   "compose.attachment": {
     "message": "Anexo",
     "description": "Attachment header when composing a draft."
   },
-
   "attachments.sizeUnknown": {
     "message": "tamaño descoñecido",
     "description": "The message displayed when an attachment size is unknown."
   },
-
   "compose.sendAnEmptyMessage": {
     "message": "Enviar unha mensaxe baleira?",
     "description": "Confirmation message for sending an empty email."
   },
-
   "compose.sendingMessage": {
     "message": "A enviar a mensaxe...",
     "description": "Information text when sending an email."
   },
-
   "compose.messageSendingSuccess": {
     "message": "A mensaxe $msgId$ foi enviada correctamente",
     "description": "Information text for email sent success.",
-    "placeholders": {
-      "msgId": {
-        "content": "$1",
-        "example": "1234"
-      }
-    }
+    "placeholders": { "msgId": { "content": "$1", "example": "1234" } }
   },
-
   "compose.couldntSendTheMessage": {
     "message": "Non foi posíbel enviar a mensaxe.",
     "description": "Information text for when sending email failed."
   },
-
   "conversation.forwardFillInText": {
     "message": "Esta é unha conversa que pensei que che había interesar!",
     "description": "Text displayed when a conversation is forwarded."
   },
-
   "compose.messageSendingCanceled": {
     "message": "Cancelouse o envío da mensaxe",
     "description": "Information text when sending email was canceled."
   },
-
   "enigmail.attachmentsNotEncrypted": {
     "message": "Attachments will not be encrypted using inline-PGP.\nInstead send message using PGP/MIME?",
     "description": "For the enigmail plugin to indicate attachments are not encrypted on sending."
   },
-
   "compose.write": {
     "message": "Escribir...",
     "description": "Document title for composing an email in a new tab."
   },
-
   "between.columnName": {
     "message": "Entre",
     "description": "The displayed name of the between column."
   },
-
   "between.columnTooltip": {
     "message": "Prema para ordenar por participantes",
     "description": "The tooltip of the between column."
   },
-
   "message.at": {
     "message": "en",
     "description": "Used for concatenation of two strings, e.g. John Doe at http://bugzilla.mozilla.org"
   },
-
   "enigmail.messageSigned": {
     "message": "asinado",
     "description": "Tag description displayed when a message is signed."
   },
-
   "enigmail.messageSignedLong": {
     "message": "Esta mensaxe foi asinada",
     "description": "Tooltip displayed when a signature is good and verified."
   },
-
   "enigmail.messageDecrypted": {
     "message": "descifrada",
     "description": "Tag description displayed when a message has been decrypted."
   },
-
   "enigmail.messageDecryptedLong": {
     "message": "Esta mensaxa foi descifrada antes de mostrala",
     "description": "Tooltip displayed when a message has been decrypted."
   },
-
   "compose.addCc": {
     "message": "engadir unha copia",
     "description": "Link to click to add a cc when composing messages."
   },
-
   "compose.addBcc": {
     "message": "engadir unha copia oculta",
     "description": "Link to click to add bcc when composing messages."
   },
-
   "compose.addAttachment": {
     "message": "engadir anexos",
     "description": "Link to add an attachment when composing messages."
   },
-
   "compose.removeAttachment": {
     "message": "retirar",
     "description": "Link to remove an attachment when composing messages."
   },
-
   "compose.fieldBcc": {
     "message": "copia oculta:",
     "description": "Field name for the bcc field when composing messages."
   },
-
   "compose.fieldSubject": {
     "message": "asunto",
     "description": "Field name for the subject field when composing messages."
   },
-
   "compose.editField": {
     "message": "editar",
     "description": "Link title to edit a particular field when composing messages."
   },
-
   "compose.send": {
     "message": "enviar",
     "description": "Button name to send a message."
   },
-
   "compose.sendArchive": {
     "message": "enviar e arquivar",
     "description": "Button name to send and archive a message."
   },
-
   "compose.save": {
     "message": "gardar",
     "description": "Button name to save a message as draft."
   },
-
   "compose.discard": {
     "message": "desbotar",
     "description": "Button name to discard a message draft."
   },
-
   "compose.mostFrequentContacts": {
     "message": "Contactos máis frecuentes",
     "description": "Field name for showing the most frequently used contacts."
   },
-
   "compose.showMore": {
     "message": "mostrar máis...",
     "description": "Show more link for showing more contacts."
   },
-
   "enigmail.unknownGood": {
     "message": "unknown good signature",
     "description": "Tooltip displayed when a signature is good but unverified."
+  },
+  "calendar.imipAcceptButton.label": {
+    "message": "Aceptar",
+    "description": "Calendar invite accept button."
+  },
+  "calendar.imipAcceptButton.tooltip": {
+    "message": "Aceptar o convite ao evento",
+    "description": "Calendar invite accept button tooltip."
+  },
+  "calendar.imipAcceptRecurrencesButton.label": {
+    "message": "Aceptar todo",
+    "description": "Calendar invite accept button."
+  },
+  "calendar.imipAcceptRecurrencesButton.tooltip": {
+    "message": "Aceptar os convites para todas as ocorrencias do evento",
+    "description": "Calendar invite accept button tooltip."
+  },
+  "calendar.imipAddButton.label": {
+    "message": "Engadir",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipAddButton.tooltip": {
+    "message": "Engadir o evento ao calendario",
+    "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imipDeclineButton.label": {
+    "message": "Rexeitar",
+    "description": "Calendar invite decline button."
+  },
+  "calendar.imipDeclineButton.tooltip": {
+    "message": "Declinar o convite ao evento",
+    "description": "Calendar invite decline button tooltip."
+  },
+  "calendar.imipDeclineRecurrencesButton.label": {
+    "message": "Rexeitar todo",
+    "description": "Calendar invite decline button."
+  },
+  "calendar.imipDeclineRecurrencesButton.tooltip": {
+    "message": "Declinar os convites para todas as ocorrencias do evento",
+    "description": "Calendar invite decline button tooltip."
+  },
+  "calendar.imipDeclineCounterButton.label": {
+    "message": "Rexeitar",
+    "description": "Calendar invite decline button."
+  },
+  "calendar.imipDeclineCounterButton.tooltip": {
+    "message": "Declinar a contraproposta",
+    "description": "Calendar invite decline button tooltip."
+  },
+  "calendar.imipDeleteButton.label": {
+    "message": "Eliminar",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipDeleteButton.tooltip": {
+    "message": "Eliminar do calendario",
+    "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imipDetailsButton.label": {
+    "message": "Detalles…",
+    "description": "Calendar invite details button."
+  },
+  "calendar.imipDetailsButton.tooltip": {
+    "message": "Amosar os detalles do evento",
+    "description": "Calendar invite details button tooltip."
+  },
+  "calendar.imipReconfirmButton.label": {
+    "message": "Volver a confirmar",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipReconfirmButton.tooltip": {
+    "message": "Envía a confirmación de novo ao organizador",
+    "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imipRescheduleButton.label": {
+    "message": "Programar de novo",
+    "description": "Calendar invite tentative button."
+  },
+  "calendar.imipRescheduleButton.tooltip": {
+    "message": "Programar de novo o evento",
+    "description": "Calendar invite tentative button tooltip."
+  },
+  "calendar.imipTentativeButton.label": {
+    "message": "Aceptar provisionalmente",
+    "description": "Calendar invite tentative button."
+  },
+  "calendar.imipTentativeButton.tooltip": {
+    "message": "Aceptar provisionalmente o convite ao evento",
+    "description": "Calendar invite tentative button tooltip."
+  },
+  "calendar.imipTentativeRecurrencesButton.label": {
+    "message": "Aceptar provisionalmente todas",
+    "description": "Calendar invite tentative button."
+  },
+  "calendar.imipTentativeRecurrencesButton.tooltip": {
+    "message": "Aceptar provisionalmente os convites para todas as ocorrencias do evento",
+    "description": "Calendar invite tentative button tooltip."
+  },
+  "calendar.imipUpdateButton.label": {
+    "message": "Aceptar",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipUpdateButton.tooltip": {
+    "message": "Aceptar",
+    "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imipGoToCalendarButton.label": {
+    "message": "Calendario",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipGoToCalendarButton.tooltip": {
+    "message": "Ir á lapela do calendario",
+    "description": "Calendar invite update button tooltip."
   }
 }

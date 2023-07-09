@@ -189,11 +189,6 @@ export const summaryActions = {
         );
       }
 
-      await browser.convCalendar.onMessageStreamed(
-        getState().summary.winId,
-        getState().summary.tabId,
-        id
-      );
       await browser.convOpenPgp.handleMessageStreamed(
         getState().summary.winId,
         getState().summary.tabId,
@@ -236,6 +231,16 @@ export const summaryActions = {
           })
         );
       }
+    };
+  },
+  messageUnloaded({ msgId }) {
+    return async (dispatch, getState) => {
+      let state = getState();
+      await browser.convCalendar.messageUnloaded(
+        state.summary.winId,
+        state.summary.tabId,
+        msgId
+      );
     };
   },
 };

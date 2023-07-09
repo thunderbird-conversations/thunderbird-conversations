@@ -3,45 +3,76 @@
     "namespace": "convCalendar",
     "functions": [
       {
-        "name": "onMessageStreamed",
-        "type": "function",
-        "description": "Handles calendar notifications on messages.",
-        "async": true,
-        "parameters": [
-          {
-            "name": "winId",
-            "type": "number",
-            "optional": true,
-            "description": "The id of the tab."
-          },
-          {
-            "name": "tabId",
-            "type": "number",
-            "optional": true,
-            "description": "The id of the tab."
-          },
-          {
-            "name": "msgId",
-            "type": "number",
-            "description": "The id of the message."
-          }
-        ]
-      },
-      {
         "name": "onMessageNotification",
         "type": "function",
         "description": "Handles clicks on notifications on messages.",
         "async": true,
         "parameters": [
           {
+            "name": "winId",
+            "type": "number",
+            "optional": true,
+            "description": "The id of the window."
+          },
+          {
             "name": "tabId",
             "type": "number",
             "description": "The id of the tab."
           },
           {
+            "name": "msgId",
+            "type": "number",
+            "description": "The message identifier."
+          },
+          {
             "name": "action",
             "type": "string",
             "description": "The action to take."
+          }
+        ]
+      },
+      {
+        "name": "messageUnloaded",
+        "type": "function",
+        "description": "Handles clearing cached state when a message is unloaded.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "winId",
+            "type": "number",
+            "optional": true,
+            "description": "The id of the window."
+          },
+          {
+            "name": "tabId",
+            "type": "number",
+            "description": "The id of the tab."
+          },
+          {
+            "name": "msgId",
+            "type": "number",
+            "description": "The message identifier."
+          }
+        ]
+      }
+    ],
+    "events": [
+      {
+        "name": "onListenForInvites",
+        "type": "function",
+        "description": "Temporary. Fake Listener, used for listening to calendar invites when loading messages",
+        "parameters": [],
+        "extraParameters": [
+          {
+            "name": "winId",
+            "type": "number",
+            "description": "The id of the window.",
+            "optional": true
+          },
+          {
+            "name": "tabId",
+            "type": "number",
+            "description": "The id of the tab."
           }
         ]
       }

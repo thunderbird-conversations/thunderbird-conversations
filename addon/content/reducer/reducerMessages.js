@@ -306,8 +306,11 @@ export const messageActions = {
   notificationClick({ id, notificationType, extraData }) {
     return async (dispatch, getState) => {
       if (notificationType == "calendar") {
+        let state = getState();
         await browser.convCalendar.onMessageNotification(
-          getState().summary.tabId,
+          state.summary.windowId,
+          state.summary.tabId,
+          id,
           extraData.execute
         );
         return;

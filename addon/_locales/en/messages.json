@@ -866,5 +866,145 @@
         "example": "12:14"
       }
     }
+  },
+
+  "calendar.imipAcceptButton.label": {
+    "message": "Accept",
+    "description": "Calendar invite accept button."
+  },
+
+  "calendar.imipAcceptButton.tooltip": {
+    "message": "Accept event invitation",
+    "description": "Calendar invite accept button tooltip."
+  },
+
+  "calendar.imipAcceptRecurrencesButton.label": {
+    "message": "Accept all",
+    "description": "Calendar invite accept button."
+  },
+
+  "calendar.imipAcceptRecurrencesButton.tooltip": {
+    "message": "Accept event invitation for all occurrences of the event",
+    "description": "Calendar invite accept button tooltip."
+  },
+
+  "calendar.imipAddButton.label": {
+    "message": "Add",
+    "description": "Calendar invite update button."
+  },
+
+  "calendar.imipAddButton.tooltip": {
+    "message": "Add the event to the calendar",
+    "description": "Calendar invite update button tooltip."
+  },
+
+  "calendar.imipDeclineButton.label": {
+    "message": "Decline",
+    "description": "Calendar invite decline button."
+  },
+
+  "calendar.imipDeclineButton.tooltip": {
+    "message": "Decline event invitation",
+    "description": "Calendar invite decline button tooltip."
+  },
+
+  "calendar.imipDeclineRecurrencesButton.label": {
+    "message": "Decline all",
+    "description": "Calendar invite decline button."
+  },
+
+  "calendar.imipDeclineRecurrencesButton.tooltip": {
+    "message": "Decline event invitation for all occurrences of the event",
+    "description": "Calendar invite decline button tooltip."
+  },
+
+  "calendar.imipDeclineCounterButton.label": {
+    "message": "Decline",
+    "description": "Calendar invite decline button."
+  },
+
+  "calendar.imipDeclineCounterButton.tooltip": {
+    "message": "Decline the counter proposal",
+    "description": "Calendar invite decline button tooltip."
+  },
+
+  "calendar.imipDeleteButton.label": {
+    "message": "Delete",
+    "description": "Calendar invite update button."
+  },
+
+  "calendar.imipDeleteButton.tooltip": {
+    "message": "Delete from calendar",
+    "description": "Calendar invite update button tooltip."
+  },
+
+  "calendar.imipDetailsButton.label": {
+    "message": "Details…",
+    "description": "Calendar invite details button."
+  },
+
+  "calendar.imipDetailsButton.tooltip": {
+    "message": "Show event details",
+    "description": "Calendar invite details button tooltip."
+  },
+
+  "calendar.imipReconfirmButton.label": {
+    "message": "Reconfirm",
+    "description": "Calendar invite update button."
+  },
+
+  "calendar.imipReconfirmButton.tooltip": {
+    "message": "Sends a reconfirmation to the organizer",
+    "description": "Calendar invite update button tooltip."
+  },
+
+  "calendar.imipRescheduleButton.label": {
+    "message": "Reschedule",
+    "description": "Calendar invite tentative button."
+  },
+
+  "calendar.imipRescheduleButton.tooltip": {
+    "message": "Reschedule the event",
+    "description": "Calendar invite tentative button tooltip."
+  },
+
+  "calendar.imipTentativeButton.label": {
+    "message": "Tentative",
+    "description": "Calendar invite tentative button."
+  },
+
+  "calendar.imipTentativeButton.tooltip": {
+    "message": "Accept event invitation tentatively",
+    "description": "Calendar invite tentative button tooltip."
+  },
+
+  "calendar.imipTentativeRecurrencesButton.label": {
+    "message": "Tentative all",
+    "description": "Calendar invite tentative button."
+  },
+
+  "calendar.imipTentativeRecurrencesButton.tooltip": {
+    "message": "Accept event invitation tentatively for all occurrences of the event",
+    "description": "Calendar invite tentative button tooltip."
+  },
+
+  "calendar.imipUpdateButton.label": {
+    "message": "Update",
+    "description": "Calendar invite update button."
+  },
+
+  "calendar.imipUpdateButton.tooltip": {
+    "message": "Update event in calendar",
+    "description": "Calendar invite update button tooltip."
+  },
+
+  "calendar.imipGoToCalendarButton.label": {
+    "message": "Calendar",
+    "description": "Calendar invite update button."
+  },
+
+  "calendar.imipGoToCalendarButton.tooltip": {
+    "message": "Go to the calendar tab",
+    "description": "Calendar invite update button tooltip."
   }
 }

@@ -13,7 +13,6 @@ const SUPPORTED_APIS_NO_EVENTS = [
   "addressBooks",
   "compose",
   "contacts",
-  "convCalendar",
   "convCompose",
   "folders",
   "identities",
@@ -29,6 +28,7 @@ const SUPPORTED_APIS_NO_EVENTS = [
 
 const SUPPORTED_BASE_APIS = [
   ...SUPPORTED_APIS_NO_EVENTS,
+  "convCalendar",
   "convContacts",
   "convGloda",
   "convMsgWindow",

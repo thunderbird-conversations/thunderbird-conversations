@@ -3,719 +3,673 @@
     "message": "Konverzace pro Thunderbird",
     "description": "Name of the extension."
   },
-
   "extensionDescription": {
     "message": "Přináší do Thunderbirdu zobrazení konverzací!",
     "description": "Description of the extension."
   },
-
   "options.expand_who": {
     "message": "Při otevření rozbalit:",
     "description": "Options - label for which messages should be expanded."
   },
-
   "options.expand_auto": {
     "message": "automaticky",
     "description": "Options - label for automatically expanding messages."
   },
-
   "options.expand_auto.tooltip": {
     "message": "Pokud je vlákno sbalené, rozbalit všechny nepřečtené, nebo poslední zprávu. Pokud je rozbalené, rozbalit pouze zprávu vybranou v seznamu zpráv.",
     "description": "Options - tooltip for automatically expanding messages."
   },
-
   "options.expand_none": {
     "message": "žádné zprávy",
     "description": "Options - label for not expanding messages."
   },
-
   "options.expand_all": {
     "message": "všechny zprávy",
     "description": "Options - label for expanding all messages."
   },
-
   "options.quoting_title": {
     "message": "Citovaný text",
     "description": "Options - title for quoted text."
   },
-
   "options.quoting_desc": {
     "message": "Citace delší než tento počet řádek budou sbaleny.",
     "description": "Options - description for quoted text."
   },
-
   "options.hide_sigs_title": {
     "message": "Skrýt podpisy",
     "description": "Options - title for hiding signatures."
   },
-
   "options.hide_sigs_desc": {
     "message": "Zobrazovat podpisy sbalené",
     "description": "Options - description for hiding signatures."
   },
-
   "options.friendly_date_title": {
     "message": "Vlastní formáty data",
     "description": "Options - title for if to show friendly dates."
   },
-
   "options.friendly_date_desc": {
     "message": "V pravém horním rohu zobrazovat \"normální\" data, stejně jako v seznamu zpráv, místo \"včera\" a dalších.",
     "description": "Options - description for if to show friendly dates."
   },
-
   "options.tweak_chrome_title": {
     "message": "Upravit písma chrome",
     "description": "Options - title for tweaking chrome fonts."
   },
-
   "options.tweak_chrome_desc": {
     "message": "Upravit písma v těle zprávy, aby ladila s vnějšími písmy (doporučeno, vyžaduje restart).",
     "description": "Options - description for tweaking chrome fonts."
   },
-
   "options.tweak_bodies_title": {
     "message": "Upravit písma těla",
     "description": "Options - title for tweaking message body fonts."
   },
-
   "options.tweak_bodies_desc": {
     "message": "Zmenšit velikost písma konverzací (doporučeno, vyžaduje restart).",
     "description": "Options - description for tweaking message body fonts."
   },
-
   "options.operate_on_conversations_title": {
     "message": "Tlačítka na liště",
     "description": "Options - title for archive/delete behavior."
   },
-
   "options.operate_on_conversations_desc": {
     "message": "Tlačítka na liště budou archivovat, nebo mazat celou konverzaci, ne jen vybranou zprávu.",
     "description": "Options - description for archive/delete behavior."
   },
-
   "options.extra_attachments_title": {
     "message": "Miluji přílohy",
     "description": "Options - title for attachment settings."
   },
-
   "options.extra_attachments_desc": {
     "message": "V několika krajních případech Thunderbird není schopen rozeznat některé přílohy. Tato předvolba vám chybu umožní obejít. Použijte ji v kombinaci s doplňkem \"Show All Body Parts\".",
     "description": "Options - description for attachment settings."
   },
-
   "options.compose_in_tab_title": {
     "message": "Skryté okno psaní zprávy",
     "description": "Options - title for hidden compose window enabling."
   },
-
   "options.compose_in_tab_desc": {
     "message": "Ctrl+Shift+N otevře v novém okně skryté, nepodporované okno psaní zprávy",
     "description": "Options - description for hidden compose window enabling."
   },
-
   "options.debugging_title": {
     "message": "Ladění",
     "description": "Options - title for debugging setting."
   },
-
   "options.debugging_desc": {
     "message": "Aktivuje ladící výstup v systémové a chybové konzoli. Tato volba bude generovat mnoho zpráv.",
     "description": "Options - description for debugging setting."
   },
-
   "assistant.title": {
     "message": "Pomocník s nastavením",
     "description": "The document title of the assistant page."
   },
-
   "assistant.working": {
     "message": "Pracuje se ...",
     "description": "An indication that the assistant is working."
   },
-
   "assistant.apply": {
     "message": "Uplatnit změny",
     "description": "The apply button title for the assistant."
   },
-
   "assistant.actionEnableGloda": {
     "message": "Aktivovat globální vyhledávání a indexaci.",
     "description": "Option text for enabling Gloda."
   },
-
   "assistant.actionOfflineDownload": {
     "message": "Doručená a odeslaná pošta je ukládána offline (silně doporučeno).",
     "description": "Option text for allowing offline download."
   },
-
   "assistant.actionEnsureMessagePaneVisible": {
     "message": "Zobrazit Panel zpráv.",
     "description": "Option text for ensuring the message pane is visible."
   },
-
   "assistant.settings2": {
     "message": "Tato nastavení můžete upravit i později, spuštěním pomocníka v předvolbách rozšíření, v sekci \"Pokročilé\".",
     "description": "Paragraph informing users of the ability to change settings later."
   },
-
   "gallery.messageMovedOrDeleted": {
     "message": "Je nám líto, ale náhled všech obrázků nelze zobrazit, jelikož zpráva která je obsahovala byla přesunuta, nebo smazána.",
     "description": "Message displayed if the email that the gallery is trying to view cannot be found."
   },
-
   "gallery.title": {
     "message": "Všechny obrázky ze zprávy: $1",
     "description": "The tab title for the image gallery"
   },
-
   "options.start_setup_assistant": {
     "message": "Spustit pomocníka s nastavením",
     "description": "Title of the button to open the setup assistant."
   },
-
   "message.movedOrDeletedConversation": {
     "message": "Je nám líto, ale tuto konverzaci nelze zobrazit, jelikož její zprávy byly přesunuty, nebo smazány.",
     "description": "Error message for the conversation tab"
   },
-
   "contact.copyEmailTooltip": {
     "message": "Kopírovat e-mailovou adresu",
     "description": "Tooltip shown on the copy email to clipboard button"
   },
-
   "contact.createFilterTooltip": {
     "message": "Vytvořit filtr",
     "description": "Tooltip shown on the create filter for contact button"
   },
-
   "contact.addContactTooltip": {
     "message": "Přidat do kontaktů",
     "description": "Tooltip shown on the add contact button"
   },
-
   "contact.editContactTooltip": {
     "message": "Upravit kontakt v adresáři",
     "description": "Tooltip shown on the edit contact button"
   },
-
   "contact.sendEmailTooltip": {
     "message": "odeslat zprávu",
     "description": "Tooltip shown on the send email button"
   },
-
   "contact.recentConversationsTooltip": {
     "message": "nedávné konverzace",
     "description": "Tooltip shown on the recent conversations button"
   },
-
   "message.archive.tooltip": {
     "message": "Archivovat konverzaci",
     "description": "Tooltip for the archive button in the conversation header"
   },
-
   "message.detach.tooltip": {
     "message": "Zobrazit konverzaci v novém panelu",
     "description": "Tooltip for the detach to new tab button in the conversation header"
   },
-
   "message.expand.tooltip": {
     "message": "Rozbalit / sbalit všechny zprávy",
     "description": "Tooltip for the expand button in the conversation header"
   },
-
   "message.forwardConversation": {
     "message": "Přeposlat konverzaci",
     "description": "The link text for forwarding a conversation"
   },
-
   "message.junk.tooltip": {
     "message": "Označit zprávu jako nevyžádaná",
     "description": "Tooltip for the junk button in the conversation header"
   },
-
   "message.loading": {
     "message": "Načítá se...",
     "description": "Displayed when the message is loading"
   },
-
   "message.printConversation": {
     "message": "Vytisknout konverzaci",
     "description": "The link text for printing a conversation"
   },
-
   "message.read.tooltip": {
     "message": "Označit všechny zprávy jako ne/přečtené",
     "description": "Tooltip for the mark as read button in the conversation header"
   },
-
   "message.trash.tooltip": {
     "message": "Smazat konverzaci",
     "description": "Tooltip for the trash button in the conversation header"
   },
-
   "message.noSubject": {
     "message": "(no subject)",
     "description": "Displayed when a message has no subject"
   },
-
   "message.showDetails.tooltip": {
     "message": "zobrazit podrobnosti",
     "description": "Tooltip for showing message header details"
   },
-
   "message.hideDetails.tooltip": {
     "message": "skrýt podrobnosti",
     "description": "Tooltip for hiding message header details"
   },
-
   "message.moreMenu.tooltip": {
     "message": "více",
     "description": "Tooltip for the more menu"
   },
-
   "action.archive": {
     "message": "archivovat",
     "description": "Archive button name in the message more menu"
   },
-
   "action.delete": {
     "message": "smazat",
     "description": "Delete button name in the message more menu"
   },
-
   "action.viewClassic": {
     "message": "zobrazit klasickým zobrazením",
     "description": "Show in classic view button name in the message more menu"
   },
-
   "action.viewSource": {
     "message": "zobrazit zdrojový kód",
     "description": "View source button name in the message more menu"
   },
-
   "notification.scamMsg": {
     "message": "Tato zpráva může být podvodný e-mail:",
     "description": "Notification message shown for a junk/scam message"
   },
-
   "notification.ignoreScamWarning": {
     "message": "ignorovat varování",
     "description": "Button title to ignore a junk/scam message"
   },
-
   "notification.junkMsg": {
     "message": "Nevyžádaná pošta",
     "description": "Notification message shown for junk messages"
   },
-
   "notification.notJunk": {
     "message": "Není nevyžádaná",
     "description": "Button title to mark as not junk"
   },
-
   "notification.isOutboxMsg": {
     "message": "Toto je neodeslaná zpráva.",
     "description": "Notification message shown for a message in the outbox"
   },
-
   "notification.sendUnsent": {
     "message": "Odeslat neodeslané zprávy?",
     "description": "Button title to send a message in the outbox"
   },
-
   "notification.remoteContentBlockedMsg": {
     "message": "Vzdálený obsah byl skryt:",
     "description": "Notification message shown when remote content is blocked"
   },
-
   "notification.showRemote": {
     "message": "zobrazit vzdálený obsah",
     "description": "Button title to show remote content"
   },
-
   "notification.alwaysShowRemote": {
     "message": "vždy zobrazit vzdálený obsah od $fromEmail$",
     "description": "Button title to always show remote content.",
     "placeholders": {
-      "fromEmail": {
-        "content": "$1",
-        "example": "me@example.com"
-      }
+      "fromEmail": { "content": "$1", "example": "me@example.com" }
     }
   },
-
   "action.editDraft": {
     "message": "upravit koncept",
     "description": "Edit draft button name in the message more menu"
   },
-
   "action.reply": {
     "message": "odpovědět",
     "description": "Reply button name in the message more menu"
   },
-
   "action.replyAll": {
     "message": "odpovědět všem",
     "description": "Reply all button name in the message more menu"
   },
-
   "action.replyList": {
     "message": "odpovědět do konference",
     "description": "Reply list button name in the message more menu"
   },
-
   "action.editNew": {
     "message": "upravit jako nové",
     "description": "Edit as new button name in the message more menu"
   },
-
   "action.forward": {
     "message": "přeposlat",
     "description": "Forward button name in the message more menu"
   },
-
   "message.fromHeader": {
     "message": "od:",
     "description": "Header name displayed for the from field"
   },
-
   "message.toHeader": {
     "message": "komu:",
     "description": "Header name displayed for the to field"
   },
-
   "message.ccHeader": {
     "message": "kopie:",
     "description": "Header name displayed for the cc field"
   },
-
   "header.to": {
     "message": "pro",
     "description": "Used in the header, inserted in 'from me to you'."
   },
-
   "tags.jumpToFolder.tooltip": {
     "message": "Přejít do této složky",
     "description": "Tooltip for the jump to folder tag."
   },
-
   "tags.inFolder": {
     "message": "V $folderName$",
     "description": "Folder indication for the jump to folder tag.",
-    "placeholders": {
-      "folderName": {
-        "content": "$1",
-        "example": "Sent"
-      }
-    }
+    "placeholders": { "folderName": { "content": "$1", "example": "Sent" } }
   },
-
   "attachments.downloadAll.tooltip": {
     "message": "uložit vše",
     "description": "Tooltip for the download all attachments button."
   },
-
   "attachments.gallery.tooltip": {
     "message": "zobrazit všechny obrázky",
     "description": "Tooltip for the view attachments in gallery button."
   },
-
   "attachments.preview.tooltip": {
     "message": "náhled",
     "description": "Tooltip displayed for the preview button of an attachment."
   },
-
   "attachments.open.tooltip": {
     "message": "otevřít",
     "description": "Tooltip displayed for the preview button of an attachment."
   },
-
   "attachments.viewAttachment.tooltip": {
     "message": "Zobrazit přílohu v novém panelu",
     "description": "Tooltip displayed for an attachment that can be previewed in a tab."
   },
-
   "attachments.download.tooltip": {
     "message": "uložit",
     "description": "Tooltip displayed for the download button of an attachment."
   },
-
   "messageBody.hideQuotedText": {
     "message": "skrýt citovaný text",
     "description": "String displayed in a message body to collapse the quoted text."
   },
-
   "messageBody.showQuotedText": {
     "message": "zobrazit citovaný text",
     "description": "String displayed in a message body to expand the quoted text."
   },
-
   "messageBody.hideSigText": {
     "message": "skrýt podpis",
     "description": "String displayed in a message body to collapse the signature."
   },
-
   "messageBody.showSigText": {
     "message": "zobrazit podpis",
     "description": "String displayed in a message body to expand the signature."
   },
-
   "header.commaSeparator": {
     "message": ",\u0020",
     "description": "This is used in messages, for the recipients, and the 'between' column as well. In English, space after the comma."
   },
-
   "header.andSeparator": {
     "message": "\u0020a\u0020",
     "description": "This is used in messages, for the recipients, and the 'between' column as well. In English, space after and before « and »."
   },
-
   "attachments.context.detach": {
     "message": "Vyčlenit přílohu",
     "description": "Context menu item to detach an attachment."
   },
-
   "attachments.context.delete": {
     "message": "Smazat přílohu",
     "description": "Context menu item to delete an attachment."
   },
-
   "pluralForm": {
     "message": "8",
     "description": "Please make sure you read and understood https://developer.mozilla.org/en/Localization_and_Plurals. pluralForm corresponds to the 'pluralRule' variable that's described in the page, it's just a mistake if the name doesn't match the MDC page."
   },
-
   "attachments.numAttachments": {
     "message": "jedna příloha;$num$ přílohy;$num$ příloh",
     "description": "The description used for how many attachments there are. This should take the form of a plural form, see also 'pluralForm'.",
-    "placeholders": {
-      "num": {
-        "content": "$1",
-        "example": "2"
-      }
-    }
+    "placeholders": { "num": { "content": "$1", "example": "2" } }
   },
-
   "message.meFromMeToSomeone": {
     "message": "já",
     "description": "One of four different strings are required to accomodate some languages which have specific declensions."
   },
-
   "message.meFromSomeoneToMe": {
     "message": "mě",
     "description": "One of four different strings are required to accomodate some languages which have specific declensions."
   },
-
   "message.meBetweenMeAndSomeone": {
     "message": "já",
     "description": "One of four different strings are required to accomodate some languages which have specific declensions."
   },
-
   "message.meBetweenSomeoneAndMe": {
     "message": "já",
     "description": "One of four different strings are required to accomodate some languages which have specific declensions."
   },
-
   "message.headerSubject": {
     "message": "předmět",
     "description": "Name for the Subject header that is displayed when you click the show details button."
   },
-
   "message.headerDate": {
     "message": "datum",
     "description": "Name for the Date header that is displayed when you click the show details button."
   },
-
   "message.headerFolder": {
     "message": "složka",
     "description": "Name for the Folder header that is displayed when you click the show details button."
   },
-
   "involvingTabTitle": {
     "message": "Zprávy zahrnující $contactName$",
     "description": "This is used when we click on the \"recent conversations\" button in a contact tooltip. This is the title of the tab that opens.",
     "placeholders": {
-      "contactName": {
-        "content": "$1",
-        "example": "John Smith"
-      }
+      "contactName": { "content": "$1", "example": "John Smith" }
     }
   },
-
   "compose.confirmDiscard": {
     "message": "Opravdu si tuto zprávu přejete smazat?",
     "description": "Confirmation message when discarding a compose draft."
   },
-
   "compose.attachFiles": {
     "message": "Připojit soubor(y)",
     "description": "Title of the file picker to attach files to a compose draft."
   },
-
   "compose.attachedMessage": {
     "message": "Přiloženo Message.eml",
     "description": "The filename name to use for an attachment when attaching an email."
   },
-
   "compose.attachment": {
     "message": "Příloha",
     "description": "Attachment header when composing a draft."
   },
-
   "attachments.sizeUnknown": {
     "message": "neznámá velikost",
     "description": "The message displayed when an attachment size is unknown."
   },
-
   "compose.sendAnEmptyMessage": {
     "message": "Odeslat prázdnou zprávu?",
     "description": "Confirmation message for sending an empty email."
   },
-
   "compose.sendingMessage": {
     "message": "Odesílání zprávy...",
     "description": "Information text when sending an email."
   },
-
   "compose.messageSendingSuccess": {
     "message": "Zpráva $msgId$ úspěšně odeslána",
     "description": "Information text for email sent success.",
-    "placeholders": {
-      "msgId": {
-        "content": "$1",
-        "example": "1234"
-      }
-    }
+    "placeholders": { "msgId": { "content": "$1", "example": "1234" } }
   },
-
   "compose.couldntSendTheMessage": {
     "message": "Nelze odeslat zprávu.",
     "description": "Information text for when sending email failed."
   },
-
   "conversation.forwardFillInText": {
     "message": "Tato konverzace by Vás mohla zajímat.",
     "description": "Text displayed when a conversation is forwarded."
   },
-
   "compose.messageSendingCanceled": {
     "message": "Odesílání zprávy bylo zrušeno.",
     "description": "Information text when sending email was canceled."
   },
-
   "enigmail.attachmentsNotEncrypted": {
     "message": "Přílohy nebudou kódovány pomocí inline-PGP.\nOdeslat místo toho zprávu pomocí PGP/MIME?",
     "description": "For the enigmail plugin to indicate attachments are not encrypted on sending."
   },
-
   "compose.write": {
     "message": "Psaní zprávy...",
     "description": "Document title for composing an email in a new tab."
   },
-
   "between.columnName": {
     "message": "Mezi",
     "description": "The displayed name of the between column."
   },
-
   "between.columnTooltip": {
     "message": "Kliknutím seřadíte podle účastníků",
     "description": "The tooltip of the between column."
   },
-
   "message.at": {
     "message": "na",
     "description": "Used for concatenation of two strings, e.g. John Doe at http://bugzilla.mozilla.org"
   },
-
   "enigmail.messageSigned": {
     "message": "podepsáno",
     "description": "Tag description displayed when a message is signed."
   },
-
   "enigmail.messageSignedLong": {
     "message": "Zpráva je podepsána",
     "description": "Tooltip displayed when a signature is good and verified."
   },
-
   "enigmail.messageDecrypted": {
     "message": "rozšifrováno",
     "description": "Tag description displayed when a message has been decrypted."
   },
-
   "enigmail.messageDecryptedLong": {
     "message": "Zpráva byla před zobrazením rozšifrována",
     "description": "Tooltip displayed when a message has been decrypted."
   },
-
   "compose.addCc": {
     "message": "přidat kopii",
     "description": "Link to click to add a cc when composing messages."
   },
-
   "compose.addBcc": {
     "message": "přidat skrytou kopii",
     "description": "Link to click to add bcc when composing messages."
   },
-
   "compose.addAttachment": {
     "message": "přidat přílohy",
     "description": "Link to add an attachment when composing messages."
   },
-
   "compose.removeAttachment": {
     "message": "smazat",
     "description": "Link to remove an attachment when composing messages."
   },
-
   "compose.fieldBcc": {
     "message": "skrytá kopie:",
     "description": "Field name for the bcc field when composing messages."
   },
-
   "compose.fieldSubject": {
     "message": "předmět:",
     "description": "Field name for the subject field when composing messages."
   },
-
   "compose.editField": {
     "message": "upravit",
     "description": "Link title to edit a particular field when composing messages."
   },
-
   "compose.send": {
     "message": "odeslat",
     "description": "Button name to send a message."
   },
-
   "compose.sendArchive": {
     "message": "odeslat a archivovat",
     "description": "Button name to send and archive a message."
   },
-
   "compose.save": {
     "message": "uložit",
     "description": "Button name to save a message as draft."
   },
-
   "compose.discard": {
     "message": "neukládat",
     "description": "Button name to discard a message draft."
   },
-
   "compose.mostFrequentContacts": {
     "message": "Nejčastější kontakty:",
     "description": "Field name for showing the most frequently used contacts."
   },
-
   "compose.showMore": {
     "message": "ukázat více...",
     "description": "Show more link for showing more contacts."
   },
-
   "enigmail.unknownGood": {
     "message": "neznámý platný podpis",
     "description": "Tooltip displayed when a signature is good but unverified."
+  },
+  "calendar.imipAcceptButton.label": {
+    "message": "Přijmout",
+    "description": "Calendar invite accept button."
+  },
+  "calendar.imipAcceptButton.tooltip": {
+    "message": "Přijme pozvání na událost",
+    "description": "Calendar invite accept button tooltip."
+  },
+  "calendar.imipAcceptRecurrencesButton.label": {
+    "message": "Přijmout vše",
+    "description": "Calendar invite accept button."
+  },
+  "calendar.imipAcceptRecurrencesButton.tooltip": {
+    "message": "Přijme pozvání na všechna opakování události",
+    "description": "Calendar invite accept button tooltip."
+  },
+  "calendar.imipAddButton.label": {
+    "message": "Přidat",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipAddButton.tooltip": {
+    "message": "Přidá událost do kalendáře",
+    "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imipDeclineButton.label": {
+    "message": "Odmítnout",
+    "description": "Calendar invite decline button."
+  },
+  "calendar.imipDeclineButton.tooltip": {
+    "message": "Odmítne pozvání na událost",
+    "description": "Calendar invite decline button tooltip."
+  },
+  "calendar.imipDeclineRecurrencesButton.label": {
+    "message": "Odmítnout vše",
+    "description": "Calendar invite decline button."
+  },
+  "calendar.imipDeclineRecurrencesButton.tooltip": {
+    "message": "Odmítne pozvání na všechna opakování události",
+    "description": "Calendar invite decline button tooltip."
+  },
+  "calendar.imipDeclineCounterButton.label": {
+    "message": "Odmítnout",
+    "description": "Calendar invite decline button."
+  },
+  "calendar.imipDeclineCounterButton.tooltip": {
+    "message": "Odmítnou protinávrh",
+    "description": "Calendar invite decline button tooltip."
+  },
+  "calendar.imipDeleteButton.label": {
+    "message": "Smazat",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipDeleteButton.tooltip": {
+    "message": "Smaže z kalendáře",
+    "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imipDetailsButton.label": {
+    "message": "Podrobnosti…",
+    "description": "Calendar invite details button."
+  },
+  "calendar.imipDetailsButton.tooltip": {
+    "message": "Zobrazí podrobné informace o události",
+    "description": "Calendar invite details button tooltip."
+  },
+  "calendar.imipReconfirmButton.label": {
+    "message": "Znovu potvrdit",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipReconfirmButton.tooltip": {
+    "message": "Pošle znovu potvrzení organizátorovi",
+    "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imipRescheduleButton.label": {
+    "message": "Přeplánovat",
+    "description": "Calendar invite tentative button."
+  },
+  "calendar.imipRescheduleButton.tooltip": {
+    "message": "Přeplánovat událost",
+    "description": "Calendar invite tentative button tooltip."
+  },
+  "calendar.imipTentativeButton.label": {
+    "message": "Předběžně",
+    "description": "Calendar invite tentative button."
+  },
+  "calendar.imipTentativeButton.tooltip": {
+    "message": "Přijme předběžně pozvání na událost",
+    "description": "Calendar invite tentative button tooltip."
+  },
+  "calendar.imipTentativeRecurrencesButton.label": {
+    "message": "Předběžně vše",
+    "description": "Calendar invite tentative button."
+  },
+  "calendar.imipTentativeRecurrencesButton.tooltip": {
+    "message": "Přijme předběžně pozvání na všechna opakování události",
+    "description": "Calendar invite tentative button tooltip."
+  },
+  "calendar.imipUpdateButton.label": {
+    "message": "Přijmout",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipUpdateButton.tooltip": {
+    "message": "Přijmout",
+    "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imipGoToCalendarButton.label": {
+    "message": "Kalendář",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipGoToCalendarButton.tooltip": {
+    "message": "Přejde na panel kalendáře",
+    "description": "Calendar invite update button tooltip."
   }
 }

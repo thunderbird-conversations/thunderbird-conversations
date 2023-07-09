@@ -3,719 +3,673 @@
     "message": "Thunderbird Conversations",
     "description": "Name of the extension."
   },
-
   "extensionDescription": {
     "message": "Προσφέρει εμφάνιση μηνυμάτων σε μορφή συνομιλίας στον Thunderbird!",
     "description": "Description of the extension."
   },
-
   "options.expand_who": {
     "message": "Ανάπτυξη (σαν προεπιλογή):",
     "description": "Options - label for which messages should be expanded."
   },
-
   "options.expand_auto": {
     "message": "Αυτόματο",
     "description": "Options - label for automatically expanding messages."
   },
-
   "options.expand_auto.tooltip": {
     "message": "Αν το νήμα έχει συμπτυχθεί, γίνεται ανάπτυξη όλων των μη αναγνωσμένων μηνυμάτων ή του τελευταίου μηνύματος. Αν έχει αναπτυχθεί, γίνεται ανάπτυξη μόνο του επιλεγμένου μηνύματος από τη λίστα.",
     "description": "Options - tooltip for automatically expanding messages."
   },
-
   "options.expand_none": {
     "message": "Κανένα μήνυμα",
     "description": "Options - label for not expanding messages."
   },
-
   "options.expand_all": {
     "message": "Όλα τα μηνύματα",
     "description": "Options - label for expanding all messages."
   },
-
   "options.quoting_title": {
     "message": "Κείμενο σε παράθεση",
     "description": "Options - title for quoted text."
   },
-
   "options.quoting_desc": {
     "message": "Παραθέσεις κειμένου μεγαλύτερες από τόσες γραμμές θα συμπτύσσονται.",
     "description": "Options - description for quoted text."
   },
-
   "options.hide_sigs_title": {
     "message": "Hide Signatures",
     "description": "Options - title for hiding signatures."
   },
-
   "options.hide_sigs_desc": {
     "message": "Whether signatures are collapsed by default.",
     "description": "Options - description for hiding signatures."
   },
-
   "options.friendly_date_title": {
     "message": "Φιλικές ημερομηνίες",
     "description": "Options - title for if to show friendly dates."
   },
-
   "options.friendly_date_desc": {
     "message": "Χρήση «κανονικής» ημερομηνίας όπως στη λίστα μηνυμάτων αντί για «χθες» κλπ. στη δεξιά πάνω γωνία.",
     "description": "Options - description for if to show friendly dates."
   },
-
   "options.tweak_chrome_title": {
     "message": "Προσαρμογή γραμματοσειράς προγράμματος",
     "description": "Options - title for tweaking chrome fonts."
   },
-
   "options.tweak_chrome_desc": {
     "message": "Σμίκρυνση γραμματοσειράς για το περιβάλλον συζήτησης (συνιστάται - απαιτεί επανεκκίνηση).",
     "description": "Options - description for tweaking chrome fonts."
   },
-
   "options.tweak_bodies_title": {
     "message": "Προσαρμογή γραμματοσειράς κυρίως σώματος",
     "description": "Options - title for tweaking message body fonts."
   },
-
   "options.tweak_bodies_desc": {
     "message": "Ρύθμιση της γραμματοσειράς στο σώμα μηνύματος ώστε να συμβαδίζει με τη γραμματοσειρά πέρα απ' αυτό (συνιστάται - απαιτεί επανεκκίνηση).",
     "description": "Options - description for tweaking message body fonts."
   },
-
   "options.operate_on_conversations_title": {
     "message": "Κουμπιά εργαλειοθήκης",
     "description": "Options - title for archive/delete behavior."
   },
-
   "options.operate_on_conversations_desc": {
     "message": "Τα κουμπιά εργαλειοθήκης θα αρχειοθετούν και θα διαγράφουν ολόκληρες τις συζητήσεις κι όχι μόνο τα επιλεγμένα μηνύματα.",
     "description": "Options - description for archive/delete behavior."
   },
-
   "options.extra_attachments_title": {
     "message": "Μου αρέσουν τα συνημμένα",
     "description": "Options - title for attachment settings."
   },
-
   "options.extra_attachments_desc": {
     "message": "Σε μερικές σπάνιες περιπτώσεις, ο Thunderbird ίσως δεν μπορέσει να αναγνωρίσει μερικά επισυναπτόμενα. Αυτή η επιλογή παρακάμπτει το σφάλμα του Thunderbird και εμφανίζει όσα περισσότερα επισυναπτόμενα γίνεται. Χρησιμοποιήστε την σε συνδυασμό με το πρόσθετο: Show All Body Parts.",
     "description": "Options - description for attachment settings."
   },
-
   "options.compose_in_tab_title": {
     "message": "Κρυμμένο παράθυρο σύνταξης",
     "description": "Options - title for hidden compose window enabling."
   },
-
   "options.compose_in_tab_desc": {
     "message": "Η συντόμευση «Ctrl-Shift-N» ανοίγει το κρυμμένο, μη υποστηριζόμενο παράθυρο σύνταξης σε νέα καρτέλα.",
     "description": "Options - description for hidden compose window enabling."
   },
-
   "options.debugging_title": {
     "message": "Αποσφαλμάτωση",
     "description": "Options - title for debugging setting."
   },
-
   "options.debugging_desc": {
     "message": "Ενεργοποίηση πληροφοριών αποσφαλμάτωσης στις κονσόλες συστήματος και σφαλμάτων.",
     "description": "Options - description for debugging setting."
   },
-
   "assistant.title": {
     "message": "Βοηθός πρώτης εκτέλεσης",
     "description": "The document title of the assistant page."
   },
-
   "assistant.working": {
     "message": "Γίνεται επεξεργασία...",
     "description": "An indication that the assistant is working."
   },
-
   "assistant.apply": {
     "message": "Εφαρμογή αλλαγών",
     "description": "The apply button title for the assistant."
   },
-
   "assistant.actionEnableGloda": {
     "message": "Βεβαιωθείτε ότι είναι ενεργή η γενική αναζήτηση και καταλογοποίησης (από τις ρυθμίσεις για προχωρημένους).",
     "description": "Option text for enabling Gloda."
   },
-
   "assistant.actionOfflineDownload": {
     "message": "Τα εισερχόμενα και τα απεσταλμένα να συγχρονίζονται για αποθήκευση εκτός σύνδεσης (συστήνεται σφόδρα).",
     "description": "Option text for allowing offline download."
   },
-
   "assistant.actionEnsureMessagePaneVisible": {
     "message": "Βεβαιωθείτε ότι η περιοχή μηνύματος είναι εμφανής.",
     "description": "Option text for ensuring the message pane is visible."
   },
-
   "assistant.settings2": {
     "message": "Αν θελήσετε να ενεργοποιήσετε περισσότερες επιλογές αργότερα, μπορείτε να φορτώσετε τον οδηγό από τις επιλογές του πρόσθετου - από το τμήμα «Για προχωρημένους».",
     "description": "Paragraph informing users of the ability to change settings later."
   },
-
   "gallery.messageMovedOrDeleted": {
     "message": "Λυπούμαστε αλλά δεν μπορούμε να εμφανίζουμε τη συλλογή γιατί το μήνυμα έχει μετακινηθεί ή διαγραφεί.",
     "description": "Message displayed if the email that the gallery is trying to view cannot be found."
   },
-
   "gallery.title": {
     "message": "Προβολή συλλογής για: $1",
     "description": "The tab title for the image gallery"
   },
-
   "options.start_setup_assistant": {
     "message": "Εκκίνηση του βοηθού ρυθμίσεων",
     "description": "Title of the button to open the setup assistant."
   },
-
   "message.movedOrDeletedConversation": {
     "message": "Λυπούμαστε αλλά δεν μπορούμε να παρουσιάσουμε αυτή τη συνομιλία γιατί τα μηνύματα έχουν μεταφερθεί ή διαγραφεί.",
     "description": "Error message for the conversation tab"
   },
-
   "contact.copyEmailTooltip": {
     "message": "Αντιγραφή διεύθυνσης στο πρόχειρο",
     "description": "Tooltip shown on the copy email to clipboard button"
   },
-
   "contact.createFilterTooltip": {
     "message": "Δημιουργία φίλτρου για τον αποστολέα",
     "description": "Tooltip shown on the create filter for contact button"
   },
-
   "contact.addContactTooltip": {
     "message": "Προσθήκη στο ευρετήριο διευθύνσεων",
     "description": "Tooltip shown on the add contact button"
   },
-
   "contact.editContactTooltip": {
     "message": "Επεξεργασία επαφής στο ευρετήριο διευθύνσεων",
     "description": "Tooltip shown on the edit contact button"
   },
-
   "contact.sendEmailTooltip": {
     "message": "Αποστολή μηνύματος",
     "description": "Tooltip shown on the send email button"
   },
-
   "contact.recentConversationsTooltip": {
     "message": "Πρόσφατες συνομιλίες",
     "description": "Tooltip shown on the recent conversations button"
   },
-
   "message.archive.tooltip": {
     "message": "Αρχειοθέτηση της συνομιλίας",
     "description": "Tooltip for the archive button in the conversation header"
   },
-
   "message.detach.tooltip": {
     "message": "Προβολή συνομιλίας σε νέα καρτέλα",
     "description": "Tooltip for the detach to new tab button in the conversation header"
   },
-
   "message.expand.tooltip": {
     "message": "Ανάπτυξη/σύμπτυξη όλων των μηνυμάτων",
     "description": "Tooltip for the expand button in the conversation header"
   },
-
   "message.forwardConversation": {
     "message": "Προώθηση συζήτησης",
     "description": "The link text for forwarding a conversation"
   },
-
   "message.junk.tooltip": {
     "message": "Μεταφορά μηνύματος στα ανεπιθύμητα",
     "description": "Tooltip for the junk button in the conversation header"
   },
-
   "message.loading": {
     "message": "Γίνεται φόρτωση...",
     "description": "Displayed when the message is loading"
   },
-
   "message.printConversation": {
     "message": "Εκτύπωση συνομιλίας",
     "description": "The link text for printing a conversation"
   },
-
   "message.read.tooltip": {
     "message": "Εναλλαγή σημείωσης αναγνωσμένων/μη αναγνωσμένων για όλα τα μηνύματα",
     "description": "Tooltip for the mark as read button in the conversation header"
   },
-
   "message.trash.tooltip": {
     "message": "Διαγραφή της συνομιλίας",
     "description": "Tooltip for the trash button in the conversation header"
   },
-
   "message.noSubject": {
     "message": "(no subject)",
     "description": "Displayed when a message has no subject"
   },
-
   "message.showDetails.tooltip": {
     "message": "Προβολή λεπτομερειών",
     "description": "Tooltip for showing message header details"
   },
-
   "message.hideDetails.tooltip": {
     "message": "Απόκρυψη λεπτομερειών",
     "description": "Tooltip for hiding message header details"
   },
-
   "message.moreMenu.tooltip": {
     "message": "Περισσότερα",
     "description": "Tooltip for the more menu"
   },
-
   "action.archive": {
     "message": "Αρχειοθέτηση του μηνύματος",
     "description": "Archive button name in the message more menu"
   },
-
   "action.delete": {
     "message": "Διαγραφή του μηνύματος",
     "description": "Delete button name in the message more menu"
   },
-
   "action.viewClassic": {
     "message": "Προβολή με χρήση της κλασσικής ανάγνωσης",
     "description": "Show in classic view button name in the message more menu"
   },
-
   "action.viewSource": {
     "message": "Προβολή πηγαίου κώδικα μηνύματος",
     "description": "View source button name in the message more menu"
   },
-
   "notification.scamMsg": {
     "message": "Αυτό το μήνυμα πιθανόν να είναι απάτη:",
     "description": "Notification message shown for a junk/scam message"
   },
-
   "notification.ignoreScamWarning": {
     "message": "Αγνόησή προειδοποίησης",
     "description": "Button title to ignore a junk/scam message"
   },
-
   "notification.junkMsg": {
     "message": "Ανεπιθύμητη αλληλογραφία",
     "description": "Notification message shown for junk messages"
   },
-
   "notification.notJunk": {
     "message": "Μη ανεπιθύμητο",
     "description": "Button title to mark as not junk"
   },
-
   "notification.isOutboxMsg": {
     "message": "Το μήνυμα δεν έχει αποσταλεί.",
     "description": "Notification message shown for a message in the outbox"
   },
-
   "notification.sendUnsent": {
     "message": "Να γίνει αποστολή μηνυμάτων τώρα;",
     "description": "Button title to send a message in the outbox"
   },
-
   "notification.remoteContentBlockedMsg": {
     "message": "Αποκρύφτηκε το απομακρυσμένο περιεχόμενο:",
     "description": "Notification message shown when remote content is blocked"
   },
-
   "notification.showRemote": {
     "message": "Προβολή απομακρυσμένου περιεχόμενου",
     "description": "Button title to show remote content"
   },
-
   "notification.alwaysShowRemote": {
     "message": "Να προβάλλεται πάντα απομακρυσμένο περιεχόμενο από $fromEmail$",
     "description": "Button title to always show remote content.",
     "placeholders": {
-      "fromEmail": {
-        "content": "$1",
-        "example": "me@example.com"
-      }
+      "fromEmail": { "content": "$1", "example": "me@example.com" }
     }
   },
-
   "action.editDraft": {
     "message": "Επεξεργασία πρόχειρου",
     "description": "Edit draft button name in the message more menu"
   },
-
   "action.reply": {
     "message": "Απάντηση",
     "description": "Reply button name in the message more menu"
   },
-
   "action.replyAll": {
     "message": "Απάντηση σε όλους",
     "description": "Reply all button name in the message more menu"
   },
-
   "action.replyList": {
     "message": "Απάντηση στη λίστα",
     "description": "Reply list button name in the message more menu"
   },
-
   "action.editNew": {
     "message": "Τροποποίηση ως νέου",
     "description": "Edit as new button name in the message more menu"
   },
-
   "action.forward": {
     "message": "Προώθηση",
     "description": "Forward button name in the message more menu"
   },
-
   "message.fromHeader": {
     "message": "Από:",
     "description": "Header name displayed for the from field"
   },
-
   "message.toHeader": {
     "message": "Προς:",
     "description": "Header name displayed for the to field"
   },
-
   "message.ccHeader": {
     "message": "Κοιν:",
     "description": "Header name displayed for the cc field"
   },
-
   "header.to": {
     "message": "προς",
     "description": "Used in the header, inserted in 'from me to you'."
   },
-
   "tags.jumpToFolder.tooltip": {
     "message": "Μεταφορά σ' αυτό το φάκελο",
     "description": "Tooltip for the jump to folder tag."
   },
-
   "tags.inFolder": {
     "message": "Σε $folderName$",
     "description": "Folder indication for the jump to folder tag.",
-    "placeholders": {
-      "folderName": {
-        "content": "$1",
-        "example": "Sent"
-      }
-    }
+    "placeholders": { "folderName": { "content": "$1", "example": "Sent" } }
   },
-
   "attachments.downloadAll.tooltip": {
     "message": "αποθήκευση όλων",
     "description": "Tooltip for the download all attachments button."
   },
-
   "attachments.gallery.tooltip": {
     "message": "Προβολή συλλογής",
     "description": "Tooltip for the view attachments in gallery button."
   },
-
   "attachments.preview.tooltip": {
     "message": "προεπισκόπηση",
     "description": "Tooltip displayed for the preview button of an attachment."
   },
-
   "attachments.open.tooltip": {
     "message": "Άνοιγμα",
     "description": "Tooltip displayed for the preview button of an attachment."
   },
-
   "attachments.viewAttachment.tooltip": {
     "message": "Προβολή αυτού του επισυναπτόμενου σε νέα καρτέλα",
     "description": "Tooltip displayed for an attachment that can be previewed in a tab."
   },
-
   "attachments.download.tooltip": {
     "message": "αποθήκευση",
     "description": "Tooltip displayed for the download button of an attachment."
   },
-
   "messageBody.hideQuotedText": {
     "message": "Απόκρυψη κειμένου σε παράθεση",
     "description": "String displayed in a message body to collapse the quoted text."
   },
-
   "messageBody.showQuotedText": {
     "message": "Εμφάνιση κειμένου σε παράθεση",
     "description": "String displayed in a message body to expand the quoted text."
   },
-
   "messageBody.hideSigText": {
     "message": "hide signature",
     "description": "String displayed in a message body to collapse the signature."
   },
-
   "messageBody.showSigText": {
     "message": "show signature",
     "description": "String displayed in a message body to expand the signature."
   },
-
   "header.commaSeparator": {
     "message": ",\u0020",
     "description": "This is used in messages, for the recipients, and the 'between' column as well. In English, space after the comma."
   },
-
   "header.andSeparator": {
     "message": "\u0020και\u0020",
     "description": "This is used in messages, for the recipients, and the 'between' column as well. In English, space after and before « and »."
   },
-
   "attachments.context.detach": {
     "message": "Απόσπαση συνημμένου",
     "description": "Context menu item to detach an attachment."
   },
-
   "attachments.context.delete": {
     "message": "Διαγραφή συνημμένου",
     "description": "Context menu item to delete an attachment."
   },
-
   "pluralForm": {
     "message": "1",
     "description": "Please make sure you read and understood https://developer.mozilla.org/en/Localization_and_Plurals. pluralForm corresponds to the 'pluralRule' variable that's described in the page, it's just a mistake if the name doesn't match the MDC page."
   },
-
   "attachments.numAttachments": {
     "message": "ένα επισυναπτόμενο;$num$ επισυναπτόμενα",
     "description": "The description used for how many attachments there are. This should take the form of a plural form, see also 'pluralForm'.",
-    "placeholders": {
-      "num": {
-        "content": "$1",
-        "example": "2"
-      }
-    }
+    "placeholders": { "num": { "content": "$1", "example": "2" } }
   },
-
   "message.meFromMeToSomeone": {
     "message": "Εγώ",
     "description": "One of four different strings are required to accomodate some languages which have specific declensions."
   },
-
   "message.meFromSomeoneToMe": {
     "message": "Εμένα",
     "description": "One of four different strings are required to accomodate some languages which have specific declensions."
   },
-
   "message.meBetweenMeAndSomeone": {
     "message": "Εμού",
     "description": "One of four different strings are required to accomodate some languages which have specific declensions."
   },
-
   "message.meBetweenSomeoneAndMe": {
     "message": "Εμού",
     "description": "One of four different strings are required to accomodate some languages which have specific declensions."
   },
-
   "message.headerSubject": {
     "message": "Θέμα",
     "description": "Name for the Subject header that is displayed when you click the show details button."
   },
-
   "message.headerDate": {
     "message": "Ημερομηνία",
     "description": "Name for the Date header that is displayed when you click the show details button."
   },
-
   "message.headerFolder": {
     "message": "φάκελος",
     "description": "Name for the Folder header that is displayed when you click the show details button."
   },
-
   "involvingTabTitle": {
     "message": "Μηνύματα σχετικά με $contactName$",
     "description": "This is used when we click on the \"recent conversations\" button in a contact tooltip. This is the title of the tab that opens.",
     "placeholders": {
-      "contactName": {
-        "content": "$1",
-        "example": "John Smith"
-      }
+      "contactName": { "content": "$1", "example": "John Smith" }
     }
   },
-
   "compose.confirmDiscard": {
     "message": "Θέλετε σίγουρα να αγνοήσετε το μήνυμα;",
     "description": "Confirmation message when discarding a compose draft."
   },
-
   "compose.attachFiles": {
     "message": "Επισύναψη αρχείου(ων)",
     "description": "Title of the file picker to attach files to a compose draft."
   },
-
   "compose.attachedMessage": {
     "message": "Συνημμένο μήνυμα.eml",
     "description": "The filename name to use for an attachment when attaching an email."
   },
-
   "compose.attachment": {
     "message": "Συνημμένο",
     "description": "Attachment header when composing a draft."
   },
-
   "attachments.sizeUnknown": {
     "message": "άγνωστο μέγεθος",
     "description": "The message displayed when an attachment size is unknown."
   },
-
   "compose.sendAnEmptyMessage": {
     "message": "Αποστολή κενού μηνύματος;",
     "description": "Confirmation message for sending an empty email."
   },
-
   "compose.sendingMessage": {
     "message": "Γίνεται αποστολή του μηνύματος...",
     "description": "Information text when sending an email."
   },
-
   "compose.messageSendingSuccess": {
     "message": "Επιτυχία αποστολής του μηνύματος $msgId$",
     "description": "Information text for email sent success.",
-    "placeholders": {
-      "msgId": {
-        "content": "$1",
-        "example": "1234"
-      }
-    }
+    "placeholders": { "msgId": { "content": "$1", "example": "1234" } }
   },
-
   "compose.couldntSendTheMessage": {
     "message": "Δεν ήταν δυνατή η αποστολή του μηνύματος.",
     "description": "Information text for when sending email failed."
   },
-
   "conversation.forwardFillInText": {
     "message": "Ιδού μια συνομιλία που πιθανόν να σας ενδιαφέρει!",
     "description": "Text displayed when a conversation is forwarded."
   },
-
   "compose.messageSendingCanceled": {
     "message": "Η αποστολή του μηνύματος ακυρώθηκε.",
     "description": "Information text when sending email was canceled."
   },
-
   "enigmail.attachmentsNotEncrypted": {
     "message": "Τα συνημμένα δεν θα κρυπτογραφηθούν με το ενσωματωμένο-PGP.\nΘέλετε να στείλετε το μήνυμα ως PGP/MIME;",
     "description": "For the enigmail plugin to indicate attachments are not encrypted on sending."
   },
-
   "compose.write": {
     "message": "Σύνταξη...",
     "description": "Document title for composing an email in a new tab."
   },
-
   "between.columnName": {
     "message": "Μεταξύ",
     "description": "The displayed name of the between column."
   },
-
   "between.columnTooltip": {
     "message": "Κάντε κλικ για ταξινόμηση ανά συμμετέχοντα",
     "description": "The tooltip of the between column."
   },
-
   "message.at": {
     "message": "σε",
     "description": "Used for concatenation of two strings, e.g. John Doe at http://bugzilla.mozilla.org"
   },
-
   "enigmail.messageSigned": {
     "message": "Υπογεγραμμένο",
     "description": "Tag description displayed when a message is signed."
   },
-
   "enigmail.messageSignedLong": {
     "message": "Το μήνυμα έχει υπογραφεί.",
     "description": "Tooltip displayed when a signature is good and verified."
   },
-
   "enigmail.messageDecrypted": {
     "message": "Αποκρυπτογραφημένο",
     "description": "Tag description displayed when a message has been decrypted."
   },
-
   "enigmail.messageDecryptedLong": {
     "message": "Το μήνυμα έχει αποκρυπτογραφηθεί πριν την προβολή του",
     "description": "Tooltip displayed when a message has been decrypted."
   },
-
   "compose.addCc": {
     "message": "Κοινοποίηση",
     "description": "Link to click to add a cc when composing messages."
   },
-
   "compose.addBcc": {
     "message": "Κρυφή κοινοποίηση",
     "description": "Link to click to add bcc when composing messages."
   },
-
   "compose.addAttachment": {
     "message": "προσθήκη συνημμένου",
     "description": "Link to add an attachment when composing messages."
   },
-
   "compose.removeAttachment": {
     "message": "αφαίρεση",
     "description": "Link to remove an attachment when composing messages."
   },
-
   "compose.fieldBcc": {
     "message": "Κρυφή Κοιν:",
     "description": "Field name for the bcc field when composing messages."
   },
-
   "compose.fieldSubject": {
     "message": "Θέμα:",
     "description": "Field name for the subject field when composing messages."
   },
-
   "compose.editField": {
     "message": "Επεξεργασία",
     "description": "Link title to edit a particular field when composing messages."
   },
-
   "compose.send": {
     "message": "Αποστολή",
     "description": "Button name to send a message."
   },
-
   "compose.sendArchive": {
     "message": "Αποστολή και αρχειοθέτηση",
     "description": "Button name to send and archive a message."
   },
-
   "compose.save": {
     "message": "Αποθήκευση",
     "description": "Button name to save a message as draft."
   },
-
   "compose.discard": {
     "message": "Απόρριψη",
     "description": "Button name to discard a message draft."
   },
-
   "compose.mostFrequentContacts": {
     "message": "Συχνότερα χρησιμοποιούμενες επαφές:",
     "description": "Field name for showing the most frequently used contacts."
   },
-
   "compose.showMore": {
     "message": "Προβολή περισσότερων...",
     "description": "Show more link for showing more contacts."
   },
-
   "enigmail.unknownGood": {
     "message": "άγνωστη έγκυρη υπογραφή",
     "description": "Tooltip displayed when a signature is good but unverified."
+  },
+  "calendar.imipAcceptButton.label": {
+    "message": "Αποδοχή",
+    "description": "Calendar invite accept button."
+  },
+  "calendar.imipAcceptButton.tooltip": {
+    "message": "Αποδοχή πρόσκλησης σε εκδήλωση",
+    "description": "Calendar invite accept button tooltip."
+  },
+  "calendar.imipAcceptRecurrencesButton.label": {
+    "message": "Αποδοχή όλων",
+    "description": "Calendar invite accept button."
+  },
+  "calendar.imipAcceptRecurrencesButton.tooltip": {
+    "message": "Αποδοχή πρόσκλησης για όλες τις καταχωρήσεις της εκδήλωσης",
+    "description": "Calendar invite accept button tooltip."
+  },
+  "calendar.imipAddButton.label": {
+    "message": "Προσθήκη",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipAddButton.tooltip": {
+    "message": "Προσθήκη εκδήλωσης στο ημερολόγιο",
+    "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imipDeclineButton.label": {
+    "message": "Απόρριψη",
+    "description": "Calendar invite decline button."
+  },
+  "calendar.imipDeclineButton.tooltip": {
+    "message": "Απόρριψη πρόσκλησης σε εκδήλωση",
+    "description": "Calendar invite decline button tooltip."
+  },
+  "calendar.imipDeclineRecurrencesButton.label": {
+    "message": "Αρνητική απάντηση σε όλα",
+    "description": "Calendar invite decline button."
+  },
+  "calendar.imipDeclineRecurrencesButton.tooltip": {
+    "message": "Απόρριψη πρόσκλησης για όλες τις καταχωρήσεις της εκδήλωσης",
+    "description": "Calendar invite decline button tooltip."
+  },
+  "calendar.imipDeclineCounterButton.label": {
+    "message": "Απόρριψη",
+    "description": "Calendar invite decline button."
+  },
+  "calendar.imipDeclineCounterButton.tooltip": {
+    "message": "Αρνητική απάντηση στην αντιπρόταση",
+    "description": "Calendar invite decline button tooltip."
+  },
+  "calendar.imipDeleteButton.label": {
+    "message": "Διαγραφή",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipDeleteButton.tooltip": {
+    "message": "Διαγραφή από το ημερολόγιο",
+    "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imipDetailsButton.label": {
+    "message": "Λεπτομέρειες…",
+    "description": "Calendar invite details button."
+  },
+  "calendar.imipDetailsButton.tooltip": {
+    "message": "Εμφάνιση λεπτομερειών εκδήλωσης",
+    "description": "Calendar invite details button tooltip."
+  },
+  "calendar.imipReconfirmButton.label": {
+    "message": "Επιβεβαίωση εκ νέου",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipReconfirmButton.tooltip": {
+    "message": "Αποστέλλεται μια επιβεβαίωση εκ νέου στο διοργανωτή",
+    "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imipRescheduleButton.label": {
+    "message": "Επαναπρογραμματισμός",
+    "description": "Calendar invite tentative button."
+  },
+  "calendar.imipRescheduleButton.tooltip": {
+    "message": "Επαναπρογραμματισμός εκδήλωσης",
+    "description": "Calendar invite tentative button tooltip."
+  },
+  "calendar.imipTentativeButton.label": {
+    "message": "Αβεβαιότητα",
+    "description": "Calendar invite tentative button."
+  },
+  "calendar.imipTentativeButton.tooltip": {
+    "message": "Επιφυλακτική αποδοχή πρόσκλησης σε εκδήλωση",
+    "description": "Calendar invite tentative button tooltip."
+  },
+  "calendar.imipTentativeRecurrencesButton.label": {
+    "message": "Αβεβαιότητα για όλα",
+    "description": "Calendar invite tentative button."
+  },
+  "calendar.imipTentativeRecurrencesButton.tooltip": {
+    "message": "Επιφυλακτική αποδοχή πρόσκλησης για όλες τις καταχωρήσεις της εκδήλωσης",
+    "description": "Calendar invite tentative button tooltip."
+  },
+  "calendar.imipUpdateButton.label": {
+    "message": "Αποδοχή",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipUpdateButton.tooltip": {
+    "message": "Αποδοχή",
+    "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imipGoToCalendarButton.label": {
+    "message": "Ημερολόγιο",
+    "description": "Calendar invite update button."
+  },
+  "calendar.imipGoToCalendarButton.tooltip": {
+    "message": "Μετάβαση στην καρτέλα ημερολογίου",
+    "description": "Calendar invite update button tooltip."
   }
 }

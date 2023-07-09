@@ -649,12 +649,6 @@ if (!browser.contacts) {
   };
 }
 
-if (!browser.convCalendar) {
-  browser.convCalendar = {
-    onMessageStreamed() {},
-  };
-}
-
 if (!browser.convOpenPgp) {
   browser.convOpenPgp = {
     beforeStreamingMessage() {},
