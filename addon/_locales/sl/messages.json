@@ -339,6 +339,16 @@
     "description": "Tooltip for the more menu"
   },
 
+"message.addStar.tooltip": {
+    "message": "Dodaj zvezdico",
+    "description": "Tooltip for the add star button"
+  },
+
+  "message.removeStar.tooltip": {
+    "message": "Odstrani zvezdico",
+    "description": "Tooltip for the remove star button"
+  },
+
   "action.archive": {
     "message": "arhiviraj ta pogovor",
     "description": "Archive button name in the message more menu"
@@ -474,6 +484,11 @@
         "example": "Sent"
       }
     }
+  },
+
+"tags.removeButton": {
+    "message": "Odstrani oznako",
+    "description": "Message label/tooltip for removing a tag."
   },
 
   "attachments.downloadAll.tooltip": {
