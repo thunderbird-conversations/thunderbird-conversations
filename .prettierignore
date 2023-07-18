@@ -1,0 +1,3 @@
+# Build directory
+dist/**
+dist-dev-html/**

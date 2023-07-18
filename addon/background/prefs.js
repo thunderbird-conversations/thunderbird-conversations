@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-const kCurrentLegacyMigration = 3;
+export const kCurrentLegacyMigration = 3;
 
 export const kPrefDefaults = {
   hide_quote_length: 5,
@@ -19,6 +19,7 @@ export const kPrefDefaults = {
   unwanted_recipients: "{}",
   hide_sigs: false,
   disableBetweenColumn: false,
+  migratedLegacy: kCurrentLegacyMigration,
 };
 
 /**
@@ -43,8 +44,6 @@ export class Prefs {
           results.preferences[prefName] = kPrefDefaults[prefName];
         }
       }
-      // Let the backend know we've started.
-      await browser.conversations.startup();
 
       if (updatePrefs) {
         try {
@@ -60,6 +59,11 @@ export class Prefs {
 
   async _migrate() {
     const results = await browser.storage.local.get("preferences");
+
+    if (!results.preferences) {
+      await browser.storage.local.set({ preferences: kPrefDefaults });
+      return;
+    }
 
     const currentMigration = results.preferences?.migratedLegacy ?? 0;
 

@@ -7,6 +7,8 @@
  * to manage the message preview correctly.
  */
 export class Window {
+  #tabListeners = new Map();
+
   constructor() {
     this.connectedPorts = new Set();
   }
@@ -14,63 +16,28 @@ export class Window {
   async init() {
     // Set up our monkey patches which aren't really listeners, but this
     // is a good way to manage them.
-    let monkeyPatchListener = () => {};
-    browser.convMsgWindow.onMonkeyPatch.addListener(monkeyPatchListener);
 
-    browser.convMsgWindow.onLayoutChange.addListener(async () => {
-      // Let any stacks unwind and ensure the new layout applies.
-      await new Promise((r) => setTimeout(r, 0));
+    for (let tab of await browser.tabs.query({ mailTab: true })) {
+      this.#addTabListener(tab.id);
+    }
 
-      browser.convMsgWindow.onMonkeyPatch.removeListener(monkeyPatchListener);
-      browser.convMsgWindow.onMonkeyPatch.addListener(monkeyPatchListener);
-
-      // Now reload the multi message pane, if necessary, to ensure the stub
-      // page continues to work. This may loose scroll position, but its the
-      // best we can do.
-      await browser.convMsgWindow.maybeReloadMultiMessage();
+    browser.tabs.onCreated.addListener((tab) => {
+      if (tab.mailTab) {
+        this.#addTabListener(tab.id);
+      }
     });
-
-    browser.convMsgWindow.onThreadPaneDoubleClick.addListener(
-      async (windowId, msgHdrs) => {
-        for (const hdr of msgHdrs) {
-          const account = await browser.accounts.get(hdr.folder.accountId);
-          if (account.type == "nntp" || account.type == "rss") {
-            return {};
-          }
-        }
-        const urls = [];
-        for (const hdr of msgHdrs) {
-          urls.push(await browser.conversations.getMessageUriForId(hdr.id));
-        }
-        await this.openConversation(windowId, urls);
-        return {
-          cancel: true,
-        };
+    browser.tabs.onRemoved.addListener((tabId) => {
+      let listeners = this.#tabListeners.get(tabId);
+      if (!listeners) {
+        return;
       }
-    );
-
-    browser.convMsgWindow.onThreadPaneMiddleClick.addListener(
-      async (windowId, msgHdrs) => {
-        for (const hdr of msgHdrs) {
-          const account = await browser.accounts.get(hdr.folder.accountId);
-          if (account.type == "nntp" || account.type == "rss") {
-            return {};
-          }
-        }
-        const urls = [];
-        for (const hdr of msgHdrs) {
-          urls.push(await browser.conversations.getMessageUriForId(hdr.id));
-        }
-        const url = this.makeConversationUrl(urls);
-        await browser.conversations.createTab({
-          url,
-          type: "chromeTab",
-        });
-        return {
-          cancel: true,
-        };
-      }
-    );
+      browser.convMsgWindow.onMonkeyPatch.removeListener(listeners.monkey);
+      browser.convMsgWindow.onThreadPaneActivate.removeListener(
+        listeners.doubleClick,
+        tabId
+      );
+      this.#tabListeners.delete(tabId);
+    });
 
     browser.runtime.onConnect.addListener((port) => {
       this._handlePort(port);
@@ -132,7 +99,23 @@ export class Window {
       });
     });
 
-    await browser.convMsgWindow.maybeReloadMultiMessage();
+    for (let tab of await browser.tabs.query({ mailTab: true })) {
+      await browser.convMsgWindow.maybeReloadMultiMessage(tab.id);
+    }
+  }
+
+  #addTabListener(tabId) {
+    let listeners = {
+      monkey: () => {},
+      doubleClick: this.doubleClickHandler.bind(this),
+    };
+
+    browser.convMsgWindow.onMonkeyPatch.addListener(listeners.monkey, tabId);
+    browser.convMsgWindow.onThreadPaneActivate.addListener(
+      listeners.doubleClick,
+      tabId
+    );
+    this.#tabListeners.set(tabId, listeners);
   }
 
   _handlePort(port) {
@@ -142,13 +125,34 @@ export class Window {
     });
   }
 
+  async doubleClickHandler(tabId, msgHdrs) {
+    for (const hdr of msgHdrs) {
+      if (hdr.folder.type == "drafts" || hdr.folder.type == "templates") {
+        return {};
+      }
+      const account = await browser.accounts.get(hdr.folder.accountId);
+      if (account.type == "nntp" || account.type == "rss") {
+        return {};
+      }
+    }
+    const urls = [];
+    for (const hdr of msgHdrs) {
+      urls.push(await browser.conversations.getMessageUriForId(hdr.id));
+    }
+
+    let windowId = (await browser.tabs.get(tabId)).windowId;
+    await this.openConversation(windowId, urls);
+    return {
+      cancel: true,
+    };
+  }
+
   async openConversation(windowId, urls) {
     switch (
       await browser.conversations.getCorePref("mail.openMessageBehavior")
     ) {
       case 0: // fall-through
       case 1: {
-        // Thunderbird 91
         browser.convMsgWindow.openNewWindow(
           "chrome://conversations/content/stubWrapper.xhtml",
           this.getQueryString(urls) + "&standalone=1"

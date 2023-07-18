@@ -36,18 +36,6 @@ class Background {
     };
   }
   async init() {
-    // Setup the temporary API caller that stub.html uses.
-    // Do this first to ensure it is set before bootstrap fires after
-    // preference startup.
-    browser.conversations.onCallAPI.addListener(
-      async (apiName, apiItem, args) => {
-        if (apiName.startsWith("_")) {
-          return this[apiName][apiItem](...args);
-        }
-        return browser[apiName][apiItem](...args);
-      }
-    );
-
     await this._assistant.init();
     await this._prefs.init();
     await this._uiHandler.init();
@@ -62,6 +50,17 @@ class Background {
     }, "font.size.variable.x-western");
 
     browser.conversations.onSetConversationPreferences.addListener(() => {});
+
+    // Setup the temporary API caller that stub.html uses.
+    // Do this at the end so that everything is ready before stub.js starts.
+    browser.conversations.onCallAPI.addListener(
+      async (apiName, apiItem, args) => {
+        if (apiName.startsWith("_")) {
+          return this[apiName][apiItem](...args);
+        }
+        return browser[apiName][apiItem](...args);
+      }
+    );
   }
 }
 

@@ -31,7 +31,7 @@ browser.i18n.initialize();
  * This will mutate `obj`!
  *
  * @param {*} obj
- * @param {*} [logFunc=() => {}]
+ * @param {*} [logFunc]
  */
 function makeAttrsLogging(obj, logFunc = () => {}) {
   for (const prop in obj) {

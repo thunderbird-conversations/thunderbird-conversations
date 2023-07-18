@@ -55,7 +55,7 @@ const ALL_LOCALES = [
  * to give the dev frame a way to mock a change to the UI language.
  *
  * @param {*} resolve
- * @param {string} [locale="en"]
+ * @param {string} [locale]
  */
 export async function initializeI18n(resolve, locale = "en") {
   let resp;
@@ -122,8 +122,11 @@ if (!browser.storage) {
   };
 
   // Fake what we need from the browser storage library
-  const _stored = { preferences: DEFAULT_PREFS };
+  const _stored = {};
   browser.storage = {
+    initForTests() {
+      _stored.preferences = DEFAULT_PREFS;
+    },
     local: {
       async get(key) {
         if (typeof key === "undefined") {

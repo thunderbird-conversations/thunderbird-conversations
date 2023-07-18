@@ -22,7 +22,7 @@
 body {
   background-color: var(--application-background-color);
   color: var(--application-foreground-color);
-  direction: __MSG_@@bidi_dir__;
+  direction: __MSG_ @@bidi_dir__;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -52,7 +52,7 @@ input[type="number"] {
   color: inherit;
   border: solid 1px grey;
   padding: 5px;
-  width: 2em
+  width: 2em;
 }
 
 button {

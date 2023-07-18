@@ -202,13 +202,11 @@ export async function getContactPhotos(enrichedMsgs, dispatch) {
 
     let url = loadedPhotos.get(from.contactId);
     if (!url) {
-      // This is currently needed in Thunderbird 102 & later, as we do not
-      // have the contact information available there.
-      // Once we drop support for pre-102, and 102 has the option for photo
-      // handling, then we could potentially remove this and rewrite it
-      // for the new photo data handling.
-      url = await browser.convContacts.getPhotoUrl(msg.from.contactId);
-      loadedPhotos.set(msg.from.contactId, url);
+      let file = await browser.contacts.getPhoto(msg.from.contactId);
+      if (file) {
+        url = URL.createObjectURL(file);
+        loadedPhotos.set(msg.from.contactId, URL.createObjectURL(file));
+      }
     }
     if (!url) {
       continue;

@@ -2,6 +2,7 @@ _build
 gconv.jar
 conversations.xpi
 .vimsession
+.vscode
 .DS_Store
 dist
 dist-dev-html

@@ -176,6 +176,10 @@ export class MessageIFrame extends React.Component {
     this._waitingForDom = false;
   }
 
+  get iframeName() {
+    return `convIframe${this.props.id}`;
+  }
+
   componentDidUpdate(prevProps) {
     let startLoad = false;
     // dueToExpansion is used so that we can indicate if this load is happening
@@ -184,7 +188,8 @@ export class MessageIFrame extends React.Component {
     // else.
     this.dueToExpansion = undefined;
     this.iframe.classList.remove(`convIframe${prevProps.id}`);
-    this.iframe.classList.add(`convIframe${this.props.id}`);
+    this.iframe.classList.add(this.iframeName);
+    this.reRegisterContentListener(`convIframe${prevProps.id}`);
     if (prevProps.id != this.props.id && this.props.expanded) {
       // This is a hack which ensures that the iframe is a minimal height, so
       // that when the message loads, the scroll height is set correctly, rather
@@ -245,7 +250,7 @@ export class MessageIFrame extends React.Component {
     this.iframe.setAttribute("style", "height: 20px; overflow-y: hidden");
     this.iframe.setAttribute("type", "content");
     this.iframe.setAttribute("sandbox", "allow-same-origin");
-    this.iframe.classList.add(`convIframe${this.props.id}`);
+    this.iframe.classList.add(this.iframeName);
     this.div.appendChild(this.iframe);
 
     this.registerListeners();
@@ -278,6 +283,25 @@ export class MessageIFrame extends React.Component {
     this.unregisterListeners();
   }
 
+  reRegisterContentListener(previousFrameName) {
+    if (this._remoteContentListener) {
+      browser.convMsgWindow.onMsgHasRemoteContent.removeListener(
+        this._remoteContentListener,
+        this.props.tabId,
+        this.props.winId,
+        previousFrameName
+      );
+      this._remoteContentListener = null;
+    }
+    this._remoteContentListener = this._onMsgHasRemoteContent.bind(this);
+    browser.convMsgWindow.onMsgHasRemoteContent.addListener(
+      this._remoteContentListener,
+      this.props.tabId,
+      this.props.winId,
+      this.iframeName
+    );
+  }
+
   registerListeners() {
     if (!this._loadListener) {
       this._loadListener = this._onLoad.bind(this);
@@ -285,6 +309,13 @@ export class MessageIFrame extends React.Component {
         capture: true,
       });
       this._domloadListener = this._onDOMLoaded.bind(this);
+      this._remoteContentListener = this._onMsgHasRemoteContent.bind(this);
+      browser.convMsgWindow.onMsgHasRemoteContent.addListener(
+        this._remoteContentListener,
+        this.props.tabId,
+        this.props.winId,
+        this.iframeName
+      );
       if (window.browsingContext) {
         // We don't apply the click listener when in a tab as Thunderbird's
         // click handling already manages that.
@@ -316,7 +347,15 @@ export class MessageIFrame extends React.Component {
     this.iframe.removeEventListener("load", this._loadListener, {
       capture: true,
     });
-    delete this._loadListener;
+    this._loadListener = null;
+    browser.convMsgWindow.onMsgHasRemoteContent.removeListener(
+      this._remoteContentListener,
+      this.props.tabId,
+      this.props.winId,
+      this.iframeName
+    );
+    this._remoteContentListener = null;
+
     if (window.browsingContext?.embedderElement) {
       window.browsingContext.embedderElement.removeEventListener(
         "click",
@@ -335,13 +374,14 @@ export class MessageIFrame extends React.Component {
     const doAdjustment = () => {
       const iframeDoc = this.iframe.contentDocument;
 
-      // The +1 here is due to having occasionally seen issues on Mac where
-      // the frame just doesn't quite scroll properly. In this case,
-      // getComputedStyle(body).height is .2px greater than the scrollHeight.
-      // Hence we try to work around that here.
-      // In #1517 made it +3 as occasional issues were still being seen with
-      // some messages.
-      const scrollHeight = iframeDoc.body.scrollHeight + 3;
+      // Sometimes vertical scroll bars may still appear. This is typically due
+      // to tables having height=100% with additional items outside the table.
+      // They should be doing something like height="calc(100% - n)".
+      // It is unclear at this time if this is a Gecko issue, or a general
+      // standards issue. See #1517 for more details.
+      // We also add a +3 to try and avoid some emails getting scrollbars
+      // at all.
+      const scrollHeight = iframeDoc.documentElement.scrollHeight + 3;
       this.iframe.style.height = scrollHeight + "px";
 
       // So now we might overflow horizontally, which causes a horizontal
@@ -352,7 +392,8 @@ export class MessageIFrame extends React.Component {
       // 20px is a completely arbitrary default value which I hope is
       // greater
       if (iframeDoc.body.scrollWidth > iframeExternalWidth) {
-        this.iframe.style.height = iframeDoc.body.scrollHeight + 20 + "px";
+        this.iframe.style.height =
+          iframeDoc.documentElement.scrollHeight + 23 + "px";
       }
     };
     try {
@@ -556,6 +597,19 @@ export class MessageIFrame extends React.Component {
     this.adjustHeight();
   }
 
+  _onMsgHasRemoteContent() {
+    this.props.dispatch(
+      messageActions.setHasRemoteContent({
+        // TODO: Not quite right, since we should check this is actually for
+        // this intended frame... maybe. iframeNames don't seem to get refreshed
+        // because we cache the listeners. Maybe need something more generic
+        // especially when switching messages.
+        id: this.props.id,
+        hasRemoteContent: true,
+      })
+    );
+  }
+
   onClickIframe(event) {
     // Only take clicks for this particular iframe.
     if (event.target.ownerDocument.URL != this.iframe.contentDocument.URL) {
@@ -592,4 +646,6 @@ MessageIFrame.propTypes = {
   tenPxFactor: PropTypes.number.isRequired,
   prefs: PropTypes.object.isRequired,
   realFrom: PropTypes.string.isRequired,
+  tabId: PropTypes.number,
+  winId: PropTypes.number,
 };

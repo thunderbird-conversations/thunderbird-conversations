@@ -7,7 +7,13 @@
         "type": "function",
         "description": "Reloads the multi message views if they are showing the stub page.",
         "async": true,
-        "parameters": []
+        "parameters": [
+          {
+            "name": "tabId",
+            "type": "number",
+            "description": "The id of the tab."
+          }
+        ]
       },
       {
         "name": "openNewWindow",
@@ -85,20 +91,26 @@
         ]
       },
       {
-        "name": "onThreadPaneDoubleClick",
+        "name": "onThreadPaneActivate",
         "type": "function",
-        "description": "Temporary. Listens for double clicks on the thread pane.",
+        "description": "Temporary. Listens for double clicks/enter presses on the thread pane.",
         "parameters": [
           {
-            "name": "window",
+            "name": "tabId",
             "type": "integer",
             "optional": true,
-            "minimum": -2,
-            "description": "The window id."
+            "description": "The tabId id."
           },
           {
             "name": "message",
             "$ref": "messages.MessageHeader"
+          }
+        ],
+        "extraParameters": [
+          {
+            "name": "tabId",
+            "type": "number",
+            "description": "The id of the tab."
           }
         ],
         "returns": {
@@ -144,13 +156,14 @@
         "name": "onMonkeyPatch",
         "type": "function",
         "description": "Temporary. Fake Listener, actually used for monkey patching various things (With automatic tidy up)",
-        "parameters": []
-      },
-      {
-        "name": "onLayoutChange",
-        "type": "function",
-        "description": "Temporary. Listens for layout changes.",
-        "parameters": []
+        "parameters": [],
+        "extraParameters": [
+          {
+            "name": "tabId",
+            "type": "number",
+            "description": "The id of the tab."
+          }
+        ]
       },
       {
         "name": "onMsgHasRemoteContent",
@@ -161,6 +174,25 @@
             "name": "id",
             "type": "integer",
             "description": "The message id."
+          }
+        ],
+        "extraParameters": [
+          {
+            "name": "tabId",
+            "type": "number",
+            "description": "The id of the tab.",
+            "optional": true
+          },
+          {
+            "name": "winId",
+            "type": "number",
+            "description": "The id of the window.",
+            "optional": true
+          },
+          {
+            "name": "iframeName",
+            "type": "string",
+            "description": "The classname for the iframe"
           }
         ]
       },

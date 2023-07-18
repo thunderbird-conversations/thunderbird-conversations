@@ -49,59 +49,35 @@ const SUPPORTED_BASE_APIS = [
  * privileged scope.
  */
 class _BrowserSim {
+  #asyncBrowser = null;
+  #browserListener = null;
+  #context = null;
+  #connectionListeners = null;
+  #waitingForContext = null;
+  #contextReceived = null;
+
   constructor() {
-    this.connectionListeners = new Set();
+    this.#connectionListeners = new Set();
+
+    this.#waitingForContext = new Promise(
+      (resolve) => (this.#contextReceived = resolve)
+    );
   }
 
   setBrowserListener(listener, context) {
     if (!listener) {
-      delete this._browser;
-      delete this._asyncBrowser;
-      delete this._browserListener;
-      delete this._context;
+      this.#asyncBrowser = null;
+      this.#browserListener = null;
+      this.#context = null;
+      this.#waitingForContext = new Promise(
+        (resolve) => (this.#contextReceived = resolve)
+      );
       return;
     }
-    this._browserListener = listener;
-    this._context = context;
-    if (this._waitingForContext) {
-      this._waitingForContext();
-      delete this._waitingForContext;
-    }
-  }
-
-  getBrowser() {
-    if (this._browser) {
-      return this._browser;
-    }
-    let { extension } = this._context;
-    const browser = {};
-    const self = this;
-    for (const apiName of SUPPORTED_BASE_APIS) {
-      if (apiName == "i18n") {
-        let api = extension.apiManager.getAPI(
-          apiName,
-          extension,
-          "addon_parent"
-        );
-        browser[apiName] = this._implementation(extension, api, apiName);
-      } else {
-        // To use the extension.apiManager functionality here, we'd have to
-        // make getBrowser an async function. I don't really want to do that
-        // at this time as that's different to the actual API, so take the
-        // slightly more expensive route of passing everything back through the
-        // experiment API.
-        // const asyncAPI = await extension.apiManager.asyncGetAPI(apiName, extension, "addon_parent");
-        // return implementation(asyncAPI);
-        const subApiHandler = {
-          get(obj, prop) {
-            return self._browserListener.bind(null, apiName, prop);
-          },
-        };
-        browser[apiName] = new Proxy({}, subApiHandler);
-      }
-    }
-    this._browser = browser;
-    return browser;
+    this.#browserListener = listener;
+    this.#context = context;
+    this.#contextReceived();
+    this.#contextReceived = null;
   }
 
   // Async version of getBrowser that we can use in stub.html and other places
@@ -112,15 +88,11 @@ class _BrowserSim {
   // due to the override below. Any other API that has optional parameters may
   // need those parameters setting to null.
   async getBrowserAsync() {
-    if (this._asyncBrowser) {
-      return this._asyncBrowser;
+    if (this.#asyncBrowser) {
+      return this.#asyncBrowser;
     }
-    if (!this._context) {
-      await new Promise((resolve) => {
-        this._waitingForContext = resolve;
-      });
-    }
-    let { extension } = this._context;
+    await this.#waitingForContext;
+    let { extension } = this.#context;
 
     const browser = {};
     const self = this;
@@ -131,11 +103,11 @@ class _BrowserSim {
           extension,
           "addon_parent"
         );
-        browser[apiName] = this._implementation(extension, api, apiName);
+        browser[apiName] = this.#implementation(extension, api, apiName);
       } else if (SUPPORTED_APIS_NO_EVENTS.includes(apiName)) {
         const subApiHandler = {
           get(obj, prop) {
-            return self._browserListener.bind(null, apiName, prop);
+            return self.#browserListener.bind(null, apiName, prop);
           },
         };
         browser[apiName] = new Proxy({}, subApiHandler);
@@ -149,24 +121,24 @@ class _BrowserSim {
           extension,
           "addon_parent"
         );
-        browser[apiName] = this._implementation(extension, asyncAPI, apiName);
+        browser[apiName] = this.#implementation(extension, asyncAPI, apiName);
       }
     }
     // Fake port connections.
     browser.runtime.connect = () => {
       return {
         disconnect() {
-          self.connectionListeners.delete(this.onMessagelistener);
+          self.#connectionListeners.delete(this.onMessagelistener);
           this.onMessage.listener = null;
         },
         onMessage: {
           listener: null,
           addListener(l) {
-            self.connectionListeners.add(l);
+            self.#connectionListeners.add(l);
             this.listener = l;
           },
           removeListener(l) {
-            self.connectionListeners.delete(l);
+            self.#connectionListeners.delete(l);
             this.listener = null;
           },
         },
@@ -183,12 +155,12 @@ class _BrowserSim {
       };
     };
 
-    this._asyncBrowser = browser;
+    this.#asyncBrowser = browser;
     return browser;
   }
 
   sendMessage(msg) {
-    for (let l of BrowserSim.connectionListeners) {
+    for (let l of this.#connectionListeners) {
       l(msg);
     }
   }
@@ -197,52 +169,41 @@ class _BrowserSim {
   // Really this should be using the ports and browser.runtime.connect, but they
   // won't work until we're proper WebExtension page.
   callBackgroundFunc(apiName, apiFunc, args) {
-    return this._browserListener(apiName, apiFunc, ...args);
+    return this.#browserListener(apiName, apiFunc, ...args);
   }
 
   getWindowId(win) {
-    return this._context.extension.windowManager.convert(win).id;
+    return this.#context.extension.windowManager.convert(win).id;
   }
 
   getTabId(win, docWin) {
     let tabmail = win.document.getElementById("tabmail");
-    // We assume for now (certainly TB 91) that we can get the current
-    // multi-message browser and that will be in the expected tab. This generally
-    // as the multi-message browser is shared across tabs, however, we should
-    // see if we can find a way to get the browser for the current document
-    // window (docWin), and avoid the winodw lookup altogether.
-    //
-    // Alternately, we need to complete the switch to loading as a WebExtension
-    // page, but that's a lot more work at the moment.
 
-    // TODO: Thunderbird's 91.x getTabForBrowser is broken in the case of the
-    // multimessage pane (bug 1767586). Work around that here.
-    let browser =
-      docWin.browsingContext?.embedderElement || docWin.frameElement;
-    let tab;
-    if (
-      browser?.id == "multimessage" &&
-      tabmail.selectedTab.mode.tabType.name == "mail"
-    ) {
-      tab = tabmail.currentTabInfo;
-    } else {
+    // Assume first we're in a three-pane tab.
+    let threePaneBrowser =
+      docWin.browsingContext?.embedderElement?.ownerDocument?.ownerGlobal
+        ?.browsingContext?.embedderElement;
+    let tab = tabmail.tabInfo.find((t) => t.chromeBrowser == threePaneBrowser);
+
+    if (tab?.mode.name != "mail3PaneTab") {
+      // Are we in a tab instead?
       tab = tabmail.getTabForBrowser(
         docWin.browsingContext?.embedderElement || docWin.frameElement
       );
     }
     if (!tab) {
-      // We are probably in a window all by ourselves in Thunderbird 91,
-      // fallback to getting the selected tab.
-      //
-      // To fix this properly we'll need to be able to drop 91 and load
-      // messages in a content tab but in its own window.
+      // We are probably in a window all by ourselves fallback to getting the
+      // selected tab.
+
+      // Ideally we'd be loading a message in a content tab on its own, but
+      // Thunderbird doesn't allow that yet.
       tab = tabmail.selectedTab;
     }
-    return this._context.extension.tabManager.convert(tab).id;
+    return this.#context.extension.tabManager.convert(tab).id;
   }
 
-  _implementation(extension, api, name) {
-    let impl = api.getAPI(this._context)[name];
+  #implementation(extension, api, name) {
+    let impl = api.getAPI(this.#context)[name];
 
     if (name == "storage") {
       impl.local.get = (...args) =>

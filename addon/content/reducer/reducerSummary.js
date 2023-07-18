@@ -17,6 +17,7 @@ export const initialSummary = {
   isStandalone: false,
   // TODO: What is loading used for?
   loading: true,
+  messageNotFound: false,
   OS: "win",
   tabId: null,
   tenPxFactor: 0.7,
@@ -237,6 +238,9 @@ export const summarySlice = RTK.createSlice({
   name: "summary",
   initialState: initialSummary,
   reducers: {
+    setMessagesNotFound(state, { payload }) {
+      return { ...state, messageNotFound: payload.notFound };
+    },
     incIframesLoading(state) {
       return { ...state, iframesLoading: state.iframesLoading + 1 };
     },

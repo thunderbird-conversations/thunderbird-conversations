@@ -4,6 +4,12 @@
 
 /* global ExtensionCommon, Services */
 
+ChromeUtils.defineModuleGetter(
+  this,
+  "MailE10SUtils",
+  "resource:///modules/MailE10SUtils.jsm"
+);
+
 /**
  * @typedef nsIMsgDBHdr
  * @see https://searchfox.org/comm-central/rev/9d9fac50cddfd9606a51c4ec3059728c33d58028/mailnews/base/public/nsIMsgHdr.idl#14
@@ -47,27 +53,37 @@ class WindowObserver {
 }
 
 let msgsChangedListeners = new Map();
+let remoteContentListeners = new Map();
 
 /* exported convMsgWindow */
 var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
   getAPI(context) {
     const { extension } = context;
-    const { messageManager, windowManager } = extension;
+    const { windowManager } = extension;
+
+    function observer(subject, topic, data) {
+      if (topic != "remote-content-blocked") {
+        return;
+      }
+      for (let [iframeName, listenerData] of remoteContentListeners.entries()) {
+        if (listenerData.tabId != null) {
+          let tabObject = context.extension.tabManager.get(listenerData.tabId);
+          let contentWin = tabObject.nativeTab.chromeBrowser.contentWindow;
+          let contentDoc = contentWin.multiMessageBrowser.contentDocument;
+          let elements = contentDoc.getElementsByClassName(iframeName);
+          if (elements.length && elements[0]?.browsingContext.id == data) {
+            listenerData.fire.async();
+          }
+        }
+      }
+    }
+
     return {
       convMsgWindow: {
-        async maybeReloadMultiMessage() {
-          monkeyPatchAllWindows(windowManager, (win) => {
-            // Pretend the selection has changed, to update any message pane
-            // browsers as necessary.
-            win.document.getElementById("threadTree").view.selectionChanged();
-            let multimessage = win.document.getElementById("multimessage");
-            if (
-              multimessage?.documentURI.spec ==
-              "chrome://conversations/content/stub.html"
-            ) {
-              multimessage.reload();
-            }
-          });
+        async maybeReloadMultiMessage(tabId) {
+          let tabObject = context.extension.tabManager.get(tabId);
+          let contentWin = tabObject.nativeTab.chromeBrowser.contentWindow;
+          contentWin.multiMessageBrowser?.reload();
         },
         async openNewWindow(url, params) {
           const win = getWindowFromId();
@@ -76,8 +92,8 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
           win.openDialog(url, "_blank", features, args);
         },
         async fireLoadCompleted(winId) {
-          let win = getWindowFromId(winId);
-          win.gMessageDisplay.onLoadCompleted();
+          // let win = getWindowFromId(winId);
+          // win.gMessageDisplay.onLoadCompleted();
         },
         async print(winId, iframeId) {
           let win = getWindowFromId(winId);
@@ -98,199 +114,78 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
             };
           },
         }).api(),
-        onThreadPaneDoubleClick: new ExtensionCommon.EventManager({
+        onThreadPaneActivate: new ExtensionCommon.EventManager({
           context,
           name: "convMsgWindow.onThreadPaneDoubleClick",
-          register(fire) {
-            const patchDoubleClick = (win, id) => {
-              win.oldThreadPaneDoubleClick = win.ThreadPaneDoubleClick;
-              win.ThreadPaneDoubleClick = () => {
-                // ThreadPaneDoubleClick calls OnMsgOpenSelectedMessages. We don't want to
-                // replace the whole ThreadPaneDoubleClick function, just the line that
-                // calls OnMsgOpenSelectedMessages in that function. So we do that weird
-                // thing here.
-                let oldMsgOpenSelectedMessages = win.MsgOpenSelectedMessages;
-                let msgHdrs = win.gFolderDisplay.selectedMessages;
-                msgHdrs = msgHdrs.map((hdr) => messageManager.convert(hdr));
-                win.MsgOpenSelectedMessages = async () => {
-                  let result = await fire
-                    .async(id, msgHdrs)
-                    .catch(console.error);
-                  if (result?.cancel) {
-                    return;
-                  }
-                  oldMsgOpenSelectedMessages();
+          register(fire, tabId) {
+            let tabObject = context.extension.tabManager.get(tabId);
+            let contentWin = tabObject.nativeTab.chromeBrowser.contentWindow;
+            let threadPane;
+
+            waitForWindow(tabObject.nativeTab.chromeBrowser.contentWindow).then(
+              () => {
+                threadPane = contentWin.threadPane;
+
+                threadPane._convOldOnItemActivate = threadPane._onItemActivate;
+                threadPane._onItemActivate = (event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+
+                  (async () => {
+                    let msgHdrs = contentWin.gDBView.getSelectedMsgHdrs();
+                    let msgs = msgHdrs.map((m) =>
+                      context.extension.messageManager.convert(m)
+                    );
+                    let result = await fire.async(tabId, msgs);
+                    if (result?.cancel) {
+                      return;
+                    }
+                    contentWin.threadPane._convOldOnItemActivate(event);
+                  })();
                 };
-                win.oldThreadPaneDoubleClick();
-                win.MsgOpenSelectedMessages = oldMsgOpenSelectedMessages;
-              };
-            };
-
-            const windowObserver = new WindowObserver(
-              windowManager,
-              patchDoubleClick
+              }
             );
-            monkeyPatchAllWindows(windowManager, patchDoubleClick);
-            Services.ww.registerNotification(windowObserver);
 
             return function () {
-              Services.ww.unregisterNotification(windowObserver);
-              monkeyPatchAllWindows(windowManager, (win, id) => {
-                win.ThreadPaneDoubleClick = win.oldThreadPaneDoubleClick;
-                delete win.oldThreadPaneDoubleClick;
-              });
-            };
-          },
-        }).api(),
-        onThreadPaneMiddleClick: new ExtensionCommon.EventManager({
-          context,
-          name: "convMsgWindow.onThreadPaneMiddleClick",
-          register(fire) {
-            const patchMiddleClick = (win, id) => {
-              win.oldTreeOnMouseDown = win.TreeOnMouseDown;
-              win.TreeOnMouseDown = async (event) => {
-                if (
-                  event.target.parentNode.id !== "threadTree" ||
-                  event.button != 1
-                ) {
-                  win.oldTreeOnMouseDown(event);
-                  return;
-                }
-
-                // Middle-click
-                win.ChangeSelectionWithoutContentLoad(
-                  event,
-                  event.target.parentNode,
-                  false
-                );
-
-                let msgHdrs = win.gFolderDisplay.selectedMessages;
-                msgHdrs = msgHdrs.map((hdr) => messageManager.convert(hdr));
-                let result = await fire.async(id, msgHdrs).catch(console.error);
-                if (result?.cancel) {
-                  return;
-                }
-                win.oldTreeOnMouseDown();
-              };
-            };
-
-            const windowObserver = new WindowObserver(
-              windowManager,
-              patchMiddleClick
-            );
-            monkeyPatchAllWindows(windowManager, patchMiddleClick);
-            Services.ww.registerNotification(windowObserver);
-
-            return function () {
-              Services.ww.unregisterNotification(windowObserver);
-              monkeyPatchAllWindows(windowManager, (win, id) => {
-                // Try and ensure that whatever happens, we've cleaned up the
-                // old listener.
-                let folderTree = win.document.getElementById("folderTree");
-                folderTree.removeEventListener(
-                  "mousedown",
-                  win.TreeOnMouseDown,
-                  true
-                );
-                folderTree.removeEventListener(
-                  "mousedown",
-                  win.oldTreeOnMouseDown,
-                  true
-                );
-                win.TreeOnMouseDown = win.oldTreeOnMouseDown;
-                delete win.oldTreeOnMouseDown;
-                folderTree.addEventListener(
-                  "mousedown",
-                  win.TreeOnMouseDown,
-                  true
-                );
-              });
+              threadPane._onItemActivate = threadPane._convOldOnItemActivate;
+              delete threadPane._convOldOnItemActivate;
             };
           },
         }).api(),
         onMonkeyPatch: new ExtensionCommon.EventManager({
           context,
           name: "convMsgWindow.onMonkeyPatch",
-          register(fire) {
-            const windowObserver = new WindowObserver(
-              windowManager,
-              specialPatches
-            );
-            monkeyPatchAllWindows(windowManager, specialPatches);
-            Services.ww.registerNotification(windowObserver);
-            const threadWindowObserver = new WindowObserver(
-              windowManager,
-              summarizeThreadHandler,
-              context
-            );
-            monkeyPatchAllWindows(
-              windowManager,
-              summarizeThreadHandler,
-              context
-            );
-            Services.ww.registerNotification(threadWindowObserver);
+          register(fire, tabId) {
+            let tabObject = context.extension.tabManager.get(tabId);
+            let contentWin = tabObject.nativeTab.chromeBrowser.contentWindow;
 
+            // TODO: How to wait for tab loaded?
+            // Probably need to wait for the nativeTab to finish loading?
+            // Or maybe a browser underneath it?
+            waitForWindow(tabObject.nativeTab.chromeBrowser.contentWindow).then(
+              () => {
+                summarizeThreadHandler(contentWin, tabId, context);
+              }
+            );
             return function () {
-              Services.ww.unregisterNotification(windowObserver);
-              Services.ww.unregisterNotification(threadWindowObserver);
-              monkeyPatchAllWindows(windowManager, (win, id) => {
-                for (const undo of win.conversationUndoFuncs) {
-                  undo();
-                }
-
-                win.summarizeThread = win.oldSummarizeThread;
-                delete win.oldSummarizeThread;
-                win.MessageDisplayWidget.prototype.onSelectedMessagesChanged =
-                  win.originalOnSelectedMessagesChanged;
-                delete win.originalOnSelectedMessagesChanged;
-
-                // Fake updating the selection to get the message panes in the
-                // correct states for Conversations having been removed.
-                win.document
-                  .getElementById("threadTree")
-                  .view.selectionChanged();
-              });
-            };
-          },
-        }).api(),
-        onLayoutChange: new ExtensionCommon.EventManager({
-          context,
-          name: "convMsgWindow.onLayoutChange",
-          register(fire) {
-            let listener = () => fire.async();
-            Services.prefs.addObserver("mail.pane_config.dynamic", listener);
-
-            return () => {
-              Services.prefs.removeObserver(
-                "mail.pane_config.dynamic",
-                listener
-              );
+              let threadPane = contentWin.threadPane;
+              threadPane._onSelect = threadPane._oldOnSelect;
+              delete threadPane._oldOnSelect;
             };
           },
         }).api(),
         onMsgHasRemoteContent: new ExtensionCommon.EventManager({
           context,
           name: "convMsgWindow.onMsgHasRemoteContent",
-          register(fire) {
+          register(fire, tabId, winId, iframeName) {
             if (remoteContentListeners.size == 0) {
-              remoteContentWindowListener = new WindowObserver(
-                windowManager,
-                remoteContentPatch,
-                context
-              );
-              monkeyPatchAllWindows(windowManager, remoteContentPatch, context);
-              Services.ww.registerNotification(remoteContentWindowListener);
+              Services.obs.addObserver(observer, "remote-content-blocked");
             }
-            remoteContentListeners.add(fire);
-
+            remoteContentListeners.set(iframeName, { winId, tabId, fire });
             return function () {
-              remoteContentListeners.delete(fire);
+              remoteContentListeners.delete(iframeName);
               if (remoteContentListeners.size == 0) {
-                Services.ww.unregisterNotification(remoteContentWindowListener);
-                monkeyPatchAllWindows(windowManager, (win, id) => {
-                  win.messageHeaderSink.onMsgHasRemoteContent =
-                    win.oldOnMsgHasRemoteContent;
-                });
+                Services.obs.removeObserver(observer, "remote-content-blocked");
               }
             };
           },
@@ -329,8 +224,6 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
   }
 };
 
-let remoteContentListeners = new Set();
-let remoteContentWindowListener = null;
 let printListeners = new Set();
 let printWindowListener = null;
 
@@ -340,6 +233,8 @@ function getWindowFromId(windowManager, context, id) {
     : Services.wm.getMostRecentWindow("mail:3pane");
 }
 
+// Only needed until https://bugzilla.mozilla.org/show_bug.cgi?id=1817872 is
+// resolved.
 function waitForWindow(win) {
   return new Promise((resolve) => {
     if (win.document.readyState == "complete") {
@@ -363,28 +258,6 @@ function monkeyPatchAllWindows(windowManager, callback, context) {
     });
   }
 }
-
-const remoteContentPatch = (win, id, context) => {
-  // Ok, this is slightly tricky. The C++ code notifies the global msgWindow
-  //  when content has been blocked, and we can't really afford to just
-  //  replace the code, because that would defeat the standard reader (e.g. in
-  //  a new tab). So we must find the message in the conversation and notify
-  //  it if needed.
-  win.oldOnMsgHasRemoteContent = win.messageHeaderSink.onMsgHasRemoteContent;
-  win.messageHeaderSink.onMsgHasRemoteContent = async function (
-    msgHdr,
-    contentURI,
-    canOverride
-  ) {
-    let id = (await context.extension.messageManager.convert(msgHdr)).id;
-    for (let listener of remoteContentListeners) {
-      listener.async(id);
-    }
-    // Wicked case: we have the conversation and another tab with a message
-    //  from the conversation in that tab. So to be safe, forward the call.
-    win.oldOnMsgHasRemoteContent(msgHdr, contentURI, canOverride);
-  };
-};
 
 const printPatch = (win, winId, context) => {
   let tabmail = win.document.getElementById("tabmail");
@@ -481,53 +354,21 @@ const printPatch = (win, winId, context) => {
   win.conversationsPrintController = PrintController;
 };
 
-const specialPatches = (win) => {
-  win.conversationUndoFuncs = [];
-  const messagepane = win.document.getElementById("messagepane");
-
-  win.document
-    .getElementById("multimessage")
-    .setAttribute("context", "mailContext");
-
-  // Because we're not even fetching the conversation when the message pane is
-  //  hidden, we need to trigger it manually when it's un-hidden.
-  let unhideListener = function () {
-    win.summarizeThread(win.gFolderDisplay.selectedMessages);
-  };
-  win.addEventListener("messagepane-unhide", unhideListener, true);
-  win.conversationUndoFuncs.push(() =>
-    win.removeEventListener("messagepane-unhide", unhideListener, true)
-  );
-
-  function fightAboutBlank() {
-    if (messagepane.contentWindow?.location.href == "about:blank") {
-      // Workaround the "feature" that disables the context menu when the
-      // messagepane points to about:blank
-      messagepane.contentWindow.location.href = "about:blank?";
-    }
-  }
-  messagepane.addEventListener("load", fightAboutBlank, true);
-  win.conversationUndoFuncs.push(() =>
-    messagepane.removeEventListener("load", fightAboutBlank, true)
-  );
-  fightAboutBlank();
-};
-
-function isSelectionExpanded(win) {
-  const msgIndex = win.gFolderDisplay
-    ? win.gFolderDisplay.selectedIndices[0]
+function isSelectionExpanded(contentWin) {
+  const msgIndex = contentWin.threadTree.selectedIndices.length
+    ? contentWin.threadTree.selectedIndices[0]
     : -1;
   if (msgIndex >= 0) {
     try {
-      let viewThread = win.gDBView.getThreadContainingIndex(msgIndex);
-      let rootIndex = win.gDBView.findIndexOfMsgHdr(
+      let viewThread = contentWin.gDBView.getThreadContainingIndex(msgIndex);
+      let rootIndex = contentWin.gDBView.findIndexOfMsgHdr(
         viewThread.getChildHdrAt(0),
         false
       );
       if (rootIndex >= 0) {
         return (
-          win.gDBView.isContainer(rootIndex) &&
-          !win.gFolderDisplay.view.isCollapsedThreadAtIndex(rootIndex)
+          contentWin.gDBView.isContainer(rootIndex) &&
+          !contentWin.gViewWrapper.isCollapsedThreadAtIndex(rootIndex)
         );
       }
     } catch (ex) {
@@ -537,224 +378,177 @@ function isSelectionExpanded(win) {
   return false;
 }
 
-function determineIfSelectionIsThreaded(win) {
+function determineIfSelectionIsThreaded(contentWin) {
   // If we're not showing threaded, then we only worry about how many
   // messages are selected.
-  if (!win.gFolderDisplay.view.showThreaded) {
+  if (!contentWin.gViewWrapper.showThreaded) {
     return false;
   }
 
-  return !isSelectionExpanded(win);
+  return !isSelectionExpanded(contentWin);
 }
 
-function summarizeThreadHandler(win, id, context) {
+function summarizeThreadHandler(contentWin, tabId, context) {
+  const STUB_URI = "chrome://conversations/content/stub.html";
+
+  let threadPane = contentWin.threadPane;
   let previouslySelectedUris = [];
   let previousIsSelectionThreaded = null;
 
-  let htmlpane = win.document.getElementById("multimessage");
-  win.oldSummarizeThread = win.summarizeThread;
-  // This one completely nukes the original summarizeThread function, which is
-  //  actually the entry point to the original ThreadSummary class.
-  win.summarizeThread = function _summarizeThread_patched(
-    aSelectedMessages,
-    messageDisplay
-  ) {
-    if (!aSelectedMessages.length) {
+  // Replace Thunderbird's onSelect with our own, so that we can display
+  // our Conversations reader when we need to.
+  threadPane._oldOnSelect = threadPane._onSelect;
+  threadPane._onSelect = async (event) => {
+    if (
+      contentWin.paneLayout.messagePaneSplitter.isCollapsed ||
+      !contentWin.gDBView
+    ) {
       return;
     }
 
-    if (!win.gMessageDisplay.visible) {
-      // Log.debug("Message pane is hidden, not fetching...");
+    async function maybeLoadMultiMessagePage() {
+      const multiMessageURI =
+        "chrome://messenger/content/multimessageview.xhtml";
+      if (
+        contentWin.multiMessageBrowser?.documentURI?.spec != multiMessageURI
+      ) {
+        await new Promise((resolve) => {
+          contentWin.multiMessageBrowser.addEventListener("load", resolve, {
+            once: true,
+            capture: true,
+          });
+          MailE10SUtils.loadURI(
+            contentWin.multiMessageBrowser,
+            multiMessageURI
+          );
+        });
+      }
+    }
+
+    let numSelected = contentWin.gDBView.numSelected;
+    if (numSelected == 0) {
+      threadPane._oldOnSelect(event);
+      return;
+    } else if (
+      // Defer to the Thunderbird method if there's a dummy row selected,
+      // e.g. a grouped by sort header.
+      contentWin.threadTree.selectedIndices.length == 1 &&
+      contentWin.gDBView.getRowProperties(
+        contentWin.threadTree.selectedIndices[0]
+      ) == "dummy"
+    ) {
+      maybeLoadMultiMessagePage().then(() => threadPane._oldOnSelect(event));
       return;
     }
 
-    let folderDisplay = messageDisplay.folderDisplay;
-    let selectedIndices = folderDisplay.selectedIndices;
-    if (selectedIndices.length == 1) {
-      let dbView = folderDisplay.view.dbView;
-      if (dbView.getRowProperties(selectedIndices[0]) == "dummy") {
-        // Abort Abort! This is really a multi-message view. Call Thunderbird's
-        // viewer instead.
-        win.summarizeMultipleSelection(aSelectedMessages, messageDisplay);
+    let msgs = [];
+    let msgHdrs = contentWin.gDBView.getSelectedMsgHdrs();
+
+    let getThreadId = function (msgHdr) {
+      return contentWin.gDBView
+        .getThreadContainingMsgHdr(msgHdr)
+        .getChildHdrAt(0).messageKey;
+    };
+
+    let firstThreadId = getThreadId(msgHdrs[0]);
+    if (msgHdrIsRssOrNews(msgHdrs[0])) {
+      // If we have any RSS or News messages, defer to Thunderbird's view.
+      maybeLoadMultiMessagePage().then(() => threadPane._oldOnSelect(event));
+      return;
+    }
+    for (let i = 1; i < msgHdrs.length; i++) {
+      if (
+        msgHdrIsRssOrNews(msgHdrs[i]) ||
+        getThreadId(msgHdrs[i]) != firstThreadId
+      ) {
+        // This is a RSS, News or multi-thread selection, so defer to
+        // Thunderbird's views.
+        maybeLoadMultiMessagePage().then(() => threadPane._oldOnSelect(event));
         return;
       }
     }
 
-    win.gMessageDisplay.singleMessageDisplay = false;
+    contentWin.messagePane._keepStartPageOpen = false;
+    contentWin.messagePane.clearWebPage();
+    contentWin.messagePane.clearMessage();
+    // As a message will now have been displayed, don't keep the start page open.
+    if (contentWin.multiMessageBrowser?.documentURI?.spec != STUB_URI) {
+      MailE10SUtils.loadURI(contentWin.multiMessageBrowser, STUB_URI);
+    }
+    contentWin.multiMessageBrowser.hidden = false;
 
-    // Save the newly selected messages as early as possible, so that we
-    // definitely have them as soon as stub.html loads.
-    let selectedMessages = [...aSelectedMessages];
+    // Should cancel most intempestive view refreshes, but only after we
+    //  made sure the multimessage pane is shown. The logic behind this
+    //  is the conversation in the message pane is already alive, and
+    //  the gloda query is updating messages just fine, so we should not
+    //  worry about messages which are not in the view.
+    let newlySelectedUris = msgHdrs.map((m) => m.folder.getUriForMsg(m));
+    let isSelectionThreaded = determineIfSelectionIsThreaded(contentWin);
 
-    win.gSummaryFrameManager.loadAndCallback(
-      "chrome://conversations/content/stub.html",
-      async function (isRefresh) {
-        // See issue #673
-        if (htmlpane.contentDocument?.body) {
-          htmlpane.contentDocument.body.hidden = false;
-        }
-
-        if (isRefresh) {
-          // Invalidate the previous selection
-          previouslySelectedUris = [];
-          // The DOM window is fresh, it needs an event listener to forward
-          //  keyboard shorcuts to the main window when the conversation view
-          //  has focus.
-          // It's crucial we register a non-capturing event listener here,
-          //  otherwise the individual message nodes get no opportunity to do
-          //  their own processing.
-          htmlpane.contentWindow.addEventListener("keypress", function (event) {
-            try {
-              win.dispatchEvent(event);
-            } catch (e) {
-              // Log.debug("We failed to dispatch the event, don't know why...", e);
-            }
-          });
-        }
-
-        // Should cancel most intempestive view refreshes, but only after we
-        //  made sure the multimessage pane is shown. The logic behind this
-        //  is the conversation in the message pane is already alive, and
-        //  the gloda query is updating messages just fine, so we should not
-        //  worry about messages which are not in the view.
-        let newlySelectedUris = aSelectedMessages.map((m) =>
-          m.folder.getUriForMsg(m)
-        );
-        let isSelectionThreaded = determineIfSelectionIsThreaded(win);
-
-        function isSubSetOrEqual(a1, a2) {
-          if (!a1.length || !a2.length || a1.length > a2.length) {
-            return false;
-          }
-
-          return a1.every((v, i) => {
-            return v == a2[i];
-          });
-        }
-        // If the selection is still threaded (or still not threaded), then
-        // avoid redisplaying if we're displaying the same set or super-set.
-        //
-        // We avoid redisplay for the same set, as sometimes Thunderbird will
-        // call the selection update twice when it hasn't changed.
-        //
-        // We avoid redisplay for the case when the previous set is a subset
-        // as this can occur when:
-        // - we've received a new message(s), but Gloda hasn't told us about
-        //   it yet, and we pick it up in a future onItemsAddedn notification.
-        // - the user has expended the selection. We won't update the
-        //   expanded state of messages in this case, but that's probably okay
-        //   since the user is probably selecting them to move them or
-        //   something, rather than getting them expanded in the conversation
-        //   view.
-        //
-        // In both cases, we should be safe to avoid regenerating the
-        // conversation. If we find issues, we might need to revisit this
-        // assumption.
-        if (
-          isSubSetOrEqual(previouslySelectedUris, newlySelectedUris) &&
-          previousIsSelectionThreaded == isSelectionThreaded
-        ) {
-          // Log.debug(
-          //   "Hey, know what? The selection hasn't changed, so we're good!"
-          // );
-          return;
-        }
-        // Remember the previously selected URIs now, so that if we get
-        // a duplicate conversation, we don't try to start rending the same
-        // conversation again whilst the previous one is still in progress.
-        previouslySelectedUris = newlySelectedUris;
-        previousIsSelectionThreaded = isSelectionThreaded;
-
-        let tabmail = win.document.getElementById("tabmail");
-        let tabId = context.extension.tabManager.convert(
-          tabmail.selectedTab
-        ).id;
-        let msgs = [];
-        for (let m of selectedMessages) {
-          msgs.push(await context.extension.messageManager.convert(m));
-        }
-        msgsChangedListeners.get(tabId)?.async(msgs);
+    function isSubSetOrEqual(a1, a2) {
+      if (!a1.length || !a2.length || a1.length > a2.length) {
+        return false;
       }
-    );
+
+      return a1.every((v, i) => {
+        return v == a2[i];
+      });
+    }
+
+    // If the selection is still threaded (or still not threaded), then
+    // avoid redisplaying if we're displaying the same set or super-set.
+    //
+    // We avoid redisplay for the same set, as sometimes Thunderbird will
+    // call the selection update twice when it hasn't changed.
+    //
+    // We avoid redisplay for the case when the previous set is a subset
+    // as this can occur when:
+    // - we've received a new message(s), but Gloda hasn't told us about
+    //   it yet, and we pick it up in a future onItemsAddedn notification.
+    // - the user has expended the selection. We won't update the
+    //   expanded state of messages in this case, but that's probably okay
+    //   since the user is probably selecting them to move them or
+    //   something, rather than getting them expanded in the conversation
+    //   view.
+    //
+    // In both cases, we should be safe to avoid regenerating the
+    // conversation. If we find issues, we might need to revisit this
+    // assumption.
+    if (
+      isSubSetOrEqual(previouslySelectedUris, newlySelectedUris) &&
+      previousIsSelectionThreaded == isSelectionThreaded
+    ) {
+      // console.debug(
+      //   "Hey, know what? The selection hasn't changed, so we're good!"
+      // );
+      return;
+    }
+
+    // Remember the previously selected URIs now, so that if we get
+    // a duplicate conversation, we don't try to start rending the same
+    // conversation again whilst the previous one is still in progress.
+    previouslySelectedUris = newlySelectedUris;
+    previousIsSelectionThreaded = isSelectionThreaded;
+
+    for (let msg of msgHdrs) {
+      msgs.push(await context.extension.messageManager.convert(msg));
+    }
+
+    msgsChangedListeners.get(tabId)?.async(msgs);
   };
-
-  // Because we want to replace the standard message reader, we need to always
-  //  fire up the conversation view instead of deferring to the regular
-  //  display code. The trick is that re-using the original function's name
-  //  allows us to intercept the calls to the thread summary in regular
-  //  situations (where a normal thread summary would kick in) as a
-  //  side-effect. That means we don't need to hack into gMessageDisplay too
-  //  much.
-  win.originalOnSelectedMessagesChanged =
-    win.MessageDisplayWidget.prototype.onSelectedMessagesChanged;
-  win.MessageDisplayWidget.prototype.onSelectedMessagesChanged =
-    function _onSelectedMessagesChanged_patched() {
-      try {
-        if (!this.active) {
-          return true;
-        }
-        win.ClearPendingReadTimer();
-
-        let selectedCount = this.folderDisplay.selectedCount;
-        // Log.debug(
-        //   "Intercepted message load,",
-        //   selectedCount,
-        //   "message(s) selected"
-        // );
-
-        if (selectedCount == 0) {
-          // So we're not copying the code here. This changes nothing, and the
-          // execution stays the same. But if someone (say, the account
-          // summary extension) decides to redirect the code to _showSummary
-          // in the case of selectedCount == 0 by monkey-patching
-          // onSelectedMessagesChanged, we give it a chance to run.
-          return win.originalOnSelectedMessagesChanged.call(this);
-        } else if (selectedCount == 1) {
-          // Here starts the part where we modify the original code.
-          let msgHdr = this.folderDisplay.selectedMessage;
-          // We can't display NTTP messages and RSS messages properly yet, so
-          // leave it up to the standard message reader. If the user explicitely
-          // asked for the old message reader, we give up as well.
-          if (msgHdrIsRss(msgHdr) || msgHdrIsNntp(msgHdr)) {
-            this.singleMessageDisplay = true;
-            return false;
-          }
-          // Otherwise, we create a thread summary.
-          // We don't want to call this._showSummary because it has a built-in check
-          // for this.folderDisplay.selectedCount and returns immediately if
-          // selectedCount == 1
-          this.singleMessageDisplay = false;
-          this.onDisplayingMessage(this.folderDisplay.selectedMessages[0]);
-          win.summarizeThread(this.folderDisplay.selectedMessages, this);
-          return true;
-        }
-
-        // Else defer to showSummary to work it out based on thread selection.
-        // (This might be a MultiMessageSummary after all!)
-        return this._showSummary();
-      } catch (ex) {
-        console.error(ex);
-      }
-      return false;
-    };
 }
 
 /**
- * Tell if a message is an RSS feed item.
+ * Tell if a message is an RSS feed item or a news message.
  *
  * @param {nsIMsgDBHdr} msgHdr The message header
  * @returns {boolean}
  */
-function msgHdrIsRss(msgHdr) {
-  return msgHdr.folder.server instanceof Ci.nsIRssIncomingServer;
-}
+function msgHdrIsRssOrNews(msgHdr) {
+  let server = msgHdr.folder.server;
 
-/**
- * Tell if a message is a NNTP message.
- *
- * @param {nsIMsgDBHdr} msgHdr The message header
- * @returns {boolean}
- */
-function msgHdrIsNntp(msgHdr) {
-  return msgHdr.folder.server instanceof Ci.nsINntpIncomingServer;
+  return (
+    server instanceof Ci.nsIRssIncomingServer ||
+    server instanceof Ci.nsINntpIncomingServer
+  );
 }

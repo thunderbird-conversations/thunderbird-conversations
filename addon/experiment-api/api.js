@@ -6,18 +6,21 @@
 
 var lazy = {};
 
-XPCOMUtils.defineLazyModuleGetters(this, {
-  BrowserSim: "chrome://conversations/content/modules/browserSim.js",
-  DownloadPaths: "resource://gre/modules/DownloadPaths.jsm",
-  Downloads: "resource://gre/modules/Downloads.jsm",
+ChromeUtils.defineESModuleGetters(this, {
+  DownloadPaths: "resource://gre/modules/DownloadPaths.sys.mjs",
+  Downloads: "resource://gre/modules/Downloads.sys.mjs",
   FileUtils: "resource://gre/modules/FileUtils.sys.mjs",
   GlodaAttrProviders:
-    "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
+    "chrome://conversations/content/modules/GlodaAttrProviders.sys.mjs",
+  PluralForm: "resource://gre/modules/PluralForm.sys.mjs",
+});
+
+XPCOMUtils.defineLazyModuleGetters(this, {
+  BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   MailServices: "resource:///modules/MailServices.jsm",
   makeFriendlyDateAgo: "resource:///modules/TemplateUtils.jsm",
   MsgHdrToMimeMessage: "resource:///modules/gloda/MimeMessage.jsm",
   NetUtil: "resource://gre/modules/NetUtil.jsm",
-  PluralForm: "resource://gre/modules/PluralForm.jsm",
 });
 
 // eslint-disable-next-line mozilla/reject-importGlobalProperties
@@ -43,10 +46,10 @@ XPCOMUtils.defineLazyServiceGetters(lazy, {
  */
 function msgUriToMsgHdr(aUri) {
   try {
-    let messageService = messenger.messageServiceFromURI(aUri);
+    let messageService = MailServices.messageServiceFromURI(aUri);
     return messageService.messageURIToMsgHdr(aUri);
   } catch (e) {
-    console.error("Unable to get ", aUri, " — returning null instead");
+    console.error("Unable to get ", aUri, " — returning null instead", e);
     return null;
   }
 }
@@ -56,7 +59,7 @@ function msgUriToMsgHdr(aUri) {
 const conversationModules = [
   // Don't unload these until we can find a way of unloading the attribute
   // providers. Unloading these will break gloda when someone updates.
-  // "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
+  // "chrome://conversations/content/modules/glodaAttrProviders.sys.mjs",
   "chrome://conversations/content/modules/browserSim.js",
 ];
 
@@ -71,72 +74,8 @@ const conversationModules = [
 
 const kAllowRemoteContent = 2;
 
-function monkeyPatchWindow(win, windowId) {
-  // Let the stub know we've finished starting.
-  win.conversationsFinishedStartup = true;
-}
-
 function msgHdrGetUri(aMsg) {
   return aMsg.folder.getUriForMsg(aMsg);
-}
-
-/**
- * Handles observing updates on windows.
- */
-class ApiWindowObserver {
-  constructor(windowManager, callback) {
-    this._windowManager = windowManager;
-    this._callback = callback;
-  }
-
-  observe(subject, topic, data) {
-    if (topic != "domwindowopened") {
-      return;
-    }
-    let win;
-    if (subject && "QueryInterface" in subject) {
-      // Supports pre-TB 70.
-      win = subject.QueryInterface(Ci.nsIDOMWindow).window;
-    } else {
-      win = subject;
-    }
-    apiWaitForWindow(win).then(() => {
-      if (
-        win.document.location != "chrome://messenger/content/messenger.xul" &&
-        win.document.location != "chrome://messenger/content/messenger.xhtml"
-      ) {
-        return;
-      }
-      this._callback(
-        subject.window,
-        this._windowManager.getWrapper(subject.window).id
-      );
-    });
-  }
-}
-
-function apiWaitForWindow(win) {
-  return new Promise((resolve) => {
-    if (win.document.readyState == "complete") {
-      resolve();
-    } else {
-      win.addEventListener(
-        "load",
-        () => {
-          resolve();
-        },
-        { once: true }
-      );
-    }
-  });
-}
-
-function apiMonkeyPatchAllWindows(windowManager, callback) {
-  for (const win of Services.wm.getEnumerator("mail:3pane")) {
-    apiWaitForWindow(win).then(() => {
-      callback(win, windowManager.getWrapper(win).id);
-    });
-  }
 }
 
 function getAttachmentInfo(win, msgUri, attachment) {
@@ -153,8 +92,6 @@ function getAttachmentInfo(win, msgUri, attachment) {
   }
   return attInfo;
 }
-
-let apiWindowObserver;
 
 function findAttachment(msgHdr, partName) {
   return new Promise((resolve) => {
@@ -190,10 +127,6 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
       return;
     }
 
-    if (apiWindowObserver) {
-      Services.ww.unregisterNotification(apiWindowObserver);
-    }
-
     BrowserSim.setBrowserListener(null);
 
     for (const module of conversationModules) {
@@ -207,24 +140,8 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
   }
   getAPI(context) {
     const { extension } = context;
-    const { windowManager } = extension;
     return {
       conversations: {
-        async startup() {
-          try {
-            // Patch all existing windows when the UI is built; all locales should have been loaded here
-            // Hook in the embedding and gloda attribute providers.
-            GlodaAttrProviders.init();
-          } catch (ex) {
-            console.error(ex);
-          }
-          apiMonkeyPatchAllWindows(windowManager, monkeyPatchWindow);
-          apiWindowObserver = new ApiWindowObserver(
-            windowManager,
-            monkeyPatchWindow
-          );
-          Services.ww.registerNotification(apiWindowObserver);
-        },
         async getCorePref(name) {
           try {
             // There are simpler ways to do this, but at the moment it gives
@@ -317,7 +234,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           Services.obs.notifyObservers(null, "startupcache-invalidate");
         },
         async getLateAttachments(id, extraAttachments) {
-          return new Promise((resolve) => {
+          return new Promise((resolve, reject) => {
             const msgHdr = context.extension.messageManager.get(id);
             MsgHdrToMimeMessage(msgHdr, null, (msgHdr, mimeMsg) => {
               if (!mimeMsg) {
@@ -383,13 +300,28 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           if (!msgHdr) {
             throw new Error("Could not find message");
           }
-          win.ViewPageSource([msgHdr.folder.getUriForMsg(msgHdr)]);
+          // We don't need to supply a nsIMsgWindow here, the window is only
+          // used for news messages, and probably wouldn't be used for view
+          // source at all.
+          let url = MailServices.mailSession.ConvertMsgURIToMsgURL(
+            msgHdrGetUri(msgHdr),
+            null
+          );
+          win.openDialog(
+            "chrome://messenger/content/viewSource.xhtml",
+            "_blank",
+            "all,dialog=no",
+            { URL: url }
+          );
         },
         async openInClassic(id) {
           const win = Services.wm.getMostRecentWindow("mail:3pane");
           const msgHdr = context.extension.messageManager.get(id);
           const tabmail = win.document.getElementById("tabmail");
-          tabmail.openTab("message", { msgHdr, background: false });
+          tabmail.openTab("mailMessageTab", {
+            messageURI: msgHdr.folder.getUriForMsg(msgHdr),
+            background: false,
+          });
         },
         async showRemoteContent(id) {
           const msgHdr = context.extension.messageManager.get(id);
@@ -882,20 +814,22 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
                   iframeClass
                 )[0];
             } else {
-              let multimessage = win.document.getElementById("multimessage");
+              let multiMessageBrowser =
+                tabObject.nativeTab.chromeBrowser.contentWindow
+                  .multiMessageBrowser;
               messageIframe =
-                multimessage.contentDocument.getElementsByClassName(
+                multiMessageBrowser.contentDocument.getElementsByClassName(
                   iframeClass
                 )[0];
             }
           }
 
           let uri = msgHdr.folder.getUriForMsg(msgHdr);
-          let msgService = messenger.messageServiceFromURI(uri);
+          let msgService = MailServices.messageServiceFromURI(uri);
           let docShell = messageIframe.contentWindow.docShell;
           docShell.appType = Ci.nsIDocShell.APP_TYPE_MAIL;
 
-          msgService.DisplayMessage(
+          msgService.loadMessage(
             uri + "&markRead=false",
             docShell,
             win.msgWindow,
@@ -974,6 +908,14 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           context,
           name: "conversations.onCallAPI",
           register(fire) {
+            // This is called on startup, so hook in the gloda attribute
+            // providers.
+            try {
+              GlodaAttrProviders.init();
+            } catch (ex) {
+              console.error(ex);
+            }
+
             function callback(apiName, apiItem, ...args) {
               return fire.async(apiName, apiItem, args);
             }

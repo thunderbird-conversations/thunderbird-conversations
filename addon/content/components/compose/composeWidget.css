@@ -39,7 +39,8 @@
   border: none;
 }
 
-textarea:focus, input:focus {
+textarea:focus,
+input:focus {
   outline: none;
   border-color: lightblue;
 }
@@ -74,7 +75,6 @@ textarea:focus, input:focus {
   height: 1.86em;
   border-radius: 7px;
 }
-
 
 #send {
   float: inline-end;
