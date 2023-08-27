@@ -2,14 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* global ExtensionCommon, XPCOMUtils, Services */
+/* global ExtensionCommon, ExtensionUtils, XPCOMUtils, Services */
 
 var lazy = {};
 
-ChromeUtils.defineESModuleGetters(this, {
-  DownloadPaths: "resource://gre/modules/DownloadPaths.sys.mjs",
-  Downloads: "resource://gre/modules/Downloads.sys.mjs",
-  FileUtils: "resource://gre/modules/FileUtils.sys.mjs",
+ChromeUtils.defineESModuleGetters(lazy, {
+  AttachmentInfo: "resource:///modules/AttachmentInfo.sys.mjs",
   GlodaAttrProviders:
     "chrome://conversations/content/modules/GlodaAttrProviders.sys.mjs",
   PluralForm: "resource://gre/modules/PluralForm.sys.mjs",
@@ -30,13 +28,7 @@ XPCOMUtils.defineLazyGetter(this, "messenger", () =>
   Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger)
 );
 
-XPCOMUtils.defineLazyServiceGetters(lazy, {
-  gHandlerService: [
-    "@mozilla.org/uriloader/handler-service;1",
-    "nsIHandlerService",
-  ],
-  gMIMEService: ["@mozilla.org/mime;1", "nsIMIMEService"],
-});
+var { ExtensionError } = ExtensionUtils;
 
 /**
  * Get a msgHdr from a message URI (msgHdr.URI).
@@ -78,14 +70,14 @@ function msgHdrGetUri(aMsg) {
   return aMsg.folder.getUriForMsg(aMsg);
 }
 
-function getAttachmentInfo(win, msgUri, attachment) {
-  const attInfo = new win.AttachmentInfo(
-    attachment.contentType,
-    attachment.url,
-    attachment.name,
-    msgUri,
-    attachment.isExternal
-  );
+function getAttachmentInfo(msgUri, attachment) {
+  const attInfo = new lazy.AttachmentInfo({
+    contentType: attachment.contentType,
+    url: attachment.url,
+    name: attachment.name,
+    uri: msgUri,
+    isExternalAttachment: attachment.isExternal,
+  });
   attInfo.size = attachment.size;
   if (attInfo.size != -1) {
     attInfo.sizeResolved = true;
@@ -104,6 +96,38 @@ function findAttachment(msgHdr, partName) {
       resolve(aMimeMsg.allUserAttachments.find((x) => x.partName == partName));
     });
   });
+}
+
+function getWinBrowserFromIds(context, winId, tabId) {
+  if (!tabId) {
+    // windowManager only recognises Thunderbird windows, so we can't
+    // use getWindowFromId.
+    let win = Services.wm.getOuterWindowWithId(winId);
+
+    return {
+      // windowManager only recognises Thunderbird windows, so we can't
+      // use getWindowFromId.
+      win,
+      msgBrowser: win.document.getElementById("multimessage"),
+    };
+  }
+
+  let tabObject = context.extension.tabManager.get(tabId);
+  if (!tabObject.nativeTab) {
+    throw new Error("Failed to find tab");
+  }
+  let win = Cu.getGlobalForObject(tabObject.nativeTab);
+  if (!win) {
+    throw new Error("Failed to extract window from tab");
+  }
+  if (tabObject.nativeTab.mode.type == "contentTab") {
+    return { win, msgBrowser: tabObject.browser };
+  }
+  return {
+    win,
+    msgBrowser:
+      tabObject.nativeTab.chromeBrowser.contentWindow.multiMessageBrowser,
+  };
 }
 
 /* exported conversations */
@@ -272,7 +296,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           });
         },
         async makePlural(pluralForm, message, value) {
-          let [makePluralFn] = PluralForm.makeGetter(pluralForm);
+          let [makePluralFn] = lazy.PluralForm.makeGetter(pluralForm);
           return makePluralFn(value, message).replace("#1", value);
         },
         async markSelectedAsJunk(isJunk) {
@@ -371,265 +395,43 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           const win = Services.wm.getMostRecentWindow("mail:3pane");
           let msgUri = msgHdrGetUri(msgHdr);
           win.HandleMultipleAttachments(
-            attachments.map((att) => getAttachmentInfo(win, msgUri, att)),
+            attachments.map((att) => getAttachmentInfo(msgUri, att)),
             "save"
           );
         },
         async downloadAttachment(id, partName) {
           let msgHdr = context.extension.messageManager.get(id);
           let attachment = await findAttachment(msgHdr, partName);
-          const win = Services.wm.getMostRecentWindow("mail:3pane");
           let msgUri = msgHdrGetUri(msgHdr);
-          getAttachmentInfo(win, msgUri, attachment).save();
+          getAttachmentInfo(msgUri, attachment).save();
         },
-        async openAttachment(id, partName) {
-          let msgHdr = context.extension.messageManager.get(id);
-          let attachment = await findAttachment(msgHdr, partName);
-          const win = Services.wm.getMostRecentWindow("mail:3pane");
-          let msgUri = msgHdrGetUri(msgHdr);
-
-          if (attachment.contentType == "application/pdf") {
-            let mimeService = Cc["@mozilla.org/mime;1"].getService(
-              Ci.nsIMIMEService
-            );
-            let handlerInfo = mimeService.getFromTypeAndExtension(
-              attachment.contentType,
-              null
-            );
-            // Only open a new tab for pdfs if we are handling them internally.
-            if (
-              !handlerInfo.alwaysAskBeforeHandling &&
-              handlerInfo.preferredAction == Ci.nsIHandlerInfo.handleInternally
-            ) {
-              // Add the content type to avoid a "how do you want to open this?"
-              // dialog. The type may already be there, but that doesn't matter.
-              let url = attachment.url;
-              if (!url.includes("type=")) {
-                url += url.includes("?") ? "&" : "?";
-                url += "type=application/pdf";
-              }
-              let tabmail = win.document.getElementById("tabmail");
-              if (!tabmail) {
-                // If no tabmail available in this window, try and find it in
-                // another.
-                let win = Services.wm.getMostRecentWindow("mail:3pane");
-                tabmail = win && win.document.getElementById("tabmail");
-              }
-              if (tabmail) {
-                tabmail.openTab("contentTab", {
-                  url,
-                  background: false,
-                  linkHandler: "single-page",
-                });
-                return;
-              }
-              // If no tabmail, open PDF same as other attachments.
-            }
+        async openAttachment({ winId, tabId, msgId, partName }) {
+          let msgHdr = context.extension.messageManager.get(msgId);
+          if (!msgHdr) {
+            throw new ExtensionError(`Message not found: ${msgId}.`);
           }
-          let msgService = Cc[
-            `@mozilla.org/messenger/messageservice;1?type=${
-              Services.io.newURI(msgUri).scheme
-            }`
-          ].createInstance(Ci.nsIMsgMessageService);
-
-          if (attachment.contentType == "message/rfc822") {
-            msgService.openAttachment(
-              attachment.contentType,
-              encodeURIComponent(attachment.name),
-              attachment.url,
-              msgUri,
-              win.docShell,
-              win.msgWindow,
-              null
+          let attachment = await getAttachment(msgHdr, partName);
+          if (!attachment) {
+            throw new ExtensionError(
+              `Part ${partName} not found in message ${msgId}.`
             );
-            return;
           }
-
-          // Get the MIME info from the service.
-          let mimeInfo;
+          let attachmentInfo = new lazy.AttachmentInfo({
+            contentType: attachment.contentType,
+            url: attachment.url,
+            name: attachment.name,
+            uri: msgHdr.folder.getUriForMsg(msgHdr),
+            isExternalAttachment: attachment.isExternal,
+            message: msgHdr,
+          });
+          let { msgBrowser } = getWinBrowserFromIds(context, winId, tabId);
           try {
-            mimeInfo = lazy.gMIMEService.getFromTypeAndExtension(
-              attachment.contentType,
-              extension
-            );
+            await attachmentInfo.open(msgBrowser.browsingContext);
           } catch (ex) {
-            // If the call above fails, which can happen on Windows where there's
-            // nothing registered for the file type, assume this generic type.
-            mimeInfo = lazy.gMIMEService.getFromTypeAndExtension(
-              "application/octet-stream",
-              ""
+            throw new ExtensionError(
+              `Part ${partName} could not be opened: ${ex}.`
             );
           }
-          // The default action is saveToDisk, which is not what we want.
-          // If we don't have a stored handler, ask before handling.
-          if (!lazy.gHandlerService.exists(mimeInfo)) {
-            mimeInfo.alwaysAskBeforeHandling = true;
-            mimeInfo.preferredAction = Ci.nsIHandlerInfo.alwaysAsk;
-          }
-
-          // If we know what to do, do it.
-
-          let { name, url } = attachment;
-          name = DownloadPaths.sanitize(name);
-
-          async function saveToFile(path) {
-            let buffer = await new Promise(function (resolve, reject) {
-              NetUtil.asyncFetch(
-                {
-                  uri: Services.io.newURI(url),
-                  loadUsingSystemPrincipal: true,
-                },
-                function (inputStream, status) {
-                  if (Components.isSuccessCode(status)) {
-                    resolve(NetUtil.readInputStream(inputStream));
-                  } else {
-                    reject(
-                      new Components.Exception(
-                        "Failed to fetch attachment",
-                        status
-                      )
-                    );
-                  }
-                }
-              );
-            });
-            await IOUtils.write(path, new Uint8Array(buffer));
-          }
-
-          let createTemporaryFileAndOpen = async (mimeInfo) => {
-            let tmpPath = PathUtils.join(
-              Services.dirsvc.get("TmpD", Ci.nsIFile).path,
-              "pid-" + Services.appinfo.processID
-            );
-            await IOUtils.makeDirectory(tmpPath, { permissions: 0o700 });
-            let tempFile = Cc["@mozilla.org/file/local;1"].createInstance(
-              Ci.nsIFile
-            );
-            tempFile.initWithPath(tmpPath);
-
-            tempFile.append(name);
-            tempFile.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, 0o600);
-            tempFile.remove(false);
-
-            Cc["@mozilla.org/uriloader/external-helper-app-service;1"]
-              .getService(Ci.nsPIExternalAppLauncher)
-              .deleteTemporaryFileOnExit(tempFile);
-
-            await saveToFile(tempFile.path);
-            // Before opening from the temp dir, make the file read only so that
-            // users don't edit and lose their edits...
-            tempFile.permissions = 0o400;
-            mimeInfo.launchWithFile(tempFile);
-          };
-
-          let openLocalFile = (mimeInfo) => {
-            let fileHandler = Services.io
-              .getProtocolHandler("file")
-              .QueryInterface(Ci.nsIFileProtocolHandler);
-
-            try {
-              let externalFile = fileHandler.getFileFromURLSpec(attachment.url);
-              mimeInfo.launchWithFile(externalFile);
-            } catch (ex) {
-              console.error(
-                "AttachmentInfo.open: file - ",
-                attachment.url,
-                ",",
-                ex
-              );
-            }
-          };
-
-          if (!mimeInfo.alwaysAskBeforeHandling) {
-            switch (mimeInfo.preferredAction) {
-              case Ci.nsIHandlerInfo.saveToDisk:
-                if (
-                  Services.prefs.getBoolPref("browser.download.useDownloadDir")
-                ) {
-                  let destFile = new FileUtils.File(
-                    await Downloads.getPreferredDownloadsDirectory()
-                  );
-                  destFile.append(name);
-                  destFile.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, 0o755);
-                  destFile.remove(false);
-                  await saveToFile(destFile.path);
-                } else {
-                  let filePicker = Cc[
-                    "@mozilla.org/filepicker;1"
-                  ].createInstance(Ci.nsIFilePicker);
-                  filePicker.defaultString = attachment.name;
-                  filePicker.defaultExtension = extension;
-                  let bundleMessenger =
-                    win.document.getElementById("bundle_messenger");
-                  filePicker.init(
-                    win,
-                    bundleMessenger.getString("SaveAttachment"),
-                    Ci.nsIFilePicker.modeSave
-                  );
-                  let rv = await new Promise((resolve) =>
-                    filePicker.open(resolve)
-                  );
-                  if (rv != Ci.nsIFilePicker.returnCancel) {
-                    await saveToFile(filePicker.file.path);
-                  }
-                }
-                return;
-              case Ci.nsIHandlerInfo.useHelperApp:
-              case Ci.nsIHandlerInfo.useSystemDefault:
-                // Attachments can be detached and, if this is the case, opened from
-                // their location on disk instead of copied to a temporary file.
-                if (attachment.isExternalAttachment) {
-                  openLocalFile(mimeInfo);
-
-                  return;
-                }
-
-                await createTemporaryFileAndOpen(mimeInfo);
-                return;
-            }
-          }
-
-          // Ask what to do, then do it.
-          let appLauncherDialog = Cc[
-            "@mozilla.org/helperapplauncherdialog;1"
-          ].createInstance(Ci.nsIHelperAppLauncherDialog);
-          appLauncherDialog.show(
-            {
-              QueryInterface: ChromeUtils.generateQI(["nsIHelperAppLauncher"]),
-              MIMEInfo: mimeInfo,
-              source: Services.io.newURI(attachment.url),
-              suggestedFileName: attachment.name,
-              cancel(reason) {},
-              promptForSaveDestination() {
-                appLauncherDialog.promptForSaveToFileAsync(
-                  attachment,
-                  win,
-                  attachment.suggestedFileName,
-                  "." + extension, // Dot stripped by promptForSaveToFileAsync.
-                  false
-                );
-              },
-              launchLocalFile() {
-                openLocalFile(mimeInfo);
-              },
-              async setDownloadToLaunch(handleInternally, file) {
-                await createTemporaryFileAndOpen(mimeInfo);
-              },
-              async saveDestinationAvailable(file) {
-                if (file) {
-                  await saveToFile(file.path);
-                }
-              },
-              setWebProgressListener(webProgressListener) {},
-              targetFile: null,
-              targetFileIsExecutable: null,
-              timeDownloadStarted: null,
-              contentLength: attachment.size,
-              browsingContextId: win.getMessagePaneBrowser().browsingContext.id,
-            },
-            win,
-            null
-          );
         },
         async detachAttachment(id, partName, shouldSave) {
           let msgHdr = context.extension.messageManager.get(id);
@@ -782,47 +584,15 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
         },
         async streamMessage({ winId, tabId, msgId, iframeClass }) {
           let msgHdr = context.extension.messageManager.get(msgId);
-          let win;
-          let messageIframe;
-          if (!tabId) {
-            // windowManager only recognises Thunderbird windows, so we can't
-            // use getWindowFromId.
-            win = Services.wm.getOuterWindowWithId(winId);
-            let multimessage = win.document.getElementById("multimessage");
-            messageIframe =
-              multimessage.contentDocument.getElementsByClassName(
-                iframeClass
-              )[0];
-          } else {
-            let tabObject = context.extension.tabManager.get(tabId);
-            if (!tabObject.nativeTab) {
-              throw new Error("Failed to find tab to stream to.");
-            }
-            win = Cu.getGlobalForObject(tabObject.nativeTab);
-            if (!win) {
-              throw new Error(
-                "Failed to extract window from tab for streaming"
-              );
-            }
-            if (tabObject.nativeTab.mode.type == "contentTab") {
-              if (tabObject.browser.getAttribute("remote")) {
-                console.error("Can't stream into a remote browser yet.");
-                return false;
-              }
-              messageIframe =
-                tabObject.browser.contentDocument.getElementsByClassName(
-                  iframeClass
-                )[0];
-            } else {
-              let multiMessageBrowser =
-                tabObject.nativeTab.chromeBrowser.contentWindow
-                  .multiMessageBrowser;
-              messageIframe =
-                multiMessageBrowser.contentDocument.getElementsByClassName(
-                  iframeClass
-                )[0];
-            }
+          let { win, msgBrowser } = getWinBrowserFromIds(context, winId, tabId);
+
+          if (msgBrowser.getAttribute("remote")) {
+            console.error("Can't stream into a remote browser yet.");
+            return false;
           }
+
+          let messageIframe =
+            msgBrowser.contentDocument.getElementsByClassName(iframeClass)[0];
 
           let uri = msgHdr.folder.getUriForMsg(msgHdr);
           let msgService = MailServices.messageServiceFromURI(uri);
@@ -911,7 +681,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             // This is called on startup, so hook in the gloda attribute
             // providers.
             try {
-              GlodaAttrProviders.init();
+              lazy.GlodaAttrProviders.init();
             } catch (ex) {
               console.error(ex);
             }
@@ -1018,4 +788,165 @@ function htmlToPlainText(aHtml) {
   fields.forcePlainText = true;
   fields.ConvertBodyToPlainText();
   return fields.body;
+}
+
+/**
+ * Functions below taken from Thunderbird.
+ * https://searchfox.org/comm-central/rev/50e5ac35216ab14c0e9f8ae941815702c97ec1f3/mail/components/extensions/parent/ext-messages.js
+ */
+
+/**
+ * @typedef {object} nsIMsgHdr
+ */
+/**
+ * @typedef {object} MimeMessagePart
+ */
+
+/**
+ * Returns the attachment identified by the provided partName.
+ *
+ * @param {nsIMsgHdr} msgHdr
+ * @param {string} partName
+ * @returns {Promise<MimeMessagePart>}
+ */
+async function getAttachment(msgHdr, partName) {
+  // It's not ideal to have to call MsgHdrToMimeMessage here again, but we need
+  // the name of the attached file, plus this also gives us the URI without having
+  // to jump through a lot of hoops.
+  let attachment = await getMimeMessage(msgHdr, partName);
+  if (!attachment) {
+    return null;
+  }
+
+  return attachment;
+}
+
+/**
+ * Returns MIME parts found in the message identified by the given nsIMsgHdr.
+ *
+ * @param {nsIMsgHdr} msgHdr
+ * @param {string} partName - Return only a specific mime part.
+ * @returns {Promise<MimeMessagePart>}
+ */
+async function getMimeMessage(msgHdr, partName = "") {
+  // If this message is a sub-message (an attachment of another message), get the
+  // mime parts of the parent message and return the part of the sub-message.
+  let subMsgPartName = getSubMessagePartName(msgHdr);
+  if (subMsgPartName) {
+    let parentMsgHdr = getParentMsgHdr(msgHdr);
+    if (!parentMsgHdr) {
+      return null;
+    }
+
+    let mimeMsg = await getMimeMessage(parentMsgHdr, partName);
+    if (!mimeMsg) {
+      return null;
+    }
+
+    // If <partName> was specified, the returned mime message is just that part,
+    // no further processing needed. But prevent x-ray vision into the parent.
+    if (partName) {
+      if (partName.split(".").length > subMsgPartName.split(".").length) {
+        return mimeMsg;
+      }
+      return null;
+    }
+
+    // Limit mimeMsg and attachments to the requested <subMessagePart>.
+    let findSubPart = (parts, partName) => {
+      let match = parts.find((a) => partName.startsWith(a.partName));
+      if (!match) {
+        throw new ExtensionError(
+          `Unexpected Error: Part ${partName} not found.`
+        );
+      }
+      return match.partName == partName
+        ? match
+        : findSubPart(match.parts, partName);
+    };
+    let subMimeMsg = findSubPart(mimeMsg.parts, subMsgPartName);
+
+    if (mimeMsg.attachments) {
+      subMimeMsg.attachments = mimeMsg.attachments.filter(
+        (a) =>
+          a.partName != subMsgPartName && a.partName.startsWith(subMsgPartName)
+      );
+    }
+    return subMimeMsg;
+  }
+
+  let mimeMsg = await new Promise((resolve) => {
+    MsgHdrToMimeMessage(
+      msgHdr,
+      null,
+      (_msgHdr, mimeMsg) => {
+        mimeMsg.attachments = mimeMsg.allInlineAttachments;
+        resolve(mimeMsg);
+      },
+      true,
+      { examineEncryptedParts: true }
+    );
+  });
+
+  return partName
+    ? mimeMsg.attachments.find((a) => a.partName == partName)
+    : mimeMsg;
+}
+
+/**
+ * Returns the <part> parameter of the dummyMsgUrl of the provided nsIMsgHdr.
+ *
+ * @param {nsIMsgHdr} msgHdr
+ * @returns {string}
+ */
+function getSubMessagePartName(msgHdr) {
+  if (msgHdr.folder || !msgHdr.getStringProperty("dummyMsgUrl")) {
+    return "";
+  }
+
+  return new URL(msgHdr.getStringProperty("dummyMsgUrl")).searchParams.get(
+    "part"
+  );
+}
+
+/**
+ * Returns the nsIMsgHdr of the outer message, if the provided nsIMsgHdr belongs
+ * to a message which is actually an attachment of another message. Returns null
+ * otherwise.
+ *
+ * @param {nsIMsgHdr} msgHdr
+ * @returns {nsIMsgHdr}
+ */
+function getParentMsgHdr(msgHdr) {
+  if (msgHdr.folder || !msgHdr.getStringProperty("dummyMsgUrl")) {
+    return null;
+  }
+
+  let url = new URL(msgHdr.getStringProperty("dummyMsgUrl"));
+
+  if (url.protocol == "news:") {
+    let newsUrl = `news-message://${url.hostname}/${url.searchParams.get(
+      "group"
+    )}#${url.searchParams.get("key")}`;
+    return messenger.msgHdrFromURI(newsUrl);
+  }
+
+  // TODO: Maybe support this
+  // if (url.protocol == "mailbox:") {
+  //   // This could be a sub-message of a message opened from file.
+  //   let fileUrl = `file://${url.pathname}`;
+  //   let parentMsgHdr = messageTracker._dummyMessageHeaders.get(fileUrl);
+  //   if (parentMsgHdr) {
+  //     return parentMsgHdr;
+  //   }
+  // }
+  // Everything else should be a mailbox:// or an imap:// url.
+  let params = Array.from(url.searchParams, (p) => p[0]).filter(
+    (p) => !["number"].includes(p)
+  );
+  for (let param of params) {
+    url.searchParams.delete(param);
+  }
+  return Services.io.newURI(url.href).QueryInterface(Ci.nsIMsgMessageUrl)
+    .messageHeader;
 }

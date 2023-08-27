@@ -27,8 +27,26 @@ export const attachmentActions = {
     };
   },
   openAttachment({ id, partName }) {
-    return async () => {
-      await browser.conversations.openAttachment(id, partName);
+    return async (dispatch, getState) => {
+      let state = getState();
+      let options = {
+        msgId: id,
+        partName,
+      };
+      if (state.summary.isStandalone) {
+        options.winId = state.summary.windowId;
+      } else {
+        options.tabId = state.summary.tabId;
+      }
+
+      // openAttachment doesn't work for tabs:
+      // xref https://bugzilla.mozilla.org/show_bug.cgi?id=1849453
+      // For the standalone window, we need to manage it ourselves because
+      // of the requirement to pass the browser/browsingContext.
+      if (state.summary.isInTab || state.summary.isStandalone) {
+        return browser.conversations.openAttachment(options);
+      }
+      return browser.messages.openAttachment(id, partName, state.summary.tabId);
     };
   },
   detachAttachment({ id, partName, shouldSave }) {

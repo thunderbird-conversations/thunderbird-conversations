@@ -336,14 +336,28 @@
         "async": true,
         "parameters": [
           {
-            "name": "id",
-            "type": "integer",
-            "description": "The message id to open the attachment for."
-          },
-          {
-            "name": "attachmentUrl",
-            "type": "string",
-            "description": "The attachment Url to open the attachment for."
+            "name": "openAttachmentProperties",
+            "type": "object",
+            "properties": {
+              "winId": {
+                "type": "integer",
+                "optional": true,
+                "description": "The window from which the attachment is being opened."
+              },
+              "tabId": {
+                "type": "integer",
+                "optional": true,
+                "description": "The tab from which the attachment is being opened."
+              },
+              "msgId": {
+                "type": "integer",
+                "description": "The message id to open the attachment for."
+              },
+              "iframeClass": {
+                "type": "string",
+                "description": "The attachment Url to open the attachment for."
+              }
+            }
           }
         ]
       },
