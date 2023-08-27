@@ -318,14 +318,28 @@
         "async": true,
         "parameters": [
           {
-            "name": "id",
-            "type": "integer",
-            "description": "The message id to download the attachment for."
-          },
-          {
-            "name": "attachmentUrl",
-            "type": "string",
-            "description": "The attachment Url to download the attachment for."
+            "name": "downloadAttachmentProperties",
+            "type": "object",
+            "properties": {
+              "winId": {
+                "type": "integer",
+                "optional": true,
+                "description": "The window from which the attachment is being downloaded."
+              },
+              "tabId": {
+                "type": "integer",
+                "optional": true,
+                "description": "The tab from which the attachment is being downloaded."
+              },
+              "msgId": {
+                "type": "integer",
+                "description": "The message id to download the attachment for."
+              },
+              "partName": {
+                "type": "string",
+                "description": "The attachment Url to download the attachment for."
+              }
+            }
           }
         ]
       },
@@ -353,7 +367,7 @@
                 "type": "integer",
                 "description": "The message id to open the attachment for."
               },
-              "iframeClass": {
+              "partName": {
                 "type": "string",
                 "description": "The attachment Url to open the attachment for."
               }

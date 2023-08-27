@@ -399,11 +399,23 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             "save"
           );
         },
-        async downloadAttachment(id, partName) {
-          let msgHdr = context.extension.messageManager.get(id);
+        async downloadAttachment({ winId, tabId, msgId, partName }) {
+          let { win } = getWinBrowserFromIds(context, winId, tabId);
+          let msgHdr = context.extension.messageManager.get(msgId);
           let attachment = await findAttachment(msgHdr, partName);
           let msgUri = msgHdrGetUri(msgHdr);
-          getAttachmentInfo(msgUri, attachment).save();
+          // Unfortunately, we still need a messenger with a msgWindow for
+          // this to work.
+          let messenger = Cc["@mozilla.org/messenger;1"].createInstance(
+            Ci.nsIMessenger
+          );
+          messenger.setWindow(
+            win,
+            Cc["@mozilla.org/messenger/msgwindow;1"].createInstance(
+              Ci.nsIMsgWindow
+            )
+          );
+          getAttachmentInfo(msgUri, attachment).save(messenger);
         },
         async openAttachment({ winId, tabId, msgId, partName }) {
           let msgHdr = context.extension.messageManager.get(msgId);
