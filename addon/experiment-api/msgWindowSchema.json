@@ -180,25 +180,6 @@
             "description": "The classname for the iframe"
           }
         ]
-      },
-      {
-        "name": "onPrint",
-        "type": "function",
-        "description": "Temporary. Used for hooking into the print menu.",
-        "parameters": [
-          {
-            "name": "window",
-            "type": "integer",
-            "optional": true,
-            "minimum": -2,
-            "description": "The window id."
-          },
-          {
-            "name": "id",
-            "type": "integer",
-            "description": "The message id."
-          }
-        ]
       }
     ]
   }

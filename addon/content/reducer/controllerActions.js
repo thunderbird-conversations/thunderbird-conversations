@@ -338,9 +338,6 @@ let unloadListeners;
  *   Function to get the current store state.
  */
 function setupListeners(dispatch, getState) {
-  // let summary = getState().summary;
-  // let windowId = summary.windowId;
-
   async function msgSelectionChanged(msgs) {
     dispatch(
       conversationActions.showConversation({ msgIds: msgs.map((m) => m.id) })
@@ -358,17 +355,6 @@ function setupListeners(dispatch, getState) {
     }
   }
 
-  // function printListener(winId, msgId) {
-  //   if (windowId != winId) {
-  //     return;
-  //   }
-  //   let state = getState();
-  //   if (!state.messages.msgData.find((m) => m.id == msgId)) {
-  //     return;
-  //   }
-  //   browser.convMsgWindow.print(winId, `convIframe${msgId}`);
-  // }
-
   let tabId = getState().summary.tabId;
 
   browser.convMsgWindow.onSelectedMessagesChanged.addListener(
@@ -378,7 +364,6 @@ function setupListeners(dispatch, getState) {
   browser.messageDisplay.onMessagesDisplayed.addListener(
     selectionChangedListener
   );
-  // browser.convMsgWindow.onPrint.addListener(printListener);
 
   let updateSecurityStatusListener = onUpdateSecurityStatus.bind(
     this,
@@ -405,7 +390,6 @@ function setupListeners(dispatch, getState) {
     browser.messageDisplay.onMessagesDisplayed.removeListener(
       selectionChangedListener
     );
-    // browser.convMsgWindow.onPrint.removeListener(printListener);
     browser.convOpenPgp.onUpdateSecurityStatus.removeListener(
       updateSecurityStatusListener
     );

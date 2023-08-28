@@ -15,52 +15,12 @@ ChromeUtils.defineModuleGetter(
  * @see https://searchfox.org/comm-central/rev/9d9fac50cddfd9606a51c4ec3059728c33d58028/mailnews/base/public/nsIMsgHdr.idl#14
  */
 
-/**
- * Handles observing updates on windows.
- */
-class WindowObserver {
-  constructor(windowManager, callback, context) {
-    this._windowManager = windowManager;
-    this._callback = callback;
-    this._context = context;
-  }
-
-  observe(subject, topic, data) {
-    if (topic != "domwindowopened") {
-      return;
-    }
-    let win;
-    if (subject && "QueryInterface" in subject) {
-      // Supports pre-TB 70.
-      win = subject.QueryInterface(Ci.nsIDOMWindow).window;
-    } else {
-      win = subject;
-    }
-    waitForWindow(win).then(() => {
-      if (
-        win.document.location != "chrome://messenger/content/messenger.xul" &&
-        win.document.location != "chrome://messenger/content/messenger.xhtml"
-      ) {
-        return;
-      }
-      this._callback(
-        subject.window,
-        this._windowManager.getWrapper(subject.window).id,
-        this._context
-      );
-    });
-  }
-}
-
 let msgsChangedListeners = new Map();
 let remoteContentListeners = new Map();
 
 /* exported convMsgWindow */
 var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
   getAPI(context) {
-    const { extension } = context;
-    const { windowManager } = extension;
-
     function observer(subject, topic, data) {
       if (topic != "remote-content-blocked") {
         return;
@@ -186,42 +146,10 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
             };
           },
         }).api(),
-        onPrint: new ExtensionCommon.EventManager({
-          context,
-          name: "convMsgWindow.onPrint",
-          register(fire) {
-            if (printListeners.size == 0) {
-              printWindowListener = new WindowObserver(
-                windowManager,
-                printPatch,
-                context
-              );
-              monkeyPatchAllWindows(windowManager, printPatch, context);
-              Services.ww.registerNotification(printWindowListener);
-            }
-            printListeners.add(fire);
-
-            return function () {
-              printListeners.delete(fire);
-              if (printListeners.size == 0) {
-                Services.ww.unregisterNotification(printWindowListener);
-                monkeyPatchAllWindows(windowManager, (win) => {
-                  win.controllers.removeController(
-                    win.conversationsPrintController
-                  );
-                  delete win.conversationsPrintController;
-                });
-              }
-            };
-          },
-        }).api(),
       },
     };
   }
 };
-
-let printListeners = new Set();
-let printWindowListener = null;
 
 function getWindowFromId(windowManager, context, id) {
   return id !== null && id !== undefined
@@ -246,109 +174,6 @@ function waitForWindow(win) {
     }
   });
 }
-
-function monkeyPatchAllWindows(windowManager, callback, context) {
-  for (const win of Services.wm.getEnumerator("mail:3pane")) {
-    waitForWindow(win).then(() => {
-      callback(win, windowManager.getWrapper(win).id, context);
-    });
-  }
-}
-
-const printPatch = (win, winId, context) => {
-  let tabmail = win.document.getElementById("tabmail");
-  var PrintController = {
-    supportsCommand(command) {
-      switch (command) {
-        case "button_print":
-        case "cmd_print":
-          return (
-            (tabmail.selectedTab.mode?.type == "folder" &&
-              tabmail.selectedTab.messageDisplay.visible) ||
-            (tabmail.selectedTab.mode?.type == "contentTab" &&
-              tabmail.selectedBrowser?.browsingContext.currentURI.spec.startsWith(
-                "chrome://conversations/content/stub.html"
-              ))
-          );
-        default:
-          return false;
-      }
-    },
-    isCommandEnabled(command) {
-      switch (command) {
-        case "button_print":
-        case "cmd_print":
-          if (tabmail.selectedTab.mode?.type == "folder") {
-            let numSelected = win.gFolderDisplay.selectedCount;
-            // TODO: Allow printing multiple selected messages if TB allows it.
-            if (numSelected != 1) {
-              return false;
-            }
-            if (
-              !win.gFolderDisplay.getCommandStatus(
-                Ci.nsMsgViewCommandType.cmdRequiringMsgBody
-              )
-            ) {
-              return false;
-            }
-
-            // Check if we have a collapsed thread selected and are summarizing it.
-            // If so, selectedIndices.length won't match numSelected. Also check
-            // that we're not displaying a message, which handles the case
-            // where we failed to summarize the selection and fell back to
-            // displaying a message.
-            if (
-              win.gFolderDisplay.selectedIndices.length != numSelected &&
-              command != "cmd_applyFiltersToSelection" &&
-              win.gDBView &&
-              win.gDBView.currentlyDisplayedMessage == win.nsMsgViewIndex_None
-            ) {
-              return false;
-            }
-            return true;
-          }
-          // else, must be a content tab, so return false for now.
-          return false;
-        default:
-          return false;
-      }
-    },
-    async doCommand(command) {
-      switch (command) {
-        case "button_print":
-        case "cmd_print":
-          let id = (
-            await context.extension.messageManager.convert(
-              win.gFolderDisplay.selectedMessage
-            )
-          ).id;
-          for (let listener of printListeners) {
-            listener.async(winId, id);
-          }
-          break;
-      }
-    },
-    QueryInterface: ChromeUtils.generateQI(["nsIController"]),
-  };
-
-  let toolbox = win.document.getElementById("mail-toolbox");
-  // Use this as a proxy for if mail-startup-done has been called.
-  if (toolbox.customizeDone) {
-    win.controllers.insertControllerAt(0, PrintController);
-  } else {
-    // The main window is loaded when the monkey-patch is applied
-    let observer = {
-      observe(msgWin, aTopic, aData) {
-        if (msgWin == win) {
-          Services.obs.removeObserver(observer, "mail-startup-done");
-          win.controllers.insertControllerAt(0, PrintController);
-        }
-      },
-    };
-    Services.obs.addObserver(observer, "mail-startup-done");
-  }
-  win.conversationsPrintController = PrintController;
-};
 
 function isSelectionExpanded(contentWin) {
   const msgIndex = contentWin.threadTree.selectedIndices.length
