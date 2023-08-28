@@ -382,8 +382,9 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           // Force a commit of the underlying msgDatabase.
           msgHdr.folder.msgDatabase = null;
         },
-        async downloadAllAttachments(id) {
-          let msgHdr = context.extension.messageManager.get(id);
+        async downloadAllAttachments({ winId, tabId, msgId }) {
+          let msgHdr = context.extension.messageManager.get(msgId);
+          let { win } = getWinBrowserFromIds(context, winId, tabId);
           let attachments = await new Promise((resolve) => {
             MsgHdrToMimeMessage(msgHdr, null, async (aMsgHdr, aMimeMsg) => {
               if (!aMimeMsg) {
@@ -392,11 +393,46 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
               resolve(aMimeMsg.allUserAttachments);
             });
           });
-          const win = Services.wm.getMostRecentWindow("mail:3pane");
           let msgUri = msgHdrGetUri(msgHdr);
-          win.HandleMultipleAttachments(
-            attachments.map((att) => getAttachmentInfo(msgUri, att)),
-            "save"
+          let messenger = Cc["@mozilla.org/messenger;1"].createInstance(
+            Ci.nsIMessenger
+          );
+          messenger.setWindow(
+            win,
+            Cc["@mozilla.org/messenger/msgwindow;1"].createInstance(
+              Ci.nsIMsgWindow
+            )
+          );
+
+          // Taken from HandleMultipleAttachments
+          // https://searchfox.org/comm-central/rev/9548311ac3161a8801fa61785c7185eb278b5bbb/mail/base/content/msgHdrView.js#2154
+
+          let contentTypeArray = [];
+          let urlArray = [];
+          let displayNameArray = [];
+          let messageUriArray = [];
+
+          for (let [i, attachment] of attachments.entries()) {
+            // Exclude attachment which are 1) deleted, or 2) detached with missing
+            // external files, unless copying urls.
+            if (
+              attachment.contentType == "text/x-moz-deleted" ||
+              attachment.url?.startsWith("file://")
+            ) {
+              continue;
+            }
+
+            contentTypeArray[i] = attachment.contentType;
+            urlArray[i] = attachment.url;
+            displayNameArray[i] = encodeURI(attachment.name);
+            messageUriArray[i] = msgUri;
+          }
+
+          messenger.saveAllAttachments(
+            contentTypeArray,
+            urlArray,
+            displayNameArray,
+            messageUriArray
           );
         },
         async downloadAttachment({ winId, tabId, msgId, partName }) {

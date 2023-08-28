@@ -305,9 +305,24 @@
         "async": true,
         "parameters": [
           {
-            "name": "id",
-            "type": "integer",
-            "description": "The message id to download the attachments for."
+            "name": "detachAttachmentProperties",
+            "type": "object",
+            "properties": {
+              "winId": {
+                "type": "integer",
+                "optional": true,
+                "description": "The window from which the attachment is being detach."
+              },
+              "tabId": {
+                "type": "integer",
+                "optional": true,
+                "description": "The tab from which the attachment is being detach."
+              },
+              "msgId": {
+                "type": "integer",
+                "description": "The message id to detach the attachment for."
+              }
+            }
           }
         ]
       },
@@ -382,7 +397,7 @@
         "async": true,
         "parameters": [
           {
-            "name": "detacbAttachmentProperties",
+            "name": "detachAttachmentProperties",
             "type": "object",
             "properties": {
               "winId": {

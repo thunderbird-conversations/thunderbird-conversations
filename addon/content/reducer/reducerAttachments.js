@@ -17,8 +17,17 @@ export const attachmentActions = {
     };
   },
   downloadAll({ id }) {
-    return async () => {
-      await browser.conversations.downloadAllAttachments(id);
+    return async (dispatch, getState) => {
+      let state = getState();
+      let options = {
+        msgId: id,
+      };
+      if (state.summary.isStandalone) {
+        options.winId = state.summary.windowId;
+      } else {
+        options.tabId = state.summary.tabId;
+      }
+      await browser.conversations.downloadAllAttachments(options);
     };
   },
   downloadAttachment({ id, partName }) {
