@@ -198,8 +198,10 @@ function Attachment({
     return "gtk-file.png";
   }
 
-  const isImage = contentType.startsWith("image/");
-  const imgTitle = isImage
+  let isDeleted = contentType == "text/x-moz-deleted";
+
+  let isImage = contentType.startsWith("image/");
+  let imgTitle = isImage
     ? browser.i18n.getMessage("attachments.viewAttachment.tooltip")
     : browser.i18n.getMessage("attachments.open.tooltip");
 
@@ -225,56 +227,65 @@ function Attachment({
   // onDragStart={this.onDragStart}
   return (
     <li className="attachment">
-      <div
-        className="attachmentThumb"
-        draggable="false"
-        onClick={isImage ? preview : openAttachment}
-      >
-        <img className={imgClass} src={thumb} title={imgTitle} />
-      </div>
+      {isDeleted && (
+        <div className="attachmentThumb deleted" draggable="false">
+          <img className={imgClass} src={thumb} title={name} />
+        </div>
+      )}
+      {!isDeleted && (
+        <div
+          className="attachmentThumb"
+          draggable="false"
+          onClick={isImage ? preview : openAttachment}
+        >
+          <img className={imgClass} src={thumb} title={imgTitle} />
+        </div>
+      )}
       <div className="attachmentInfo align">
         <span className="filename">{name}</span>
         <span className="filesize">{formattedSize}</span>
-        <div className="attachActions">
-          {isImage && (
-            <a
-              className="icon-link preview-attachment"
-              title={browser.i18n.getMessage("attachments.preview.tooltip")}
-              onClick={preview}
-            >
-              <SvgIcon hash="visibility" />
-            </a>
-          )}
-          <a
-            className="icon-link download-attachment"
-            title={browser.i18n.getMessage("attachments.download.tooltip")}
-            onClick={downloadAttachment}
-          >
-            <SvgIcon hash="file_download" />
-          </a>
-          <a
-            className="icon-link open-attachment"
-            title={browser.i18n.getMessage("attachments.open.tooltip")}
-            onClick={openAttachment}
-          >
-            <SvgIcon hash="search" />
-          </a>
-          <span className="attachmentsDropDown">
-            <a
-              className="icon-link more-attachment"
-              title={browser.i18n.getMessage("message.moreMenu.tooltip")}
-              onClick={handleDisplayMenu}
-            >
-              <SvgIcon hash="more_vert" />
-            </a>
-            {displayMenu && (
-              <AttachmentMoreMenu
-                detachCallback={detachAttachment}
-                deleteCallback={deleteAttachment}
-              />
+        {!isDeleted && (
+          <div className="attachActions">
+            {isImage && (
+              <a
+                className="icon-link preview-attachment"
+                title={browser.i18n.getMessage("attachments.preview.tooltip")}
+                onClick={preview}
+              >
+                <SvgIcon hash="visibility" />
+              </a>
             )}
-          </span>
-        </div>
+            <a
+              className="icon-link download-attachment"
+              title={browser.i18n.getMessage("attachments.download.tooltip")}
+              onClick={downloadAttachment}
+            >
+              <SvgIcon hash="file_download" />
+            </a>
+            <a
+              className="icon-link open-attachment"
+              title={browser.i18n.getMessage("attachments.open.tooltip")}
+              onClick={openAttachment}
+            >
+              <SvgIcon hash="search" />
+            </a>
+            <span className="attachmentsDropDown">
+              <a
+                className="icon-link more-attachment"
+                title={browser.i18n.getMessage("message.moreMenu.tooltip")}
+                onClick={handleDisplayMenu}
+              >
+                <SvgIcon hash="more_vert" />
+              </a>
+              {displayMenu && (
+                <AttachmentMoreMenu
+                  detachCallback={detachAttachment}
+                  deleteCallback={deleteAttachment}
+                />
+              )}
+            </span>
+          </div>
+        )}
       </div>
     </li>
   );

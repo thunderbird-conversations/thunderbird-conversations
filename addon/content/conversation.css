@@ -658,6 +658,10 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
   cursor: pointer;
 }
 
+.attachmentThumb.deleted {
+  cursor: auto;
+}
+
 .attachmentThumb img {
   image-rendering: optimizeQuality;
 }
