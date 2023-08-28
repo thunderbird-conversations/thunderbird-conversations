@@ -204,7 +204,9 @@ export const conversationActions = {
         // TODO: Fix this for the standalone message view, so that we send
         // the correct notifications.
         if (!currentState.summary.isInTab) {
-          await browser.convMsgWindow.fireLoadCompleted();
+          await browser.conversations.fireLoadCompleted({
+            tabId: currentState.summary.tabId,
+          });
         }
         await dispatch(controllerActions.maybeSetMarkAsRead());
 

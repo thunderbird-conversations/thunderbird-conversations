@@ -254,6 +254,7 @@ if (!browser.conversations) {
       return 1;
     },
     async streamMessage() {},
+    async fireLoadCompleted() {},
   };
 }
 
@@ -266,9 +267,7 @@ if (!browser.convCompose) {
 }
 
 if (!browser.convMsgWindow) {
-  browser.convMsgWindow = {
-    async fireLoadCompleted() {},
-  };
+  browser.convMsgWindow = {};
 }
 
 if (!browser.compose) {

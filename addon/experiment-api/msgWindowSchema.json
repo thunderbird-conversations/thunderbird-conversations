@@ -35,21 +35,6 @@
         ]
       },
       {
-        "name": "fireLoadCompleted",
-        "type": "function",
-        "description": "Fires onLoadCompleted in the given window.",
-        "async": true,
-        "parameters": [
-          {
-            "name": "window",
-            "type": "integer",
-            "optional": true,
-            "minimum": -2,
-            "description": "The window id."
-          }
-        ]
-      },
-      {
         "name": "print",
         "type": "function",
         "description": "Prints an iframe in the multimessage view of the given window.",

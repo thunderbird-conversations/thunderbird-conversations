@@ -526,6 +526,30 @@
         }
       },
       {
+        "name": "fireLoadCompleted",
+        "type": "function",
+        "description": "Fires onLoadCompleted in the given window.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "fireLoadCompletedProperties",
+            "type": "object",
+            "properties": {
+              "winId": {
+                "type": "integer",
+                "optional": true,
+                "description": "The window the message is displayed within."
+              },
+              "tabId": {
+                "type": "integer",
+                "optional": true,
+                "description": "The tab the message is displayed within."
+              }
+            }
+          }
+        ]
+      },
+      {
         "name": "setAccountOfflineDownload",
         "type": "function",
         "description": "Temporary. Gets the account download offline preference.",

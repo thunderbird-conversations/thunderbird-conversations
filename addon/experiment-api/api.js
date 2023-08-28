@@ -657,6 +657,14 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           );
           return true;
         },
+        async fireLoadCompleted({ winId, tabId }) {
+          let { msgBrowser } = getWinBrowserFromIds(context, winId, tabId);
+          msgBrowser.ownerGlobal.dispatchEvent(
+            new msgBrowser.ownerGlobal.CustomEvent("MsgsLoaded", {
+              bubbles: true,
+            })
+          );
+        },
         /**
          * Wraps the low-level header parser stuff.
          *

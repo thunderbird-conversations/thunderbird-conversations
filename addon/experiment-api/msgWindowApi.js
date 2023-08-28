@@ -91,10 +91,6 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
           let features = "chrome,resizable,titlebar,minimizable";
           win.openDialog(url, "_blank", features, args);
         },
-        async fireLoadCompleted(winId) {
-          // let win = getWindowFromId(winId);
-          // win.gMessageDisplay.onLoadCompleted();
-        },
         async print(winId, iframeId) {
           let win = getWindowFromId(winId);
           let multimessage = win.document.getElementById("multimessage");
