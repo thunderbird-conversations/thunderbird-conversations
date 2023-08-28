@@ -60,8 +60,19 @@ export const attachmentActions = {
     };
   },
   detachAttachment({ id, partName, shouldSave }) {
-    return async () => {
-      await browser.conversations.detachAttachment(id, partName, shouldSave);
+    return async (dispatch, getState) => {
+      let state = getState();
+      let options = {
+        msgId: id,
+        partName,
+        shouldSave,
+      };
+      if (state.summary.isStandalone) {
+        options.winId = state.summary.windowId;
+      } else {
+        options.tabId = state.summary.tabId;
+      }
+      await browser.conversations.detachAttachment(options);
     };
   },
   showGalleryView({ id }) {

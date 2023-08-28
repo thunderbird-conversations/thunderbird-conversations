@@ -382,19 +382,32 @@
         "async": true,
         "parameters": [
           {
-            "name": "id",
-            "type": "integer",
-            "description": "The message id to detaching the attachment for."
-          },
-          {
-            "name": "attachmentUrl",
-            "type": "string",
-            "description": "The attachment Url to detaching the attachment for."
-          },
-          {
-            "name": "shouldSave",
-            "type": "boolean",
-            "description": "If the file being detached should be saved or not."
+            "name": "detacbAttachmentProperties",
+            "type": "object",
+            "properties": {
+              "winId": {
+                "type": "integer",
+                "optional": true,
+                "description": "The window from which the attachment is being detach."
+              },
+              "tabId": {
+                "type": "integer",
+                "optional": true,
+                "description": "The tab from which the attachment is being detach."
+              },
+              "msgId": {
+                "type": "integer",
+                "description": "The message id to detach the attachment for."
+              },
+              "partName": {
+                "type": "string",
+                "description": "The attachment Url to detach the attachment for."
+              },
+              "shouldSave": {
+                "type": "boolean",
+                "description": "If the file being detached should be saved or not."
+              }
+            }
           }
         ]
       },

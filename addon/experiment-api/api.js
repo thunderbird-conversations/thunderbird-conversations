@@ -445,23 +445,23 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             );
           }
         },
-        async detachAttachment(id, partName, shouldSave) {
-          let msgHdr = context.extension.messageManager.get(id);
+        async detachAttachment({ winId, tabId, msgId, partName, shouldSave }) {
+          let { win } = getWinBrowserFromIds(context, winId, tabId);
+          let msgHdr = context.extension.messageManager.get(msgId);
           let attachment = await findAttachment(msgHdr, partName);
-          const win = Services.wm.getMostRecentWindow("mail:3pane");
           let msgUri = msgHdrGetUri(msgHdr);
+          // Unfortunately, we still need a messenger with a msgWindow for
+          // this to work.
           let messenger = Cc["@mozilla.org/messenger;1"].createInstance(
             Ci.nsIMessenger
           );
-          messenger.setWindow(win, win.msgWindow);
-          let info = getAttachmentInfo(win, msgUri, attachment);
-          messenger.detachAttachment(
-            info.contentType,
-            info.url,
-            encodeURIComponent(info.name),
-            info.uri,
-            shouldSave
+          messenger.setWindow(
+            win,
+            Cc["@mozilla.org/messenger/msgwindow;1"].createInstance(
+              Ci.nsIMsgWindow
+            )
           );
+          getAttachmentInfo(msgUri, attachment).detach(messenger, shouldSave);
         },
         async makeFriendlyDateAgo(date) {
           return makeFriendlyDateAgo(new Date(date));
