@@ -599,11 +599,11 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             quoter.quoteMessage(msgUri, false, listener, "", false, msgHdr);
           });
         },
-        async bodyAsText(winId, msgId) {
+        async bodyAsText({ winId, tabId, msgId }) {
+          let { msgBrowser } = getWinBrowserFromIds(context, winId, tabId);
           // This function tries to clean up the email's body by removing hidden
           // blockquotes, removing signatures, etc. Note: sometimes there's a little
           // quoted text left over, need to investigate why...
-          let win = getWindowFromId(winId);
           let prepare = function (aNode) {
             let node = aNode.cloneNode(true);
             for (let x of node.getElementsByClassName("moz-txt-sig")) {
@@ -618,11 +618,9 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             }
             return node.innerHTML;
           };
-          let multimessage = win.document.getElementById("multimessage");
-          let messageIframe =
-            multimessage.contentDocument.getElementsByClassName(
-              `convIframe${msgId}`
-            )[0];
+          let messageIframe = msgBrowser.contentDocument.getElementsByClassName(
+            `convIframe${msgId}`
+          )[0];
           let body = htmlToPlainText(
             prepare(messageIframe.contentDocument.body)
           );

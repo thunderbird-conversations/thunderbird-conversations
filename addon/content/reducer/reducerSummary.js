@@ -146,7 +146,11 @@ export const summaryActions = {
           await dispatch(
             messageActions.setPrintBody({
               id: msg.id,
-              printBody: await browser.conversations.bodyAsText(winId, msg.id),
+              printBody: await browser.conversations.bodyAsText({
+                winId,
+                tabId: state.summary.tabId,
+                msgId: msg.id,
+              }),
             })
           );
         }
