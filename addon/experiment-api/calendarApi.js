@@ -123,7 +123,11 @@ var convCalendar = class extends ExtensionCommon.ExtensionAPI {
     const { tabManager } = extension;
     return {
       convCalendar: {
-        onMessageStreamed(tabId, msgId) {
+        onMessageStreamed(winId, tabId, msgId) {
+          // TODO: Handle winId.
+          if (!tabId) {
+            return;
+          }
           let tabObject = tabManager.get(tabId);
           if (!tabObject.nativeTab) {
             throw new Error("No tab found");

@@ -68,7 +68,7 @@ export const controllerActions = {
       } else {
         const topWin = window.browsingContext.topChromeWindow;
         windowId = BrowserSim.getWindowId(topWin);
-        tabId = isStandalone ? -1 : BrowserSim.getTabId(topWin, window);
+        tabId = isStandalone ? null : BrowserSim.getTabId(topWin, window);
       }
 
       await dispatch(

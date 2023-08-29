@@ -186,10 +186,12 @@ export const summaryActions = {
       }
 
       await browser.convCalendar.onMessageStreamed(
+        getState().summary.winId,
         getState().summary.tabId,
         id
       );
       await browser.convOpenPgp.handleMessageStreamed(
+        getState().summary.winId,
         getState().summary.tabId,
         id
       );

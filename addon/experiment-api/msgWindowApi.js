@@ -15,6 +15,38 @@ ChromeUtils.defineModuleGetter(
  * @see https://searchfox.org/comm-central/rev/9d9fac50cddfd9606a51c4ec3059728c33d58028/mailnews/base/public/nsIMsgHdr.idl#14
  */
 
+function msgWinApigetWinBrowserFromIds(context, winId, tabId) {
+  if (!tabId) {
+    // windowManager only recognises Thunderbird windows, so we can't
+    // use getWindowFromId.
+    let win = Services.wm.getOuterWindowWithId(winId);
+
+    return {
+      // windowManager only recognises Thunderbird windows, so we can't
+      // use getWindowFromId.
+      win,
+      msgBrowser: win.document.getElementById("multimessage"),
+    };
+  }
+
+  let tabObject = context.extension.tabManager.get(tabId);
+  if (!tabObject.nativeTab) {
+    throw new Error("Failed to find tab");
+  }
+  let win = Cu.getGlobalForObject(tabObject.nativeTab);
+  if (!win) {
+    throw new Error("Failed to extract window from tab");
+  }
+  if (tabObject.nativeTab.mode.type == "contentTab") {
+    return { win, msgBrowser: tabObject.browser };
+  }
+  return {
+    win,
+    msgBrowser:
+      tabObject.nativeTab.chromeBrowser.contentWindow.multiMessageBrowser,
+  };
+}
+
 let msgsChangedListeners = new Map();
 let remoteContentListeners = new Map();
 
@@ -26,14 +58,15 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
         return;
       }
       for (let [iframeName, listenerData] of remoteContentListeners.entries()) {
-        if (listenerData.tabId != null) {
-          let tabObject = context.extension.tabManager.get(listenerData.tabId);
-          let contentWin = tabObject.nativeTab.chromeBrowser.contentWindow;
-          let contentDoc = contentWin.multiMessageBrowser.contentDocument;
-          let elements = contentDoc.getElementsByClassName(iframeName);
-          if (elements.length && elements[0]?.browsingContext.id == data) {
-            listenerData.fire.async();
-          }
+        let { msgBrowser } = msgWinApigetWinBrowserFromIds(
+          context,
+          listenerData.winId,
+          listenerData.tabId
+        );
+        let contentDoc = msgBrowser.contentDocument;
+        let elements = contentDoc.getElementsByClassName(iframeName);
+        if (elements.length && elements[0]?.browsingContext.id == data) {
+          listenerData.fire.async();
         }
       }
     }

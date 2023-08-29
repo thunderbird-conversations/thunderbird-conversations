@@ -108,7 +108,7 @@ var convOpenPgp = class extends ExtensionCommon.ExtensionAPI {
           // // Not sure if we need this or not.
           // // win.EnigmailVerify.lastMsgWindow = win.msgWindow;
         },
-        handleMessageStreamed(tabId, msgId) {},
+        handleMessageStreamed(winId, tabId, msgId) {},
         handleTagClick(tabId, msgId) {
           // let win = getWindow(context, tabId);
           // win.showMessageReadSecurityInfo();

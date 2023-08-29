@@ -58,7 +58,7 @@ function _MessageList(props) {
               setRef(index, ref);
             }}
             tabId={props.summary.tabId}
-            winId={props.summary.winId}
+            winId={props.summary.windowId}
           />
         ))}
     </ul>

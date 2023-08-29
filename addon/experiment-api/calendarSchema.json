@@ -9,8 +9,15 @@
         "async": true,
         "parameters": [
           {
+            "name": "winId",
+            "type": "number",
+            "optional": true,
+            "description": "The id of the tab."
+          },
+          {
             "name": "tabId",
             "type": "number",
+            "optional": true,
             "description": "The id of the tab."
           },
           {
