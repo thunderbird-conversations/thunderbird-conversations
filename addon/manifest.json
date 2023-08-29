@@ -11,7 +11,7 @@
   "name": "__MSG_extensionName__",
   "default_locale": "en",
   "description": "__MSG_extensionDescription__",
-  "version": "4.1pre",
+  "version": "4.1.0",
   "homepage_url": "http://github.com/thunderbird-conversations/thunderbird-conversations/wiki",
   "background": {
     "page": "background/background.html"
