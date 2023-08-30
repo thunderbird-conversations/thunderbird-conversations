@@ -6,6 +6,8 @@
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   Gloda: "resource:///modules/gloda/Gloda.jsm",
+  GlodaConstants: "resource:///modules/gloda/GlodaConstants.jsm",
+  GlodaSyntheticView: "resource:///modules/gloda/GlodaSyntheticView.jsm",
   MailServices: "resource:///modules/MailServices.jsm",
 });
 
@@ -28,7 +30,7 @@ function getQuery(
     involvesItems: null,
   }
 ) {
-  const q = Gloda.newQuery(Gloda[options.query]);
+  const q = Gloda.newQuery(GlodaConstants[options.query]);
   if (options.kind != null) {
     q.kind(options.kind);
   }
@@ -133,8 +135,9 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
           });
 
           let tabmail = window.document.getElementById("tabmail");
-          tabmail.openTab("glodaList", {
-            query,
+          tabmail.openTab("mail3PaneTab", {
+            folderPaneVisible: false,
+            syntheticView: new GlodaSyntheticView({ query }),
             title: options.title,
             background: false,
           });
