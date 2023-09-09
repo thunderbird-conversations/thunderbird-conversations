@@ -189,6 +189,11 @@
         "async": true,
         "parameters": [
           {
+            "name": "tabId",
+            "type": "integer",
+            "description": "The tab in which the message is being marked as junk."
+          },
+          {
             "name": "isJunk",
             "type": "boolean",
             "description": "To mark as junk or not."

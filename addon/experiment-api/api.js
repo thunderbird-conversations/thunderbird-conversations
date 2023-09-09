@@ -299,10 +299,14 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           let [makePluralFn] = lazy.PluralForm.makeGetter(pluralForm);
           return makePluralFn(value, message).replace("#1", value);
         },
-        async markSelectedAsJunk(isJunk) {
-          const win = Services.wm.getMostRecentWindow("mail:3pane");
-          win.JunkSelectedMessages(isJunk);
-          win.SetFocusThreadPane();
+        async markSelectedAsJunk(tabId, isJunk) {
+          let tabObject = context.extension.tabManager.get(tabId);
+          if (!tabObject.nativeTab) {
+            throw new Error("Failed to find tab");
+          }
+          tabObject.nativeTab.chromeBrowser.contentWindow.commandController.doCommand(
+            isJunk ? "cmd_markAsJunk" : "cmd_markAsNotJunk"
+          );
         },
         async switchToFolderAndMsg(id) {
           const msgHdr = context.extension.messageManager.get(id);
