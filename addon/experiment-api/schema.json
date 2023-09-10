@@ -201,19 +201,6 @@
         ]
       },
       {
-        "name": "switchToFolderAndMsg",
-        "type": "function",
-        "description": "Switch to a particular folder/message combination. Bug 1696775.",
-        "async": true,
-        "parameters": [
-          {
-            "name": "id",
-            "type": "integer",
-            "description": "The message id to switch to."
-          }
-        ]
-      },
-      {
         "name": "sendUnsent",
         "type": "function",
         "description": "Triggers sending of unsent messages.",

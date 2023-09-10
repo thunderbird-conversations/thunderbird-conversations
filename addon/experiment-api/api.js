@@ -308,12 +308,6 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             isJunk ? "cmd_markAsJunk" : "cmd_markAsNotJunk"
           );
         },
-        async switchToFolderAndMsg(id) {
-          const msgHdr = context.extension.messageManager.get(id);
-          const win = Services.wm.getMostRecentWindow("mail:3pane");
-          win.gFolderTreeView.selectFolder(msgHdr.folder, true);
-          win.gFolderDisplay.selectMessage(msgHdr);
-        },
         async sendUnsent() {
           const win = Services.wm.getMostRecentWindow("mail:3pane");
           if (Services.io.offline) {

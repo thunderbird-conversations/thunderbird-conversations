@@ -328,8 +328,8 @@ export const messageActions = {
     };
   },
   switchToFolderAndMsg({ id }) {
-    return async () => {
-      browser.conversations.switchToFolderAndMsg(id).catch(console.error);
+    return async (dispatch, getState) => {
+      browser.mailTabs.setSelectedMessages(getState().summary.tabId, [id]);
     };
   },
   sendUnsent() {
