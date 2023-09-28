@@ -298,6 +298,12 @@ function summarizeThreadHandler(contentWin, tabId, context) {
     let msgs = [];
     let msgHdrs = contentWin.gDBView.getSelectedMsgHdrs();
 
+    if (msgHdrs.length == 1 && msgHdrIsRssOrNews(msgHdrs[0])) {
+      // If we have any RSS or News messages, defer to Thunderbird's view.
+      maybeLoadMultiMessagePage().then(() => threadPane._oldOnSelect(event));
+      return;
+    }
+
     let getThreadId = function (msgHdr) {
       return contentWin.gDBView
         .getThreadContainingMsgHdr(msgHdr)
@@ -305,18 +311,13 @@ function summarizeThreadHandler(contentWin, tabId, context) {
     };
 
     let firstThreadId = getThreadId(msgHdrs[0]);
-    if (msgHdrIsRssOrNews(msgHdrs[0])) {
-      // If we have any RSS or News messages, defer to Thunderbird's view.
-      maybeLoadMultiMessagePage().then(() => threadPane._oldOnSelect(event));
-      return;
-    }
     for (let i = 1; i < msgHdrs.length; i++) {
-      if (
-        msgHdrIsRssOrNews(msgHdrs[i]) ||
-        getThreadId(msgHdrs[i]) != firstThreadId
-      ) {
-        // This is a RSS, News or multi-thread selection, so defer to
-        // Thunderbird's views.
+      // If this is multi-thread selection, defer to Thunderbird's views.
+      //
+      // We intentionally do not skip RSS/news messages here as some people
+      // have managed to get Thunderbird set up to have them threaded (#2016).
+      // Though this is supported on a totally un-supported basis.
+      if (getThreadId(msgHdrs[i]) != firstThreadId) {
         maybeLoadMultiMessagePage().then(() => threadPane._oldOnSelect(event));
         return;
       }
