@@ -108,7 +108,7 @@ function getWinBrowserFromIds(context, winId, tabId) {
       // windowManager only recognises Thunderbird windows, so we can't
       // use getWindowFromId.
       win,
-      msgBrowser: win.document.getElementById("multimessage"),
+      msgBrowser: win.document.getElementById("multiMessageBrowser"),
     };
   }
 
@@ -246,7 +246,9 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
         },
         async resetMessagePane() {
           for (const win of Services.wm.getEnumerator("mail:3pane")) {
-            const messagepane = win.document.getElementById("multimessage");
+            const messagepane = win.document.getElementById(
+              "multiMessageBrowser"
+            );
             if (messagepane.contentDocument.documentURI.includes("stub.html")) {
               // The best we can do here is to clear via the summary manager,
               // so that we get re-loaded with the new correct size.

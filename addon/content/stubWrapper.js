@@ -7,7 +7,7 @@
 window.addEventListener(
   "load",
   function (event) {
-    let browser = document.getElementById("multimessage");
+    let browser = document.getElementById("multiMessageBrowser");
 
     browser.addEventListener(
       "load",

@@ -25,7 +25,7 @@ function msgWinApigetWinBrowserFromIds(context, winId, tabId) {
       // windowManager only recognises Thunderbird windows, so we can't
       // use getWindowFromId.
       win,
-      msgBrowser: win.document.getElementById("multimessage"),
+      msgBrowser: win.document.getElementById("multiMessageBrowser"),
     };
   }
 
@@ -86,7 +86,7 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
         },
         async print(winId, iframeId) {
           let win = getWindowFromId(winId);
-          let multimessage = win.document.getElementById("multimessage");
+          let multimessage = win.document.getElementById("multiMessageBrowser");
           let messageIframe =
             multimessage.contentDocument.getElementsByClassName(iframeId)[0];
           win.PrintUtils.startPrintWindow(messageIframe.browsingContext, {
@@ -153,12 +153,18 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
             // Or maybe a browser underneath it?
             waitForWindow(tabObject.nativeTab.chromeBrowser.contentWindow).then(
               () => {
+                contentWin.document
+                  .getElementById("multiMessageBrowser")
+                  ?.setAttribute("context", "browserContext");
                 summarizeThreadHandler(contentWin, tabId, context);
               }
             );
             return function () {
               let threadPane = contentWin.threadPane;
               threadPane._onSelect = threadPane._oldOnSelect;
+              contentWin.document
+                .getElementById("multiMessageBrowser")
+                ?.setAttribute("context", "aboutPagesContext");
               delete threadPane._oldOnSelect;
             };
           },
