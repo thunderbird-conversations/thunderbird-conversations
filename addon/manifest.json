@@ -4,7 +4,7 @@
     "gecko": {
       "id": "gconversation@xulforum.org",
       "strict_min_version": "114.0a1",
-      "strict_max_version": "119.0a1"
+      "strict_max_version": "120.0a1"
     }
   },
   "author": "Jonathan Protzenko",
