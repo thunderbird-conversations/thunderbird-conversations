@@ -566,12 +566,14 @@ var convCalendar = class extends ExtensionCommon.ExtensionAPI {
             );
             return function () {
               inviteListeners.delete(fire);
-              msgBrowser.removeProgressListener(
-                msgHeaderSink,
-                Ci.nsIWebProgress.NOTIFY_STATE_NETWORK |
-                  Ci.nsIWebProgress.NOTIFY_STATE_WINDOW |
-                  Ci.nsIWebProgress.NOTIFY_STATUS
-              );
+              if (msgBrowser.webProgress) {
+                msgBrowser.removeProgressListener(
+                  msgHeaderSink,
+                  Ci.nsIWebProgress.NOTIFY_STATE_NETWORK |
+                    Ci.nsIWebProgress.NOTIFY_STATE_WINDOW |
+                    Ci.nsIWebProgress.NOTIFY_STATUS
+                );
+              }
             };
           },
         }).api(),
