@@ -686,7 +686,7 @@
     "description": "Calendar invite accept button."
   },
   "calendar.imipAcceptRecurrencesButton.tooltip": {
-    "message": "Прийняти запрошення на подію для всіх випадків події",
+    "message": "Прийняти запрошення на подію для всіх повторень",
     "description": "Calendar invite accept button tooltip."
   },
   "calendar.imipAddButton.label": {
@@ -694,7 +694,7 @@
     "description": "Calendar invite update button."
   },
   "calendar.imipAddButton.tooltip": {
-    "message": "Додати подію в календар",
+    "message": "Додати подію до календаря",
     "description": "Calendar invite update button tooltip."
   },
   "calendar.imipDeclineButton.label": {
@@ -706,11 +706,11 @@
     "description": "Calendar invite decline button tooltip."
   },
   "calendar.imipDeclineRecurrencesButton.label": {
-    "message": "Відхилити все",
+    "message": "Відхилити всі",
     "description": "Calendar invite decline button."
   },
   "calendar.imipDeclineRecurrencesButton.tooltip": {
-    "message": "Відхилити запрошення на подію для всіх випадків події",
+    "message": "Відхилити запрошення на подію для всіх повторень",
     "description": "Calendar invite decline button tooltip."
   },
   "calendar.imipDeclineCounterButton.label": {
@@ -718,7 +718,7 @@
     "description": "Calendar invite decline button."
   },
   "calendar.imipDeclineCounterButton.tooltip": {
-    "message": "Відхилити зустрічну пропозицію",
+    "message": "Відхилити пропозицію",
     "description": "Calendar invite decline button tooltip."
   },
   "calendar.imipDeleteButton.label": {
@@ -738,43 +738,43 @@
     "description": "Calendar invite details button tooltip."
   },
   "calendar.imipReconfirmButton.label": {
-    "message": "Підтвердити заново",
+    "message": "Повторно підтвердити",
     "description": "Calendar invite update button."
   },
   "calendar.imipReconfirmButton.tooltip": {
-    "message": "Надсилає повторне підтвердження організатору",
+    "message": "Надсилає організатору повторне підтвердження",
     "description": "Calendar invite update button tooltip."
   },
   "calendar.imipRescheduleButton.label": {
-    "message": "Змінити розклад",
+    "message": "Перенести",
     "description": "Calendar invite tentative button."
   },
   "calendar.imipRescheduleButton.tooltip": {
-    "message": "Змінити розклад події",
+    "message": "Перенести подію",
     "description": "Calendar invite tentative button tooltip."
   },
   "calendar.imipTentativeButton.label": {
-    "message": "Попередньо",
+    "message": "Сумнівно",
     "description": "Calendar invite tentative button."
   },
   "calendar.imipTentativeButton.tooltip": {
-    "message": "Попередньо прийняти запрошення на подію",
+    "message": "Прийняти запрошення на подію із сумнівом",
     "description": "Calendar invite tentative button tooltip."
   },
   "calendar.imipTentativeRecurrencesButton.label": {
-    "message": "Попередньо все",
+    "message": "Сумнівно для всіх",
     "description": "Calendar invite tentative button."
   },
   "calendar.imipTentativeRecurrencesButton.tooltip": {
-    "message": "Попередньо прийняти запрошення на подію для всіх випадків події",
+    "message": "Прийняти запрошення на подію із сумнівом для всіх повторень",
     "description": "Calendar invite tentative button tooltip."
   },
   "calendar.imipUpdateButton.label": {
-    "message": "Прийняти",
+    "message": "Оновити",
     "description": "Calendar invite update button."
   },
   "calendar.imipUpdateButton.tooltip": {
-    "message": "Прийняти",
+    "message": "Оновити подію в календарі",
     "description": "Calendar invite update button tooltip."
   },
   "calendar.imipGoToCalendarButton.label": {
