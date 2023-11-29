@@ -10,7 +10,6 @@ module.exports = {
     gallery: "./addon/gallery/gallery.jsx",
     options: "./addon/options/optionsRender.js",
     stub: "./addon/content/stub.js",
-    background: "./addon/background/background.js",
     "dev-frame": "./addon/dev-frame/dev-frame-render.js",
   },
   mode: "none",
@@ -59,19 +58,13 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       hash: false,
-      template: "./addon/background/background.html",
-      chunks: ["background"],
-      filename: "../background/background.html",
-    }),
-    new HtmlWebpackPlugin({
-      hash: false,
       template: "./addon/dev-frame/dev-frame.html",
       chunks: ["dev-frame"],
       filename: "../dev-frame/dev-frame.html",
     }),
   ],
   resolve: {
-    extensions: [".js", ".jsx"],
+    extensions: [".js", ".jsx", ".mjs"],
   },
   module: {
     rules: [

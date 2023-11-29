@@ -16,7 +16,7 @@
  *   The id of the associated ContactNode from the WebExtension APIs (if any).
  * @property {string} identityId
  *   The id of the associated MailIdentiy from the WebExtension APIs (if any).
- * @property {string} name
+ * @property {string} contactName
  *   The name from the associated ContactNode. This is only returned if the
  *   ContactNode has "Always prefer display name over message header" set for
  *   the contact.
@@ -34,14 +34,14 @@ class ExtendedContact {
     contactId,
     email,
     identityId = undefined,
-    name,
+    contactName,
     photoURI,
     readOnly,
   }) {
     this.color = freshColor(email);
     this.contactId = contactId;
     this.identityId = identityId;
-    this.name = name;
+    this.contactName = contactName;
     this.photoURI = photoURI;
     this.readOnly = readOnly;
     /**
@@ -64,7 +64,7 @@ class ExtendedContact {
       contactId: this.contactId,
       identityId: this.identityId,
       lastAccessed: this.lastAccessed,
-      name: this.name,
+      contactName: this.contactName,
       photoURI: this.photoURI,
       readOnly: this.readOnly,
     };
@@ -219,7 +219,7 @@ export class ContactManager {
 
     let contactId = undefined;
     let emails = [];
-    let name = undefined;
+    let contactName = undefined;
     let photoURI = undefined;
     let emailAddressForColor = email;
     let readOnly = false;
@@ -235,13 +235,13 @@ export class ContactManager {
       let useCardName =
         card.PreferDisplayName != null ? !!+card.PreferDisplayName : true;
       if (useCardName) {
-        name = card.DisplayName;
+        contactName = card.DisplayName;
       } else {
         if (card.FirstName) {
-          name = card.FirstName;
+          contactName = card.FirstName;
         }
         if (card.LastName) {
-          name += (name ? " " : "") + card.LastName;
+          contactName += (contactName ? " " : "") + card.LastName;
         }
       }
 
@@ -264,7 +264,7 @@ export class ContactManager {
       new ExtendedContact({
         contactId,
         email: emailAddressForColor,
-        name,
+        contactName,
         photoURI,
         readOnly,
       }),

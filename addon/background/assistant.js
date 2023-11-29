@@ -36,17 +36,17 @@ class SimpleCustomization {
  * Handles a core preference customization.
  */
 class PrefCustomization extends SimpleCustomization {
-  constructor({ name, value }) {
+  constructor({ prefName, value }) {
     super(value);
-    this._name = name;
+    this._prefName = prefName;
   }
 
   _get() {
-    return browser.conversations.getCorePref(this._name);
+    return browser.conversations.getCorePref(this._prefName);
   }
 
   _set(value) {
-    return browser.conversations.setCorePref(this._name, value);
+    return browser.conversations.setCorePref(this._prefName, value);
   }
 }
 
@@ -75,14 +75,23 @@ class MultipleCustomization {
 
 const installActions = {
   actionEnableGloda: new PrefCustomization({
-    name: "mailnews.database.global.indexer.enabled",
+    prefName: "mailnews.database.global.indexer.enabled",
     value: true,
   }),
 
   actionSetupView: new MultipleCustomization([
-    new PrefCustomization({ name: "mailnews.default_sort_order", value: 1 }),
-    new PrefCustomization({ name: "mailnews.default_sort_type", value: 18 }),
-    new PrefCustomization({ name: "mailnews.default_view_flags", value: 1 }),
+    new PrefCustomization({
+      prefName: "mailnews.default_sort_order",
+      value: 1,
+    }),
+    new PrefCustomization({
+      prefName: "mailnews.default_sort_type",
+      value: 18,
+    }),
+    new PrefCustomization({
+      prefName: "mailnews.default_view_flags",
+      value: 1,
+    }),
     {
       async install(mailTab) {
         let newParams = {};

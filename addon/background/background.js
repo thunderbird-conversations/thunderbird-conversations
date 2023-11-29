@@ -6,6 +6,7 @@ import { Assistant } from "./assistant.js";
 import { contactManager } from "./contactManager.js";
 import { Prefs } from "./prefs.js";
 import { UIHandler } from "./uiHandler.js";
+// eslint-disable-next-line no-shadow
 import { Window } from "./window.js";
 
 const requestHandlers = [];

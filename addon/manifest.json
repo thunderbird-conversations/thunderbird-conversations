@@ -4,7 +4,7 @@
     "gecko": {
       "id": "gconversation@xulforum.org",
       "strict_min_version": "114.0a1",
-      "strict_max_version": "120.0a1"
+      "strict_max_version": "122.0a1"
     }
   },
   "author": "Jonathan Protzenko",
@@ -14,7 +14,8 @@
   "version": "4.1.5",
   "homepage_url": "http://github.com/thunderbird-conversations/thunderbird-conversations/wiki",
   "background": {
-    "page": "background/background.html"
+    "scripts": ["background/background.js"],
+    "type": "module"
   },
   "icons": {
     "32": "icon.png"

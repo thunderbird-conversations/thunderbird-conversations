@@ -54,7 +54,7 @@ describe("Test ContactManager", () => {
     expect(contact).toMatchObject({
       contactId: undefined,
       identityId: undefined,
-      name: undefined,
+      contactName: undefined,
       photoURI: undefined,
     });
     expect(isValidColor(contact.color)).toBe(true);
@@ -73,7 +73,7 @@ describe("Test ContactManager", () => {
     expect(contact).toMatchObject({
       contactId: "135246",
       identityId: undefined,
-      name: "display name",
+      contactName: "display name",
       photoURI: undefined,
     });
     expect(isValidColor(contact.color)).toBe(true);
@@ -90,7 +90,7 @@ describe("Test ContactManager", () => {
     expect(extra).toMatchObject({
       contactId: "75312468",
       identityId: undefined,
-      name: undefined,
+      contactName: undefined,
       photoURI: "https://example.com/fake",
       readOnly: true,
     });
@@ -103,7 +103,7 @@ describe("Test ContactManager", () => {
     expect(contact).toMatchObject({
       contactId: "3216549870",
       identityId: undefined,
-      name: "arch test",
+      contactName: "arch test",
       photoURI: undefined,
     });
     expect(isValidColor(contact.color)).toBe(true);
@@ -114,7 +114,7 @@ describe("Test ContactManager", () => {
     expect(contact).toMatchObject({
       contactId: "9753124680",
       identityId: undefined,
-      name: "cond test",
+      contactName: "cond test",
       photoURI: undefined,
     });
     expect(isValidColor(contact.color)).toBe(true);
@@ -152,14 +152,14 @@ describe("Test ContactManager", () => {
     expect(contact).toMatchObject({
       contactId: "135246",
       identityId: undefined,
-      name: "display name",
+      contactName: "display name",
       photoURI: undefined,
     });
     expect(isValidColor(contact.color)).toBe(true);
     expect(contact2).toMatchObject({
       contactId: "135246",
       identityId: undefined,
-      name: "display name",
+      contactName: "display name",
       photoURI: undefined,
     });
     expect(isValidColor(contact2.color)).toBe(true);
@@ -171,7 +171,7 @@ describe("Test ContactManager", () => {
     expect(contact).toMatchObject({
       contactId: undefined,
       identityId: "id3",
-      name: undefined,
+      contactName: undefined,
       photoURI: undefined,
     });
     expect(isValidColor(contact.color)).toBe(true);
@@ -190,7 +190,7 @@ describe("Test ContactManager", () => {
     expect(contact).toMatchObject({
       contactId: undefined,
       identityId: "id10",
-      name: undefined,
+      contactName: undefined,
       photoURI: undefined,
     });
     expect(isValidColor(contact.color)).toBe(true);
@@ -209,7 +209,7 @@ describe("Test ContactManager", () => {
     expect(contact).toMatchObject({
       contactId: "15263748",
       identityId: "id4",
-      name: "id4 card",
+      contactName: "id4 card",
       photoURI: undefined,
     });
     expect(isValidColor(contact.color)).toBe(true);
@@ -222,7 +222,7 @@ describe("Test ContactManager", () => {
     expect(contact).toMatchObject({
       contactId: "15263748",
       identityId: "id5",
-      name: "id5 card",
+      contactName: "id5 card",
       photoURI: undefined,
     });
     expect(isValidColor(contact.color)).toBe(true);
@@ -234,7 +234,7 @@ describe("Test ContactManager", () => {
     expect(contact).toMatchObject({
       contactId: "15263748",
       identityId: "id5",
-      name: "id5 card",
+      contactName: "id5 card",
       photoURI: undefined,
     });
     expect(isValidColor(contact.color)).toBe(true);
@@ -245,7 +245,7 @@ describe("Test ContactManager", () => {
     expect(contact).toMatchObject({
       contactId: "15263748",
       identityId: undefined,
-      name: "id5 card",
+      contactName: "id5 card",
       photoURI: undefined,
     });
     expect(isValidColor(contact.color)).toBe(true);
@@ -258,7 +258,7 @@ describe("Test ContactManager", () => {
     expect(contact).toMatchObject({
       contactId: undefined,
       identityId: undefined,
-      name: undefined,
+      contactName: undefined,
       photoURI: undefined,
     });
 
@@ -288,7 +288,7 @@ describe("Test ContactManager", () => {
     expect(contact).toMatchObject({
       contactId: "14327658",
       identityId: undefined,
-      name: "invalid name",
+      contactName: "invalid name",
       photoURI: undefined,
     });
   });
@@ -299,7 +299,7 @@ describe("Test ContactManager", () => {
     expect(contact).toMatchObject({
       contactId: "135246",
       identityId: undefined,
-      name: "display name",
+      contactName: "display name",
       photoURI: undefined,
     });
 
@@ -329,7 +329,7 @@ describe("Test ContactManager", () => {
     expect(contact).toMatchObject({
       contactId: "135246",
       identityId: undefined,
-      name: "updated name",
+      contactName: "updated name",
       photoURI: undefined,
     });
   });
@@ -340,7 +340,7 @@ describe("Test ContactManager", () => {
     expect(contact).toMatchObject({
       contactId: "135246",
       identityId: undefined,
-      name: "display name",
+      contactName: "display name",
       photoURI: undefined,
     });
 
@@ -354,7 +354,7 @@ describe("Test ContactManager", () => {
     expect(contact).toMatchObject({
       contactId: undefined,
       identityId: undefined,
-      name: undefined,
+      contactName: undefined,
       photoURI: undefined,
     });
   });

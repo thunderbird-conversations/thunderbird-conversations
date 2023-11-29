@@ -32,6 +32,7 @@ done
 for a in $(git ls-files \
 '::_locales' \
 '::assistant' \
+'::background' \
 '::content/icons' '::content/modules' 'content/stubGlobals.js' \
 'content/stubWrapper.*' \
 '::experiment-api' '::*.css' ); do

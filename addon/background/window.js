@@ -6,6 +6,7 @@
  * This class handles hooking into the Thunderbird message window to be able
  * to manage the message preview correctly.
  */
+// eslint-disable-next-line no-shadow
 export class Window {
   #tabListeners = new Map();
 
@@ -76,8 +77,8 @@ export class Window {
           pillMessage.icon = undefined;
         }
 
-        for (let port of this.connectedPorts) {
-          port.postMessage({
+        for (let connectedPort of this.connectedPorts) {
+          connectedPort.postMessage({
             type: "addSpecialTag",
             id: pillMessage.msgId,
             classNames: pillMessage.severity ?? "normal",
@@ -120,8 +121,8 @@ export class Window {
 
   _handlePort(port) {
     this.connectedPorts.add(port);
-    port.onDisconnect.addListener((port) => {
-      this.connectedPorts.delete(port);
+    port.onDisconnect.addListener((disconnectPort) => {
+      this.connectedPorts.delete(disconnectPort);
     });
   }
 
