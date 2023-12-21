@@ -242,6 +242,7 @@ export const messageActions = {
         // The additional nulls appear to be necessary due to our browser proxying.
         let currentTab = await browser.tabs.query({
           active: true,
+          cookieStoreId: null,
           currentWindow: null,
           lastFocusedWindow: null,
           title: null,
