@@ -31,8 +31,8 @@
     "@reduxjs/toolkit": "1.9.7",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-redux": "9.0.4",
-    "redux": "5.0.0"
+    "react-redux": "9.1.0",
+    "redux": "5.0.1"
   },
   "devDependencies": {
     "@babel/cli": "7.23.4",
