@@ -24,7 +24,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
 // eslint-disable-next-line mozilla/reject-importGlobalProperties
 XPCOMUtils.defineLazyGlobalGetters(this, ["TextDecoder"]);
 
-XPCOMUtils.defineLazyGetter(this, "messenger", () =>
+ChromeUtils.defineLazyGetter(this, "messenger", () =>
   Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger)
 );
 
