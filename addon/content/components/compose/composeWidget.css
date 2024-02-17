@@ -68,12 +68,17 @@ input:focus {
 }
 
 .compose > .buttons > button {
-  padding: 0 5px;
-  margin-inline-end: 3px;
-  background-color: white;
+  padding: 0.3em 1em;
+  margin-inline-end: 0.2em;
+  background-color: -moz-dialog;
+  color: -moz-dialogtext;
+  cursor: pointer;
   border: 1px solid ThreeDShadow;
-  height: 1.86em;
-  border-radius: 7px;
+  border-radius: 3px;
+}
+
+.compose > .buttons > button:hover {
+  filter: brightness(85%);
 }
 
 #send {
