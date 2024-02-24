@@ -98,8 +98,6 @@ module.exports = {
         vars: "all",
       },
     ],
-    // Add prettier separately.
-    "prettier/prettier": "off",
   },
   settings: {
     react: {
