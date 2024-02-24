@@ -5,7 +5,7 @@
 // A compatibility layer that can be imported whether in the browser or
 // in Thunderbird
 
-import { kPrefDefaults } from "../../background/prefs.js";
+import { kPrefDefaults } from "../../background/prefs.mjs";
 
 const browser = window.browser || {};
 

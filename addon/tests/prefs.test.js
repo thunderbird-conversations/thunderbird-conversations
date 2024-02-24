@@ -6,7 +6,7 @@ import {
   Prefs,
   kPrefDefaults,
   kCurrentLegacyMigration,
-} from "../background/prefs.js";
+} from "../background/prefs.mjs";
 
 import { jest } from "@jest/globals";
 

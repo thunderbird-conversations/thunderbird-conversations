@@ -2,12 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import { Assistant } from "./assistant.js";
-import { contactManager } from "./contactManager.js";
-import { Prefs } from "./prefs.js";
-import { UIHandler } from "./uiHandler.js";
+import { Assistant } from "./assistant.mjs";
+import { contactManager } from "./contactManager.mjs";
+import { Prefs } from "./prefs.mjs";
+import { UIHandler } from "./uiHandler.mjs";
 // eslint-disable-next-line no-shadow
-import { Window } from "./window.js";
+import { Window } from "./window.mjs";
 
 const requestHandlers = [];
 

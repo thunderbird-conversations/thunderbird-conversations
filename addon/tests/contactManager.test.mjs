@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import { ContactManager, freshColor } from "../background/contactManager.js";
+import { ContactManager, freshColor } from "../background/contactManager.mjs";
 
 // From https://gist.github.com/olmokramer/82ccce673f86db7cda5e
 function isValidColor(color) {

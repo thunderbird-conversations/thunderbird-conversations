@@ -14,7 +14,7 @@
   "version": "4.1.6",
   "homepage_url": "http://github.com/thunderbird-conversations/thunderbird-conversations/wiki",
   "background": {
-    "scripts": ["background/background.js"],
+    "scripts": ["background/background.mjs"],
     "type": "module"
   },
   "icons": {

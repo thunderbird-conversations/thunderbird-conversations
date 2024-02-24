@@ -7,6 +7,8 @@ module.exports = function (api) {
       // We don't want es modules to be bundled; we'll use native loading!
       {
         targets: { browsers: "Firefox >= 110.0" },
+        // Use commonjs for now until the ecosystem sorts itself out.
+        modules: "commonjs",
       },
     ],
     [
