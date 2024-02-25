@@ -19,7 +19,6 @@ describe("Quick Reply tests", () => {
   beforeEach(async () => {
     store = RTK.configureStore({
       reducer: conversationApp,
-      middleware: RTK.getDefaultMiddleware(),
     });
     quickReplyActions.expand = jest.fn().mockImplementation(() => {
       return {

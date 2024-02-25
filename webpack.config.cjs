@@ -73,18 +73,6 @@ module.exports = {
         exclude: /node_modules/,
         use: {
           loader: "babel-loader",
-          options: {
-            presets: [
-              [
-                "@babel/preset-env",
-                {
-                  targets: { browsers: "Firefox >= 110.0" },
-                  // Tests use "commonjs" for now, but for webpack we need auto.
-                  modules: "auto",
-                },
-              ],
-            ],
-          },
         },
       },
     ],

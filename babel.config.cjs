@@ -8,7 +8,7 @@ module.exports = function (api) {
       {
         targets: { browsers: "Firefox >= 110.0" },
         // Use commonjs for now until the ecosystem sorts itself out.
-        modules: "commonjs",
+        modules: "auto",
       },
     ],
     [

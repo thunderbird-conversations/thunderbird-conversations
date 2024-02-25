@@ -2,8 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import { createFakeData, createFakeSummaryData } from "./utils.js";
-import { jest } from "@jest/globals";
+import { createFakeData, createFakeSummaryData } from "./utils.mjs";
 import { MessageEnricher } from "../content/reducer/messageEnricher.js";
 
 describe("messageEnricher", () => {
@@ -174,8 +173,8 @@ describe("messageEnricher", () => {
 
       mailTabsGetSpy.mockReturnValue(false);
 
-      for (let test of tests) {
-        let fakeMsg = createFakeData(test.source, fakeMessageHeaderData);
+      for (let t of tests) {
+        let fakeMsg = createFakeData(t.source, fakeMessageHeaderData);
 
         let msgs = await messageEnricher.enrich(
           [fakeMsg],
@@ -183,7 +182,7 @@ describe("messageEnricher", () => {
           [3]
         );
 
-        expect(msgs[0]).toMatchObject(test.expected);
+        expect(msgs[0]).toMatchObject(t.expected);
       }
     });
 

@@ -2,10 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import { jest } from "@jest/globals";
 import * as RTK from "@reduxjs/toolkit";
 import * as Redux from "redux";
-import { createFakeData } from "./utils.js";
+import { createFakeData } from "./utils.mjs";
 
 // Import the components we want to test
 import {

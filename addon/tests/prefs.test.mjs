@@ -8,8 +8,6 @@ import {
   kCurrentLegacyMigration,
 } from "../background/prefs.mjs";
 
-import { jest } from "@jest/globals";
-
 describe("Prefs tests", () => {
   let prefs;
 

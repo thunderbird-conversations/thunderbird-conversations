@@ -14,21 +14,21 @@
   },
   "jest": {
     "transform": {
-      "\\.m?[jt]sx?$": "babel-jest"
+      "\\.m?jsx?$": "babel-jest"
     },
     "setupFiles": [
-      "./addon/tests/setup.js"
+      "./addon/tests/setup.mjs"
     ],
     "testEnvironment": "jsdom",
     "testMatch": [
-      "**/__tests__/**/*.?(m)[jt]s?(x)",
-      "**/?(*.)+(spec|test).?(m)[jt]s?(x)"
+      "**/__tests__/**/*.?(m)js?(x)",
+      "**/?(*.)+(spec|test).?(m)js?(x)"
     ]
   },
   "private": true,
   "type": "module",
   "dependencies": {
-    "@reduxjs/toolkit": "1.9.7",
+    "@reduxjs/toolkit": "2.2.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-redux": "9.1.0",

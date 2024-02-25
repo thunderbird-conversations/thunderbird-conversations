@@ -2,8 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import { createFakeData, createFakeSummaryData } from "./utils.js";
-import { jest } from "@jest/globals";
+import { createFakeData, createFakeSummaryData } from "./utils.mjs";
 import * as RTK from "@reduxjs/toolkit";
 import * as Redux from "redux";
 

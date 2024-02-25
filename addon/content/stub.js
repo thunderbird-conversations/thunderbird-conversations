@@ -20,7 +20,6 @@ document.addEventListener(
 
     let store = RTK.configureStore({
       reducer: conversationApp,
-      middleware: RTK.getDefaultMiddleware(),
     });
 
     // Once we can potentially load in a WebExtension scope, then we should

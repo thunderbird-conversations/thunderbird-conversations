@@ -2,8 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import { createFakeData } from "./utils.js";
-import { jest } from "@jest/globals";
+import { createFakeData } from "./utils.mjs";
 import { conversationUtils } from "../content/reducer/conversationUtils.js";
 
 describe("conversationUtils", () => {
