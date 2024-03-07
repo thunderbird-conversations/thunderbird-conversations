@@ -90,6 +90,7 @@ module.exports = {
     "jsdoc/require-returns-type": "error",
     "jsdoc/tag-lines": ["error", "never", { startLines: 1 }],
     "jsdoc/valid-types": "error",
+    "no-console": "off",
     // We want to check the global scope everywhere.
     "no-unused-vars": [
       "error",
