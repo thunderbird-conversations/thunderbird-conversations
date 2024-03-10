@@ -100,7 +100,7 @@ export function ComposeWidget({ discard }) {
       <div id="sendStatus">{composeState.sendingMsg}</div>
       <div className="buttons">
         <button id="discard" onClick={discard} disabled={!discard}>
-          {browser.i18n.getMessage("compose.discard")}
+          🗑️ {browser.i18n.getMessage("compose.discard")}
         </button>
         <button
           id="send"
@@ -109,7 +109,7 @@ export function ComposeWidget({ discard }) {
             composeState.sending || !composeState.to || !composeState.subject
           }
         >
-          {browser.i18n.getMessage("compose.send")}
+          📨 {browser.i18n.getMessage("compose.send")}
         </button>
       </div>
     </div>
