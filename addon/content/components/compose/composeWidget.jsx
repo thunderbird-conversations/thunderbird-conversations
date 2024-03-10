@@ -99,11 +99,9 @@ export function ComposeWidget({ discard }) {
       />
       <div id="sendStatus">{composeState.sendingMsg}</div>
       <div className="buttons">
-        {discard && (
-          <a className="link" onClick={discard}>
-            {browser.i18n.getMessage("compose.discard")}
-          </a>
-        )}
+        <button id="discard" onClick={discard} disabled={!discard}>
+          {browser.i18n.getMessage("compose.discard")}
+        </button>
         <button
           id="send"
           onClick={onSend}

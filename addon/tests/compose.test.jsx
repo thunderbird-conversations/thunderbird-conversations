@@ -44,7 +44,7 @@ describe("Compose full page tests", () => {
       }
     }
 
-    fireEvent.click(screen.getByRole("button"));
+    fireEvent.click(screen.getByRole("button", { name: /send/i }));
 
     await waitFor(() => {
       if (!mockedSend.mock.calls.length) {
