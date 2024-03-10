@@ -64,12 +64,13 @@ input:focus {
 }
 
 .compose > .buttons {
-  margin-top: 10px;
+  padding-top: 10px;
+  display: flex;
+  justify-content: space-between;
 }
 
 .compose > .buttons > button {
   padding: 0.3em 1em;
-  margin-inline-end: 0.2em;
   background-color: -moz-dialog;
   color: -moz-dialogtext;
   cursor: pointer;
@@ -79,8 +80,4 @@ input:focus {
 
 .compose > .buttons > button:hover {
   filter: brightness(85%);
-}
-
-#send {
-  float: inline-end;
 }
