@@ -73,7 +73,6 @@ input:focus {
   padding: 0.3em 1em;
   background-color: -moz-dialog;
   color: -moz-dialogtext;
-  cursor: pointer;
   border: 1px solid ThreeDShadow;
   border-radius: 3px;
 }
