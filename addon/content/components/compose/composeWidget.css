@@ -64,18 +64,19 @@ input:focus {
 }
 
 .compose > .buttons {
-  margin-top: 10px;
+  padding-top: 10px;
+  display: flex;
+  justify-content: space-between;
 }
 
 .compose > .buttons > button {
-  padding: 0 5px;
-  margin-inline-end: 3px;
-  background-color: white;
+  padding: 0.3em 1em;
+  background-color: -moz-dialog;
+  color: -moz-dialogtext;
   border: 1px solid ThreeDShadow;
-  height: 1.86em;
-  border-radius: 7px;
+  border-radius: 3px;
 }
 
-#send {
-  float: inline-end;
+.compose > .buttons > button:hover {
+  filter: brightness(85%);
 }
