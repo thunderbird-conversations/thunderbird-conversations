@@ -21,6 +21,11 @@
             "items": {
               "type": "number"
             }
+          },
+          {
+            "name": "conversationId",
+            "type": "number",
+            "description": "The conversation id for the query."
           }
         ]
       }

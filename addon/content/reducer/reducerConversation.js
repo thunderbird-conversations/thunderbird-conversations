@@ -33,9 +33,9 @@ let messageEnricher = () => {
   return (_messageEnricher = new MessageEnricher());
 };
 
-function removeListeners() {
+async function removeListeners() {
   if (currentQueryListener) {
-    browser.convGloda.queryConversationMessages.removeListener(
+    await browser.convGloda.queryConversationMessages.removeListener(
       currentQueryListener,
       currentQueryListenerArgs
     );
@@ -77,7 +77,7 @@ export const conversationActions = {
     return async (dispatch, getState) => {
       let loadingStartedTime = Date.now();
 
-      removeListeners();
+      await removeListeners();
 
       let currentId = getState().conversation.currentId + 1;
       await dispatch(conversationActions.setConversationId({ currentId }));
@@ -98,6 +98,12 @@ export const conversationActions = {
       );
 
       currentQueryListener = (event) => {
+        if (event.conversationId != currentId) {
+          console.warn(
+            "Conversation Query Listener called after being removed"
+          );
+          return;
+        }
         if (event.initial) {
           dispatch(
             conversationActions.displayConversationMsgs({
@@ -130,7 +136,8 @@ export const conversationActions = {
 
       browser.convGloda.queryConversationMessages.addListener(
         currentQueryListener,
-        currentQueryListenerArgs
+        currentQueryListenerArgs,
+        currentId
       );
     };
   },

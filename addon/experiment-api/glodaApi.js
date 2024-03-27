@@ -28,8 +28,8 @@ var convGloda = class extends ExtensionCommon.ExtensionAPI {
         queryConversationMessages: new ExtensionCommon.EventManager({
           context,
           name: "convContacts.queryConversationMessages",
-          register(fire, msgIds) {
-            let status = { stopQuery: false };
+          register(fire, msgIds, conversationId) {
+            let status = { stopQuery: false, conversationId };
 
             let msgHdrs = msgIds.map((id) =>
               context.extension.messageManager.get(id)
@@ -109,10 +109,11 @@ function getGlodaMessages(msgHdrs) {
  *
  */
 class GlodaListener {
-  constructor(msgHdrs, intermediateResults, fire, context) {
+  constructor({ msgHdrs, intermediateResults, status, fire, context }) {
     this.initialQueryComplete = false;
     this.msgHdrs = msgHdrs;
     this.intermediateResults = intermediateResults;
+    this.status = status;
     this.fire = fire;
     this.context = context;
   }
@@ -132,7 +133,10 @@ class GlodaListener {
       }
     }
     if (messages.length) {
-      this.fire.async({ added: messages });
+      this.fire.async({
+        added: messages,
+        conversationId: this.status.conversationId,
+      });
     }
   }
   onItemsModified(items) {
@@ -148,7 +152,10 @@ class GlodaListener {
       }
     }
     if (messages.length) {
-      this.fire.async({ modified: messages });
+      this.fire.async({
+        modified: messages,
+        conversationId: this.status.conversationId,
+      });
     }
   }
   onItemsRemoved(items) {
@@ -168,7 +175,10 @@ class GlodaListener {
         msgIds.push(message.id);
       }
     }
-    this.fire.async({ removed: msgIds });
+    this.fire.async({
+      removed: msgIds,
+      conversationId: this.status.conversationId,
+    });
   }
   onQueryCompleted(collection) {
     if (this.initialQueryComplete) {
@@ -216,7 +226,10 @@ class GlodaListener {
     // since we would still need to load the headers to inject into the gloda
     // query and for the basic details.
 
-    this.fire.async({ initial: messages });
+    this.fire.async({
+      initial: messages,
+      conversationId: this.status.conversationId,
+    });
   }
 
   /**
@@ -301,12 +314,13 @@ function getAndObserveConversationThread(
   fire,
   context
 ) {
-  let glodaListener = new GlodaListener(
+  let glodaListener = new GlodaListener({
     msgHdrs,
     intermediateResults,
+    status,
     fire,
-    context
-  );
+    context,
+  });
 
   let query = intermediateResults[0].conversation.getMessagesCollection(
     glodaListener,
