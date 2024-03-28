@@ -75,7 +75,7 @@ async function startQuery(msgHdrs, status, fire, context) {
         initial.push(msg);
       }
     }
-    fire.async({ initial });
+    fire.async({ initial, conversationId: status.conversationId });
     return;
   }
 
