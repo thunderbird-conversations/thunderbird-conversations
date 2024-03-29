@@ -102,7 +102,6 @@ export function ComposeWidget({ discard }) {
       <div className="buttons">
         <button id="discard" onClick={discard} disabled={!discard}>
           <SvgIcon ariaHidden={true} hash="delete_forever" />
-          &nbsp;
           {browser.i18n.getMessage("compose.discard")}
         </button>
         <button
@@ -112,9 +111,8 @@ export function ComposeWidget({ discard }) {
             composeState.sending || !composeState.to || !composeState.subject
           }
         >
-          {browser.i18n.getMessage("compose.send")}
-          &nbsp;
           <SvgIcon ariaHidden={true} hash="send" />
+          {browser.i18n.getMessage("compose.send")}
         </button>
       </div>
     </div>
