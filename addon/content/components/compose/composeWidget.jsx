@@ -7,6 +7,7 @@ import React from "react";
 import * as ReactRedux from "react-redux";
 import { TextArea, TextBox } from "./composeFields.jsx";
 import PropTypes from "prop-types";
+import { SvgIcon } from "../svgIcon.jsx";
 
 export function ComposeWidget({ discard }) {
   const dispatch = ReactRedux.useDispatch();
@@ -99,11 +100,10 @@ export function ComposeWidget({ discard }) {
       />
       <div id="sendStatus">{composeState.sendingMsg}</div>
       <div className="buttons">
-        {discard && (
-          <a className="link" onClick={discard}>
-            {browser.i18n.getMessage("compose.discard")}
-          </a>
-        )}
+        <button id="discard" onClick={discard} disabled={!discard}>
+          <SvgIcon ariaHidden={true} hash="delete_forever" />
+          {browser.i18n.getMessage("compose.discard")}
+        </button>
         <button
           id="send"
           onClick={onSend}
@@ -111,6 +111,7 @@ export function ComposeWidget({ discard }) {
             composeState.sending || !composeState.to || !composeState.subject
           }
         >
+          <SvgIcon ariaHidden={true} hash="send" />
           {browser.i18n.getMessage("compose.send")}
         </button>
       </div>
