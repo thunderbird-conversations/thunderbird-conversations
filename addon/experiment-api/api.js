@@ -11,6 +11,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   GlodaAttrProviders:
     "chrome://conversations/content/modules/GlodaAttrProviders.sys.mjs",
   PluralForm: "resource://gre/modules/PluralForm.sys.mjs",
+  NetUtil: "resource://gre/modules/NetUtil.sys.mjs",
 });
 
 XPCOMUtils.defineLazyModuleGetters(this, {
@@ -18,7 +19,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   MailServices: "resource:///modules/MailServices.jsm",
   makeFriendlyDateAgo: "resource:///modules/TemplateUtils.jsm",
   MsgHdrToMimeMessage: "resource:///modules/gloda/MimeMessage.jsm",
-  NetUtil: "resource://gre/modules/NetUtil.jsm",
 });
 
 // eslint-disable-next-line mozilla/reject-importGlobalProperties
@@ -561,7 +561,10 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
               /** @ignore*/
               onDataAvailable(aRequest, aStream, aOffset, aCount) {
                 // Fortunately, we have in Gecko 2.0 a nice wrapper
-                let data = NetUtil.readInputStreamToString(aStream, aCount);
+                let data = lazy.NetUtil.readInputStreamToString(
+                  aStream,
+                  aCount
+                );
                 // Now each character of the string is actually to be understood as a byte
                 //  of a UTF-8 string.
                 // So charCodeAt is what we want here...
