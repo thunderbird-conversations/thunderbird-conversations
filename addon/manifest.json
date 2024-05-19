@@ -31,6 +31,8 @@
     "messagesMove",
     "messagesDelete",
     "messagesUpdate",
+    "messagesTags",
+    "messagesTagsList",
     "storage",
     "tabs"
   ],

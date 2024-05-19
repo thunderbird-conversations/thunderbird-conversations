@@ -107,8 +107,23 @@ class _BrowserSim {
         browser[apiName] = this.#implementation(extension, api, apiName);
       } else if (SUPPORTED_APIS_NO_EVENTS.includes(apiName)) {
         const subApiHandler = {
-          get(obj, prop) {
-            return self.#browserListener.bind(null, apiName, prop);
+          get(target, prop) {
+            if (apiName == "messages" && prop == "tags") {
+              return new Proxy(
+                {},
+                {
+                  get(obj, subProp) {
+                    return self.#browserListener.bind(
+                      null,
+                      apiName,
+                      prop,
+                      subProp
+                    );
+                  },
+                }
+              );
+            }
+            return self.#browserListener.bind(null, apiName, prop, null);
           },
         };
         browser[apiName] = new Proxy({}, subApiHandler);
@@ -170,7 +185,7 @@ class _BrowserSim {
   // Really this should be using the ports and browser.runtime.connect, but they
   // won't work until we're proper WebExtension page.
   callBackgroundFunc(apiName, apiFunc, args) {
-    return this.#browserListener(apiName, apiFunc, ...args);
+    return this.#browserListener(apiName, apiFunc, null, ...args);
   }
 
   getWindowId(win) {

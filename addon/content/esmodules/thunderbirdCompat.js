@@ -410,10 +410,10 @@ if (!browser.identities) {
 
 if (!browser.folders) {
   browser.folders = {
-    async getParentFolders(folder) {
+    async getParentFolders(accountId) {
       return [
         {
-          accountId: folder.accountId,
+          accountId: accountId,
           name: "Fake",
           path: "/Fake",
         },
@@ -442,27 +442,29 @@ if (!browser.messageDisplay) {
 
 if (!browser.messages) {
   browser.messages = {
-    async listTags() {
-      return [
-        {
-          key: "$label1",
-          tag: "Important",
-          color: "#ff2600",
-          ordinal: "",
-        },
-        {
-          key: "$label2",
-          tag: "Work",
-          color: "#FF9900",
-          ordinal: "",
-        },
-        {
-          color: "#009900",
-          key: "$label3",
-          ordinal: "",
-          tag: "Personal",
-        },
-      ];
+    tags: {
+      async list() {
+        return [
+          {
+            key: "$label1",
+            tag: "Important",
+            color: "#ff2600",
+            ordinal: "",
+          },
+          {
+            key: "$label2",
+            tag: "Work",
+            color: "#FF9900",
+            ordinal: "",
+          },
+          {
+            color: "#009900",
+            key: "$label3",
+            ordinal: "",
+            tag: "Personal",
+          },
+        ];
+      },
     },
     async get(id) {
       return {};

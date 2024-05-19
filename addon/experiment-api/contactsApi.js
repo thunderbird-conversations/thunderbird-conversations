@@ -2,13 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* global ExtensionCommon, XPCOMUtils, Services */
+/* global ExtensionCommon, Services */
 
-XPCOMUtils.defineLazyModuleGetters(this, {
-  Gloda: "resource:///modules/gloda/Gloda.jsm",
-  GlodaConstants: "resource:///modules/gloda/GlodaConstants.jsm",
-  GlodaSyntheticView: "resource:///modules/gloda/GlodaSyntheticView.jsm",
-  MailServices: "resource:///modules/MailServices.jsm",
+ChromeUtils.defineESModuleGetters(this, {
+  Gloda: "resource:///modules/gloda/Gloda.sys.mjs",
+  GlodaConstants: "resource:///modules/gloda/GlodaConstants.sys.mjs",
+  GlodaSyntheticView: "resource:///modules/gloda/GlodaSyntheticView.sys.mjs",
+  MailServices: "resource:///modules/MailServices.sys.mjs",
 });
 
 /**
@@ -89,10 +89,11 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
             beginNewProperties.windowId
           );
 
-          window.toAddressBook({
-            action: "create",
-            vCard: `BEGIN:VCARD\r\nFN:${beginNewProperties.displayName}\r\nEMAIL:${beginNewProperties.email}\r\nEND:VCARD\r\n`,
-          });
+          window.toAddressBook([
+            "cmd_newCard",
+            undefined,
+            `BEGIN:VCARD\r\nFN:${beginNewProperties.displayName}\r\nEMAIL:${beginNewProperties.email}\r\nEND:VCARD\r\n`,
+          ]);
         },
         async beginEdit(beginEditProperties) {
           const window = getWindowFromId(
@@ -108,10 +109,7 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
             return;
           }
 
-          window.toAddressBook({
-            action: "edit",
-            card: contact.item,
-          });
+          window.toAddressBook(["cmd_editContact", contact.item]);
         },
         async showMessagesInvolving(options) {
           const window = getWindowFromId(

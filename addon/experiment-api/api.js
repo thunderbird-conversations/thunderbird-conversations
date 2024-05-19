@@ -11,14 +11,15 @@ ChromeUtils.defineESModuleGetters(lazy, {
   GlodaAttrProviders:
     "chrome://conversations/content/modules/GlodaAttrProviders.sys.mjs",
   PluralForm: "resource://gre/modules/PluralForm.sys.mjs",
+  MailServices: "resource:///modules/MailServices.sys.mjs",
+  makeFriendlyDateAgo: "resource:///modules/TemplateUtils.sys.mjs",
+  MsgHdrToMimeMessage: "resource:///modules/gloda/MimeMessage.sys.mjs",
   NetUtil: "resource://gre/modules/NetUtil.sys.mjs",
 });
 
+// eslint-disable-next-line mozilla/reject-chromeutils-import
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
-  MailServices: "resource:///modules/MailServices.jsm",
-  makeFriendlyDateAgo: "resource:///modules/TemplateUtils.jsm",
-  MsgHdrToMimeMessage: "resource:///modules/gloda/MimeMessage.jsm",
 });
 
 // eslint-disable-next-line mozilla/reject-importGlobalProperties
@@ -38,7 +39,7 @@ var { ExtensionError } = ExtensionUtils;
  */
 function msgUriToMsgHdr(aUri) {
   try {
-    let messageService = MailServices.messageServiceFromURI(aUri);
+    let messageService = lazy.MailServices.messageServiceFromURI(aUri);
     return messageService.messageURIToMsgHdr(aUri);
   } catch (e) {
     console.error("Unable to get ", aUri, " — returning null instead", e);
@@ -87,7 +88,7 @@ function getAttachmentInfo(msgUri, attachment) {
 
 function findAttachment(msgHdr, partName) {
   return new Promise((resolve) => {
-    MsgHdrToMimeMessage(msgHdr, null, async (aMsgHdr, aMimeMsg) => {
+    lazy.MsgHdrToMimeMessage(msgHdr, null, async (aMsgHdr, aMimeMsg) => {
       if (!aMimeMsg) {
         return;
       }
@@ -262,7 +263,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
         async getLateAttachments(id, extraAttachments) {
           return new Promise((resolve, reject) => {
             const msgHdr = context.extension.messageManager.get(id);
-            MsgHdrToMimeMessage(msgHdr, null, (msgHdr, mimeMsg) => {
+            lazy.MsgHdrToMimeMessage(msgHdr, null, (msgHdr, mimeMsg) => {
               if (!mimeMsg) {
                 resolve([]);
                 return;
@@ -327,7 +328,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           // We don't need to supply a nsIMsgWindow here, the window is only
           // used for news messages, and probably wouldn't be used for view
           // source at all.
-          let url = MailServices.mailSession.ConvertMsgURIToMsgURL(
+          let url = lazy.MailServices.mailSession.ConvertMsgURIToMsgURL(
             msgHdrGetUri(msgHdr),
             null
           );
@@ -386,12 +387,16 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           let msgHdr = context.extension.messageManager.get(msgId);
           let { win } = getWinBrowserFromIds(context, winId, tabId);
           let attachments = await new Promise((resolve) => {
-            MsgHdrToMimeMessage(msgHdr, null, async (aMsgHdr, aMimeMsg) => {
-              if (!aMimeMsg) {
-                return;
+            lazy.MsgHdrToMimeMessage(
+              msgHdr,
+              null,
+              async (aMsgHdr, aMimeMsg) => {
+                if (!aMimeMsg) {
+                  return;
+                }
+                resolve(aMimeMsg.allUserAttachments);
               }
-              resolve(aMimeMsg.allUserAttachments);
-            });
+            );
           });
           let msgUri = msgHdrGetUri(msgHdr);
           let messenger = Cc["@mozilla.org/messenger;1"].createInstance(
@@ -500,7 +505,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           getAttachmentInfo(msgUri, attachment).detach(messenger, shouldSave);
         },
         async makeFriendlyDateAgo(date) {
-          return makeFriendlyDateAgo(new Date(date));
+          return lazy.makeFriendlyDateAgo(new Date(date));
         },
         /**
          * Use the mailnews component to stream a message, and process it in a way
@@ -642,7 +647,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             msgBrowser.contentDocument.getElementsByClassName(iframeClass)[0];
 
           let uri = msgHdr.folder.getUriForMsg(msgHdr);
-          let msgService = MailServices.messageServiceFromURI(uri);
+          let msgService = lazy.MailServices.messageServiceFromURI(uri);
           let docShell = messageIframe.contentWindow.docShell;
 
           docShell.appType = Ci.nsIDocShell.APP_TYPE_MAIL;
@@ -680,7 +685,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             return [{ email: "", name: "-", fullName: "-" }];
           }
           let addresses =
-            MailServices.headerParser.parseDecodedHeader(mimeLine);
+            lazy.MailServices.headerParser.parseDecodedHeader(mimeLine);
           if (addresses.length) {
             return addresses.map((addr) => {
               return {
@@ -697,13 +702,13 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           return msgFolder.convertMsgSnippetToPlainText(text);
         },
         async getAccountOfflineDownload(accountId) {
-          let account = MailServices.accounts.getAccount(accountId);
+          let account = lazy.MailServices.accounts.getAccount(accountId);
           return account?.incomingServer.QueryInterface(
             Ci.nsIImapIncomingServer
           ).offlineDownload;
         },
         async setAccountOfflineDownload(accountId, value) {
-          let account = MailServices.accounts.getAccount(accountId);
+          let account = lazy.MailServices.accounts.getAccount(accountId);
           if (account) {
             account.incomingServer.QueryInterface(
               Ci.nsIImapIncomingServer
@@ -725,7 +730,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           }
         },
         async getReplyOnTop(identityId) {
-          let identity = MailServices.accounts.getIdentity(identityId);
+          let identity = lazy.MailServices.accounts.getIdentity(identityId);
           return identity.replyOnTop;
         },
         async postMessageViaBrowserSim(msg) {
@@ -743,8 +748,8 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
               console.error(ex);
             }
 
-            function callback(apiName, apiItem, ...args) {
-              return fire.async(apiName, apiItem, args);
+            function callback(apiName, apiItem, apiSubItem, ...args) {
+              return fire.async(apiName, apiItem, apiSubItem, args);
             }
 
             BrowserSim.setBrowserListener(callback, context);
@@ -933,7 +938,7 @@ async function getMimeMessage(msgHdr, partName = "") {
   }
 
   let mimeMsg = await new Promise((resolve) => {
-    MsgHdrToMimeMessage(
+    lazy.MsgHdrToMimeMessage(
       msgHdr,
       null,
       (_msgHdr, mimeMsg) => {

@@ -4,11 +4,9 @@
 
 /* global ExtensionCommon */
 
-ChromeUtils.defineModuleGetter(
-  this,
-  "Gloda",
-  "resource:///modules/gloda/GlodaPublic.jsm"
-);
+ChromeUtils.defineESModuleGetters(this, {
+  Gloda: "resource:///modules/gloda/GlodaPublic.sys.mjs",
+});
 
 /**
  * @typedef nsIMsgDBHdr

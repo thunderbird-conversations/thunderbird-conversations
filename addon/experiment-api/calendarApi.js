@@ -2,12 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* global ExtensionCommon, XPCOMUtils */
+/* global ExtensionCommon */
 
-XPCOMUtils.defineLazyModuleGetters(this, {
-  cal: "resource:///modules/calendar/calUtils.jsm",
-  call10n: "resource:///modules/calendar/utils/calL10NUtils.jsm",
-  MailServices: "resource:///modules/MailServices.jsm",
+ChromeUtils.defineESModuleGetters(this, {
+  cal: "resource:///modules/calendar/calUtils.sys.mjs",
+  call10n: "resource:///modules/calendar/utils/calL10NUtils.sys.mjs",
+  MailServices: "resource:///modules/MailServices.sys.mjs",
 });
 
 /**

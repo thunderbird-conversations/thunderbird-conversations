@@ -10,7 +10,7 @@
     "url": "https://github.com/thunderbird-conversations/thunderbird-conversations/issues"
   },
   "engines": {
-    "thunderbird": ">=78.0a1"
+    "thunderbird": ">=128.0a1"
   },
   "jest": {
     "transform": {
@@ -48,7 +48,7 @@
     "eslint-plugin-html": "8.1.1",
     "eslint-plugin-jsdoc": "48.2.5",
     "eslint-plugin-json": "3.1.0",
-    "eslint-plugin-mozilla": "3.7.3",
+    "eslint-plugin-mozilla": "3.7.4",
     "eslint-plugin-no-unsanitized": "4.0.2",
     "eslint-plugin-react": "7.34.1",
     "globals": "15.2.0",

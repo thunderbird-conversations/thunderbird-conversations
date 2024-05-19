@@ -19,15 +19,11 @@
  *  Sender Name <xx@xx.xx>
  */
 
-const { XPCOMUtils } = ChromeUtils.importESModule(
-  "resource://gre/modules/XPCOMUtils.sys.mjs"
-);
-
 const lazy = {};
 
-XPCOMUtils.defineLazyModuleGetters(lazy, {
-  Gloda: "resource:///modules/gloda/GlodaPublic.jsm",
-  GlodaConstants: "resource:///modules/gloda/GlodaConstants.jsm",
+ChromeUtils.defineESModuleGetters(lazy, {
+  Gloda: "resource:///modules/gloda/GlodaPublic.sys.mjs",
+  GlodaConstants: "resource:///modules/gloda/GlodaConstants.sys.mjs",
 });
 
 let AlternativeSender = {

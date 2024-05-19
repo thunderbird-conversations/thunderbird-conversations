@@ -2,10 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* global ExtensionCommon, XPCOMUtils, Services */
+/* global ExtensionCommon, Services */
 
-XPCOMUtils.defineLazyModuleGetters(this, {
-  EnigmailConstants: "chrome://openpgp/content/modules/constants.jsm",
+ChromeUtils.defineESModuleGetters(this, {
+  EnigmailConstants: "chrome://openpgp/content/modules/constants.sys.mjs",
 });
 
 // TODO: Fix this file.

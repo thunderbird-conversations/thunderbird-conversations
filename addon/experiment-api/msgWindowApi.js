@@ -4,11 +4,9 @@
 
 /* global ExtensionCommon, Services */
 
-ChromeUtils.defineModuleGetter(
-  this,
-  "MailE10SUtils",
-  "resource:///modules/MailE10SUtils.jsm"
-);
+ChromeUtils.defineESModuleGetters(this, {
+  MailE10SUtils: "resource:///modules/MailE10SUtils.sys.mjs",
+});
 
 /**
  * @typedef nsIMsgDBHdr

@@ -46,7 +46,7 @@ export class MessageEnricher {
   async enrich(msgData, summary, selectedMessages) {
     this.loggingEnabled = summary.prefs.loggingEnabled;
 
-    const userTags = await browser.messages.listTags();
+    const userTags = await browser.messages.tags.list();
 
     let msgs = await Promise.all(
       msgData.map(async (message) => {
@@ -384,7 +384,9 @@ export class MessageEnricher {
       }
     }
 
-    let parentFolders = await browser.folders.getParentFolders(message.folder);
+    let parentFolders = await browser.folders.getParentFolders(
+      message.folder.id
+    );
     let folderName = message.folder.name;
     for (let folder of parentFolders) {
       folderName = folder.name + "/" + folderName;

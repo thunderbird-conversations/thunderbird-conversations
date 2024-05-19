@@ -3,7 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 /* exported BrowserSim */
-// eslint-disable-next-line no-unused-vars
+// eslint-disable-next-line no-unused-vars, mozilla/reject-chromeutils-import
 ChromeUtils.defineModuleGetter(
   this,
   "BrowserSim",
