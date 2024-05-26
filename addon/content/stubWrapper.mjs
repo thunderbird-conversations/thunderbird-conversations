@@ -5,6 +5,7 @@
 window.addEventListener(
   "load",
   function (event) {
+    // eslint-disable-next-line no-shadow
     let browser = document.getElementById("multiMessageBrowser");
 
     browser.addEventListener(

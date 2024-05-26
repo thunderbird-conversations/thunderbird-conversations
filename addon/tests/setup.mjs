@@ -7,6 +7,7 @@
 // Imported for side-effects
 // eslint-disable-next-line import/no-unassigned-import, import/no-unresolved
 import "global-jsdom/register";
+// eslint-disable-next-line no-shadow
 import { browser } from "../content/esmodules/thunderbirdCompat.mjs";
 import fileSystem from "fs";
 import path from "path";

@@ -159,7 +159,7 @@ export class MessageEnricher {
         return null;
       }
 
-      let msg =
+      let message =
         findForCriterion((msg) => msg.inView) ||
         findForCriterion((msg) => msg.isInbox) ||
         findForCriterion((msg) => msg.isSent) ||
@@ -170,7 +170,7 @@ export class MessageEnricher {
       // The message that's selected has the highest priority to avoid
       //  inconsistencies in case multiple identical messages are present in the
       //  same thread (e.g. message from to me).
-      msgData[i++] = msg;
+      msgData[i++] = message;
     }
   }
 

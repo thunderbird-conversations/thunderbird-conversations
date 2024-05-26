@@ -138,14 +138,14 @@ async function sleep(ms) {
  * @returns {*}
  */
 async function runUntilValid(func, validator) {
-  const ret = func();
+  let ret = func();
   if (validator(ret)) {
     return ret;
   }
   const TIMEOUTS = [0, 0, 10, 10, 10];
   for (const timeout of TIMEOUTS) {
     await sleep(timeout);
-    const ret = func();
+    ret = func();
     if (validator(ret)) {
       return ret;
     }

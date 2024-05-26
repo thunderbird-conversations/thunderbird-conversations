@@ -159,13 +159,13 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
             commaSeparator,
             andSeparator
           ) {
-            const emails = getIdentityEmails();
+            const identityEmails = getIdentityEmails();
             ThreadPaneColumns.addCustomColumn("betweenColumn", {
               name: columnName,
               resizable: true,
               sortable: true,
               textCallback: getBetweenColumnCallback(
-                emails,
+                identityEmails,
                 betweenMeAndSomeone,
                 betweenSomeoneAndMe,
                 commaSeparator,
@@ -184,7 +184,7 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
 };
 
 function getBetweenColumnCallback(
-  emails,
+  identityEmails,
   betweenMeAndSomeone,
   betweenSomeoneAndMe,
   commaSeparator,
@@ -193,7 +193,7 @@ function getBetweenColumnCallback(
   // It isn't quite right to do this ahead of time, but it saves us having
   // to get the number of identities twice for every cell. Users don't often
   // add or remove identities/accounts anyway.
-  const multipleIdentities = emails.length > 1;
+  const multipleIdentities = identityEmails.length > 1;
   function hasIdentity(emails, emailAddress) {
     const email = emailAddress.toLowerCase();
     return emails.some((e) => e.toLowerCase() == email);
@@ -206,7 +206,7 @@ function getBetweenColumnCallback(
       // Helper for formatting; depending on the locale, we may need a different
       // for me as in "to me" or as in "from me".
       let format = function (x, p) {
-        if (hasIdentity(emails, x.email)) {
+        if (hasIdentity(identityEmails, x.email)) {
           let display = p ? betweenMeAndSomeone : betweenSomeoneAndMe;
           if (multipleIdentities) {
             display += " (" + x.email + ")";

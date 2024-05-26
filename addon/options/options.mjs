@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
+// eslint-disable-next-line no-shadow
 import { browser, i18n } from "../content/esmodules/thunderbirdCompat.mjs";
 import React from "react";
 import * as RTK from "@reduxjs/toolkit";
@@ -150,6 +151,7 @@ const PREFS_INFO = [
  * @param {object} [i18n]
  * @returns {(string | object[])}
  */
+// eslint-disable-next-line no-shadow
 function localize(prefsInfo, i18n = browser.i18n) {
   if (!i18n) {
     throw new Error("`i18n` object not specified");

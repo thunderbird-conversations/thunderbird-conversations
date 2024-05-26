@@ -97,13 +97,15 @@ export let conversationUtils = new (class {
    * Helper function to escape some XML chars, so they display properly in
    *  innerHTML.
    *
-   * @param {string} s input text
-   * @returns {string} The string with &lt;, &gt;, and &amp; replaced by the corresponding entities.
+   * @param {string} html
+   *   input text
+   * @returns {string}
+   *   The string with &lt;, &gt;, and &amp; replaced by the corresponding entities.
    */
-  _escapeHtml(s) {
-    s += "";
+  _escapeHtml(html) {
+    html += "";
     // stolen from selectionsummaries.js (thanks davida!)
-    return s.replace(/[<>&]/g, function (s) {
+    return html.replace(/[<>&]/g, function (s) {
       switch (s) {
         case "<":
           return "&lt;";

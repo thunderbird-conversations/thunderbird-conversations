@@ -6,6 +6,7 @@ import React from "react";
 import ReactDOMClient from "react-dom/client";
 import PropTypes from "prop-types";
 
+// eslint-disable-next-line no-shadow
 const Photo = React.forwardRef(({ index, length, name, size, src }, ref) =>
   React.createElement(
     "div",

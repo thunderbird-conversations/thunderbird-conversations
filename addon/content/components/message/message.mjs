@@ -293,8 +293,8 @@ export class Message extends React.PureComponent {
     const rect = this.li.getBoundingClientRect();
 
     if (!this._topInView) {
-      const top = rect.y;
-      if (top > 0 && top < window.innerHeight) {
+      const rectTop = rect.y;
+      if (rectTop > 0 && rectTop < window.innerHeight) {
         this._topInView = true;
       }
     }

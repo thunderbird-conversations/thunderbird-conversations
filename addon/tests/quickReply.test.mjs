@@ -4,6 +4,7 @@
 
 import assert from "node:assert/strict";
 import { describe, it, beforeEach } from "node:test";
+// eslint-disable-next-line no-shadow
 import { render, fireEvent, act, screen } from "@testing-library/react";
 import React from "react";
 import * as RTK from "@reduxjs/toolkit";

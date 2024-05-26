@@ -234,7 +234,7 @@ const smimeReloadPatch = (win, id, context) => {
       return;
     }
     let msgHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
-    let id = context.extension.messageManager.convert(msgHdr).id;
+    let msgId = context.extension.messageManager.convert(msgHdr).id;
 
     // Changed to `registerPGPMimeHandler` in Thunderbird 104.
     "unregisterPGPMimeHandler" in win.EnigmailVerify
@@ -242,7 +242,7 @@ const smimeReloadPatch = (win, id, context) => {
       : win.EnigmailVerify.unregisterContentTypeHandler();
 
     for (let listener of smimeReloadListeners) {
-      listener.async(id);
+      listener.async(msgId);
     }
   };
 };
@@ -262,7 +262,7 @@ const smimeStatusPatch = (win, id, context) => {
     }
     let neckoURL = Services.io.newURI(msgNeckoURL);
     let msgHdr = neckoURL.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
-    let id = context.extension.messageManager.convert(msgHdr).id;
+    let msgId = context.extension.messageManager.convert(msgHdr).id;
 
     let signedStatus = "bad";
     if (signatureStatus == Ci.nsICMSMessageErrors.SUCCESS) {
@@ -275,7 +275,7 @@ const smimeStatusPatch = (win, id, context) => {
     );
     for (let listener of smimeStatusListeners) {
       listener.async({
-        id,
+        id: msgId,
         signedStatus,
         details,
       });
@@ -293,7 +293,7 @@ const smimeStatusPatch = (win, id, context) => {
     }
     let neckoURL = Services.io.newURI(msgNeckoURL);
     let msgHdr = neckoURL.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
-    let id = context.extension.messageManager.convert(msgHdr).id;
+    let msgId = context.extension.messageManager.convert(msgHdr).id;
 
     let encryptedStatus = "bad";
     if (encryptionStatus == Ci.nsICMSMessageErrors.SUCCESS) {
@@ -306,7 +306,7 @@ const smimeStatusPatch = (win, id, context) => {
     );
     for (let listener of smimeStatusListeners) {
       listener.async({
-        id,
+        id: msgId,
         encryptedStatus,
         details,
       });
@@ -423,7 +423,7 @@ const securityStatusPatch = (win, id, context) => {
     }
 
     let msgHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
-    let id = context.extension.messageManager.convert(msgHdr).id;
+    let msgId = context.extension.messageManager.convert(msgHdr).id;
 
     (async () => {
       // Non-encrypted message may have decrypted label since
@@ -472,13 +472,13 @@ const securityStatusPatch = (win, id, context) => {
           let signedStatus = getSignedStatus(statusFlags);
           for (let listener of securityListeners) {
             listener.async({
-              id,
+              id: msgId,
               encryptionStatus,
               encryptionNotification,
               details: encyptDetails,
             });
             listener.async({
-              id,
+              id: msgId,
               signedStatus,
               details: signedDetails,
             });

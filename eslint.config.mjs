@@ -4,20 +4,25 @@ import json from "eslint-plugin-json";
 import react from "eslint-plugin-react";
 import imports from "eslint-plugin-import";
 import mozilla from "eslint-plugin-mozilla";
-import nounsanitized from "eslint-plugin-no-unsanitized";
 import { fixupPluginRules } from "@eslint/compat";
+import eslintConfigPrettier from "eslint-config-prettier";
 
-// TODO: do we still want html?
-// TODO: Mozilla plugin
 export default [
   {
     ignores: ["dist**", "package-lock.json"],
   },
+  ...mozilla.configs["flat/recommended"],
+  {
+    files: ["**/*.mjs"],
+    rules: {
+      "no-shadow": [
+        "error",
+        { allow: ["event", "name"], builtinGlobals: true },
+      ],
+    },
+  },
   {
     files: ["**/*.{js,mjs}"],
-    languageOptions: {
-      ecmaVersion: "latest",
-    },
     linterOptions: {
       reportUnusedDisableDirectives: "error",
     },
@@ -26,7 +31,6 @@ export default [
     files: ["**/*.mjs", "**/*.js"],
     languageOptions: {
       parserOptions: {
-        ecmaVersion: "latest",
         sourceType: "module",
       },
     },
@@ -73,9 +77,6 @@ export default [
       "addon/content/stubWrapper.mjs",
       "addon/experiment-api/*.js",
     ],
-    plugins: { mozilla, "no-unsanitized": fixupPluginRules(nounsanitized) },
-    // processor: json.processors[".json"],
-    rules: mozilla.configs.recommended.rules,
     languageOptions: {
       globals: {
         ...mozilla.environments.privileged.globals,
@@ -165,7 +166,7 @@ export default [
       "jsdoc/valid-types": "error",
       // Conversations has its own special logging.
       "no-console": "off",
-      // // We want to check the global scope everywhere.
+      // We want to check the global scope everywhere.
       "no-unused-vars": [
         "error",
         {
@@ -176,4 +177,13 @@ export default [
       "no-undef": "error",
     },
   },
+  {
+    files: ["**/*.cjs"],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+  },
+  eslintConfigPrettier,
 ];

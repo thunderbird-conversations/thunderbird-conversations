@@ -6,6 +6,7 @@
  * This class handles hooking into the Thunderbird message window to be able
  * to manage the message preview correctly.
  */
+// eslint-disable-next-line no-shadow
 export class Window {
   #tabListeners = new Map();
 

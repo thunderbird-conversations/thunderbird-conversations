@@ -372,11 +372,11 @@ export function MessageHeader({
           "span",
           { className: "snippet" },
           React.createElement(MessageTags, {
-            onTagsChange: (tags) => {
+            onTagsChange: (newTags) => {
               dispatch(
                 messageActions.setTags({
                   id,
-                  tags,
+                  tags: newTags,
                 })
               );
             },

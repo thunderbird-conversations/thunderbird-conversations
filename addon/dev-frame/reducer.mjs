@@ -18,6 +18,7 @@ import {
   quickReplySlice,
 } from "../content/reducer/reducerQuickReply.mjs";
 import { mockThreads } from "./mock-data/threads.mjs";
+// eslint-disable-next-line no-shadow
 import { browser } from "../content/esmodules/thunderbirdCompat.mjs";
 
 globalThis.browser = browser;

@@ -6,6 +6,7 @@ import React from "react";
 import * as ReactRedux from "react-redux";
 import {
   initializeI18n,
+  // eslint-disable-next-line no-shadow
   browser,
 } from "../content/esmodules/thunderbirdCompat.mjs";
 import {
@@ -29,8 +30,7 @@ function LocaleSelector() {
   // Asynchronously fetch a list of the available locales
   React.useEffect(() => {
     (async () => {
-      const locales = await browser.i18n.getAcceptLanguages();
-      setLocales(locales);
+      setLocales(await browser.i18n.getAcceptLanguages());
     })();
   });
 

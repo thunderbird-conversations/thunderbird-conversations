@@ -7,6 +7,7 @@
 
 import { kPrefDefaults } from "../../background/prefs.mjs";
 
+// eslint-disable-next-line no-shadow
 const browser = globalThis.window?.browser ?? {};
 
 // `i18n` is a replacement for `browser.i18n`.  `getMessage` defaults
