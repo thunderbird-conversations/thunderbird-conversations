@@ -13,7 +13,7 @@ import React from "react";
 import { jest } from "@jest/globals";
 
 // Import the components we want to test
-import { Main, store } from "../compose/compose.jsx";
+import { Main, store } from "../compose/compose.mjs";
 import { composeActions } from "../content/reducer/reducerCompose.js";
 
 describe("Compose full page tests", () => {
@@ -21,7 +21,7 @@ describe("Compose full page tests", () => {
 
   beforeEach(async () => {
     mockedSend = jest.spyOn(browser.convCompose, "send");
-    render(<Main />);
+    render(React.createElement(Main));
 
     await act(async () => {
       await store.dispatch(composeActions.initCompose({ showSubject: true }));

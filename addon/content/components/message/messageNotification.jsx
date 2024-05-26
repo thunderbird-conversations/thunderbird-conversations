@@ -5,7 +5,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { messageActions } from "../../reducer/reducerMessages.js";
-import { SvgIcon } from "../svgIcon.jsx";
+import { SvgIcon } from "../svgIcon.mjs";
 
 /**
  * Handles display of the remote content notification.

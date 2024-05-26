@@ -4,9 +4,9 @@
 
 import React from "react";
 import * as ReactRedux from "react-redux";
-import { ComposeWidget } from "../compose/composeWidget.jsx";
+import { ComposeWidget } from "../compose/composeWidget.mjs";
 import { quickReplyActions } from "../../reducer/reducerQuickReply.js";
-import { SvgIcon } from "../svgIcon.jsx";
+import { SvgIcon } from "../svgIcon.mjs";
 import PropTypes from "prop-types";
 
 export function QuickReply({ id, multipleRecipients, recipientsIncludeLists }) {

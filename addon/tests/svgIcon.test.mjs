@@ -6,19 +6,19 @@ import { render, screen } from "@testing-library/react";
 import React from "react";
 
 // Import the components we want to test
-import { SvgIcon } from "../content/components/svgIcon.jsx";
+import { SvgIcon } from "../content/components/svgIcon.mjs";
 
 describe("SvgIcon test", () => {
   test("renders given a full path", async () => {
     const PATH = "full/path/to/icon";
-    render(<SvgIcon fullPath={PATH} />);
+    render(React.createElement(SvgIcon, { fullPath: PATH }));
 
     expect(screen.getByTestId("use").getAttribute("xlink:href")).toMatch(PATH);
   });
 
   test("renders given a hash", async () => {
     const HASH = "abc";
-    render(<SvgIcon hash={HASH} />);
+    render(React.createElement(SvgIcon, { hash: HASH }));
 
     expect(screen.getByTestId("use").getAttribute("xlink:href")).toMatch(
       "#" + HASH

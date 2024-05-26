@@ -6,7 +6,7 @@ import React from "react";
 import * as ReactRedux from "react-redux";
 import * as RTK from "@reduxjs/toolkit";
 import { composeApp } from "./reducer.js";
-import { ComposeWidget } from "../content/components/compose/composeWidget.jsx";
+import { ComposeWidget } from "../content/components/compose/composeWidget.mjs";
 
 export const store = RTK.configureStore({ reducer: composeApp });
 
@@ -16,14 +16,14 @@ function ComposeWrapper() {
   // TODO: Maybe should handle the tweak chrome option here.
   window.document.body.parentNode.setAttribute("os", OS);
 
-  return <ComposeWidget />;
+  return React.createElement(ComposeWidget);
 }
 
 // The entry point for the compose page
 export function Main() {
-  return (
-    <ReactRedux.Provider store={store}>
-      <ComposeWrapper />
-    </ReactRedux.Provider>
+  return React.createElement(
+    ReactRedux.Provider,
+    { store },
+    React.createElement(ComposeWrapper, null)
   );
 }

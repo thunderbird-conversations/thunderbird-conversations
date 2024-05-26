@@ -4,7 +4,7 @@
 
 import React from "react";
 import PropTypes from "prop-types";
-import { SvgIcon } from "../svgIcon.jsx";
+import { SvgIcon } from "../svgIcon.mjs";
 
 const ActionsToInfoMap = {
   draft: {

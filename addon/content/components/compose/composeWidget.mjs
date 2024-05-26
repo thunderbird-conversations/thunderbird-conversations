@@ -5,9 +5,9 @@
 import { composeActions } from "../../reducer/reducerCompose.js";
 import React from "react";
 import * as ReactRedux from "react-redux";
-import { TextArea, TextBox } from "./composeFields.jsx";
+import { TextArea, TextBox } from "./composeFields.mjs";
 import PropTypes from "prop-types";
-import { SvgIcon } from "../svgIcon.jsx";
+import { SvgIcon } from "../svgIcon.mjs";
 
 export function ComposeWidget({ discard }) {
   const dispatch = ReactRedux.useDispatch();
@@ -68,54 +68,74 @@ export function ComposeWidget({ discard }) {
     };
   });
 
-  return (
-    <div className="compose">
-      <div className="from">
-        {browser.i18n.getMessage("message.fromHeader")}{" "}
-        <span>{composeState.from}</span>
-      </div>
-      <TextBox
-        name="to"
-        title="message.toHeader"
-        value={composeState.to}
-        sending={composeState.sending}
-        onChange={setValue}
-      />
-      {composeState.showSubject && (
-        <TextBox
-          name="subject"
-          ref={subjectInput}
-          title="compose.fieldSubject"
-          value={composeState.subject}
-          sending={composeState.sending}
-          onChange={setValue}
-        />
-      )}
-      <TextArea
-        name="body"
-        ref={bodyInput}
-        value={composeState.body}
-        sending={composeState.sending}
-        onChange={setValue}
-      />
-      <div id="sendStatus">{composeState.sendingMsg}</div>
-      <div className="buttons">
-        <button id="discard" onClick={discard} disabled={!discard}>
-          <SvgIcon ariaHidden={true} hash="delete_forever" />
-          {browser.i18n.getMessage("compose.discard")}
-        </button>
-        <button
-          id="send"
-          onClick={onSend}
-          disabled={
-            composeState.sending || !composeState.to || !composeState.subject
-          }
-        >
-          <SvgIcon ariaHidden={true} hash="send" />
-          {browser.i18n.getMessage("compose.send")}
-        </button>
-      </div>
-    </div>
+  return React.createElement(
+    "div",
+    { className: "compose" },
+    React.createElement(
+      "div",
+      { className: "from" },
+      browser.i18n.getMessage("message.fromHeader"),
+      " ",
+      React.createElement("span", null, composeState.from)
+    ),
+    React.createElement(TextBox, {
+      name: "to",
+      title: "message.toHeader",
+      value: composeState.to,
+      sending: composeState.sending,
+      onChange: setValue,
+    }),
+    composeState.showSubject &&
+      React.createElement(TextBox, {
+        name: "subject",
+        ref: subjectInput,
+        title: "compose.fieldSubject",
+        value: composeState.subject,
+        sending: composeState.sending,
+        onChange: setValue,
+      }),
+    React.createElement(TextArea, {
+      name: "body",
+      ref: bodyInput,
+      value: composeState.body,
+      sending: composeState.sending,
+      onChange: setValue,
+    }),
+    React.createElement(
+      "div",
+      {
+        id: "sendStatus",
+      },
+      composeState.sendingMsg
+    ),
+    React.createElement(
+      "div",
+      { className: "buttons" },
+      React.createElement(
+        "button",
+        {
+          id: "discard",
+          onClick: discard,
+          disabled: !discard,
+        },
+        React.createElement(SvgIcon, {
+          ariaHidden: true,
+          hash: "delete_forever",
+        }),
+        browser.i18n.getMessage("compose.discard")
+      ),
+      React.createElement(
+        "button",
+        {
+          id: "send",
+          onClick: onSend,
+          disabled:
+            composeState.sending || !composeState.to || !composeState.subject,
+        },
+        React.createElement(SvgIcon, { ariaHidden: true, hash: "send" }),
+        browser.i18n.getMessage("compose.send")
+      )
+    )
   );
 }
 ComposeWidget.propTypes = {

@@ -10,7 +10,7 @@ import { jest } from "@jest/globals";
 import {
   TextArea,
   TextBox,
-} from "../content/components/compose/composeFields.jsx";
+} from "../content/components/compose/composeFields.mjs";
 
 describe("Compose components have correct return values", () => {
   test("TextBox always returns a string type", () => {

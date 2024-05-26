@@ -9,7 +9,7 @@ import { ContactDetail } from "../contactDetail.jsx";
 import { messageActions } from "../../reducer/reducerMessages.js";
 import { MessageHeaderOptions } from "./messageHeaderOptions.jsx";
 import { MessageTags, SpecialMessageTags } from "./messageTags.jsx";
-import { SvgIcon } from "../svgIcon.jsx";
+import { SvgIcon } from "../svgIcon.mjs";
 
 /**
  * Normalize a contact into a string (used for i18n formatting).

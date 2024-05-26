@@ -6,7 +6,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { ActionButton } from "./messageActionButton.jsx";
 import { messageActions } from "../../reducer/reducerMessages.js";
-import { SvgIcon } from "../svgIcon.jsx";
+import { SvgIcon } from "../svgIcon.mjs";
 
 /**
  * Handles display of the options menu.

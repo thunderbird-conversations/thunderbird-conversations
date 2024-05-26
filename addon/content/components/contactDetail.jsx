@@ -6,7 +6,7 @@ import React from "react";
 import * as ReactRedux from "react-redux";
 import PropTypes from "prop-types";
 import { summaryActions } from "../reducer/reducerSummary.js";
-import { SvgIcon } from "./svgIcon.jsx";
+import { SvgIcon } from "./svgIcon.mjs";
 
 function _ContactDetail({
   name,

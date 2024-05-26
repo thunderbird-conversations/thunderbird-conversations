@@ -17,16 +17,19 @@ import PropTypes from "prop-types";
  */
 export function SvgIcon({ fullPath, hash, ariaHidden = false }) {
   fullPath = fullPath || `material-icons.svg#${hash}`;
-  return (
-    <svg
-      aria-hidden={ariaHidden}
-      className="icon"
-      viewBox="0 0 24 24"
-      xmlns="http://www.w3.org/2000/svg"
-      xmlnsXlink="http://www.w3.org/1999/xlink"
-    >
-      <use data-testid="use" xlinkHref={`icons/${fullPath}`}></use>
-    </svg>
+  return React.createElement(
+    "svg",
+    {
+      "aria-hidden": ariaHidden,
+      className: "icon",
+      viewBox: "0 0 24 24",
+      xmlns: "http://www.w3.org/2000/svg",
+      xmlnsXlink: "http://www.w3.org/1999/xlink",
+    },
+    React.createElement("use", {
+      "data-testid": "use",
+      xlinkHref: `icons/${fullPath}`,
+    })
   );
 }
 SvgIcon.propTypes = {

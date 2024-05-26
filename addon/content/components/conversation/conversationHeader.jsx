@@ -7,7 +7,7 @@ import * as ReactRedux from "react-redux";
 import PropTypes from "prop-types";
 import { messageActions } from "../../reducer/reducerMessages.js";
 import { summaryActions } from "../../reducer/reducerSummary.js";
-import { SvgIcon } from "../svgIcon.jsx";
+import { SvgIcon } from "../svgIcon.mjs";
 
 const LINKS_REGEX = /((\w+):\/\/[^<>()'"\s]+|www(\.[-\w]+){2,})/;
 
