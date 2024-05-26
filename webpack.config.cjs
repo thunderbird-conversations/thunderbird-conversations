@@ -7,7 +7,7 @@ module.exports = {
   devtool: development ? "source-map" : false,
   entry: {
     compose: "./addon/compose/composeRender.js",
-    gallery: "./addon/gallery/gallery.jsx",
+    gallery: "./addon/gallery/gallery.mjs",
     options: "./addon/options/optionsRender.js",
     stub: "./addon/content/stub.js",
     "dev-frame": "./addon/dev-frame/dev-frame-render.js",

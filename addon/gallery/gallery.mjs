@@ -6,16 +6,20 @@ import React from "react";
 import ReactDOMClient from "react-dom/client";
 import PropTypes from "prop-types";
 
-const Photo = React.forwardRef(({ index, length, name, size, src }, ref) => (
-  <div className="photoWrap" ref={ref}>
-    <img src={src} />
-    <div className="informationline">
-      <div className="filename">{name}</div>
-      <div className="size">{size}</div>
-      <div className="count">{index + " / " + length}</div>
-    </div>
-  </div>
-));
+const Photo = React.forwardRef(({ index, length, name, size, src }, ref) =>
+  React.createElement(
+    "div",
+    { className: "photoWrap", ref: ref },
+    React.createElement("img", { src }),
+    React.createElement(
+      "div",
+      { className: "informationline" },
+      React.createElement("div", { className: "filename" }, name),
+      React.createElement("div", { className: "size" }, size),
+      React.createElement("div", { className: "count" }, index + " / " + length)
+    )
+  )
+);
 Photo.displayName = "Photo";
 Photo.propTypes = {
   index: PropTypes.number.isRequired,
@@ -132,20 +136,20 @@ class MyComponent extends React.Component {
   }
 
   render() {
-    return this.state.images.map((image) => (
-      <Photo
-        index={image.index}
-        key={image.index}
-        name={image.name}
-        ref={
-          this.state.scrollToPartName == image.partName ? this.scrollTo : null
-        }
-        size={image.size}
-        src={image.src}
-        className="gallery"
-        length={this.state.images.length}
-      />
-    ));
+    return this.state.images.map((image) =>
+      React.createElement(Photo, {
+        index: image.index,
+        key: image.index,
+        name: image.name,
+        ref:
+          this.state.scrollToPartName == image.partName ? this.scrollTo : null,
+
+        size: image.size,
+        src: image.src,
+        className: "gallery",
+        length: this.state.images.length,
+      })
+    );
   }
 }
 

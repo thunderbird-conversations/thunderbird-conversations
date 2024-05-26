@@ -207,32 +207,42 @@ export function ChoiceOption({
   onChange,
 }) {
   const elementName = `choice_${title}`.replace(/\s+/g, "");
-  return (
-    <React.Fragment>
-      <div>
-        <label className="title">{title}</label>
-        <br />
-        <label>{desc}</label>
-      </div>
-      <div>
-        {choices.map((choice, i) => (
-          <span key={i}>
-            <input
-              type="radio"
-              className="pref"
-              id={`${elementName}-${i}`}
-              name={elementName}
-              value={choice.value}
-              checked={choice.value === value}
-              onChange={() => {
-                onChange(name, choice.value);
-              }}
-            />
-            <label htmlFor={`${elementName}-${i}`}>{choice.desc}</label>
-          </span>
-        ))}
-      </div>
-    </React.Fragment>
+  return React.createElement(
+    React.Fragment,
+    null,
+    React.createElement(
+      "div",
+      null,
+      React.createElement("label", { className: "title" }, title),
+      React.createElement("br"),
+      React.createElement("label", null, desc)
+    ),
+    React.createElement(
+      "div",
+      null,
+      choices.map((choice, i) =>
+        React.createElement(
+          "span",
+          { key: i },
+          React.createElement("input", {
+            type: "radio",
+            className: "pref",
+            id: `${elementName}-${i}`,
+            name: elementName,
+            value: choice.value,
+            checked: choice.value === value,
+            onChange: () => {
+              onChange(name, choice.value);
+            },
+          }),
+          React.createElement(
+            "label",
+            { htmlFor: `${elementName}-${i}` },
+            choice.desc
+          )
+        )
+      )
+    )
   );
 }
 ChoiceOption.propTypes = {
@@ -253,27 +263,33 @@ export function TextOption({
   name,
   onChange = () => {},
 }) {
-  return (
-    <React.Fragment>
-      <div>
-        <label htmlFor={name} className="title">
-          {title}
-        </label>
-        <br />
-        <label>{desc}</label>
-      </div>
-      <div>
-        <input
-          id={name}
-          type="text"
-          className="pref"
-          value={value}
-          onChange={(e) => {
-            onChange(name, e.target.value);
-          }}
-        />
-      </div>
-    </React.Fragment>
+  return React.createElement(
+    React.Fragment,
+    null,
+    React.createElement(
+      "div",
+      null,
+      React.createElement(
+        "label",
+        { htmlFor: name, className: "title" },
+        title
+      ),
+      React.createElement("br"),
+      React.createElement("label", null, desc)
+    ),
+    React.createElement(
+      "div",
+      null,
+      React.createElement("input", {
+        id: name,
+        type: "text",
+        className: "pref",
+        value: value,
+        onChange: (e) => {
+          onChange(name, e.target.value);
+        },
+      })
+    )
   );
 }
 TextOption.propTypes = {
@@ -291,27 +307,35 @@ export function NumericOption({
   name,
   onChange = () => {},
 }) {
-  return (
-    <React.Fragment>
-      <div htmlFor={name}>
-        <label className="title">{title}</label>
-        <br />
-        <label>{desc}</label>
-      </div>
-      <div>
-        <input
-          id={name}
-          type="number"
-          className="pref hidespinbuttons"
-          min={0}
-          max={100}
-          onChange={(e) => {
-            onChange(name, parseInt(e.target.value || value, 10));
-          }}
-          value={value}
-        />
-      </div>
-    </React.Fragment>
+  return React.createElement(
+    React.Fragment,
+    null,
+    React.createElement(
+      "div",
+      null,
+      React.createElement(
+        "label",
+        { htmlFor: name, className: "title" },
+        title
+      ),
+      React.createElement("br"),
+      React.createElement("label", null, desc)
+    ),
+    React.createElement(
+      "div",
+      null,
+      React.createElement("input", {
+        id: name,
+        type: "number",
+        className: "pref hidespinbuttons",
+        min: 0,
+        max: 100,
+        value: value,
+        onChange: (e) => {
+          onChange(name, parseInt(e.target.value || value, 10));
+        },
+      })
+    )
   );
 }
 NumericOption.propTypes = {
@@ -329,27 +353,33 @@ export function BinaryOption({
   name,
   onChange = () => {},
 }) {
-  return (
-    <React.Fragment>
-      <div>
-        <label htmlFor={name} className="title">
-          {title}
-        </label>
-        <br />
-        <label>{desc}</label>
-      </div>
-      <div>
-        <input
-          id={name}
-          type="checkbox"
-          className="pref"
-          checked={value}
-          onChange={(e) => {
-            onChange(name, e.target.checked);
-          }}
-        />
-      </div>
-    </React.Fragment>
+  return React.createElement(
+    React.Fragment,
+    null,
+    React.createElement(
+      "div",
+      null,
+      React.createElement(
+        "label",
+        { htmlFor: name, className: "title" },
+        title
+      ),
+      React.createElement("br"),
+      React.createElement("label", null, desc)
+    ),
+    React.createElement(
+      "div",
+      null,
+      React.createElement("input", {
+        id: name,
+        type: "checkbox",
+        className: "pref",
+        checked: value,
+        onChange: (e) => {
+          onChange(name, e.target.checked);
+        },
+      })
+    )
   );
 }
 BinaryOption.propTypes = {
@@ -391,32 +421,40 @@ function _ConversationOptions({
   startSetupAssistant,
   startUndoConversations,
 }) {
-  return (
-    <React.Fragment>
-      <h1>{localizedName}</h1>
-      <form id="conversationOptions">
-        <div id="preferencesGrid">
-          {localizedPrefsInfo.map((Item, i) => (
-            <Item.component
-              {...Item.props}
-              key={i}
-              value={prefs[Item.props.name]}
-              onChange={setPref}
-            />
-          ))}
-        </div>
-      </form>
-      <button className="start" onClick={startSetupAssistant}>
-        {localizedStartAssistant}
-      </button>
-      <button
-        className="undo"
-        onClick={startUndoConversations}
-        title={localizedUndoCustomizationsTooltip}
-      >
-        {localizedUndoCustomizations}
-      </button>
-    </React.Fragment>
+  return React.createElement(
+    React.Fragment,
+    null,
+    React.createElement("h1", null, localizedName),
+    React.createElement(
+      "form",
+      { id: "conversationOptions" },
+      React.createElement(
+        "div",
+        { id: "preferencesGrid" },
+        localizedPrefsInfo.map((Item, i) =>
+          React.createElement(Item.component, {
+            ...Item.props,
+            key: i,
+            value: prefs[Item.props.name],
+            onChange: setPref,
+          })
+        )
+      )
+    ),
+    React.createElement(
+      "button",
+      { className: "start", onClick: startSetupAssistant },
+      localizedStartAssistant
+    ),
+    React.createElement(
+      "button",
+      {
+        className: "undo",
+        onClick: startUndoConversations,
+        title: localizedUndoCustomizationsTooltip,
+      },
+      localizedUndoCustomizations
+    )
   );
 }
 _ConversationOptions.propTypes = {
@@ -482,17 +520,17 @@ export function Main() {
       });
   }, []);
 
-  return (
-    <ReactRedux.Provider store={store}>
-      <ConversationOptions
-        localizedPrefsInfo={localizedPrefsInfo}
-        localizedName={localizedName}
-        localizedStartAssistant={localizedStartAssistant}
-        localizedUndoCustomizations={localizedUndoCustomizations}
-        localizedUndoCustomizationsTooltip={localizedUndoCustomizationsTooltip}
-        startSetupAssistant={openSetupAssistant}
-        startUndoConversations={runUndoConversations}
-      />
-    </ReactRedux.Provider>
+  return React.createElement(
+    ReactRedux.Provider,
+    { store },
+    React.createElement(ConversationOptions, {
+      localizedPrefsInfo: localizedPrefsInfo,
+      localizedName: localizedName,
+      localizedStartAssistant: localizedStartAssistant,
+      localizedUndoCustomizations: localizedUndoCustomizations,
+      localizedUndoCustomizationsTooltip: localizedUndoCustomizationsTooltip,
+      startSetupAssistant: openSetupAssistant,
+      startUndoConversations: runUndoConversations,
+    })
   );
 }

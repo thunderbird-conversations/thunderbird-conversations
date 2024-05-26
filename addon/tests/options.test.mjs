@@ -16,7 +16,7 @@ import {
   Main,
   store,
   actions,
-} from "../options/options.jsx";
+} from "../options/options.mjs";
 
 describe("Option components have correct return values", () => {
   test("NumericOption always returns a numeric type", () => {

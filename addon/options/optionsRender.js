@@ -4,7 +4,7 @@
 
 import React from "react";
 import ReactDOMClient from "react-dom/client";
-import { Main } from "./options.jsx";
+import { Main } from "./options.mjs";
 
 // Render the options to the root of the page
 let root = ReactDOMClient.createRoot(document.querySelector("#root"));
