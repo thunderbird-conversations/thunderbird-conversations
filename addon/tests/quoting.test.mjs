@@ -4,7 +4,7 @@
 
 // Prettier is used to normalize the html formatting so we can reliably use it to compare HTML with
 // text diffing.
-import { default as prettier } from "prettier";
+import prettier from "prettier";
 
 // Import the components we want to test
 import { Quoting } from "../content/utils/quoting.mjs";
