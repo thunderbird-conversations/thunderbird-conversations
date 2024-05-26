@@ -4,14 +4,14 @@
 
 import React from "react";
 import PropTypes from "prop-types";
-import { Attachments } from "./attachments.jsx";
+import { Attachments } from "./attachments.mjs";
 import { messageActions } from "../../reducer/reducerMessages.js";
-import { MessageDetails } from "./messageDetails.jsx";
-import { MessageFooter } from "./messageFooter.jsx";
-import { MessageHeader } from "./messageHeader.jsx";
+import { MessageDetails } from "./messageDetails.mjs";
+import { MessageFooter } from "./messageFooter.mjs";
+import { MessageHeader } from "./messageHeader.mjs";
 import { MessageIFrame } from "./messageIFrame.mjs";
-import { MessageNotification } from "./messageNotification.jsx";
-import { MessageTags, SpecialMessageTags } from "./messageTags.jsx";
+import { MessageNotification } from "./messageNotification.mjs";
+import { MessageTags, SpecialMessageTags } from "./messageTags.mjs";
 import { QuickReply } from "../quickreply/quickReply.mjs";
 
 function isAccel(event) {
@@ -43,15 +43,17 @@ class ErrorBoundary extends React.Component {
   render() {
     if (this.state.errorInfo) {
       // Error path
-      return (
-        <div>
-          <h4>Error encountered while rendering.</h4>
-          <details style={{ whiteSpace: "pre-wrap" }}>
-            {this.state.error && this.state.error.toString()}
-            <br />
-            {this.state.errorInfo.componentStack}
-          </details>
-        </div>
+      return React.createElement(
+        "div",
+        null,
+        React.createElement("h4", null, "Error encountered while rendering."),
+        React.createElement(
+          "details",
+          { style: { whiteSpace: "pre-wrap" } },
+          this.state.error && this.state.error.toString(),
+          React.createElement("br"),
+          this.state.errorInfo.componentStack
+        )
       );
     }
     // Normally, just render children
@@ -315,154 +317,156 @@ export class Message extends React.PureComponent {
   }
 
   render() {
-    return (
-      <li
-        className="message"
-        ref={(li) => {
+    return React.createElement(
+      "li",
+      {
+        className: "message",
+        ref: (li) => {
           this.li = li;
           this.props.setRef(li);
-        }}
-        tabIndex={this.props.index + 1}
-        onFocusCapture={this.onSelected}
-        onClickCapture={this.onSelected}
-        onKeyDownCapture={this.onKeyDown}
-      >
-        <MessageHeader
-          dispatch={this.props.dispatch}
-          bcc={this.props.message.bcc}
-          cc={this.props.message.cc}
-          date={this.props.message.date}
-          detailsShowing={this.props.message.detailsShowing}
-          expanded={this.props.message.expanded}
-          from={this.props.message.from}
-          to={this.props.message.to}
-          fullDate={this.props.message.fullDate}
-          id={this.props.message.id}
-          attachments={this.props.message.attachments}
-          multipleRecipients={this.props.message.multipleRecipients}
-          recipientsIncludeLists={this.props.message.recipientsIncludeLists}
-          inView={this.props.message.inView}
-          isDraft={this.props.message.isDraft}
-          shortFolderName={this.props.message.shortFolderName}
-          snippet={this.props.message.snippet}
-          starred={this.props.message.starred}
-          tags={this.props.message.tags}
-          specialTags={this.props.message.specialTags}
-        />
-        {this.props.message.expanded && this.props.message.detailsShowing && (
-          <MessageDetails
-            bcc={this.props.message.bcc}
-            cc={this.props.message.cc}
-            extraLines={this.props.message.extraLines}
-            from={this.props.message.from}
-            id={this.props.message.id}
-            to={this.props.message.to}
-          />
-        )}
-        {this.props.message.expanded && (
-          <MessageNotification
-            canUnJunk={
-              this.props.message.isJunk && !this.props.displayingMultipleMsgs
-            }
-            dispatch={this.props.dispatch}
-            extraNotifications={this.props.message.extraNotifications}
-            hasRemoteContent={this.props.message.hasRemoteContent}
-            isPhishing={this.props.message.isPhishing}
-            isOutbox={this.props.message.isOutbox}
-            id={this.props.message.id}
-            realFrom={this.props.message.realFrom}
-          />
-        )}
-        <div className="messageBody">
-          {this.props.message.expanded && (
-            <SpecialMessageTags
-              onFolderClick={() => {
-                this.props.dispatch(
-                  messageActions.switchToFolderAndMsg({
-                    id: this.props.message.id,
-                  })
-                );
-              }}
-              onTagClick={(event, tag) => {
-                this.props.dispatch(
-                  messageActions.tagClick({
-                    event,
-                    id: this.props.message.id,
-                    details: tag.details,
-                  })
-                );
-              }}
-              folderName={this.props.message.folderName}
-              inView={this.props.message.inView}
-              specialTags={this.props.message.specialTags}
-            />
-          )}
-          {this.props.message.expanded && (
-            <MessageTags
-              onTagsChange={(tags) => {
-                this.props.dispatch(
-                  messageActions.setTags({
-                    id: this.props.message.id,
-                    tags,
-                  })
-                );
-              }}
-              expanded={true}
-              tags={this.props.message.tags}
-            />
-          )}
-          {this.props.message.expanded && this.props.message.printBody && (
-            <div className="body-container">{this.props.message.printBody}</div>
-          )}
-          <ErrorBoundary>
-            <MessageIFrame
-              browserBackgroundColor={this.props.browserBackgroundColor}
-              browserForegroundColor={this.props.browserForegroundColor}
-              defaultFontSize={this.props.defaultFontSize}
-              dispatch={this.props.dispatch}
-              expanded={this.props.message.expanded}
-              hasRemoteContent={this.props.message.hasRemoteContent}
-              smimeReload={this.props.message.smimeReload}
-              id={this.props.message.id}
-              isInTab={this.props.isInTab}
-              initialPosition={this.props.message.initialPosition}
-              isStandalone={this.props.isStandalone}
-              tenPxFactor={this.props.tenPxFactor}
-              prefs={this.props.prefs}
-              realFrom={this.props.message.realFrom}
-              tabId={this.props.tabId}
-              winId={this.props.winId}
-            />
-          </ErrorBoundary>
-          {this.props.message.expanded &&
-            !!this.props.message.attachments.length && (
-              <Attachments
-                dispatch={this.props.dispatch}
-                attachments={this.props.message.attachments}
-                attachmentsPlural={this.props.message.attachmentsPlural}
-                id={this.props.message.id}
-              />
-            )}
-        </div>
-        {this.props.message.expanded && (
-          <MessageFooter
-            dispatch={this.props.dispatch}
-            id={this.props.message.id}
-            multipleRecipients={this.props.message.multipleRecipients}
-            recipientsIncludeLists={this.props.message.recipientsIncludeLists}
-            isDraft={this.props.message.isDraft}
-          />
-        )}
-        {this.props.isLastMessage &&
-          this.props.message.expanded &&
-          !this.props.hideQuickReply && (
-            <QuickReply
-              id={this.props.message.id}
-              multipleRecipients={this.props.message.multipleRecipients}
-              recipientsIncludeLists={this.props.message.recipientsIncludeLists}
-            />
-          )}
-      </li>
+        },
+        tabIndex: this.props.index + 1,
+        onFocusCapture: this.onSelected,
+        onClickCapture: this.onSelected,
+        onKeyDownCapture: this.onKeyDown,
+      },
+      React.createElement(MessageHeader, {
+        dispatch: this.props.dispatch,
+        bcc: this.props.message.bcc,
+        cc: this.props.message.cc,
+        date: this.props.message.date,
+        detailsShowing: this.props.message.detailsShowing,
+        expanded: this.props.message.expanded,
+        from: this.props.message.from,
+        to: this.props.message.to,
+        fullDate: this.props.message.fullDate,
+        id: this.props.message.id,
+        attachments: this.props.message.attachments,
+        multipleRecipients: this.props.message.multipleRecipients,
+        recipientsIncludeLists: this.props.message.recipientsIncludeLists,
+        inView: this.props.message.inView,
+        isDraft: this.props.message.isDraft,
+        shortFolderName: this.props.message.shortFolderName,
+        snippet: this.props.message.snippet,
+        starred: this.props.message.starred,
+        tags: this.props.message.tags,
+        specialTags: this.props.message.specialTags,
+      }),
+      this.props.message.expanded &&
+        this.props.message.detailsShowing &&
+        React.createElement(MessageDetails, {
+          bcc: this.props.message.bcc,
+          cc: this.props.message.cc,
+          extraLines: this.props.message.extraLines,
+          from: this.props.message.from,
+          id: this.props.message.id,
+          to: this.props.message.to,
+        }),
+      this.props.message.expanded &&
+        React.createElement(MessageNotification, {
+          canUnJunk:
+            this.props.message.isJunk && !this.props.displayingMultipleMsgs,
+
+          dispatch: this.props.dispatch,
+          extraNotifications: this.props.message.extraNotifications,
+          hasRemoteContent: this.props.message.hasRemoteContent,
+          isPhishing: this.props.message.isPhishing,
+          isOutbox: this.props.message.isOutbox,
+          id: this.props.message.id,
+          realFrom: this.props.message.realFrom,
+        }),
+      React.createElement(
+        "div",
+        { className: "messageBody" },
+        this.props.message.expanded &&
+          React.createElement(SpecialMessageTags, {
+            onFolderClick: () => {
+              this.props.dispatch(
+                messageActions.switchToFolderAndMsg({
+                  id: this.props.message.id,
+                })
+              );
+            },
+            onTagClick: (event, tag) => {
+              this.props.dispatch(
+                messageActions.tagClick({
+                  event,
+                  id: this.props.message.id,
+                  details: tag.details,
+                })
+              );
+            },
+            folderName: this.props.message.folderName,
+            inView: this.props.message.inView,
+            specialTags: this.props.message.specialTags,
+          }),
+        this.props.message.expanded &&
+          React.createElement(MessageTags, {
+            onTagsChange: (tags) => {
+              this.props.dispatch(
+                messageActions.setTags({
+                  id: this.props.message.id,
+                  tags,
+                })
+              );
+            },
+            expanded: true,
+            tags: this.props.message.tags,
+          }),
+        this.props.message.expanded &&
+          this.props.message.printBody &&
+          React.createElement(
+            "div",
+            { className: "body-container" },
+            this.props.message.printBody
+          ),
+        React.createElement(
+          ErrorBoundary,
+          null,
+          React.createElement(MessageIFrame, {
+            browserBackgroundColor: this.props.browserBackgroundColor,
+            browserForegroundColor: this.props.browserForegroundColor,
+            defaultFontSize: this.props.defaultFontSize,
+            dispatch: this.props.dispatch,
+            expanded: this.props.message.expanded,
+            hasRemoteContent: this.props.message.hasRemoteContent,
+            smimeReload: this.props.message.smimeReload,
+            id: this.props.message.id,
+            isInTab: this.props.isInTab,
+            initialPosition: this.props.message.initialPosition,
+            isStandalone: this.props.isStandalone,
+            tenPxFactor: this.props.tenPxFactor,
+            prefs: this.props.prefs,
+            realFrom: this.props.message.realFrom,
+            tabId: this.props.tabId,
+            winId: this.props.winId,
+          })
+        ),
+        this.props.message.expanded &&
+          !!this.props.message.attachments.length &&
+          React.createElement(Attachments, {
+            dispatch: this.props.dispatch,
+            attachments: this.props.message.attachments,
+            attachmentsPlural: this.props.message.attachmentsPlural,
+            id: this.props.message.id,
+          })
+      ),
+      this.props.message.expanded &&
+        React.createElement(MessageFooter, {
+          dispatch: this.props.dispatch,
+          id: this.props.message.id,
+          multipleRecipients: this.props.message.multipleRecipients,
+          recipientsIncludeLists: this.props.message.recipientsIncludeLists,
+          isDraft: this.props.message.isDraft,
+        }),
+      this.props.isLastMessage &&
+        this.props.message.expanded &&
+        !this.props.hideQuickReply &&
+        React.createElement(QuickReply, {
+          id: this.props.message.id,
+          multipleRecipients: this.props.message.multipleRecipients,
+          recipientsIncludeLists: this.props.message.recipientsIncludeLists,
+        })
     );
   }
 }

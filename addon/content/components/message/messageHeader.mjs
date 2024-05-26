@@ -7,8 +7,8 @@ import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
 import { ContactDetail } from "../contactDetail.mjs";
 import { messageActions } from "../../reducer/reducerMessages.js";
-import { MessageHeaderOptions } from "./messageHeaderOptions.jsx";
-import { MessageTags, SpecialMessageTags } from "./messageTags.jsx";
+import { MessageHeaderOptions } from "./messageHeaderOptions.mjs";
+import { MessageTags, SpecialMessageTags } from "./messageTags.mjs";
 import { SvgIcon } from "../svgIcon.mjs";
 
 /**
@@ -77,35 +77,39 @@ function HoverFade({ children, popup, ...rest }) {
     bottom: 0,
   };
 
-  return (
-    <>
-      <span
-        ref={spanRef}
-        className="fade-parent"
-        {...rest}
-        onMouseEnter={() => {
+  return React.createElement(
+    React.Fragment,
+    null,
+    React.createElement(
+      "span",
+      {
+        ref: spanRef,
+        className: "fade-parent",
+        ...rest,
+        onMouseEnter: () => {
           setIsHovering(true);
-        }}
-        onMouseLeave={() => {
+        },
+        onMouseLeave: () => {
           setIsHovering(false);
-        }}
-      >
-        {children}
-      </span>
-      {popupParentNode &&
-        ReactDOM.createPortal(
-          <div
-            className={`fade-popup ${shouldShowPopup ? "hover" : ""}`}
-            style={{
+        },
+      },
+      children
+    ),
+    popupParentNode &&
+      ReactDOM.createPortal(
+        React.createElement(
+          "div",
+          {
+            className: `fade-popup ${shouldShowPopup ? "hover" : ""}`,
+            style: {
               left: pos.left - parentPos.left,
               top: pos.bottom - parentPos.top,
-            }}
-          >
-            {popup}
-          </div>,
-          popupParentNode
-        )}
-    </>
+            },
+          },
+          popup
+        ),
+        popupParentNode
+      )
   );
 }
 HoverFade.propTypes = {
@@ -130,36 +134,40 @@ export function DetailedContactLabel({ contact, className, msgId }) {
   // In a detail view, there is a star at the start of the contact
   // info and a line break at the end.
   const star = contact.contactId && "\u2605 ";
-  let emailLabel = contact.email && (
-    <span className="smallEmail">
-      {" "}
-      <Email email={contact.email} />
-    </span>
-  );
+  let emailLabel =
+    contact.email &&
+    React.createElement(
+      "span",
+      { className: "smallEmail" },
+      " ",
+      React.createElement(Email, { email: contact.email })
+    );
 
-  return (
-    <HoverFade
-      popup={
-        <ContactDetail
-          name={contact.name}
-          email={contact.displayEmail}
-          msgId={msgId}
-          realEmail={contact.email}
-          avatar={contact.avatar}
-          contactId={contact.contactId}
-          contactIsReadOnly={contact.readOnly}
-        />
-      }
-      style={{ display: "inline-block" }}
-    >
-      <span className={className}>
-        <span className="contactName">
-          {star}
-          {contact.name.trim()}
-          {emailLabel}
-        </span>
-      </span>
-    </HoverFade>
+  return React.createElement(
+    HoverFade,
+    {
+      popup: React.createElement(ContactDetail, {
+        name: contact.name,
+        email: contact.displayEmail,
+        msgId: msgId,
+        realEmail: contact.email,
+        avatar: contact.avatar,
+        contactId: contact.contactId,
+        contactIsReadOnly: contact.readOnly,
+      }),
+      style: { display: "inline-block" },
+    },
+    React.createElement(
+      "span",
+      { className },
+      React.createElement(
+        "span",
+        { className: "contactName" },
+        star,
+        contact.name.trim(),
+        emailLabel
+      )
+    )
   );
 }
 DetailedContactLabel.propTypes = {
@@ -170,34 +178,38 @@ DetailedContactLabel.propTypes = {
 
 export function ContactLabel({ contact, className, msgId }) {
   // This component conditionally renders.
-  let emailLabel = contact.displayEmail && (
-    <span className="smallEmail">
-      {" "}
-      <Email email={contact.displayEmail} />
-    </span>
-  );
+  let emailLabel =
+    contact.displayEmail &&
+    React.createElement(
+      "span",
+      { className: "smallEmail" },
+      " ",
+      React.createElement(Email, { email: contact.displayEmail })
+    );
 
-  return (
-    <HoverFade
-      popup={
-        <ContactDetail
-          name={contact.name}
-          email={contact.displayEmail}
-          msgId={msgId}
-          realEmail={contact.email}
-          avatar={contact.avatar}
-          contactId={contact.contactId}
-          contactIsReadOnly={contact.readOnly}
-        />
-      }
-    >
-      <span className={className}>
-        <span className="contactName">
-          {contact.name.trim()}
-          {emailLabel}
-        </span>
-      </span>
-    </HoverFade>
+  return React.createElement(
+    HoverFade,
+    {
+      popup: React.createElement(ContactDetail, {
+        name: contact.name,
+        email: contact.displayEmail,
+        msgId: msgId,
+        realEmail: contact.email,
+        avatar: contact.avatar,
+        contactId: contact.contactId,
+        contactIsReadOnly: contact.readOnly,
+      }),
+    },
+    React.createElement(
+      "span",
+      { className },
+      React.createElement(
+        "span",
+        { className: "contactName" },
+        contact.name.trim(),
+        emailLabel
+      )
+    )
   );
 }
 ContactLabel.propTypes = {
@@ -208,19 +220,19 @@ ContactLabel.propTypes = {
 
 function Avatar({ url, initials, isDefault, style }) {
   if (!url) {
-    return (
-      <abbr className="contactInitials" style={style}>
-        {initials}
-      </abbr>
+    return React.createElement(
+      "abbr",
+      { className: "contactInitials", style },
+      initials
     );
   }
-  return (
-    <span
-      className="contactAvatar"
-      style={{ backgroundImage: `url('${url}')` }}
-    >
-      {"\u00a0"}
-    </span>
+  return React.createElement(
+    "span",
+    {
+      className: "contactAvatar",
+      style: { backgroundImage: `url('${url}')` },
+    },
+    "\u00a0"
   );
 }
 Avatar.propTypes = {
@@ -287,80 +299,94 @@ export function MessageHeader({
     );
     const locale = browser.i18n.getUILanguage();
 
-    extraContacts = (
-      <React.Fragment>
-        {browser.i18n.getMessage("header.to")}{" "}
-        {new Intl.ListFormat(locale, { style: "long", type: "conjunction" })
-          .formatToParts(allToMap.keys())
-          .map((item, i) => {
-            if (item.type === "literal") {
-              return (
-                <span className="to" key={i}>
-                  {item.value}
-                </span>
-              );
-            }
-            const contact = allToMap.get(item.value);
-            return (
-              <ContactLabel
-                className="to"
-                contact={contact}
-                key={item.value}
-                msgId={id}
-              />
+    extraContacts = React.createElement(
+      React.Fragment,
+      null,
+      browser.i18n.getMessage("header.to") + " ",
+      new Intl.ListFormat(locale, { style: "long", type: "conjunction" })
+        .formatToParts(allToMap.keys())
+        .map((item, i) => {
+          if (item.type === "literal") {
+            return React.createElement(
+              "span",
+              { className: "to", key: i },
+              item.value
             );
-          })}{" "}
-      </React.Fragment>
+          }
+          const contact = allToMap.get(item.value);
+          return React.createElement(ContactLabel, {
+            className: "to",
+            contact: contact,
+            key: item.value,
+            msgId: id,
+          });
+        }),
+      " "
     );
   }
   if (!expanded) {
-    extraContacts = <React.Fragment></React.Fragment>;
+    extraContacts = React.createElement(React.Fragment);
   }
 
   let starTitle = browser.i18n.getMessage(
     starred ? "message.removeStar.tooltip" : "message.addStar.tooltip"
   );
 
-  return (
-    <div
-      className={`messageHeader hbox ${expanded ? "expanded" : ""}`}
-      onClick={onClickHeader}
-    >
-      <div className="shrink-box">
-        <button
-          className={`star ${starred ? "starred" : ""}`}
-          title={starTitle}
-          onClick={onClickStar}
-        >
-          <SvgIcon ariaHidden={true} hash="star" />
-        </button>
-        {!!from && (
-          <>
-            <Avatar
-              url={from.avatar}
-              style={from.colorStyle}
-              initials={from.initials}
-            />{" "}
-            <ContactLabel className="author" contact={from} msgId={id} />
-          </>
-        )}
-        {extraContacts}
-        {!expanded && (
-          <span className="snippet">
-            <MessageTags
-              onTagsChange={(tags) => {
-                dispatch(
-                  messageActions.setTags({
-                    id,
-                    tags,
-                  })
-                );
-              }}
-              expanded={false}
-              tags={tags}
-            />
-            <SpecialMessageTags
-              onTagClick={(event, tag) => {
+  return React.createElement(
+    "div",
+    {
+      className: `messageHeader hbox ${expanded ? "expanded" : ""}`,
+      onClick: onClickHeader,
+    },
+    React.createElement(
+      "div",
+      { className: "shrink-box" },
+      React.createElement(
+        "button",
+        {
+          className: `star ${starred ? "starred" : ""}`,
+          title: starTitle,
+          onClick: onClickStar,
+        },
+        React.createElement(SvgIcon, { ariaHidden: true, hash: "star" })
+      ),
+      !!from &&
+        React.createElement(
+          React.Fragment,
+          null,
+          React.createElement(Avatar, {
+            url: from.avatar,
+            style: from.colorStyle,
+            initials: from.initials,
+          }),
+          " ",
+          React.createElement(ContactLabel, {
+            className: "author",
+            contact: from,
+            msgId: id,
+          })
+        ),
+      extraContacts,
+      !expanded &&
+        React.createElement(
+          "span",
+          { className: "snippet" },
+          React.createElement(MessageTags, {
+            onTagsChange: (tags) => {
+              dispatch(
+                messageActions.setTags({
+                  id,
+                  tags,
+                })
+              );
+            },
+            expanded: false,
+            tags,
+          }),
+          React.createElement(
+            SpecialMessageTags,
+            {
+              onTagClick: (event, tag) => {
                 dispatch(
                   messageActions.tagClick({
                     event,
@@ -368,27 +394,26 @@ export function MessageHeader({
                     details: tag.details,
                   })
                 );
-              }}
-              folderName={shortFolderName}
-              inView={inView}
-            />
-            {snippet}
-          </span>
-        )}
-      </div>
-      <MessageHeaderOptions
-        dispatch={dispatch}
-        date={date}
-        detailsShowing={detailsShowing}
-        expanded={expanded}
-        fullDate={fullDate}
-        id={id}
-        attachments={attachments}
-        multipleRecipients={multipleRecipients}
-        recipientsIncludeLists={recipientsIncludeLists}
-        isDraft={isDraft}
-      />
-    </div>
+              },
+              folderName: shortFolderName,
+              inView: inView,
+            },
+            snippet
+          )
+        )
+    ),
+    React.createElement(MessageHeaderOptions, {
+      dispatch: dispatch,
+      date: date,
+      detailsShowing: detailsShowing,
+      expanded: expanded,
+      fullDate: fullDate,
+      id,
+      attachments: attachments,
+      multipleRecipients: multipleRecipients,
+      recipientsIncludeLists: recipientsIncludeLists,
+      isDraft: isDraft,
+    })
   );
 }
 

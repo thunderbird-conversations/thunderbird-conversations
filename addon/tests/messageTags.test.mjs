@@ -10,7 +10,7 @@ import { jest } from "@jest/globals";
 import {
   MessageTags,
   SpecialMessageTags,
-} from "../content/components/message/messageTags.jsx";
+} from "../content/components/message/messageTags.mjs";
 
 describe("SpecialMessageTags test", () => {
   test("special-tag classes are applied", async () => {

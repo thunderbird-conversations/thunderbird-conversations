@@ -5,7 +5,7 @@
 import React from "react";
 import * as ReactRedux from "react-redux";
 import PropTypes from "prop-types";
-import { Message } from "./message.jsx";
+import { Message } from "./message.mjs";
 
 /**
  * Handles display of the list of messages.

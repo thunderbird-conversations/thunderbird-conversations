@@ -35,23 +35,33 @@ class RemoteContentNotification extends React.PureComponent {
   }
 
   render() {
-    return (
-      <div className="remoteContent notificationBar">
-        {browser.i18n.getMessage("notification.remoteContentBlockedMsg") + " "}
-        <span className="show-remote-content">
-          <a className="link" onClick={this.onShowRemote}>
-            {browser.i18n.getMessage("notification.showRemote")}
-          </a>
-          {" - "}
-        </span>
-        <span className="always-display">
-          <a className="link" onClick={this.onAlwaysShowRemote}>
-            {browser.i18n.getMessage("notification.alwaysShowRemote", [
-              this.props.realFrom,
-            ])}
-          </a>
-        </span>
-      </div>
+    return React.createElement(
+      "div",
+      { className: "remoteContent notificationBar" },
+      browser.i18n.getMessage("notification.remoteContentBlockedMsg") + " ",
+      React.createElement(
+        "span",
+        { className: "show-remote-content" },
+        React.createElement(
+          "a",
+          { className: "link", onClick: this.onShowRemote },
+
+          browser.i18n.getMessage("notification.showRemote")
+        ),
+        " - "
+      ),
+      React.createElement(
+        "span",
+        { className: "always-display" },
+        React.createElement(
+          "a",
+          { className: "link", onClick: this.onAlwaysShowRemote },
+
+          browser.i18n.getMessage("notification.alwaysShowRemote", [
+            this.props.realFrom,
+          ])
+        )
+      )
     );
   }
 }
@@ -67,14 +77,20 @@ RemoteContentNotification.propTypes = {
  */
 class GenericSingleButtonNotification extends React.PureComponent {
   render() {
-    return (
-      <div className={this.props.barClassName + " notificationBar"}>
-        <SvgIcon hash={this.props.iconName} />
-        {this.props.notificationText}{" "}
-        <span className={this.props.buttonClassName}>
-          <a onClick={this.props.onButtonClick}>{this.props.buttonTitle}</a>
-        </span>
-      </div>
+    return React.createElement(
+      "div",
+      { className: this.props.barClassName + " notificationBar" },
+      React.createElement(SvgIcon, { hash: this.props.iconName }),
+      this.props.notificationText + " ",
+      React.createElement(
+        "span",
+        { className: this.props.buttonClassName },
+        React.createElement(
+          "a",
+          { onClick: this.props.onButtonClick },
+          this.props.buttonTitle
+        )
+      )
     );
   }
 }
@@ -108,21 +124,23 @@ class GenericMultiButtonNotification extends React.PureComponent {
   }
 
   render() {
-    return (
-      <div className={this.props.barClassName + " notificationBar"}>
-        <SvgIcon hash={this.props.iconName} />
-        {this.props.notificationText}{" "}
-        {this.props.buttons.map((button, i) => (
-          <button
-            className={button.classNames}
-            title={button.tooltiptext}
-            key={i}
-            onClick={this.onClick.bind(this, button.actionParams)}
-          >
-            {button.textContent}
-          </button>
-        ))}
-      </div>
+    return React.createElement(
+      "div",
+      { className: this.props.barClassName + " notificationBar" },
+      React.createElement(SvgIcon, { hash: this.props.iconName }),
+      this.props.notificationText + " ",
+      this.props.buttons.map((button, i) =>
+        React.createElement(
+          "button",
+          {
+            className: button.classNames,
+            title: button.tooltiptext,
+            key: i,
+            onClick: this.onClick.bind(this, button.actionParams),
+          },
+          button.textContent
+        )
+      )
     );
   }
 }
@@ -157,16 +175,14 @@ class JunkNotification extends React.PureComponent {
   }
 
   render() {
-    return (
-      <GenericSingleButtonNotification
-        barClassName="junkBar"
-        buttonClassName="notJunk"
-        buttonTitle={browser.i18n.getMessage("notification.notJunk")}
-        iconName="whatshot"
-        notificationText={browser.i18n.getMessage("notification.junkMsg")}
-        onButtonClick={this.onClick}
-      />
-    );
+    return React.createElement(GenericSingleButtonNotification, {
+      barClassName: "junkBar",
+      buttonClassName: "notJunk",
+      buttonTitle: browser.i18n.getMessage("notification.notJunk"),
+      iconName: "whatshot",
+      notificationText: browser.i18n.getMessage("notification.junkMsg"),
+      onButtonClick: this.onClick,
+    });
   }
 }
 
@@ -189,16 +205,14 @@ class OutboxNotification extends React.PureComponent {
   }
 
   render() {
-    return (
-      <GenericSingleButtonNotification
-        barClassName="outboxBar"
-        buttonClassName="sendUnsent"
-        buttonTitle={browser.i18n.getMessage("notification.sendUnsent")}
-        iconName="inbox"
-        notificationText={browser.i18n.getMessage("notification.isOutboxMsg")}
-        onButtonClick={this.onClick}
-      />
-    );
+    return React.createElement(GenericSingleButtonNotification, {
+      barClassName: "outboxBar",
+      buttonClassName: "sendUnsent",
+      buttonTitle: browser.i18n.getMessage("notification.sendUnsent"),
+      iconName: "inbox",
+      notificationText: browser.i18n.getMessage("notification.isOutboxMsg"),
+      onButtonClick: this.onClick,
+    });
   }
 }
 
@@ -224,16 +238,14 @@ class PhishingNotification extends React.PureComponent {
   }
 
   render() {
-    return (
-      <GenericSingleButtonNotification
-        barClassName="phishingBar"
-        buttonClassName="ignore-warning"
-        buttonTitle={browser.i18n.getMessage("notification.ignoreScamWarning")}
-        iconName="warning"
-        notificationText={browser.i18n.getMessage("notification.scamMsg")}
-        onButtonClick={this.onClick}
-      />
-    );
+    return React.createElement(GenericSingleButtonNotification, {
+      barClassName: "phishingBar",
+      buttonClassName: "ignore-warning",
+      buttonTitle: browser.i18n.getMessage("notification.ignoreScamWarning"),
+      iconName: "warning",
+      notificationText: browser.i18n.getMessage("notification.scamMsg"),
+      onButtonClick: this.onClick,
+    });
   }
 }
 
@@ -248,44 +260,41 @@ PhishingNotification.propTypes = {
 export class MessageNotification extends React.PureComponent {
   render() {
     if (this.props.isPhishing) {
-      return (
-        <PhishingNotification
-          dispatch={this.props.dispatch}
-          id={this.props.id}
-        />
-      );
+      return React.createElement(PhishingNotification, {
+        dispatch: this.props.dispatch,
+        id: this.props.id,
+      });
     }
     if (this.props.hasRemoteContent) {
-      return (
-        <RemoteContentNotification
-          dispatch={this.props.dispatch}
-          id={this.props.id}
-          realFrom={this.props.realFrom}
-        />
-      );
+      return React.createElement(RemoteContentNotification, {
+        dispatch: this.props.dispatch,
+        id: this.props.id,
+        realFrom: this.props.realFrom,
+      });
     }
     if (this.props.canUnJunk) {
-      return (
-        <JunkNotification dispatch={this.props.dispatch} id={this.props.id} />
-      );
+      return React.createElement(JunkNotification, {
+        dispatch: this.props.dispatch,
+        id: this.props.id,
+      });
     }
     if (this.props.isOutbox) {
-      return <OutboxNotification dispatch={this.props.dispatch} />;
+      return React.createElement(OutboxNotification, {
+        dispatch: this.props.dispatch,
+      });
     }
     if (this.props.extraNotifications && this.props.extraNotifications.length) {
       // Only display the first notification.
       const notification = this.props.extraNotifications[0];
-      return (
-        <GenericMultiButtonNotification
-          barClassName={notification.type + "Bar"}
-          buttons={notification.buttons || []}
-          iconName={notification.iconName}
-          dispatch={this.props.dispatch}
-          id={this.props.id}
-          notificationText={notification.label}
-          type={notification.type}
-        />
-      );
+      return React.createElement(GenericMultiButtonNotification, {
+        barClassName: notification.type + "Bar",
+        buttons: notification.buttons || [],
+        iconName: notification.iconName,
+        dispatch: this.props.dispatch,
+        id: this.props.id,
+        notificationText: notification.label,
+        type: notification.type,
+      });
     }
     return null;
   }

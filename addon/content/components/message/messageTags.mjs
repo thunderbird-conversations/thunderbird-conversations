@@ -33,25 +33,25 @@ function isColorLight(color) {
 export function MessageTag({ onClickX, expanded, name, color }) {
   const isLight = isColorLight(color);
 
-  return (
-    <li
-      className={"tag" + (isLight ? " light-tag" : "")}
-      style={{ backgroundColor: color }}
-    >
-      {name}
-      {expanded && (
-        <span
-          role="button"
-          aria-label={browser.i18n.getMessage("tags.removeButton")}
-          className="tag-x"
-          tabIndex="0"
-          onClick={onClickX}
-        >
-          {" "}
-          x
-        </span>
-      )}
-    </li>
+  return React.createElement(
+    "li",
+    {
+      className: "tag" + (isLight ? " light-tag" : ""),
+      style: { backgroundColor: color },
+    },
+    name,
+    expanded &&
+      React.createElement(
+        "span",
+        {
+          role: "button",
+          "aria-label": browser.i18n.getMessage("tags.removeButton"),
+          className: "tag-x",
+          tabIndex: "0",
+          onClick: onClickX,
+        },
+        " x"
+      )
   );
 }
 MessageTag.propTypes = {
@@ -78,20 +78,20 @@ export function MessageTags({ expanded, tags = [], onTagsChange }) {
     }
   }
 
-  return (
-    <ul className="tags regular-tags">
-      {tags.map((tag, i) => (
-        <MessageTag
-          color={tag.color}
-          expanded={expanded}
-          key={i}
-          name={tag.name}
-          onClickX={() => {
-            removeTag(tag.key);
-          }}
-        />
-      ))}
-    </ul>
+  return React.createElement(
+    "ul",
+    { className: "tags regular-tags" },
+    tags.map((tag, i) =>
+      React.createElement(MessageTag, {
+        color: tag.color,
+        expanded: expanded,
+        key: i,
+        name: tag.name,
+        onClickX: () => {
+          removeTag(tag.key);
+        },
+      })
+    )
   );
 }
 MessageTags.propTypes = {
@@ -108,7 +108,10 @@ MessageTags.propTypes = {
  * @returns {React.ReactNode}
  */
 export function SpecialMessageTagIcon({ fullPath }) {
-  return <img className="icon special-tag-ext-icon" src={fullPath} />;
+  return React.createElement("img", {
+    className: "icon special-tag-ext-icon",
+    src: fullPath,
+  });
 }
 SpecialMessageTagIcon.propTypes = { fullPath: PropTypes.string };
 
@@ -119,60 +122,77 @@ SpecialMessageTagIcon.propTypes = { fullPath: PropTypes.string };
  * @param {string[]} root0.strings
  */
 function SpecialMessageTagTooltip({ strings }) {
-  const tooltip = strings.length ? (
-    <React.Fragment>
-      {strings.map((s, i) => (
-        <div key={i}>{s}</div>
-      ))}
-      <div />
-    </React.Fragment>
-  ) : null;
+  const tooltip = strings.length
+    ? React.createElement(
+        React.Fragment,
+        null,
+        strings.map((s, i) => React.createElement("div", { key: i }, s)),
+        React.createElement("div")
+      )
+    : null;
 
-  return <span>{tooltip}</span>;
+  return React.createElement("span", null, tooltip);
 }
 SpecialMessageTagTooltip.propTypes = { strings: PropTypes.array.isRequired };
 
 function DisplayInfo({ info }) {
-  return (
-    <div className="tooltip extraDetails">
-      <div>
-        <strong>{info.signatureLabel}</strong>
-        <p>{info.signatureExplanation}</p>
-        <p>
-          <strong>{info.signatureKeyIdLabel}</strong>
-        </p>
-        {info.signerCert && (
-          <p>
-            <strong>{browser.i18n.getMessage("openpgp.signedByLabel")}</strong>{" "}
-            {info.signerCert.name}
-            <br />
-            <strong>
-              {browser.i18n.getMessage("openpgp.signedByEmailLabel")}
-            </strong>{" "}
-            {info.signerCert.email}
-            <br />
-            <strong>
-              {browser.i18n.getMessage("openpgp.certificateIssuedByLabel")}
-            </strong>{" "}
-            {info.signerCert.issuerName}
-          </p>
-        )}
-        <strong>{info.encryptionLabel}</strong>
-        <p>{info.encryptionExplanation}</p>
-        <p>
-          <strong>{info.encryptionKeyIdLabel}</strong>
-        </p>
-        <p>{info.otherKeysLabel}</p>
-        {info.otherKeys &&
-          info.otherKeys.map((key, i) => (
-            <div key={i}>
-              {key.name}
-              <br />
-              {key.id}
-            </div>
-          ))}
-      </div>
-    </div>
+  return React.createElement(
+    "div",
+    { className: "tooltip extraDetails" },
+    React.createElement(
+      "div",
+      null,
+      React.createElement("strong", null, info.signatureLabel),
+      React.createElement("p", null, info.signatureExplanation),
+      React.createElement(
+        "p",
+        null,
+        React.createElement("strong", null, info.signatureKeyIdLabel)
+      ),
+      info.signerCert &&
+        React.createElement(
+          "p",
+          null,
+          React.createElement(
+            "strong",
+            null,
+            browser.i18n.getMessage("openpgp.signedByLabel")
+          ),
+          ` ${info.signerCert.name}`,
+          React.createElement("br"),
+          React.createElement(
+            "strong",
+            null,
+            browser.i18n.getMessage("openpgp.signedByEmailLabel")
+          ),
+          ` ${info.signerCert.email}`,
+          React.createElement("br"),
+          React.createElement(
+            "strong",
+            null,
+            browser.i18n.getMessage("openpgp.certificateIssuedByLabel")
+          ),
+          ` ${info.signerCert.issuerName}`
+        ),
+      React.createElement("strong", null, info.encryptionLabel),
+      React.createElement("p", null, info.encryptionExplanation),
+      React.createElement(
+        "p",
+        null,
+        React.createElement("strong", null, info.encryptionKeyIdLabel)
+      ),
+      React.createElement("p", info.otherKeysLabel),
+      info.otherKeys &&
+        info.otherKeys.map((key, i) =>
+          React.createElement(
+            "div",
+            { key: i },
+            key.name,
+            React.createElement("br"),
+            key.id
+          )
+        )
+    )
   );
 }
 DisplayInfo.propTypes = {
@@ -236,23 +256,25 @@ export function SpecialMessageTag({
     }
   }
 
-  return (
-    <li
-      className={classNames + " special-tag" + (onClick ? " can-click" : "")}
-      title={title}
-      onClick={onInternalClick}
-    >
-      {detailsExpanded && displayInfo && <DisplayInfo info={displayInfo} />}
-      {icon.startsWith("moz-extension://") ? (
-        <SpecialMessageTagIcon fullPath={icon} />
-      ) : (
-        <SvgIcon fullPath={icon} />
-      )}
-      {name}
-      {tooltip.strings && !!tooltip.strings.length && (
-        <SpecialMessageTagTooltip strings={tooltip.strings} />
-      )}
-    </li>
+  return React.createElement(
+    "li",
+    {
+      className: classNames + " special-tag" + (onClick ? " can-click" : ""),
+      title,
+      onClick: onInternalClick,
+    },
+    detailsExpanded &&
+      displayInfo &&
+      React.createElement(DisplayInfo, { info: displayInfo }),
+    icon.startsWith("moz-extension://")
+      ? React.createElement(SpecialMessageTagIcon, { fullPath: icon })
+      : React.createElement(SvgIcon, { fullPath: icon }),
+    name,
+    tooltip.strings &&
+      !!tooltip.strings.length &&
+      React.createElement(SpecialMessageTagTooltip, {
+        strings: tooltip.strings,
+      })
   );
 }
 
@@ -285,34 +307,34 @@ export function SpecialMessageTags({
 }) {
   let folderItem = null;
   if (!inView) {
-    folderItem = (
-      <li
-        className="in-folder"
-        onClick={onFolderClick}
-        title={browser.i18n.getMessage("tags.jumpToFolder.tooltip")}
-      >
-        {browser.i18n.getMessage("tags.inFolder", [folderName])}
-      </li>
+    folderItem = React.createElement(
+      "li",
+      {
+        className: "in-folder",
+        onClick: onFolderClick,
+        title: browser.i18n.getMessage("tags.jumpToFolder.tooltip"),
+      },
+      browser.i18n.getMessage("tags.inFolder", [folderName])
     );
   }
 
-  return (
-    <ul className="tags special-tags">
-      {specialTags &&
-        specialTags.map((tag, i) => (
-          <SpecialMessageTag
-            classNames={tag.classNames}
-            displayInfo={tag.details?.displayInfo}
-            icon={tag.icon}
-            key={i}
-            name={tag.name}
-            onClick={(event) => tag.details && onTagClick(event, tag)}
-            title={tag.title}
-            tooltip={tag.tooltip}
-          />
-        ))}
-      {folderItem}
-    </ul>
+  return React.createElement(
+    "ul",
+    { className: "tags special-tags" },
+    specialTags &&
+      specialTags.map((tag, i) =>
+        React.createElement(SpecialMessageTag, {
+          classNames: tag.classNames,
+          displayInfo: tag.details?.displayInfo,
+          icon: tag.icon,
+          key: i,
+          name: tag.name,
+          onClick: (event) => tag.details && onTagClick(event, tag),
+          title: tag.title,
+          tooltip: tag.tooltip,
+        })
+      ),
+    folderItem
   );
 }
 

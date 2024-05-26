@@ -42,29 +42,40 @@ export class MessageFooter extends React.PureComponent {
   }
 
   render() {
-    return (
-      <div className="messageFooter">
-        <div className="footerActions">
-          {this.props.isDraft && (
-            <ActionButton callback={this.onActionButtonClick} type="draft" />
-          )}
-          {!this.props.isDraft && (
-            <ActionButton callback={this.onActionButtonClick} type="reply" />
-          )}
-          {!this.props.isDraft && this.props.multipleRecipients && (
-            <ActionButton callback={this.onActionButtonClick} type="replyAll" />
-          )}
-          {!this.props.isDraft && this.props.recipientsIncludeLists && (
-            <ActionButton
-              callback={this.onActionButtonClick}
-              type="replyList"
-            />
-          )}
-          {!this.props.isDraft && (
-            <ActionButton callback={this.onActionButtonClick} type="forward" />
-          )}
-        </div>
-      </div>
+    return React.createElement(
+      "div",
+      { className: "messageFooter" },
+      React.createElement(
+        "div",
+        { className: "footerActions" },
+        this.props.isDraft &&
+          React.createElement(ActionButton, {
+            callback: this.onActionButtonClick,
+            type: "draft",
+          }),
+        !this.props.isDraft &&
+          React.createElement(ActionButton, {
+            callback: this.onActionButtonClick,
+            type: "reply",
+          }),
+        !this.props.isDraft &&
+          this.props.multipleRecipients &&
+          React.createElement(ActionButton, {
+            callback: this.onActionButtonClick,
+            type: "replyAll",
+          }),
+        !this.props.isDraft &&
+          this.props.recipientsIncludeLists &&
+          React.createElement(ActionButton, {
+            callback: this.onActionButtonClick,
+            type: "replyList",
+          }),
+        !this.props.isDraft &&
+          React.createElement(ActionButton, {
+            callback: this.onActionButtonClick,
+            type: "forward",
+          })
+      )
     );
   }
 }

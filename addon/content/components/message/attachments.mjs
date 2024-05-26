@@ -37,29 +37,35 @@ const FALLBACK_ICON_MAPPING = new Map([
 ]);
 
 function AttachmentMoreMenu({ detachCallback, deleteCallback }) {
-  return (
-    <div className="tooltip tooltip-menu menu">
-      <div className="arrow"></div>
-      <div className="arrow inside"></div>
-      <ul>
-        <li className="action-detach">
-          <ActionButton
-            callback={detachCallback}
-            className="optionsButton"
-            showString={true}
-            type="detachAttachment"
-          />
-        </li>
-        <li className="action-delete">
-          <ActionButton
-            callback={deleteCallback}
-            className="optionsButton"
-            showString={true}
-            type="deleteAttachment"
-          />
-        </li>
-      </ul>
-    </div>
+  return React.createElement(
+    "div",
+    { className: "tooltip tooltip-menu menu" },
+    React.createElement("div", { className: "arrow" }),
+    React.createElement("div", { className: "arrow inside" }),
+    React.createElement(
+      "ul",
+      null,
+      React.createElement(
+        "li",
+        { className: "action-detach" },
+        React.createElement(ActionButton, {
+          callback: detachCallback,
+          className: "optionsButton",
+          showString: true,
+          type: "detachAttachment",
+        })
+      ),
+      React.createElement(
+        "li",
+        { className: "action-delete" },
+        React.createElement(ActionButton, {
+          callback: deleteCallback,
+          className: "optionsButton",
+          showString: true,
+          type: "deleteAttachment",
+        })
+      )
+    )
   );
 }
 AttachmentMoreMenu.propTypes = {
@@ -225,69 +231,90 @@ function Attachment({
 
   // TODO: Drag n drop
   // onDragStart={this.onDragStart}
-  return (
-    <li className="attachment">
-      {isDeleted && (
-        <div className="attachmentThumb deleted" draggable="false">
-          <img className={imgClass} src={thumb} title={name} />
-        </div>
-      )}
-      {!isDeleted && (
-        <div
-          className="attachmentThumb"
-          draggable="false"
-          onClick={isImage ? preview : openAttachment}
-        >
-          <img className={imgClass} src={thumb} title={imgTitle} />
-        </div>
-      )}
-      <div className="attachmentInfo align">
-        <span className="filename">{name}</span>
-        <span className="filesize">{formattedSize}</span>
-        {!isDeleted && (
-          <div className="attachActions">
-            {isImage && (
-              <a
-                className="icon-link preview-attachment"
-                title={browser.i18n.getMessage("attachments.preview.tooltip")}
-                onClick={preview}
-              >
-                <SvgIcon hash="visibility" />
-              </a>
-            )}
-            <a
-              className="icon-link download-attachment"
-              title={browser.i18n.getMessage("attachments.download.tooltip")}
-              onClick={downloadAttachment}
-            >
-              <SvgIcon hash="file_download" />
-            </a>
-            <a
-              className="icon-link open-attachment"
-              title={browser.i18n.getMessage("attachments.open.tooltip")}
-              onClick={openAttachment}
-            >
-              <SvgIcon hash="search" />
-            </a>
-            <span className="attachmentsDropDown">
-              <a
-                className="icon-link more-attachment"
-                title={browser.i18n.getMessage("message.moreMenu.tooltip")}
-                onClick={handleDisplayMenu}
-              >
-                <SvgIcon hash="more_vert" />
-              </a>
-              {displayMenu && (
-                <AttachmentMoreMenu
-                  detachCallback={detachAttachment}
-                  deleteCallback={deleteAttachment}
-                />
-              )}
-            </span>
-          </div>
-        )}
-      </div>
-    </li>
+  return React.createElement(
+    "li",
+    { className: "attachment" },
+    isDeleted &&
+      React.createElement(
+        "div",
+        { className: "attachmentThumb deleted", draggable: "false" },
+        React.createElement("img", {
+          className: imgClass,
+          src: thumb,
+          title: name,
+        })
+      ),
+    !isDeleted &&
+      React.createElement(
+        "div",
+        {
+          className: "attachmentThumb",
+          draggable: "false",
+          onClick: isImage ? preview : openAttachment,
+        },
+        React.createElement("img", {
+          className: imgClass,
+          src: thumb,
+          title: imgTitle,
+        })
+      ),
+    React.createElement(
+      "div",
+      { className: "attachmentInfo align" },
+      React.createElement("span", { className: "filename" }, name),
+      React.createElement("span", { className: "filesize" }, formattedSize),
+      !isDeleted &&
+        React.createElement(
+          "div",
+          { className: "attachActions" },
+          isImage &&
+            React.createElement(
+              "a",
+              {
+                className: "icon-link preview-attachment",
+                title: browser.i18n.getMessage("attachments.preview.tooltip"),
+                onClick: preview,
+              },
+              React.createElement(SvgIcon, { hash: "visibility" })
+            ),
+          React.createElement(
+            "a",
+            {
+              className: "icon-link download-attachment",
+              title: browser.i18n.getMessage("attachments.download.tooltip"),
+              onClick: downloadAttachment,
+            },
+            React.createElement(SvgIcon, { hash: "file_download" })
+          ),
+          React.createElement(
+            "a",
+            {
+              className: "icon-link open-attachment",
+              title: browser.i18n.getMessage("attachments.open.tooltip"),
+              onClick: openAttachment,
+            },
+            React.createElement(SvgIcon, { hash: "search" })
+          ),
+          React.createElement(
+            "span",
+            { className: "attachmentsDropDown" },
+            React.createElement(
+              "a",
+              {
+                className: "icon-link more-attachment",
+                title: browser.i18n.getMessage("attachments.moreMenu.tooltip"),
+                onClick: handleDisplayMenu,
+              },
+              React.createElement(SvgIcon, { hash: "more_vert" })
+            ),
+            displayMenu &&
+              React.createElement(AttachmentMoreMenu, {
+                detachCallback: detachAttachment,
+                deleteCallback: deleteAttachment,
+              })
+          )
+        )
+    )
   );
 }
 
@@ -333,41 +360,46 @@ export class Attachments extends React.PureComponent {
     const showGalleryLink = this.props.attachments.some((a) =>
       a.contentType.startsWith("image/")
     );
-    return (
-      <ul className="attachments">
-        <div className="attachHeader">
-          {this.props.attachmentsPlural}
-          <a
-            className="icon-link download-all"
-            onClick={this.downloadAll}
-            title={browser.i18n.getMessage("attachments.downloadAll.tooltip")}
-          >
-            <SvgIcon hash={"file_download"} />
-          </a>
-          {showGalleryLink && (
-            <a
-              onClick={this.showGalleryView}
-              className="icon-link view-all"
-              title={browser.i18n.getMessage("attachments.gallery.tooltip")}
-            >
-              <SvgIcon hash={"photo_library"} />
-            </a>
-          )}
-        </div>
-        {this.props.attachments.map((attachment) => (
-          <Attachment
-            anchor={attachment.anchor}
-            dispatch={this.props.dispatch}
-            key={attachment.anchor}
-            contentType={attachment.contentType}
-            formattedSize={attachment.formattedSize}
-            id={this.props.id}
-            name={attachment.name}
-            partName={attachment.partName}
-            size={attachment.size}
-          />
-        ))}
-      </ul>
+    return React.createElement(
+      "ul",
+      { className: "attachments" },
+      React.createElement(
+        "div",
+        { className: "attachHeader" },
+        this.props.attachmentsPlural,
+        React.createElement(
+          "a",
+          {
+            className: "icon-link download-all",
+            onClick: this.downloadAll,
+            title: browser.i18n.getMessage("attachments.downloadAll.tooltip"),
+          },
+          React.createElement(SvgIcon, { hash: "file_download" })
+        ),
+        showGalleryLink &&
+          React.createElement(
+            "a",
+            {
+              onClick: this.showGalleryView,
+              className: "icon-link view-all",
+              title: browser.i18n.getMessage("attachments.gallery.tooltip"),
+            },
+            React.createElement(SvgIcon, { hash: "photo_library" })
+          )
+      ),
+      this.props.attachments.map((attachment) =>
+        React.createElement(Attachment, {
+          anchor: attachment.anchor,
+          dispatch: this.props.dispatch,
+          key: attachment.anchor,
+          contentType: attachment.contentType,
+          formattedSize: attachment.formattedSize,
+          id: this.props.id,
+          name: attachment.name,
+          partName: attachment.partName,
+          size: attachment.size,
+        })
+      )
     );
   }
 }
