@@ -5,6 +5,7 @@
 // Prettier is used to normalize the html formatting so we can reliably use it to compare HTML with
 // text diffing.
 import prettier from "prettier";
+import html from "prettier/plugins/html";
 
 // Import the components we want to test
 import { Quoting } from "../content/utils/quoting.mjs";
@@ -204,7 +205,12 @@ const samples = {
   ],
 };
 
-const PRETTIER_OPTS = { parser: "html", tabWidth: 0, printWidth: 120 };
+const PRETTIER_OPTS = {
+  parser: "html",
+  plugins: [html],
+  tabWidth: 0,
+  printWidth: 120,
+};
 
 describe("Quoting test", () => {
   test("Find quotes in Hotmail messages", async () => {
@@ -213,8 +219,11 @@ describe("Quoting test", () => {
       const doc = parser.parseFromString(unquoted, "text/html");
       Quoting.convertHotmailQuotingToBlockquote1(doc);
 
-      const prettyQuoted = prettier.format(doc.body.outerHTML, PRETTIER_OPTS);
-      const prettyExpected = prettier.format(quoted, PRETTIER_OPTS);
+      const prettyQuoted = await prettier.format(
+        doc.body.outerHTML,
+        PRETTIER_OPTS
+      );
+      const prettyExpected = await prettier.format(quoted, PRETTIER_OPTS);
 
       expect(prettyQuoted).toBe(prettyExpected);
     }
@@ -225,8 +234,11 @@ describe("Quoting test", () => {
       const doc = parser.parseFromString(unquoted, "text/html");
       Quoting.convertForwardedToBlockquote(doc);
 
-      const prettyQuoted = prettier.format(doc.body.outerHTML, PRETTIER_OPTS);
-      const prettyExpected = prettier.format(quoted, PRETTIER_OPTS);
+      const prettyQuoted = await prettier.format(
+        doc.body.outerHTML,
+        PRETTIER_OPTS
+      );
+      const prettyExpected = await prettier.format(quoted, PRETTIER_OPTS);
 
       expect(prettyQuoted).toBe(prettyExpected);
     }
@@ -237,8 +249,11 @@ describe("Quoting test", () => {
       const doc = parser.parseFromString(unquoted, "text/html");
       Quoting.fusionBlockquotes(doc);
 
-      const prettyQuoted = prettier.format(doc.body.outerHTML, PRETTIER_OPTS);
-      const prettyExpected = prettier.format(quoted, PRETTIER_OPTS);
+      const prettyQuoted = await prettier.format(
+        doc.body.outerHTML,
+        PRETTIER_OPTS
+      );
+      const prettyExpected = await prettier.format(quoted, PRETTIER_OPTS);
 
       expect(prettyQuoted).toBe(prettyExpected);
     }
@@ -255,8 +270,11 @@ describe("Quoting test", () => {
       const doc = parser.parseFromString(unquoted, "text/html");
       Quoting.normalizeBlockquotes(doc);
 
-      const prettyQuoted = prettier.format(doc.body.outerHTML, PRETTIER_OPTS);
-      const prettyExpected = prettier.format(quoted, PRETTIER_OPTS);
+      const prettyQuoted = await prettier.format(
+        doc.body.outerHTML,
+        PRETTIER_OPTS
+      );
+      const prettyExpected = await prettier.format(quoted, PRETTIER_OPTS);
 
       expect(prettyQuoted).toBe(prettyExpected);
     }

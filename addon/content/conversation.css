@@ -843,7 +843,9 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
   top: 50px;
   left: 0;
   pointer-events: auto;
-  transition: visibility 800ms, opacity 800ms;
+  transition:
+    visibility 800ms,
+    opacity 800ms;
   /* make sure the popup is in the foreground */
   z-index: 100;
   /* 7px for .arrow, plus 2px for borders */

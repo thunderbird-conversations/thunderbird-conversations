@@ -4,7 +4,12 @@
 }
 
 body {
-  font-family: "Lucida Grande", Trebuchet MS, Tahoma, Verdana, sans-serif;
+  font-family:
+    "Lucida Grande",
+    Trebuchet MS,
+    Tahoma,
+    Verdana,
+    sans-serif;
   font-size: 14px;
   line-height: 24px;
   color: #222;

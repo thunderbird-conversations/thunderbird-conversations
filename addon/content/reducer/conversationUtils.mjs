@@ -5,9 +5,8 @@
 export let conversationUtils = new (class {
   async forward(tabId, msgs) {
     let body = await this._exportConversationAsHtml(msgs);
-    let displayedMsgs = await browser.messageDisplay.getDisplayedMessages(
-      tabId
-    );
+    let displayedMsgs =
+      await browser.messageDisplay.getDisplayedMessages(tabId);
     let identityId = undefined;
     if (displayedMsgs.length) {
       let accountId = displayedMsgs[0].folder.accountId;
