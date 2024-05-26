@@ -5,26 +5,28 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
-import { devFrameActions } from "../reducer";
+import { devFrameActions } from "../reducer.js";
 
 function WindowButtons() {
-  return (
-    <div className="mock-tb-window-buttons-container">
-      <div className="mock-tb-close">●</div>
-      <div className="mock-tb-maximize">●</div>
-      <div className="mock-tb-minimize">●</div>
-    </div>
+  return React.createElement(
+    "div",
+    { className: "mock-tb-window-buttons-container" },
+    React.createElement("div", { className: "mock-tb-close" }, "●"),
+    React.createElement("div", { className: "mock-tb-maximize" }, "●"),
+    React.createElement("div", { className: "mock-tb-minimize" }, "●")
   );
 }
 
 function MockThunderbird({ children }) {
-  return (
-    <div className="mock-tb-frame">
-      <div className="mock-tb-toolbar">
-        <WindowButtons />
-      </div>
-      <div className="mock-tb-content">{children}</div>
-    </div>
+  return React.createElement(
+    "div",
+    { className: "mock-tb-frame" },
+    React.createElement(
+      "div",
+      { className: "mock-tb-toolbar" },
+      React.createElement(WindowButtons)
+    ),
+    React.createElement("div", { className: "mock-tb-content" }, children)
   );
 }
 MockThunderbird.propTypes = {
@@ -45,16 +47,24 @@ export function ThreePanelThunderbird({
   topRight = null,
   bottomRight = null,
 }) {
-  return (
-    <MockThunderbird>
-      <div className="three-pane-container">
-        <div className="three-pane-left">{left}</div>
-        <div className="three-pane-right">
-          <div className="three-pane-top">{topRight}</div>
-          <div className="three-pane-bottom">{bottomRight}</div>
-        </div>
-      </div>
-    </MockThunderbird>
+  return React.createElement(
+    MockThunderbird,
+    null,
+    React.createElement(
+      "div",
+      { className: "three-pane-container" },
+      React.createElement("div", { className: "three-pane-left" }, left),
+      React.createElement(
+        "div",
+        { className: "three-pane-right" },
+        React.createElement("div", { className: "three-pane-top" }, topRight),
+        React.createElement(
+          "div",
+          { className: "three-pane-bottom" },
+          bottomRight
+        )
+      )
+    )
   );
 }
 ThreePanelThunderbird.propTypes = {
@@ -83,14 +93,16 @@ function MessageRow({
   // Is the message the first in a thread of many?
   const isFirst = numMessages > 1 && position === 0;
 
-  const star = message.starred ? (
-    <div className="mock-tb-star starred">★</div>
-  ) : (
-    <div className="mock-tb-star">☆</div>
-  );
+  const star = message.starred
+    ? React.createElement("div", { className: "mock-tb-star starred" }, "★")
+    : React.createElement("div", { className: "mock-tb-star" }, "☆");
 
   // The first message
-  const expander = <div className="mock-tb-expander">{isFirst ? "⌄" : ""}</div>;
+  const expander = React.createElement(
+    "div",
+    { className: "mock-tb-expander" },
+    isFirst ? "⌄" : ""
+  );
 
   let indent = null;
   if (!isFirst && numMessages > 1) {
@@ -98,28 +110,37 @@ function MessageRow({
     // put a `└` icon
     indent = [];
     for (let i = 0; i < position - 1; i++) {
-      indent.push(<div key={i} className="mock-tb-message-indent" />);
+      indent.push(
+        React.createElement("div", {
+          className: "mock-tb-message-indent",
+          key: i,
+        })
+      );
     }
     indent.push(
-      <div key={position} className="mock-tb-message-indent">
-        └
-      </div>
+      React.createElement(
+        "div",
+        { className: "mock-tb-message-indent", key: position },
+        "└"
+      )
     );
   }
 
-  return (
-    <div className="mock-tb-message-row" onClick={() => onClick(position)}>
-      {star}
-      {expander}
-      {indent}
-      <div
-        className={`mock-tb-message-row-subject ${
+  return React.createElement(
+    "div",
+    { className: "mock-tb-message-row", onClick: () => onClick(position) },
+    star,
+    expander,
+    indent,
+    React.createElement(
+      "div",
+      {
+        className: `mock-tb-message-row-subject ${
           message.read ? "read" : "unread"
-        }`}
-      >
-        {message.subject}
-      </div>
-    </div>
+        }`,
+      },
+      message.subject
+    )
   );
 }
 MessageRow.propTypes = {
@@ -148,18 +169,18 @@ function Thread({ thread, position = 0 }) {
       })
     );
   }
-  return (
-    <React.Fragment>
-      {thread.map((message, i) => (
-        <MessageRow
-          key={i}
-          message={message}
-          position={i}
-          numMessages={thread.length}
-          onClick={onClick}
-        />
-      ))}
-    </React.Fragment>
+  return React.createElement(
+    React.Fragment,
+    "",
+    thread.map((message, i) =>
+      React.createElement(MessageRow, {
+        key: i,
+        message: message,
+        position: i,
+        numMessages: thread.length,
+        onClick: onClick,
+      })
+    )
   );
 }
 Thread.propTypes = {
@@ -175,11 +196,11 @@ Thread.propTypes = {
  */
 export function ThreadView() {
   const threads = useSelector((state) => state.threads.threadData);
-  return (
-    <React.Fragment>
-      {threads.map((thread, i) => (
-        <Thread key={i} thread={thread} position={i} />
-      ))}
-    </React.Fragment>
+  return React.createElement(
+    React.Fragment,
+    null,
+    threads.map((thread, i) =>
+      React.createElement(Thread, { key: i, thread, position: i })
+    )
   );
 }

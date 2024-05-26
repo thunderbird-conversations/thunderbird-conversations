@@ -5,7 +5,7 @@
 import React from "react";
 import ReactDOMClient from "react-dom/client";
 import { browser } from "../content/esmodules/thunderbirdCompat.js";
-import { Main } from "./dev-frame.jsx";
+import { Main } from "./dev-frame.mjs";
 
 (async function renderAfterInitialized() {
   // When running in the browser, we shim `i18n` by dynamically
