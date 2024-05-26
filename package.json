@@ -14,7 +14,7 @@
   },
   "jest": {
     "transform": {
-      "\\.m?jsx?$": "babel-jest"
+      "\\.m?js$": "babel-jest"
     },
     "setupFiles": [
       "./addon/tests/setup.mjs"
@@ -37,7 +37,6 @@
     "@babel/cli": "7.24.6",
     "@babel/core": "7.24.6",
     "@babel/preset-env": "7.24.6",
-    "@babel/preset-react": "7.24.6",
     "@testing-library/react": "15.0.7",
     "babel-jest": "29.7.0",
     "babel-loader": "9.1.3",

@@ -11,12 +11,6 @@ module.exports = function (api) {
         modules: "auto",
       },
     ],
-    [
-      "@babel/preset-react",
-      {
-        development: process.env.BABEL_ENV === "development",
-      },
-    ],
   ];
 
   const plugins = [];

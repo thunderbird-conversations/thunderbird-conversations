@@ -12,7 +12,7 @@ export default [
     ignores: ["dist**", "package-lock.json"],
   },
   {
-    files: ["**/*.{js,jsx,mjs}"],
+    files: ["**/*.{js,mjs}"],
     languageOptions: {
       ecmaVersion: "latest",
     },
@@ -44,7 +44,7 @@ export default [
     },
   },
   {
-    files: ["**/*.jsx"],
+    files: ["**/*.mjs"],
     ...reactRecommended,
     languageOptions: {
       ...reactRecommended.languageOptions,
@@ -109,7 +109,7 @@ export default [
     },
   },
   {
-    files: ["**/*.{js,jsx,mjs}"],
+    files: ["**/*.{js,mjs}"],
     plugins: { jsdoc },
     rules: {
       "jsdoc/check-tag-names": "error",

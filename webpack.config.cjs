@@ -64,12 +64,12 @@ module.exports = {
     }),
   ],
   resolve: {
-    extensions: [".js", ".jsx", ".mjs"],
+    extensions: [".js", ".mjs"],
   },
   module: {
     rules: [
       {
-        test: /\.m?jsx?$/,
+        test: /\.m?js$/,
         exclude: /node_modules/,
         use: {
           loader: "babel-loader",
