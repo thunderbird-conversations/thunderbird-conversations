@@ -16,13 +16,13 @@ describe("Compose components have correct return values", () => {
   test("TextBox always returns a string type", () => {
     const callback = jest.fn();
     render(
-      <TextBox
-        title="foo"
-        disabled={false}
-        onChange={callback}
-        name="option_name"
-        value={"first text"}
-      />
+      React.createElement(TextBox, {
+        title: "foo",
+        disabled: false,
+        onChange: callback,
+        name: "option_name",
+        value: "first text",
+      })
     );
     fireEvent.change(screen.getByRole("textbox"), {
       target: { value: "my special text" },
@@ -36,7 +36,11 @@ describe("Compose components have correct return values", () => {
   test("TextArea always returns a string type", () => {
     const callback = jest.fn();
     render(
-      <TextArea onChange={callback} name="option_name" value={"first text"} />
+      React.createElement(TextArea, {
+        onChange: callback,
+        name: "option_name",
+        value: "first text",
+      })
     );
     fireEvent.change(screen.getByRole("textbox"), {
       target: { value: "my special text" },

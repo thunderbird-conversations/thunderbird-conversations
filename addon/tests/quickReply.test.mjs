@@ -34,13 +34,15 @@ describe("Quick Reply tests", () => {
   describe("Expansion Actions", () => {
     test("It should handle only the reply button", async () => {
       render(
-        <ReactRedux.Provider store={store}>
-          <QuickReply
-            id={0}
-            multipleRecipients={false}
-            recipientsIncludeLists={false}
-          />
-        </ReactRedux.Provider>
+        React.createElement(
+          ReactRedux.Provider,
+          { store },
+          React.createElement(QuickReply, {
+            id: 0,
+            multipleRecipients: false,
+            recipientsIncludeLists: false,
+          })
+        )
       );
 
       let replyButton = screen.getByRole("button", { name: "reply" });
@@ -60,13 +62,15 @@ describe("Quick Reply tests", () => {
 
     test("It should handle the reply and replyAll button", async () => {
       render(
-        <ReactRedux.Provider store={store}>
-          <QuickReply
-            id={0}
-            multipleRecipients={true}
-            recipientsIncludeLists={false}
-          />
-        </ReactRedux.Provider>
+        React.createElement(
+          ReactRedux.Provider,
+          { store },
+          React.createElement(QuickReply, {
+            id: 0,
+            multipleRecipients: true,
+            recipientsIncludeLists: false,
+          })
+        )
       );
 
       expect(screen.queryByRole("button", { name: "reply" })).not.toBe(null);
@@ -96,13 +100,15 @@ describe("Quick Reply tests", () => {
 
     test("It should handle the reply and replyList button", async () => {
       render(
-        <ReactRedux.Provider store={store}>
-          <QuickReply
-            id={0}
-            multipleRecipients={true}
-            recipientsIncludeLists={true}
-          />
-        </ReactRedux.Provider>
+        React.createElement(
+          ReactRedux.Provider,
+          { store },
+          React.createElement(QuickReply, {
+            id: 0,
+            multipleRecipients: true,
+            recipientsIncludeLists: true,
+          })
+        )
       );
 
       expect(screen.queryByRole("button", { name: "reply" })).not.toBe(null);
@@ -132,13 +138,15 @@ describe("Quick Reply tests", () => {
   describe("Expanded state", () => {
     test("Should show the ComposeWidget when expanded", async () => {
       render(
-        <ReactRedux.Provider store={store}>
-          <QuickReply
-            id={0}
-            multipleRecipients={false}
-            recipientsIncludeLists={false}
-          />
-        </ReactRedux.Provider>
+        React.createElement(
+          ReactRedux.Provider,
+          { store },
+          React.createElement(QuickReply, {
+            id: 0,
+            multipleRecipients: false,
+            recipientsIncludeLists: false,
+          })
+        )
       );
 
       await act(() => {

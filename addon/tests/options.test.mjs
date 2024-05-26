@@ -21,7 +21,13 @@ import {
 describe("Option components have correct return values", () => {
   test("NumericOption always returns a numeric type", () => {
     const callback = jest.fn();
-    render(<NumericOption onChange={callback} name="option_name" value={7} />);
+    render(
+      React.createElement(NumericOption, {
+        onChange: callback,
+        name: "option_name",
+        value: 7,
+      })
+    );
     // Put in a number and expect it back
     fireEvent.change(screen.getByRole("spinbutton"), {
       target: { value: "45" },
@@ -42,7 +48,11 @@ describe("Option components have correct return values", () => {
   test("BinaryOption always returns a boolean type", () => {
     const callback = jest.fn();
     let { rerender } = render(
-      <BinaryOption onChange={callback} name="option_name" value={true} />
+      React.createElement(BinaryOption, {
+        onChange: callback,
+        name: "option_name",
+        value: true,
+      })
     );
     expect(screen.getByRole("checkbox").checked).toBe(true);
 
@@ -53,7 +63,11 @@ describe("Option components have correct return values", () => {
     expect(typeof callback.mock.calls[0][1]).toBe("boolean");
 
     rerender(
-      <BinaryOption onChange={callback} name="option_name" value={false} />
+      React.createElement(BinaryOption, {
+        onChange: callback,
+        name: "option_name",
+        value: false,
+      })
     );
 
     fireEvent.click(screen.getByRole("checkbox"));
@@ -64,7 +78,11 @@ describe("Option components have correct return values", () => {
   test("TextOption always returns a string type", () => {
     const callback = jest.fn();
     render(
-      <TextOption onChange={callback} name="option_name" value={"first text"} />
+      React.createElement(TextOption, {
+        onChange: callback,
+        name: "option_name",
+        value: "first text",
+      })
     );
     fireEvent.change(screen.getByRole("textbox"), {
       target: { value: "my special text" },
@@ -78,32 +96,32 @@ describe("Option components have correct return values", () => {
   test("ChoiceOption always returns the value supplied", () => {
     const callback = jest.fn();
     let { rerender } = render(
-      <ChoiceOption
-        onChange={callback}
-        name="option_name"
-        choices={[
+      React.createElement(ChoiceOption, {
+        onChange: callback,
+        name: "option_name",
+        choices: [
           { desc: "item1", value: 5 },
           { desc: "item2", value: 10 },
           { desc: "item3", value: "abc" },
-        ]}
-        value={10}
-      />
+        ],
+        value: 10,
+      })
     );
     // We have three choices, so there are three input radio buttons
     // fireEvent.change(screen.getByRole("radio", { name: "item1" }), { target: { checked: true }});
     fireEvent.click(screen.getByRole("radio", { name: "item1" }));
     expect(callback.mock.calls.length).toBe(1);
     rerender(
-      <ChoiceOption
-        onChange={callback}
-        name="option_name"
-        choices={[
+      React.createElement(ChoiceOption, {
+        onChange: callback,
+        name: "option_name",
+        choices: [
           { desc: "item1", value: 5 },
           { desc: "item2", value: 10 },
           { desc: "item3", value: "abc" },
-        ]}
-        value={5}
-      />
+        ],
+        value: 5,
+      })
     );
     fireEvent.click(screen.getByRole("radio", { name: "item2" }));
     expect(callback.mock.calls.length).toBe(2);
@@ -145,7 +163,7 @@ describe("Option full page tests", () => {
 
   test("Toggling an option changes the setting in browser.storage.local", async () => {
     await act(async () => {
-      render(<Main />);
+      render(React.createElement(Main));
       await i18n.isLoaded;
     });
 
@@ -173,7 +191,7 @@ describe("Option full page tests", () => {
   test("Pressing the button opens the setup assistant", async () => {
     const mockedTabCreate = jest.spyOn(browser.tabs, "create");
     await act(async () => {
-      render(<Main />);
+      render(React.createElement(Main));
       await i18n.isLoaded;
     });
 
@@ -196,7 +214,7 @@ describe("Option full page tests", () => {
     });
 
     await act(async () => {
-      render(<Main />);
+      render(React.createElement(Main));
       await i18n.isLoaded;
     });
 

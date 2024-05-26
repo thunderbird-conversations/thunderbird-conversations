@@ -21,8 +21,7 @@
     ],
     "testEnvironment": "jsdom",
     "testMatch": [
-      "**/__tests__/**/*.?(m)js?(x)",
-      "**/?(*.)+(spec|test).?(m)js?(x)"
+      "**/?(*.)+(spec|test).?(m)js"
     ]
   },
   "private": true,

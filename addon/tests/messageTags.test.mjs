@@ -28,11 +28,11 @@ describe("SpecialMessageTags test", () => {
     ];
 
     render(
-      <SpecialMessageTags
-        onTagClick={callback}
-        folderName="n/a"
-        specialTags={tagData}
-      />
+      React.createElement(SpecialMessageTags, {
+        onTagClick: callback,
+        folderName: "n/a",
+        specialTags: tagData,
+      })
     );
 
     expect(screen.getByText("DKIM signed").className).toBe(
@@ -64,11 +64,11 @@ describe("SpecialMessageTags test", () => {
     ];
 
     render(
-      <SpecialMessageTags
-        onTagClick={callback}
-        folderName="n/a"
-        specialTags={tagData}
-      />
+      React.createElement(SpecialMessageTags, {
+        onTagClick: callback,
+        folderName: "n/a",
+        specialTags: tagData,
+      })
     );
 
     // The first tag cannot be clicked
@@ -105,7 +105,11 @@ describe("MessageTags test", () => {
   test("Basic tags", async () => {
     const callback = jest.fn();
     render(
-      <MessageTags onTagsChange={callback} tags={SAMPLE_TAGS} expanded={true} />
+      React.createElement(MessageTags, {
+        onTagsChange: callback,
+        tags: SAMPLE_TAGS,
+        expanded: true,
+      })
     );
 
     let tags = screen.getAllByRole("listitem");
@@ -120,7 +124,11 @@ describe("MessageTags test", () => {
   test("Expanded tags", async () => {
     const callback = jest.fn();
     render(
-      <MessageTags onTagsChange={callback} tags={SAMPLE_TAGS} expanded={true} />
+      React.createElement(MessageTags, {
+        onTagsChange: callback,
+        tags: SAMPLE_TAGS,
+        expanded: true,
+      })
     );
 
     let tags = screen.getAllByRole("listitem");
@@ -139,11 +147,11 @@ describe("MessageTags test", () => {
   test("Unexpanded tags", async () => {
     const callback = jest.fn();
     render(
-      <MessageTags
-        onTagsChange={callback}
-        tags={SAMPLE_TAGS}
-        expanded={false}
-      />
+      React.createElement(MessageTags, {
+        onTagsChange: callback,
+        tags: SAMPLE_TAGS,
+        expanded: false,
+      })
     );
 
     let tags = screen.getAllByRole("listitem");
