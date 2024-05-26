@@ -8,13 +8,13 @@
  */
 
 import * as RTK from "@reduxjs/toolkit";
-import { composeSlice } from "./reducerCompose.js";
-import { controllerActions } from "./controllerActions.js";
-import { mergeContactDetails, getContactPhotos } from "./contacts.js";
-import { messageActions } from "./reducerMessages.js";
-import { MessageEnricher } from "./messageEnricher.js";
-import { quickReplySlice } from "./reducerQuickReply.js";
-import { summarySlice } from "./reducerSummary.js";
+import { composeSlice } from "./reducerCompose.mjs";
+import { controllerActions } from "./controllerActions.mjs";
+import { mergeContactDetails, getContactPhotos } from "./contacts.mjs";
+import { messageActions } from "./reducerMessages.mjs";
+import { MessageEnricher } from "./messageEnricher.mjs";
+import { quickReplySlice } from "./reducerQuickReply.mjs";
+import { summarySlice } from "./reducerSummary.mjs";
 
 const sortMessages = (m1, m2) => m1.date - m2.date;
 

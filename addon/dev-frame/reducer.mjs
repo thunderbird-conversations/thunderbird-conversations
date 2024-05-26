@@ -1,24 +1,24 @@
 import * as RTK from "@reduxjs/toolkit";
 import * as Redux from "redux";
-import { attachmentActions } from "../content/reducer/reducerAttachments.js";
+import { attachmentActions } from "../content/reducer/reducerAttachments.mjs";
 import {
   composeSlice,
   composeActions,
-} from "../content/reducer/reducerCompose.js";
+} from "../content/reducer/reducerCompose.mjs";
 import {
   initialMessages,
   messageActions,
-} from "../content/reducer/reducerMessages.js";
+} from "../content/reducer/reducerMessages.mjs";
 import {
   initialSummary,
   summaryActions,
-} from "../content/reducer/reducerSummary.js";
+} from "../content/reducer/reducerSummary.mjs";
 import {
   quickReplyActions,
   quickReplySlice,
-} from "../content/reducer/reducerQuickReply.js";
-import { mockThreads } from "./mock-data/threads.js";
-import { browser } from "../content/esmodules/thunderbirdCompat.js";
+} from "../content/reducer/reducerQuickReply.mjs";
+import { mockThreads } from "./mock-data/threads.mjs";
+import { browser } from "../content/esmodules/thunderbirdCompat.mjs";
 
 globalThis.browser = browser;
 browser.i18n.initialize();

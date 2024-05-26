@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import { getInitials } from "../esmodules/utils.js";
-import { messageActions } from "./reducerMessages.js";
+import { getInitials } from "../esmodules/utils.mjs";
+import { messageActions } from "./reducerMessages.mjs";
 
 /**
  * Adds necessary information for display contacts.

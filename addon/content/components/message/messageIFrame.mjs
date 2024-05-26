@@ -4,9 +4,9 @@
 
 import React from "react";
 import PropTypes from "prop-types";
-import { messageActions } from "../../reducer/reducerMessages.js";
-import { summaryActions } from "../../reducer/reducerSummary.js";
-import { Quoting } from "../../utils/quoting.js";
+import { messageActions } from "../../reducer/reducerMessages.mjs";
+import { summaryActions } from "../../reducer/reducerSummary.mjs";
+import { Quoting } from "../../utils/quoting.mjs";
 
 let index = 0;
 

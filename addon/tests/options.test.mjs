@@ -5,7 +5,7 @@
 import { render, fireEvent, act, screen } from "@testing-library/react";
 import React from "react";
 import { jest } from "@jest/globals";
-import { i18n } from "../content/esmodules/thunderbirdCompat.js";
+import { i18n } from "../content/esmodules/thunderbirdCompat.mjs";
 
 // Import the components we want to test
 import {

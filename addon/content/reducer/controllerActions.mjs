@@ -9,9 +9,9 @@
  */
 
 /* global BrowserSim */
-import { conversationActions } from "./reducerConversation.js";
-import { messageActions } from "./reducerMessages.js";
-import { summaryActions, summarySlice } from "./reducerSummary.js";
+import { conversationActions } from "./reducerConversation.mjs";
+import { messageActions } from "./reducerMessages.mjs";
+import { summaryActions, summarySlice } from "./reducerSummary.mjs";
 
 let loggingEnabled = false;
 let markAsReadTimer;

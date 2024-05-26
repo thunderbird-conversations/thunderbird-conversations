@@ -10,12 +10,12 @@ import { createFakeData } from "./utils.mjs";
 import {
   quickReplySlice,
   quickReplyActions,
-} from "../content/reducer/reducerQuickReply.js";
+} from "../content/reducer/reducerQuickReply.mjs";
 import {
   messagesSlice,
   messageActions,
-} from "../content/reducer/reducerMessages.js";
-import { composeActions } from "../content/reducer/reducerCompose.js";
+} from "../content/reducer/reducerMessages.mjs";
+import { composeActions } from "../content/reducer/reducerCompose.mjs";
 
 const quickReplyApp = Redux.combineReducers({
   quickReply: quickReplySlice.reducer,

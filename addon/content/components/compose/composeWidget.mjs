@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import { composeActions } from "../../reducer/reducerCompose.js";
+import { composeActions } from "../../reducer/reducerCompose.mjs";
 import React from "react";
 import * as ReactRedux from "react-redux";
 import { TextArea, TextBox } from "./composeFields.mjs";

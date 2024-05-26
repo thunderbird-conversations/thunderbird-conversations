@@ -4,7 +4,7 @@
 
 import React from "react";
 import ReactDOMClient from "react-dom/client";
-import { browser } from "../content/esmodules/thunderbirdCompat.js";
+import { browser } from "../content/esmodules/thunderbirdCompat.mjs";
 import { Main } from "./dev-frame.mjs";
 
 (async function renderAfterInitialized() {

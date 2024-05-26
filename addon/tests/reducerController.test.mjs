@@ -7,17 +7,17 @@ import * as RTK from "@reduxjs/toolkit";
 import * as Redux from "redux";
 
 // Import the components we want to test
-// jest.mock("../content/reducer/reducerMessages.js");
+// jest.mock("../content/reducer/reducerMessages.mjs");
 
-import { conversationActions } from "../content/reducer/reducerConversation.js";
+import { conversationActions } from "../content/reducer/reducerConversation.mjs";
 import {
   messageActions,
   messagesSlice,
-} from "../content/reducer/reducerMessages.js";
+} from "../content/reducer/reducerMessages.mjs";
 import {
   summarySlice,
   summaryActions,
-} from "../content/reducer/reducerSummary.js";
+} from "../content/reducer/reducerSummary.mjs";
 
 const summaryApp = Redux.combineReducers({
   messages: messagesSlice.reducer,

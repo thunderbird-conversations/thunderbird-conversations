@@ -5,7 +5,7 @@
 /* global BrowserSim */
 
 import * as RTK from "@reduxjs/toolkit";
-import { messageUtils } from "./messageUtils.js";
+import { messageUtils } from "./messageUtils.mjs";
 
 export const initialMessages = {
   msgData: [],

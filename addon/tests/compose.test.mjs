@@ -14,7 +14,7 @@ import { jest } from "@jest/globals";
 
 // Import the components we want to test
 import { Main, store } from "../compose/compose.mjs";
-import { composeActions } from "../content/reducer/reducerCompose.js";
+import { composeActions } from "../content/reducer/reducerCompose.mjs";
 
 describe("Compose full page tests", () => {
   let mockedSend;

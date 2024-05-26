@@ -7,11 +7,11 @@ import React from "react";
 import * as RTK from "@reduxjs/toolkit";
 import * as ReactRedux from "react-redux";
 import { jest } from "@jest/globals";
-import { conversationApp } from "../content/reducer/reducer.js";
+import { conversationApp } from "../content/reducer/reducer.mjs";
 
 // Import the components we want to test
 import { QuickReply } from "../content/components/quickreply/quickReply.mjs";
-import { quickReplyActions } from "../content/reducer/reducerQuickReply.js";
+import { quickReplyActions } from "../content/reducer/reducerQuickReply.mjs";
 
 describe("Quick Reply tests", () => {
   let store;

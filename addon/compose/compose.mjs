@@ -5,7 +5,7 @@
 import React from "react";
 import * as ReactRedux from "react-redux";
 import * as RTK from "@reduxjs/toolkit";
-import { composeApp } from "./reducer.js";
+import { composeApp } from "./reducer.mjs";
 import { ComposeWidget } from "../content/components/compose/composeWidget.mjs";
 
 export const store = RTK.configureStore({ reducer: composeApp });

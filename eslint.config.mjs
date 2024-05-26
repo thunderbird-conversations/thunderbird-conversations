@@ -30,7 +30,7 @@ export default [
     files: [
       "addon/content/modules/*.*js",
       "addon/content/stubGlobals.js",
-      "addon/content/stubWrapper.js",
+      "addon/content/stubWrapper.mjs",
       "addon/experiment-api/*.js",
     ],
     plugins: { mozilla, "no-unsanitized": nounsanitized },

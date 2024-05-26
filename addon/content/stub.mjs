@@ -7,9 +7,9 @@ import React from "react";
 import ReactDOMClient from "react-dom/client";
 import * as RTK from "@reduxjs/toolkit";
 import * as ReactRedux from "react-redux";
-import { conversationApp } from "./reducer/reducer.js";
+import { conversationApp } from "./reducer/reducer.mjs";
 import { ConversationWrapper } from "./components/conversation/conversationWrapper.mjs";
-import { controllerActions } from "./reducer/controllerActions.js";
+import { controllerActions } from "./reducer/controllerActions.mjs";
 
 document.addEventListener(
   "DOMContentLoaded",

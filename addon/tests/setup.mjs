@@ -4,7 +4,7 @@
 
 /* eslint-env node */
 
-import { browser } from "../content/esmodules/thunderbirdCompat.js";
+import { browser } from "../content/esmodules/thunderbirdCompat.mjs";
 import fileSystem from "fs";
 import path from "path";
 

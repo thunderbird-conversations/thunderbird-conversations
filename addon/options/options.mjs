@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import { browser, i18n } from "../content/esmodules/thunderbirdCompat.js";
+import { browser, i18n } from "../content/esmodules/thunderbirdCompat.mjs";
 import React from "react";
 import * as RTK from "@reduxjs/toolkit";
 import * as ReactRedux from "react-redux";

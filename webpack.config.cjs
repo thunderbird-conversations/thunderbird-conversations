@@ -6,11 +6,11 @@ const development = process.env.NODE_ENV === "development";
 module.exports = {
   devtool: development ? "source-map" : false,
   entry: {
-    compose: "./addon/compose/composeRender.js",
+    compose: "./addon/compose/composeRender.mjs",
     gallery: "./addon/gallery/gallery.mjs",
-    options: "./addon/options/optionsRender.js",
-    stub: "./addon/content/stub.js",
-    "dev-frame": "./addon/dev-frame/dev-frame-render.js",
+    options: "./addon/options/optionsRender.mjs",
+    stub: "./addon/content/stub.mjs",
+    "dev-frame": "./addon/dev-frame/dev-frame-render.mjs",
   },
   mode: "none",
   optimization: {

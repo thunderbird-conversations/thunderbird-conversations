@@ -5,7 +5,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Attachments } from "./attachments.mjs";
-import { messageActions } from "../../reducer/reducerMessages.js";
+import { messageActions } from "../../reducer/reducerMessages.mjs";
 import { MessageDetails } from "./messageDetails.mjs";
 import { MessageFooter } from "./messageFooter.mjs";
 import { MessageHeader } from "./messageHeader.mjs";

@@ -7,13 +7,13 @@ import * as ReactRedux from "react-redux";
 import {
   initializeI18n,
   browser,
-} from "../content/esmodules/thunderbirdCompat.js";
+} from "../content/esmodules/thunderbirdCompat.mjs";
 import {
   ThreadView,
   ThreePanelThunderbird,
 } from "./components/thunderbird.mjs";
 import { ConversationWrapper } from "../content/components/conversation/conversationWrapper.mjs";
-import { store } from "./reducer.js";
+import { store } from "./reducer.mjs";
 
 globalThis.browser = browser;
 

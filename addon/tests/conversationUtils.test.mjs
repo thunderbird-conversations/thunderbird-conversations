@@ -3,7 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import { createFakeData } from "./utils.mjs";
-import { conversationUtils } from "../content/reducer/conversationUtils.js";
+import { conversationUtils } from "../content/reducer/conversationUtils.mjs";
 
 describe("conversationUtils", () => {
   let composeSpy;

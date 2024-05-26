@@ -7,8 +7,8 @@ import * as Redux from "redux";
 import {
   composeActions,
   composeSlice,
-} from "../content/reducer/reducerCompose.js";
-import { summarySlice } from "../content/reducer/reducerSummary.js";
+} from "../content/reducer/reducerCompose.mjs";
+import { summarySlice } from "../content/reducer/reducerSummary.mjs";
 
 composeActions.close = () => {
   return async function (dispatch) {

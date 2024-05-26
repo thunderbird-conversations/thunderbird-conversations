@@ -5,7 +5,7 @@
 import React from "react";
 import ReactDOMClient from "react-dom/client";
 import { Main, store } from "./compose.mjs";
-import { composeActions } from "../content/reducer/reducerCompose.js";
+import { composeActions } from "../content/reducer/reducerCompose.mjs";
 
 // Render the options to the root of the page
 let root = ReactDOMClient.createRoot(document.querySelector("#root"));

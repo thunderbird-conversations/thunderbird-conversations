@@ -6,7 +6,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
 import { ContactDetail } from "../contactDetail.mjs";
-import { messageActions } from "../../reducer/reducerMessages.js";
+import { messageActions } from "../../reducer/reducerMessages.mjs";
 import { MessageHeaderOptions } from "./messageHeaderOptions.mjs";
 import { MessageTags, SpecialMessageTags } from "./messageTags.mjs";
 import { SvgIcon } from "../svgIcon.mjs";

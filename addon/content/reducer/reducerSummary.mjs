@@ -3,8 +3,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import * as RTK from "@reduxjs/toolkit";
-import { conversationUtils } from "./conversationUtils.js";
-import { messageActions } from "./reducerMessages.js";
+import { conversationUtils } from "./conversationUtils.mjs";
+import { messageActions } from "./reducerMessages.mjs";
 
 export const initialSummary = {
   autoMarkAsRead: true,

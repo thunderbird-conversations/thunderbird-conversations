@@ -3,7 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import { createFakeData, createFakeSummaryData } from "./utils.mjs";
-import { MessageEnricher } from "../content/reducer/messageEnricher.js";
+import { MessageEnricher } from "../content/reducer/messageEnricher.mjs";
 
 describe("messageEnricher", () => {
   let fakeMessageHeaderData;

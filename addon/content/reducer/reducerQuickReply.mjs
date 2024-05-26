@@ -3,8 +3,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import * as RTK from "@reduxjs/toolkit";
-import { composeActions } from "./reducerCompose.js";
-import { messageUtils } from "./messageUtils.js";
+import { composeActions } from "./reducerCompose.mjs";
+import { messageUtils } from "./messageUtils.mjs";
 
 export const initialQuickReply = {
   expanded: false,

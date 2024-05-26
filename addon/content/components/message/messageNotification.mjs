@@ -4,7 +4,7 @@
 
 import React from "react";
 import PropTypes from "prop-types";
-import { messageActions } from "../../reducer/reducerMessages.js";
+import { messageActions } from "../../reducer/reducerMessages.mjs";
 import { SvgIcon } from "../svgIcon.mjs";
 
 /**
