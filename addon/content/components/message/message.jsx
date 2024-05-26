@@ -9,10 +9,10 @@ import { messageActions } from "../../reducer/reducerMessages.js";
 import { MessageDetails } from "./messageDetails.jsx";
 import { MessageFooter } from "./messageFooter.jsx";
 import { MessageHeader } from "./messageHeader.jsx";
-import { MessageIFrame } from "./messageIFrame.jsx";
+import { MessageIFrame } from "./messageIFrame.mjs";
 import { MessageNotification } from "./messageNotification.jsx";
 import { MessageTags, SpecialMessageTags } from "./messageTags.jsx";
-import { QuickReply } from "../quickreply/quickReply.jsx";
+import { QuickReply } from "../quickreply/quickReply.mjs";
 
 function isAccel(event) {
   if (window.navigator.platform.includes("Mac")) {

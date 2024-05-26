@@ -26,16 +26,20 @@ class _ConversationFooter extends React.PureComponent {
   }
 
   render() {
-    return (
-      <div className="bottom-links">
-        <a className="link" onClick={this.forwardConversation}>
-          {browser.i18n.getMessage("message.forwardConversation")}
-        </a>{" "}
-        –{" "}
-        <a className="link" onClick={this.printConversation}>
-          {browser.i18n.getMessage("message.printConversation")}
-        </a>
-      </div>
+    return React.createElement(
+      "div",
+      { className: "bottom-links" },
+      React.createElement(
+        "a",
+        { className: "link", onClick: this.forwardConversation },
+        browser.i18n.getMessage("message.forwardConversation")
+      ),
+      " - ",
+      React.createElement(
+        "a",
+        { className: "link", onClick: this.printConversation },
+        browser.i18n.getMessage("message.printConversation")
+      )
     );
   }
 }

@@ -5,9 +5,9 @@
 import React from "react";
 import * as ReactRedux from "react-redux";
 import PropTypes from "prop-types";
-import { ConversationFooter } from "./conversationFooter.jsx";
-import { ConversationHeader } from "./conversationHeader.jsx";
-import { MessageList } from "../message/messageList.jsx";
+import { ConversationFooter } from "./conversationFooter.mjs";
+import { ConversationHeader } from "./conversationHeader.mjs";
+import { MessageList } from "../message/messageList.mjs";
 
 /**
  * This is a wrapper class around the whole conversation. It also kicks off
@@ -51,19 +51,19 @@ class _ConversationWrapper extends React.PureComponent {
 
   render() {
     if (this.props.messageNotFound) {
-      return (
-        <React.Fragment>
-          {browser.i18n.getMessage("message.movedOrDeletedConversation")}
-        </React.Fragment>
+      return React.createElement(
+        React.Fragment,
+        null,
+        browser.i18n.getMessage("message.movedOrDeletedConversation")
       );
     }
-    return (
-      <React.Fragment>
-        <div id="popup-container"></div>
-        <ConversationHeader />
-        <MessageList />
-        <ConversationFooter />
-      </React.Fragment>
+    return React.createElement(
+      React.Fragment,
+      null,
+      React.createElement("div", { id: "popup-container" }),
+      React.createElement(ConversationHeader),
+      React.createElement(MessageList),
+      React.createElement(ConversationFooter)
     );
   }
 }

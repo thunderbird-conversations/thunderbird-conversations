@@ -4,7 +4,7 @@
 
 import React from "react";
 import PropTypes from "prop-types";
-import { ActionButton } from "./messageActionButton.jsx";
+import { ActionButton } from "./messageActionButton.mjs";
 import { messageActions } from "../../reducer/reducerMessages.js";
 
 /**

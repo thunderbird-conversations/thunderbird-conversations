@@ -71,10 +71,12 @@ export function ActionButton({ type, callback, className, showString }) {
     );
   }
 
-  return (
-    <button className={className || ""} title={title} onClick={action}>
-      <SvgIcon ariaHidden={true} hash={info.icon} /> {!!showString && title}
-    </button>
+  return React.createElement(
+    "button",
+    { className: className || "", title: title, onClick: action },
+    React.createElement(SvgIcon, { ariaHidden: true, hash: info.icon }),
+    " ",
+    !!showString && title
   );
 }
 ActionButton.propTypes = {

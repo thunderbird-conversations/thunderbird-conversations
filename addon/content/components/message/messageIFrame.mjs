@@ -632,9 +632,10 @@ export class MessageIFrame extends React.Component {
   render() {
     // TODO: See comment in componentDidMount
     // <iframe className={`iframe${this.index}`} type="content" ref={f => this.iframe = f}/>
-    return (
-      <div className={`iframewrap${this.index}`} ref={(d) => (this.div = d)} />
-    );
+    return React.createElement("div", {
+      className: `iframewrap${this.index}`,
+      ref: (d) => (this.div = d),
+    });
   }
 }
 

@@ -38,16 +38,16 @@ class LinkifiedSubject extends React.PureComponent {
       while (text && LINKS_REGEX.test(text)) {
         let matches = LINKS_REGEX.exec(text);
         let [pre, ...post] = text.split(matches[1]);
-        let link = (
-          <a
-            href={matches[1]}
-            title={matches[1]}
-            className="link"
-            onClick={this.handleClick}
-            key={i++}
-          >
-            {matches[1]}
-          </a>
+        let link = React.createElement(
+          "a",
+          {
+            href: matches[1],
+            title: matches[1],
+            className: "link",
+            onClick: this.handleClick,
+            key: i++,
+          },
+          matches[1]
         );
         if (pre) {
           contents.push(pre);
@@ -59,17 +59,17 @@ class LinkifiedSubject extends React.PureComponent {
         contents.push(text);
       }
 
-      return (
-        <div className="subject" title={subject}>
-          <span>{contents}</span>
-        </div>
+      return React.createElement(
+        "div",
+        { className: "subject", title: subject },
+        React.createElement("span", null, contents)
       );
     }
 
-    return (
-      <div className="subject" title={subject}>
-        {subject}
-      </div>
+    return React.createElement(
+      "div",
+      { className: "subject", title: subject },
+      subject
     );
   }
 }
@@ -168,81 +168,104 @@ class _ConversationHeader extends React.PureComponent {
 
   render() {
     document.title = this.props.subject;
-    return (
-      <div className="conversationHeaderWrapper">
-        <div className="conversationHeader">
-          <LinkifiedSubject
-            dispatch={this.props.dispatch}
-            loading={this.props.loading}
-            subject={this.props.subject}
-          />
-          <div className="actions">
-            <button
-              className="button-flat"
-              title={browser.i18n.getMessage("message.detach.tooltip")}
-              onClick={this.detachTab}
-            >
-              <SvgIcon ariaHidden={true} hash={"open_in_new"} />
-            </button>
-            <button
-              className={`button-flat ${
+    return React.createElement(
+      "div",
+      { className: "conversationHeaderWrapper" },
+      React.createElement(
+        "div",
+        { className: "conversationHeader" },
+        React.createElement(LinkifiedSubject, {
+          dispatch: this.props.dispatch,
+          loading: this.props.loading,
+          subject: this.props.subject,
+        }),
+        React.createElement(
+          "div",
+          { className: "actions" },
+          React.createElement(
+            "button",
+            {
+              className: "button-flat",
+              title: browser.i18n.getMessage("message.detach.tooltip"),
+              onClick: this.detachTab,
+            },
+            React.createElement(SvgIcon, {
+              ariaHidden: true,
+              hash: "open_in_new",
+            })
+          ),
+          React.createElement(
+            "button",
+            {
+              className: `button-flat ${
                 this.areSomeMessagesUnread ? "unread" : ""
-              }`}
-              title={browser.i18n.getMessage("message.read.tooltip")}
-              onClick={this.toggleRead}
-            >
-              <SvgIcon ariaHidden={true} hash={"new"} />
-            </button>
-            <button
-              className="button-flat"
-              title={browser.i18n.getMessage("message.expand.tooltip")}
-              onClick={this.expandCollapse}
-            >
-              <svg
-                className={`icon expand ${
+              }`,
+              title: browser.i18n.getMessage("message.read.tooltip"),
+              onClick: this.toggleRead,
+            },
+            React.createElement(SvgIcon, { ariaHidden: true, hash: "new" })
+          ),
+          React.createElement(
+            "button",
+            {
+              className: "button-flat",
+              title: browser.i18n.getMessage("message.expand.tooltip"),
+              onClick: this.expandCollapse,
+            },
+            React.createElement(
+              "svg",
+              {
+                className: `icon expand ${
                   this.areSomeMessagesCollapsed ? "" : "collapse"
-                }`}
-                aria-hidden={true}
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                xmlnsXlink="http://www.w3.org/1999/xlink"
-              >
-                <use
-                  className="expand-more"
-                  xlinkHref="icons/material-icons.svg#expand_more"
-                ></use>
-                <use
-                  className="expand-less"
-                  xlinkHref="icons/material-icons.svg#expand_less"
-                ></use>
-              </svg>
-            </button>
-            {this.canJunk && (
-              <button
-                className="button-flat junk-button"
-                title={browser.i18n.getMessage("message.junk.tooltip")}
-                onClick={this.junkConversation}
-              >
-                <SvgIcon ariaHidden={true} hash={"whatshot"} />
-              </button>
-            )}
-            <button
-              className="button-flat"
-              title={browser.i18n.getMessage("message.archive.tooltip")}
-              onClick={this.archiveToolbar}
-            >
-              <SvgIcon ariaHidden={true} hash={"archive"} />
-            </button>
-            <button
-              className="button-flat"
-              title={browser.i18n.getMessage("message.trash.tooltip")}
-              onClick={this.delete}
-            >
-              <SvgIcon ariaHidden={true} hash={"delete"} />
-            </button>
-          </div>
-        </div>
-      </div>
+                }`,
+                "aria-hidden": true,
+                viewBox: "0 0 24 24",
+                xmlns: "http://www.w3.org/2000/svg",
+                xmlnsXlink: "http://www.w3.org/1999/xlink",
+              },
+              React.createElement("use", {
+                className: "expand-more",
+                xlinkHref: "icons/material-icons.svg#expand_more",
+              }),
+              React.createElement("use", {
+                className: "expand-less",
+                xlinkHref: "icons/material-icons.svg#expand_less",
+              })
+            )
+          ),
+          this.canJunk &&
+            React.createElement(
+              "button",
+              {
+                className: "button-flat junk-button",
+                title: browser.i18n.getMessage("message.junk.tooltip"),
+                onClick: this.junkConversation,
+              },
+              React.createElement(SvgIcon, {
+                ariaHidden: true,
+                hash: "whatshot",
+              })
+            ),
+          React.createElement(
+            "button",
+            {
+              className: "button-flat",
+              title: browser.i18n.getMessage("message.archive.tooltip"),
+              onClick: this.archiveToolbar,
+            },
+            React.createElement(SvgIcon, { ariaHidden: true, hash: "archive" })
+          ),
+          React.createElement(
+            "button",
+            {
+              className: "button-flat",
+              title: browser.i18n.getMessage("message.trash.tooltip"),
+              onClick: this.delete,
+            },
+            React.createElement(SvgIcon, { ariaHidden: true, hash: "delete" })
+          )
+        )
+      )
     );
   }
 }
