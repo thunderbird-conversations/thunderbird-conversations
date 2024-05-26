@@ -13,9 +13,6 @@
     "thunderbird": ">=128.0a1"
   },
   "jest": {
-    "transform": {
-      "\\.m?js$": "babel-jest"
-    },
     "setupFiles": [
       "./addon/tests/setup.mjs"
     ],
@@ -34,12 +31,7 @@
     "redux": "5.0.1"
   },
   "devDependencies": {
-    "@babel/cli": "7.24.6",
-    "@babel/core": "7.24.6",
-    "@babel/preset-env": "7.24.6",
     "@testing-library/react": "15.0.7",
-    "babel-jest": "29.7.0",
-    "babel-loader": "9.1.3",
     "eslint": "8.57.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-fetch-options": "0.0.5",
@@ -70,7 +62,7 @@
     "test": "npm run test:lint && npm run test:format && npm run test:jest",
     "test:lint": "eslint .",
     "test:format": "prettier --check .",
-    "test:jest": "jest ./addon/tests/",
+    "test:jest": "node --experimental-vm-modules node_modules/jest/bin/jest.js ./addon/tests/",
     "webextlint": "web-ext lint",
     "preversion": "npm ci && npm test",
     "version": "scripts/update-max-version.sh && scripts/update-version.sh",

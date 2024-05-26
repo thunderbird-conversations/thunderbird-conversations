@@ -9,6 +9,7 @@ import * as Redux from "redux";
 // Import the components we want to test
 // jest.mock("../content/reducer/reducerMessages.mjs");
 
+import { jest } from "@jest/globals";
 import { conversationActions } from "../content/reducer/reducerConversation.mjs";
 import {
   messageActions,
