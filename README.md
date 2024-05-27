@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.com/thunderbird-conversations/thunderbird-conversations.svg?branch=master)](https://travis-ci.com/thunderbird-conversations/thunderbird-conversations)
-
 # Thunderbird Conversations
 
 This extension improves the threaded summary for emails in Thunderbird. It
