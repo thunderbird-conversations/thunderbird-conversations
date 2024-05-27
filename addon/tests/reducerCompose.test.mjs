@@ -2,9 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import { jest } from "@jest/globals";
+import assert from "node:assert/strict";
+import { describe, it, beforeEach } from "node:test";
 import * as RTK from "@reduxjs/toolkit";
 import * as Redux from "redux";
+import { assertContains } from "./utils.mjs";
 
 // Import the components we want to test
 import {
@@ -23,24 +25,20 @@ describe("Compose Reducer and Actions tests", () => {
   let mockedGet;
   let mockedSend;
 
-  beforeEach(() => {
-    mockedAccountDefault = jest.spyOn(browser.accounts, "getDefault");
-    mockedGet = jest.spyOn(browser.identities, "getDefault");
-    mockedSend = jest.spyOn(browser.convCompose, "send");
+  beforeEach((t) => {
+    mockedAccountDefault = t.mock.method(browser.accounts, "getDefault");
+    mockedGet = t.mock.method(browser.identities, "getDefault");
+    mockedSend = t.mock.method(browser.convCompose, "send");
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
-  test("initCompose() retrieves the default identity information", async () => {
+  it("initCompose() retrieves the default identity information", async () => {
     await store.dispatch(composeActions.initCompose({ showSubject: false }));
 
-    expect(mockedAccountDefault).toHaveBeenCalled();
-    expect(mockedGet).toHaveBeenCalled();
+    assert.equal(mockedAccountDefault.mock.calls.length, 1);
+    assert.equal(mockedGet.mock.calls.length, 1);
 
     // Should have correctly set up the initial values.
-    expect(store.getState()).toStrictEqual({
+    assert.deepEqual(store.getState(), {
       compose: {
         body: undefined,
         from: "id3@EXAMPLE.com",
@@ -58,12 +56,12 @@ describe("Compose Reducer and Actions tests", () => {
     });
   });
 
-  test("initCompose() resets the store", async () => {
+  it("initCompose() resets the store", async () => {
     await store.dispatch(composeActions.setValue("subject", "test"));
 
     await store.dispatch(composeActions.initCompose({ showSubject: true }));
 
-    expect(store.getState()).toStrictEqual({
+    assert.deepEqual(store.getState(), {
       compose: {
         body: undefined,
         from: "id3@EXAMPLE.com",
@@ -81,19 +79,19 @@ describe("Compose Reducer and Actions tests", () => {
     });
   });
 
-  test("setValue() sets a value in the store", async () => {
+  it("setValue() sets a value in the store", async () => {
     await store.dispatch(composeActions.setValue("_custom", "test"));
 
-    expect(store.getState().compose).toHaveProperty("_custom", "test");
+    assert.equal(store.getState().compose._custom, "test");
   });
 
-  test("sendMessage() sends a message", async () => {
+  it("sendMessage() sends a message", async () => {
     await store.dispatch(composeActions.setValue("to", "me@example.com"));
     await store.dispatch(composeActions.setValue("subject", "Test"));
     await store.dispatch(composeActions.setValue("body", "Hello"));
     await store.dispatch(composeActions.sendMessage("custom"));
 
-    expect(mockedSend).toHaveBeenCalledWith({
+    assertContains(mockedSend.mock.calls[0].arguments[0], {
       from: "id3",
       to: "me@example.com",
       subject: "Test",

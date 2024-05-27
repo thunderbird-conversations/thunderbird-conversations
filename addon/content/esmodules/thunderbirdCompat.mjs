@@ -7,7 +7,7 @@
 
 import { kPrefDefaults } from "../../background/prefs.mjs";
 
-const browser = window.browser || {};
+const browser = globalThis.window?.browser ?? {};
 
 // `i18n` is a replacement for `browser.i18n`.  `getMessage` defaults
 // `browser.i18n.getMessage` if the function exists. Otherwise, locale

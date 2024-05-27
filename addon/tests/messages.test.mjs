@@ -2,8 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import { jest } from "@jest/globals";
-import { createFakeData, createFakeSummaryData } from "./utils.mjs";
+import assert from "node:assert/strict";
+import { describe, it, beforeEach } from "node:test";
+import {
+  assertContains,
+  createFakeData,
+  createFakeSummaryData,
+} from "./utils.mjs";
 import { MessageEnricher } from "../content/reducer/messageEnricher.mjs";
 
 describe("messageEnricher", () => {
@@ -11,17 +16,17 @@ describe("messageEnricher", () => {
   let mailTabsGetSpy;
   let messageEnricher;
 
-  beforeEach(() => {
+  beforeEach((t) => {
     messageEnricher = new MessageEnricher();
     fakeMessageHeaderData = new Map();
-    jest
-      .spyOn(browser.messages, "get")
-      .mockImplementation(async (id) => fakeMessageHeaderData.get(id));
-    mailTabsGetSpy = jest.spyOn(browser.mailTabs, "get");
+    t.mock
+      .method(browser.messages, "get")
+      .mock.mockImplementation(async (id) => fakeMessageHeaderData.get(id));
+    mailTabsGetSpy = t.mock.method(browser.mailTabs, "get");
     let originalConsoleError = console.error;
     // We expect some errors due to how the tests are run with single messages
     // only.
-    jest.spyOn(console, "error").mockImplementation((...args) => {
+    t.mock.method(console, "error").mock.mockImplementation((...args) => {
       if (
         !args[0].includes("kScrollSelected && didn't find the selected message")
       ) {
@@ -30,12 +35,8 @@ describe("messageEnricher", () => {
     });
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
   describe("Header Details", () => {
-    test("Fills out the message with details from the header", async () => {
+    it("Fills out the message with details from the header", async () => {
       let fakeMsg = createFakeData({}, fakeMessageHeaderData);
 
       let msgs = await messageEnricher.enrich(
@@ -44,7 +45,7 @@ describe("messageEnricher", () => {
         [fakeMessageHeaderData.size - 1]
       );
 
-      expect(msgs[0]).toMatchObject({
+      assertContains(msgs[0], {
         folderName: "Fake/Inbox",
         inView: true,
         isDraft: false,
@@ -58,7 +59,7 @@ describe("messageEnricher", () => {
       });
     });
 
-    test("Marks as not in view if the message is not in the selected view nor folder", async () => {
+    it("Marks as not in view if the message is not in the selected view nor folder", async () => {
       let fakeMsg = createFakeData({}, fakeMessageHeaderData);
 
       let msgs = await messageEnricher.enrich(
@@ -67,18 +68,20 @@ describe("messageEnricher", () => {
         []
       );
 
-      expect(msgs[0]).toMatchObject({
+      assertContains(msgs[0], {
         inView: false,
       });
     });
 
-    test("Marks as in view if the message is not selected but in the same folder", async () => {
+    it("Marks as in view if the message is not selected but in the same folder", async () => {
       let fakeMsg = createFakeData({}, fakeMessageHeaderData);
-      mailTabsGetSpy.mockReturnValue({
-        displayedFolder: {
-          accountId: "id1",
-          path: "Inbox",
-        },
+      mailTabsGetSpy.mock.mockImplementation(() => {
+        return {
+          displayedFolder: {
+            accountId: "id1",
+            path: "Inbox",
+          },
+        };
       });
 
       let msgs = await messageEnricher.enrich(
@@ -87,12 +90,12 @@ describe("messageEnricher", () => {
         []
       );
 
-      expect(msgs[0]).toMatchObject({
+      assertContains(msgs[0], {
         inView: true,
       });
     });
 
-    test("Fills out folder name", async () => {
+    it("Fills out folder name", async () => {
       let fakeMsg = createFakeData({}, fakeMessageHeaderData);
       let msgs = await messageEnricher.enrich(
         [fakeMsg],
@@ -100,13 +103,13 @@ describe("messageEnricher", () => {
         [fakeMessageHeaderData.size]
       );
 
-      expect(msgs[0]).toMatchObject({
+      assertContains(msgs[0], {
         folderName: "Fake/Inbox",
         shortFolderName: "Inbox",
       });
     });
 
-    test("Correctly sets flags with details from the header", async () => {
+    it("Correctly sets flags with details from the header", async () => {
       let tests = [
         {
           source: {
@@ -172,7 +175,7 @@ describe("messageEnricher", () => {
         },
       ];
 
-      mailTabsGetSpy.mockReturnValue(false);
+      mailTabsGetSpy.mock.mockImplementation(() => false);
 
       for (let t of tests) {
         let fakeMsg = createFakeData(t.source, fakeMessageHeaderData);
@@ -183,11 +186,11 @@ describe("messageEnricher", () => {
           [3]
         );
 
-        expect(msgs[0]).toMatchObject(t.expected);
+        assertContains(msgs[0], t.expected);
       }
     });
 
-    test("Obtains the informaiton for tags", async () => {
+    it("Obtains the informaiton for tags", async () => {
       let fakeMsg = createFakeData(
         {
           tags: ["$label1", "$label3"],
@@ -201,7 +204,7 @@ describe("messageEnricher", () => {
         [fakeMessageHeaderData.size - 1]
       );
 
-      expect(msgs[0]).toMatchObject({
+      assertContains(msgs[0], {
         tags: [
           {
             color: "#ff2600",
@@ -219,7 +222,7 @@ describe("messageEnricher", () => {
   });
 
   describe("De-duplicates messages when they have the same ids", () => {
-    test("Prefers in-view messages", async () => {
+    it("Prefers in-view messages", async () => {
       let fakeMsgs = [
         createFakeData(
           { id: 1, folderType: "trash", headerMessageId: 1 },
@@ -242,11 +245,13 @@ describe("messageEnricher", () => {
           fakeMessageHeaderData
         ),
       ];
-      mailTabsGetSpy.mockReturnValue({
-        displayedFolder: {
-          accountId: "id1",
-          path: "Junk",
-        },
+      mailTabsGetSpy.mock.mockImplementation(() => {
+        return {
+          displayedFolder: {
+            accountId: "id1",
+            path: "Junk",
+          },
+        };
       });
 
       let msgs = await messageEnricher.enrich(
@@ -256,11 +261,11 @@ describe("messageEnricher", () => {
       );
       messageEnricher.determineExpansion(msgs, 3, []);
 
-      expect(msgs.length).toBe(1);
-      expect(msgs[0].id).toBe(5);
+      assert.equal(msgs.length, 1);
+      assert.equal(msgs[0].id, 5);
     });
 
-    test("Next messages in inbox", async () => {
+    it("Next messages in inbox", async () => {
       let fakeMsgs = [
         createFakeData(
           { id: 1, folderType: "trash", headerMessageId: 1 },
@@ -287,11 +292,11 @@ describe("messageEnricher", () => {
       );
       messageEnricher.determineExpansion(msgs, 3, []);
 
-      expect(msgs.length).toBe(1);
-      expect(msgs[0].id).toBe(4);
+      assert.equal(msgs.length, 1);
+      assert.equal(msgs[0].id, 4);
     });
 
-    test("Next messages in sent", async () => {
+    it("Next messages in sent", async () => {
       let fakeMsgs = [
         createFakeData(
           { id: 1, folderType: "trash", headerMessageId: 1 },
@@ -314,11 +319,11 @@ describe("messageEnricher", () => {
       );
       messageEnricher.determineExpansion(msgs, 3, []);
 
-      expect(msgs.length).toBe(1);
-      expect(msgs[0].id).toBe(3);
+      assert.equal(msgs.length, 1);
+      assert.equal(msgs[0].id, 3);
     });
 
-    test("Next messages in archives", async () => {
+    it("Next messages in archives", async () => {
       let fakeMsgs = [
         createFakeData(
           { id: 1, folderType: "trash", headerMessageId: 1 },
@@ -337,11 +342,11 @@ describe("messageEnricher", () => {
       );
       messageEnricher.determineExpansion(msgs, 3, []);
 
-      expect(msgs.length).toBe(1);
-      expect(msgs[0].id).toBe(2);
+      assert.equal(msgs.length, 1);
+      assert.equal(msgs[0].id, 2);
     });
 
-    test("Lastly, the first of other messages", async () => {
+    it("Lastly, the first of other messages", async () => {
       let fakeMsgs = [
         createFakeData(
           { id: 1, folderType: "trash", headerMessageId: 1 },
@@ -360,13 +365,13 @@ describe("messageEnricher", () => {
       );
       messageEnricher.determineExpansion(msgs, 3, []);
 
-      expect(msgs.length).toBe(1);
-      expect(msgs[0].id).toBe(1);
+      assert.equal(msgs.length, 1);
+      assert.equal(msgs[0].id, 1);
     });
   });
 
   describe("Expansion and Scroll To", () => {
-    test("Expands all messages when expand is set to all", async () => {
+    it("Expands all messages when expand is set to all", async () => {
       let fakeMsgs = [];
       for (let i = 0; i < 5; i++) {
         fakeMsgs.push(createFakeData({ id: i }, fakeMessageHeaderData));
@@ -382,16 +387,16 @@ describe("messageEnricher", () => {
       ]);
 
       for (let i = 0; i < 5; i++) {
-        expect(msgs[i].expanded).toBe(true);
+        assert.equal(msgs[i].expanded, true);
         if (i < 4) {
-          expect("scrollTo" in fakeMsgs[i]).toBe(false);
+          assert.equal("scrollTo" in fakeMsgs[i], false);
         } else {
-          expect(msgs[i].scrollTo).toBe(true);
+          assert.equal(msgs[i].scrollTo, true);
         }
       }
     });
 
-    test("Expands no messages when expand is set to none", async () => {
+    it("Expands no messages when expand is set to none", async () => {
       let fakeMsgs = [];
       for (let i = 0; i < 5; i++) {
         fakeMsgs.push(createFakeData({ id: i }, fakeMessageHeaderData));
@@ -407,17 +412,17 @@ describe("messageEnricher", () => {
       ]);
 
       for (let i = 0; i < 5; i++) {
-        expect(msgs[i].expanded).toBe(false);
+        assert.equal(msgs[i].expanded, false);
         if (i < 4) {
-          expect("scrollTo" in msgs[i]).toBe(false);
+          assert.equal("scrollTo" in msgs[i], false);
         } else {
-          expect(msgs[i].scrollTo).toBe(true);
+          assert.equal(msgs[i].scrollTo, true);
         }
       }
     });
 
     describe("Expansion Auto", () => {
-      test("Single, all read - expand and select selection", async () => {
+      it("Single, all read - expand and select selection", async () => {
         let fakeMsgs = [];
         for (let i = 0; i < 5; i++) {
           fakeMsgs.push(
@@ -433,16 +438,16 @@ describe("messageEnricher", () => {
         messageEnricher.determineExpansion(msgs, 4, [3]);
 
         for (let i = 0; i < 5; i++) {
-          expect(msgs[i].expanded).toBe(i == 3);
+          assert.equal(msgs[i].expanded, i == 3);
           if (i != 3) {
-            expect("scrollTo" in msgs[i]).toBe(false);
+            assert.equal("scrollTo" in msgs[i], false);
           } else {
-            expect(msgs[i].scrollTo).toBe(true);
+            assert.equal(msgs[i].scrollTo, true);
           }
         }
       });
 
-      test("Single, multi unread  - expand single and scroll it", async () => {
+      it("Single, multi unread  - expand single and scroll it", async () => {
         let fakeMsgs = [];
         for (let i = 0; i < 5; i++) {
           fakeMsgs.push(
@@ -458,16 +463,16 @@ describe("messageEnricher", () => {
         messageEnricher.determineExpansion(msgs, 4, [3]);
 
         for (let i = 0; i < 5; i++) {
-          expect(msgs[i].expanded).toBe(i == 3);
+          assert.equal(msgs[i].expanded, i == 3);
           if (i != 3) {
-            expect("scrollTo" in msgs[i]).toBe(false);
+            assert.equal("scrollTo" in msgs[i], false);
           } else {
-            expect(msgs[i].scrollTo).toBe(true);
+            assert.equal(msgs[i].scrollTo, true);
           }
         }
       });
 
-      test("Multi, unread - expand unread, select first", async () => {
+      it("Multi, unread - expand unread, select first", async () => {
         let fakeMsgs = [];
         for (let i = 0; i < 5; i++) {
           fakeMsgs.push(
@@ -483,12 +488,12 @@ describe("messageEnricher", () => {
         messageEnricher.determineExpansion(msgs, 4, [3, 4]);
 
         for (let i = 0; i < 5; i++) {
-          expect(msgs[i].expanded).toBe(i > 2);
+          assert.equal(msgs[i].expanded, i > 2);
           // Should have selected the first unread.
           if (i != 3) {
-            expect("scrollTo" in msgs[i]).toBe(false);
+            assert.equal("scrollTo" in msgs[i], false);
           } else {
-            expect(msgs[i].scrollTo).toBe(true);
+            assert.equal(msgs[i].scrollTo, true);
           }
         }
       });
@@ -496,7 +501,7 @@ describe("messageEnricher", () => {
   });
 
   describe("Attachments", () => {
-    test("Extends the information for attachments", async () => {
+    it("Extends the information for attachments", async () => {
       let fakeMsg = createFakeData(
         {
           attachments: [
@@ -517,7 +522,7 @@ describe("messageEnricher", () => {
         [fakeMessageHeaderData.size - 1]
       );
 
-      expect(msgs[0]).toMatchObject({
+      assertContains(msgs[0], {
         attachments: [
           {
             anchor: "msg0att0",
@@ -533,21 +538,23 @@ describe("messageEnricher", () => {
   });
 
   describe("getFullDetails", () => {
-    test("Adjusts the from lines for Bugzilla messages", async () => {
-      jest.spyOn(browser.messages, "getFull").mockReturnValue({
-        headers: {
-          "x-bugzilla-who": ["actualFrom@invalid.com"],
-        },
-        parts: [
-          {
-            contentType: "text/plain",
-            body: "should be used",
+    it("Adjusts the from lines for Bugzilla messages", async (t) => {
+      t.mock.method(browser.messages, "getFull").mock.mockImplementation(() => {
+        return {
+          headers: {
+            "x-bugzilla-who": ["actualFrom@invalid.com"],
           },
-        ],
+          parts: [
+            {
+              contentType: "text/plain",
+              body: "should be used",
+            },
+          ],
+        };
       });
-      jest
-        .spyOn(browser.conversations, "parseMimeLine")
-        .mockImplementation((line) => [
+      t.mock
+        .method(browser.conversations, "parseMimeLine")
+        .mock.mockImplementation((line) => [
           {
             email: line,
             name: "-",
@@ -569,25 +576,27 @@ describe("messageEnricher", () => {
         createFakeSummaryData(),
         [fakeMessageHeaderData.size - 1]
       );
-      expect(msgs[0].parsedLines.from[0].email).toBe("actualFrom@invalid.com");
-      expect(msgs[0].realFrom).toBe("realEmail@invalid.com");
+      assert.equal(msgs[0].parsedLines.from[0].email, "actualFrom@invalid.com");
+      assert.equal(msgs[0].realFrom, "realEmail@invalid.com");
     });
 
-    test("Parse reply-to header", async () => {
-      jest.spyOn(browser.messages, "getFull").mockReturnValue({
-        headers: {
-          "reply-to": ["actualFrom@invalid.com"],
-        },
-        parts: [
-          {
-            contentType: "text/plain",
-            body: "should be used",
+    it("Parse reply-to header", async (t) => {
+      t.mock.method(browser.messages, "getFull").mock.mockImplementation(() => {
+        return {
+          headers: {
+            "reply-to": ["actualFrom@invalid.com"],
           },
-        ],
+          parts: [
+            {
+              contentType: "text/plain",
+              body: "should be used",
+            },
+          ],
+        };
       });
-      jest
-        .spyOn(browser.conversations, "parseMimeLine")
-        .mockImplementation((line) => [
+      t.mock
+        .method(browser.conversations, "parseMimeLine")
+        .mock.mockImplementation((line) => [
           {
             email: line,
             name: "-",
@@ -609,7 +618,7 @@ describe("messageEnricher", () => {
         createFakeSummaryData(),
         [fakeMessageHeaderData.size - 1]
       );
-      expect(msgs[0].replyTo).toStrictEqual([
+      assert.deepEqual(msgs[0].replyTo, [
         {
           email: "actualFrom@invalid.com",
           name: "-",
@@ -620,7 +629,7 @@ describe("messageEnricher", () => {
   });
 
   describe("Snippets", () => {
-    test("Adjusts the snippet for better output from bugzilla", async () => {
+    it("Adjusts the snippet for better output from bugzilla", async () => {
       const msgSnippets = [
         {
           actual: "My message snippet",
@@ -663,19 +672,21 @@ Updating`,
       );
 
       for (let [i, fakeMsg] of msgs.entries()) {
-        expect(fakeMsg.snippet).toBe(msgSnippets[i].expected);
+        assert.equal(fakeMsg.snippet, msgSnippets[i].expected);
       }
     });
 
-    test("Uses the snippet from getFull if getting full message (text)", async () => {
-      jest.spyOn(browser.messages, "getFull").mockReturnValue({
-        headers: [],
-        parts: [
-          {
-            contentType: "text/plain",
-            body: "should be used",
-          },
-        ],
+    it("Uses the snippet from getFull if getting full message (text)", async (t) => {
+      t.mock.method(browser.messages, "getFull").mock.mockImplementation(() => {
+        return {
+          headers: [],
+          parts: [
+            {
+              contentType: "text/plain",
+              body: "should be used",
+            },
+          ],
+        };
       });
 
       let fakeMsg = createFakeData(
@@ -689,18 +700,20 @@ Updating`,
         [fakeMessageHeaderData.size - 1]
       );
 
-      expect(msgs[0].snippet).toBe("should be used");
+      assert.equal(msgs[0].snippet, "should be used");
     });
 
-    test("Uses the snippet from getFull if getting full message (html)", async () => {
-      jest.spyOn(browser.messages, "getFull").mockReturnValue({
-        headers: [],
-        parts: [
-          {
-            contentType: "text/html",
-            body: "should not be used (html is translated to plain)",
-          },
-        ],
+    it("Uses the snippet from getFull if getting full message (html)", async (t) => {
+      t.mock.method(browser.messages, "getFull").mock.mockImplementation(() => {
+        return {
+          headers: [],
+          parts: [
+            {
+              contentType: "text/html",
+              body: "should not be used (html is translated to plain)",
+            },
+          ],
+        };
       });
 
       let fakeMsg = createFakeData(
@@ -714,12 +727,12 @@ Updating`,
         [fakeMessageHeaderData.size - 1]
       );
 
-      expect(msgs[0].snippet).toBe("short snippet");
+      assert.equal(msgs[0].snippet, "short snippet");
     });
   });
 
   describe("Dates", () => {
-    test("Sets the dates for displaying friendly dates", async () => {
+    it("Sets the dates for displaying friendly dates", async () => {
       let now = new Date();
       let fakeMsg = createFakeData({ date: now }, fakeMessageHeaderData);
 
@@ -729,15 +742,16 @@ Updating`,
         [fakeMessageHeaderData.size - 1]
       );
 
-      expect(msgs[0].date).toBe("yesterday");
-      expect(msgs[0].fullDate).toBe(
+      assert.equal(msgs[0].date, "yesterday");
+      assert.equal(
+        msgs[0].fullDate,
         new Intl.DateTimeFormat(undefined, {
           timeStyle: "short",
         }).format(now)
       );
     });
 
-    test("Sets the dates for not displaying friendly dates", async () => {
+    it("Sets the dates for not displaying friendly dates", async () => {
       let now = new Date();
       let fakeMsg = createFakeData({ date: now }, fakeMessageHeaderData);
 
@@ -747,12 +761,13 @@ Updating`,
         [fakeMessageHeaderData.size - 1]
       );
 
-      expect(msgs[0].date).toBe(
+      assert.equal(
+        msgs[0].date,
         new Intl.DateTimeFormat(undefined, {
           timeStyle: "short",
         }).format(now)
       );
-      expect(msgs[0].fullDate).toBe("");
+      assert.equal(msgs[0].fullDate, "");
     });
   });
 });

@@ -2,9 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
+import assert from "node:assert/strict";
+import { describe, it, mock } from "node:test";
 import { render, fireEvent, screen } from "@testing-library/react";
 import React from "react";
-import { jest } from "@jest/globals";
 
 // Import the components we want to test
 import {
@@ -13,8 +14,8 @@ import {
 } from "../content/components/compose/composeFields.mjs";
 
 describe("Compose components have correct return values", () => {
-  test("TextBox always returns a string type", () => {
-    const callback = jest.fn();
+  it("TextBox always returns a string type", () => {
+    const callback = mock.fn();
     render(
       React.createElement(TextBox, {
         title: "foo",
@@ -28,13 +29,13 @@ describe("Compose components have correct return values", () => {
       target: { value: "my special text" },
     });
 
-    expect(callback.mock.calls[0][0]).toBe("option_name");
-    expect(callback.mock.calls[0][1]).toBe("my special text");
-    expect(typeof callback.mock.calls[0][1]).toBe("string");
+    assert.equal(callback.mock.calls[0].arguments[0], "option_name");
+    assert.equal(callback.mock.calls[0].arguments[1], "my special text");
+    assert.equal(typeof callback.mock.calls[0].arguments[1], "string");
   });
 
-  test("TextArea always returns a string type", () => {
-    const callback = jest.fn();
+  it("TextArea always returns a string type", () => {
+    const callback = mock.fn();
     render(
       React.createElement(TextArea, {
         onChange: callback,
@@ -46,8 +47,8 @@ describe("Compose components have correct return values", () => {
       target: { value: "my special text" },
     });
 
-    expect(callback.mock.calls[0][0]).toBe("option_name");
-    expect(callback.mock.calls[0][1]).toBe("my special text");
-    expect(typeof callback.mock.calls[0][1]).toBe("string");
+    assert.equal(callback.mock.calls[0].arguments[0], "option_name");
+    assert.equal(callback.mock.calls[0].arguments[1], "my special text");
+    assert.equal(typeof callback.mock.calls[0].arguments[1], "string");
   });
 });

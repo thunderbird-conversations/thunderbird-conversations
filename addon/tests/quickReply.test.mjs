@@ -2,11 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
+import assert from "node:assert/strict";
+import { describe, it, beforeEach } from "node:test";
 import { render, fireEvent, act, screen } from "@testing-library/react";
 import React from "react";
 import * as RTK from "@reduxjs/toolkit";
 import * as ReactRedux from "react-redux";
-import { jest } from "@jest/globals";
 import { conversationApp } from "../content/reducer/reducer.mjs";
 
 // Import the components we want to test
@@ -16,23 +17,19 @@ import { quickReplyActions } from "../content/reducer/reducerQuickReply.mjs";
 describe("Quick Reply tests", () => {
   let store;
 
-  beforeEach(async () => {
+  beforeEach(async (t) => {
     store = RTK.configureStore({
       reducer: conversationApp,
     });
-    quickReplyActions.expand = jest.fn().mockImplementation(() => {
+    quickReplyActions.expand = t.mock.fn(() => {
       return {
         type: "expand",
       };
     });
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
   describe("Expansion Actions", () => {
-    test("It should handle only the reply button", async () => {
+    it("It should handle only the reply button", async () => {
       render(
         React.createElement(
           ReactRedux.Provider,
@@ -46,21 +43,22 @@ describe("Quick Reply tests", () => {
       );
 
       let replyButton = screen.getByRole("button", { name: "reply" });
-      expect(screen.queryByRole("button", { name: "reply all" })).toBe(null);
-      expect(screen.queryByRole("button", { name: "reply to list" })).toBe(
+      assert.equal(screen.queryByRole("button", { name: "reply all" }), null);
+      assert.equal(
+        screen.queryByRole("button", { name: "reply to list" }),
         null
       );
 
       fireEvent.click(replyButton);
 
-      expect(quickReplyActions.expand.mock.calls.length).toBe(1);
-      expect(quickReplyActions.expand.mock.calls[0][0]).toStrictEqual({
+      assert.equal(quickReplyActions.expand.mock.calls.length, 1);
+      assert.deepEqual(quickReplyActions.expand.mock.calls[0].arguments[0], {
         id: 0,
         type: "reply",
       });
     });
 
-    test("It should handle the reply and replyAll button", async () => {
+    it("It should handle the reply and replyAll button", async () => {
       render(
         React.createElement(
           ReactRedux.Provider,
@@ -73,32 +71,34 @@ describe("Quick Reply tests", () => {
         )
       );
 
-      expect(screen.queryByRole("button", { name: "reply" })).not.toBe(null);
-      expect(screen.queryByRole("button", { name: "reply all" })).not.toBe(
+      assert.notEqual(screen.queryByRole("button", { name: "reply" }), null);
+      assert.notEqual(
+        screen.queryByRole("button", { name: "reply all" }),
         null
       );
-      expect(screen.queryByRole("button", { name: "reply to list" })).toBe(
+      assert.equal(
+        screen.queryByRole("button", { name: "reply to list" }),
         null
       );
 
       fireEvent.click(screen.getByRole("button", { name: "reply" }));
 
-      expect(quickReplyActions.expand.mock.calls.length).toBe(1);
-      expect(quickReplyActions.expand.mock.calls[0][0]).toStrictEqual({
+      assert.equal(quickReplyActions.expand.mock.calls.length, 1);
+      assert.deepEqual(quickReplyActions.expand.mock.calls[0].arguments[0], {
         id: 0,
         type: "reply",
       });
 
       fireEvent.click(screen.getByRole("button", { name: "reply all" }));
 
-      expect(quickReplyActions.expand.mock.calls.length).toBe(2);
-      expect(quickReplyActions.expand.mock.calls[1][0]).toStrictEqual({
+      assert.equal(quickReplyActions.expand.mock.calls.length, 2);
+      assert.deepEqual(quickReplyActions.expand.mock.calls[1].arguments[0], {
         id: 0,
         type: "replyAll",
       });
     });
 
-    test("It should handle the reply and replyList button", async () => {
+    it("It should handle the reply and replyList button", async () => {
       render(
         React.createElement(
           ReactRedux.Provider,
@@ -111,24 +111,25 @@ describe("Quick Reply tests", () => {
         )
       );
 
-      expect(screen.queryByRole("button", { name: "reply" })).not.toBe(null);
-      expect(screen.queryByRole("button", { name: "reply all" })).toBe(null);
-      expect(screen.queryByRole("button", { name: "reply to list" })).not.toBe(
+      assert.notEqual(screen.queryByRole("button", { name: "reply" }), null);
+      assert.equal(screen.queryByRole("button", { name: "reply all" }), null);
+      assert.notEqual(
+        screen.queryByRole("button", { name: "reply to list" }),
         null
       );
 
       fireEvent.click(screen.getByRole("button", { name: "reply" }));
 
-      expect(quickReplyActions.expand.mock.calls.length).toBe(1);
-      expect(quickReplyActions.expand.mock.calls[0][0]).toStrictEqual({
+      assert.equal(quickReplyActions.expand.mock.calls.length, 1);
+      assert.deepEqual(quickReplyActions.expand.mock.calls[0].arguments[0], {
         id: 0,
         type: "reply",
       });
 
       fireEvent.click(screen.getByRole("button", { name: "reply to list" }));
 
-      expect(quickReplyActions.expand.mock.calls.length).toBe(2);
-      expect(quickReplyActions.expand.mock.calls[1][0]).toStrictEqual({
+      assert.equal(quickReplyActions.expand.mock.calls.length, 2);
+      assert.deepEqual(quickReplyActions.expand.mock.calls[1].arguments[0], {
         id: 0,
         type: "replyList",
       });
@@ -136,7 +137,7 @@ describe("Quick Reply tests", () => {
   });
 
   describe("Expanded state", () => {
-    test("Should show the ComposeWidget when expanded", async () => {
+    it("Should show the ComposeWidget when expanded", async () => {
       render(
         React.createElement(
           ReactRedux.Provider,
@@ -155,13 +156,14 @@ describe("Quick Reply tests", () => {
         );
       });
 
-      expect(screen.queryByRole("button", { name: "reply" })).toBe(null);
-      expect(screen.queryByRole("button", { name: "reply all" })).toBe(null);
-      expect(screen.queryByRole("button", { name: "reply to list" })).toBe(
+      assert.equal(screen.queryByRole("button", { name: "reply" }), null);
+      assert.equal(screen.queryByRole("button", { name: "reply all" }), null);
+      assert.equal(
+        screen.queryByRole("button", { name: "reply to list" }),
         null
       );
 
-      expect(screen.queryByRole("textbox", { name: "to:" })).not.toBe(null);
+      assert.notEqual(screen.queryByRole("textbox", { name: "to:" }), null);
     });
   });
 });

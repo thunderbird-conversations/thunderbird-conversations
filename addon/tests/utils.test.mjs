@@ -2,23 +2,25 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
+import assert from "node:assert/strict";
+import { describe, it } from "node:test";
 import { getInitials } from "../content/esmodules/utils.mjs";
 
 describe("Test utility functions", () => {
-  test("getInitials extracts initials from names", async () => {
-    expect(getInitials("")).toBe("??");
-    expect(getInitials("X")).toBe("X");
-    expect(getInitials("Tammy Smith")).toBe("TS");
-    expect(getInitials("tammy smith")).toEqual("TS");
-    expect(getInitials("tammy smith jackson")).toEqual("TJ");
+  it("getInitials extracts initials from names", async () => {
+    assert.equal(getInitials(""), "??");
+    assert.equal(getInitials("X"), "X");
+    assert.equal(getInitials("Tammy Smith"), "TS");
+    assert.equal(getInitials("tammy smith"), "TS");
+    assert.equal(getInitials("tammy smith jackson"), "TJ");
   });
-  test("getInitials handles wide characters", async () => {
-    expect(getInitials("明治天皇")).toBe("明治");
-    expect(getInitials("😍😏😊")).toEqual("😍");
+  it("getInitials handles wide characters", async () => {
+    assert.equal(getInitials("明治天皇"), "明治");
+    assert.equal(getInitials("😍😏😊"), "😍");
   });
-  test("getInitials interprets the first part of an email address as being a name", async () => {
-    expect(getInitials("sam@fake.com")).toBe("SA");
-    expect(getInitials("same.wise@fake.com")).toEqual("SW");
-    expect(getInitials("same.wise+extra@fake.com")).toEqual("SW");
+  it("getInitials interprets the first part of an email address as being a name", async () => {
+    assert.equal(getInitials("sam@fake.com"), "SA");
+    assert.equal(getInitials("same.wise@fake.com"), "SW");
+    assert.equal(getInitials("same.wise+extra@fake.com"), "SW");
   });
 });

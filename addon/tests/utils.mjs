@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
+import assert from "node:assert/strict";
+
 export function createFakeData(
   {
     asInternal = false,
@@ -105,4 +107,18 @@ export function createFakeSummaryData(prefs = {}) {
       ...prefs,
     },
   };
+}
+
+export function assertContains(a, b) {
+  for (let [key, value] of Object.entries(b)) {
+    if (typeof value == "object") {
+      if (Array.isArray(value)) {
+        assert.deepEqual(a[key], value, `Array should match for key: ${key}`);
+      } else {
+        assertContains(a[key], value);
+      }
+    } else if (a[key] != value) {
+      assert.fail(`${key}: ${a[key]} != ${value}`);
+    }
+  }
 }

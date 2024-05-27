@@ -2,14 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
+import assert from "node:assert/strict";
+import { describe, it, beforeEach, afterEach } from "node:test";
 import { createFakeData, createFakeSummaryData } from "./utils.mjs";
 import * as RTK from "@reduxjs/toolkit";
 import * as Redux from "redux";
 
-// Import the components we want to test
-// jest.mock("../content/reducer/reducerMessages.mjs");
-
-import { jest } from "@jest/globals";
 import { conversationActions } from "../content/reducer/reducerConversation.mjs";
 import {
   messageActions,
@@ -30,24 +28,20 @@ const store = RTK.configureStore({ reducer: summaryApp });
 describe("Controller Actions tests", () => {
   let fakeMessageHeaderData;
 
-  beforeEach(() => {
+  beforeEach((t) => {
     fakeMessageHeaderData = new Map();
-    jest
-      .spyOn(browser.messages, "get")
-      .mockImplementation(async (id) => fakeMessageHeaderData.get(id));
-  });
-
-  afterEach(() => {
-    jest.restoreAllMocks();
+    t.mock
+      .method(browser.messages, "get")
+      .mock.mockImplementation(async (id) => fakeMessageHeaderData.get(id));
   });
 
   describe("displayConversationMsgs", () => {
     let oldReplaceConversation;
 
-    beforeEach(() => {
-      // TODO: Figure out how to mock this properly with JEST.
+    beforeEach((t) => {
+      // TODO: Figure out how to mock this properly.
       oldReplaceConversation = messageActions.replaceConversation;
-      messageActions.replaceConversation = jest.fn(() => {
+      messageActions.replaceConversation = t.mock.fn(() => {
         return { type: "mock" };
       });
     });
@@ -56,7 +50,7 @@ describe("Controller Actions tests", () => {
       messageActions.replaceConversation = oldReplaceConversation;
     });
 
-    test("Enriches message data", async () => {
+    it("Enriches message data", async () => {
       let now = new Date();
       let fakeMsg = createFakeData(
         {
@@ -73,9 +67,9 @@ describe("Controller Actions tests", () => {
         })
       );
 
-      expect(messageActions.replaceConversation).toHaveBeenCalled();
+      assert.equal(messageActions.replaceConversation.mock.calls.length, 1);
       let msgData =
-        messageActions.replaceConversation.mock.calls[0][0].messages;
+        messageActions.replaceConversation.mock.calls[0].arguments[0].messages;
 
       let date = new Intl.DateTimeFormat(undefined, {
         timeStyle: "short",
@@ -89,11 +83,7 @@ describe("Controller Actions tests", () => {
         fakeMessageHeaderData
       );
 
-      // jest doesn't seem to work properly with an object within an array, and
-      // we don't need to test for _contactsData anyway as that is more internal.
-      delete msgData[0].parsedLines;
-
-      expect(msgData[0]).toStrictEqual({
+      assert.deepEqual(msgData[0], {
         alternativeSender: [],
         attachments: [],
         bcc: [],
@@ -122,6 +112,13 @@ describe("Controller Actions tests", () => {
         isTemplate: false,
         multipleRecipients: false,
         needsLateAttachments: undefined,
+        parsedLines: {
+          alternativeSender: [],
+          bcc: [],
+          cc: [],
+          from: [],
+          to: [],
+        },
         rawDate: now.getTime(),
         read: false,
         realFrom: undefined,
@@ -158,7 +155,7 @@ describe("Controller Actions tests", () => {
       );
     });
 
-    test("Appends message data", async () => {
+    it("Appends message data", async () => {
       let msgs = store.getState().messages.msgData;
       let fakeMsg = createFakeData(
         {
@@ -173,11 +170,11 @@ describe("Controller Actions tests", () => {
       );
 
       msgs = store.getState().messages.msgData;
-      expect(msgs.length).toBe(2);
-      expect(msgs[1].id).toBe(2);
+      assert.equal(msgs.length, 2);
+      assert.equal(msgs[1].id, 2);
     });
 
-    test("Expands all appended messages when expand is set to all", async () => {
+    it("Expands all appended messages when expand is set to all", async () => {
       let fakeMsgs = [];
       for (let i = 1; i < 5; i++) {
         fakeMsgs.push(createFakeData({ id: i }, fakeMessageHeaderData));
@@ -196,12 +193,12 @@ describe("Controller Actions tests", () => {
 
       let msgs = store.getState().messages.msgData;
       for (let i = 1; i < 5; i++) {
-        expect(msgs[i].expanded).toBe(true);
-        expect("scrollTo" in msgs[i]).toBe(false);
+        assert.equal(msgs[i].expanded, true);
+        assert.equal("scrollTo" in msgs[i], false);
       }
     });
 
-    test("Expands no appended messages when expand is set to none", async () => {
+    it("Expands no appended messages when expand is set to none", async () => {
       let fakeMsgs = [];
       for (let i = 1; i < 5; i++) {
         fakeMsgs.push(createFakeData({ id: i }, fakeMessageHeaderData));
@@ -220,8 +217,8 @@ describe("Controller Actions tests", () => {
 
       let msgs = store.getState().messages.msgData;
       for (let i = 1; i < 5; i++) {
-        expect(msgs[i].expanded).toBe(false);
-        expect("scrollTo" in msgs[i]).toBe(false);
+        assert.equal(msgs[i].expanded, false);
+        assert.equal("scrollTo" in msgs[i], false);
       }
     });
   });

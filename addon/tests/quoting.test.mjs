@@ -2,6 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
+import assert from "node:assert/strict";
+import { describe, it } from "node:test";
+
 // Prettier is used to normalize the html formatting so we can reliably use it to compare HTML with
 // text diffing.
 import prettier from "prettier";
@@ -213,7 +216,7 @@ const PRETTIER_OPTS = {
 };
 
 describe("Quoting test", () => {
-  test("Find quotes in Hotmail messages", async () => {
+  it("Find quotes in Hotmail messages", async () => {
     const parser = new DOMParser();
     for (const { unquoted, quoted } of samples.hotmail) {
       const doc = parser.parseFromString(unquoted, "text/html");
@@ -225,10 +228,10 @@ describe("Quoting test", () => {
       );
       const prettyExpected = await prettier.format(quoted, PRETTIER_OPTS);
 
-      expect(prettyQuoted).toBe(prettyExpected);
+      assert.equal(prettyQuoted, prettyExpected);
     }
   });
-  test("Find quotes in forwarded plain-text messages", async () => {
+  it("Find quotes in forwarded plain-text messages", async () => {
     const parser = new DOMParser();
     for (const { unquoted, quoted } of samples.forward) {
       const doc = parser.parseFromString(unquoted, "text/html");
@@ -240,10 +243,10 @@ describe("Quoting test", () => {
       );
       const prettyExpected = await prettier.format(quoted, PRETTIER_OPTS);
 
-      expect(prettyQuoted).toBe(prettyExpected);
+      assert.equal(prettyQuoted, prettyExpected);
     }
   });
-  test("Merge disjoint blockquotes", async () => {
+  it("Merge disjoint blockquotes", async () => {
     const parser = new DOMParser();
     for (const { unquoted, quoted } of samples.disjoint) {
       const doc = parser.parseFromString(unquoted, "text/html");
@@ -255,10 +258,10 @@ describe("Quoting test", () => {
       );
       const prettyExpected = await prettier.format(quoted, PRETTIER_OPTS);
 
-      expect(prettyQuoted).toBe(prettyExpected);
+      assert.equal(prettyQuoted, prettyExpected);
     }
   });
-  test("Normalize blockquotes using all methods", async () => {
+  it("Normalize blockquotes using all methods", async () => {
     const allSampleEmails = [].concat(
       samples.hotmail,
       samples.disjoint,
@@ -276,7 +279,7 @@ describe("Quoting test", () => {
       );
       const prettyExpected = await prettier.format(quoted, PRETTIER_OPTS);
 
-      expect(prettyQuoted).toBe(prettyExpected);
+      assert.equal(prettyQuoted, prettyExpected);
     }
   });
 });

@@ -4,10 +4,15 @@
 
 /* eslint-env node */
 
+// Imported for side-effects
+// eslint-disable-next-line import/no-unassigned-import, import/no-unresolved
+import "global-jsdom/register";
 import { browser } from "../content/esmodules/thunderbirdCompat.mjs";
 import fileSystem from "fs";
 import path from "path";
 import url from "url";
+import { afterEach } from "node:test";
+import { cleanup } from "@testing-library/react";
 
 // Mock `fetch`, which is used to get localization info when running in the browser
 globalThis.fetch = function (fetchUrl) {
@@ -29,3 +34,7 @@ globalThis.fetch = function (fetchUrl) {
 browser.i18n.initialize();
 
 globalThis.browser = browser;
+
+afterEach(() => {
+  cleanup();
+});

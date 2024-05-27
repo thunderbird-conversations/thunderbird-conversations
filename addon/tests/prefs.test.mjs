@@ -2,7 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import { jest } from "@jest/globals";
+import assert from "node:assert/strict";
+import { describe, it, beforeEach } from "node:test";
 import {
   Prefs,
   kPrefDefaults,
@@ -16,20 +17,16 @@ describe("Prefs tests", () => {
     prefs = new Prefs();
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
   describe("init", () => {
-    test("Should initialise data to a reasonable default", async () => {
+    it("Should initialise data to a reasonable default", async () => {
       await prefs.init();
 
-      expect(await browser.storage.local.get("preferences")).toStrictEqual({
+      assert.deepEqual(await browser.storage.local.get("preferences"), {
         preferences: kPrefDefaults,
       });
     });
 
-    test("Should upgrade older preferences", async () => {
+    it("Should upgrade older preferences", async () => {
       let newPrefs = {
         ...kPrefDefaults,
         no_friendly_date: true,
@@ -42,10 +39,10 @@ describe("Prefs tests", () => {
       await prefs.init();
 
       let stored = (await browser.storage.local.get("preferences")).preferences;
-      expect(stored.migratedLegacy).toStrictEqual(kCurrentLegacyMigration);
-      expect(stored.hide_quick_reply).toStrictEqual(false);
-      expect(stored.no_friendly_date).toStrictEqual(true);
-      expect(stored.compose_in_tab).toStrictEqual(false);
+      assert.strictEqual(stored.migratedLegacy, kCurrentLegacyMigration);
+      assert.strictEqual(stored.hide_quick_reply, false);
+      assert.strictEqual(stored.no_friendly_date, true);
+      assert.strictEqual(stored.compose_in_tab, false);
     });
   });
 });

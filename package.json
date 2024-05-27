@@ -12,15 +12,6 @@
   "engines": {
     "thunderbird": ">=128.0a1"
   },
-  "jest": {
-    "setupFiles": [
-      "./addon/tests/setup.mjs"
-    ],
-    "testEnvironment": "jsdom",
-    "testMatch": [
-      "**/?(*.)+(spec|test).?(m)js"
-    ]
-  },
   "private": true,
   "type": "module",
   "dependencies": {
@@ -42,10 +33,10 @@
     "eslint-plugin-mozilla": "3.7.4",
     "eslint-plugin-no-unsanitized": "4.0.2",
     "eslint-plugin-react": "7.34.1",
+    "global-jsdom": "24.0.0",
     "globals": "15.3.0",
     "html-webpack-plugin": "5.6.0",
-    "jest": "29.7.0",
-    "jest-environment-jsdom": "29.7.0",
+    "jsdom": "24.1.0",
     "prettier": "3.2.5",
     "prop-types": "15.8.1",
     "serve": "14.2.3",
@@ -59,10 +50,10 @@
     "start": "web-ext run",
     "prod": "./scripts/build.sh --prod",
     "format": "prettier --write .",
-    "test": "npm run test:lint && npm run test:format && npm run test:jest",
+    "test": "npm run test:lint && npm run test:format && npm run test:node",
     "test:lint": "eslint .",
     "test:format": "prettier --check .",
-    "test:jest": "node --experimental-vm-modules node_modules/jest/bin/jest.js ./addon/tests/",
+    "test:node": "NODE_OPTIONS='--import \"./addon/tests/setup.mjs\"' node --test",
     "webextlint": "web-ext lint",
     "preversion": "npm ci && npm test",
     "version": "scripts/update-max-version.sh && scripts/update-version.sh",

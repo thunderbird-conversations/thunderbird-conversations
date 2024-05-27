@@ -140,14 +140,6 @@ export default [
     },
   },
   {
-    files: ["addon/tests/*.test.js*", "addon/tests/*.test.mjs*"],
-    languageOptions: {
-      globals: {
-        ...globals.jest,
-      },
-    },
-  },
-  {
     files: ["**/*.{js,mjs}"],
     plugins: { jsdoc },
     rules: {

@@ -68,16 +68,16 @@ fall back to mocked APIs.
 
 ## Testing
 
-`thunderbird-conversations` has linting tests and [jest](https://jestjs.io) tests. To run all tests, do
+`thunderbird-conversations` has linting tests and [node](https://nodejs.org/api/test.html) tests. To run all tests, do
 
 ```
 $ npm test
 ```
 
-To run just the _jest_ tests, do
+To run just the _node_ tests, do
 
 ```
-$ npm run test:jest
+$ npm run test:node
 ```
 
 Tests are stored in `test` directories. Because native ESM modules are used while

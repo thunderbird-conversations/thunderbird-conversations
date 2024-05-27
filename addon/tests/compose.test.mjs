@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
+import assert from "node:assert/strict";
+import { describe, it, beforeEach } from "node:test";
 import {
   render,
   fireEvent,
@@ -10,7 +12,6 @@ import {
   screen,
 } from "@testing-library/react";
 import React from "react";
-import { jest } from "@jest/globals";
 
 // Import the components we want to test
 import { Main, store } from "../compose/compose.mjs";
@@ -19,8 +20,8 @@ import { composeActions } from "../content/reducer/reducerCompose.mjs";
 describe("Compose full page tests", () => {
   let mockedSend;
 
-  beforeEach(async () => {
-    mockedSend = jest.spyOn(browser.convCompose, "send");
+  beforeEach(async (t) => {
+    mockedSend = t.mock.method(browser.convCompose, "send");
     render(React.createElement(Main));
 
     await act(async () => {
@@ -28,11 +29,7 @@ describe("Compose full page tests", () => {
     });
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
-  test("A message can be sent", async () => {
+  it("A message can be sent", async () => {
     const inputs = screen.getAllByRole("textbox");
 
     for (let inputBox of inputs) {
@@ -52,7 +49,8 @@ describe("Compose full page tests", () => {
       }
     });
 
-    expect(mockedSend).toHaveBeenCalledWith({
+    assert.deepEqual(mockedSend.mock.calls[0].arguments[0], {
+      originalMsgId: undefined,
       from: "id3",
       to: "to",
       subject: "subject",
@@ -60,7 +58,7 @@ describe("Compose full page tests", () => {
     });
   });
 
-  test("Modifying a field sets the modified flag", async () => {
+  it("Modifying a field sets the modified flag", async () => {
     await act(async () => {
       await store.dispatch(composeActions.resetStore());
     });
@@ -77,7 +75,7 @@ describe("Compose full page tests", () => {
     });
 
     // Should have correctly set up the initial values.
-    expect(store.getState().compose).toStrictEqual({
+    assert.deepEqual(store.getState().compose, {
       from: undefined,
       body: undefined,
       modified: true,

@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
+import assert from "node:assert/strict";
+import { describe, it } from "node:test";
 import { render, screen } from "@testing-library/react";
 import React from "react";
 
@@ -9,19 +11,23 @@ import React from "react";
 import { SvgIcon } from "../content/components/svgIcon.mjs";
 
 describe("SvgIcon test", () => {
-  test("renders given a full path", async () => {
+  it("renders given a full path", async () => {
     const PATH = "full/path/to/icon";
     render(React.createElement(SvgIcon, { fullPath: PATH }));
 
-    expect(screen.getByTestId("use").getAttribute("xlink:href")).toMatch(PATH);
+    assert.equal(
+      screen.getByTestId("use").getAttribute("xlink:href"),
+      `icons/${PATH}`
+    );
   });
 
-  test("renders given a hash", async () => {
+  it("renders given a hash", async () => {
     const HASH = "abc";
     render(React.createElement(SvgIcon, { hash: HASH }));
 
-    expect(screen.getByTestId("use").getAttribute("xlink:href")).toMatch(
-      "#" + HASH
+    assert.equal(
+      screen.getByTestId("use").getAttribute("xlink:href"),
+      "icons/material-icons.svg#" + HASH
     );
   });
 });

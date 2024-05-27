@@ -2,9 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
+import assert from "node:assert/strict";
+import { describe, it } from "node:test";
 import { render, fireEvent, within, screen } from "@testing-library/react";
 import React from "react";
-import { jest } from "@jest/globals";
 
 // Import the components we want to test
 import {
@@ -13,8 +14,8 @@ import {
 } from "../content/components/message/messageTags.mjs";
 
 describe("SpecialMessageTags test", () => {
-  test("special-tag classes are applied", async () => {
-    const callback = jest.fn();
+  it("special-tag classes are applied", async (t) => {
+    const callback = t.mock.fn();
     const tagData = [
       {
         canClick: false,
@@ -35,13 +36,14 @@ describe("SpecialMessageTags test", () => {
       })
     );
 
-    expect(screen.getByText("DKIM signed").className).toBe(
+    assert.equal(
+      screen.getByText("DKIM signed").className,
       "success special-tag can-click"
     );
   });
 
-  test("Clicking of special-tags", async () => {
-    const callback = jest.fn();
+  it("Clicking of special-tags", async (t) => {
+    const callback = t.mock.fn();
     const tagData = [
       {
         details: null,
@@ -73,13 +75,13 @@ describe("SpecialMessageTags test", () => {
 
     // The first tag cannot be clicked
     fireEvent.click(screen.getByText("Can't click"));
-    expect(callback.mock.calls).toHaveLength(0);
+    assert.equal(callback.mock.calls.length, 0);
 
-    callback.mockReset();
+    callback.mock.resetCalls();
 
     // The second tag can be clicked
     fireEvent.click(screen.getByText("Can click"));
-    expect(callback.mock.calls).toHaveLength(1);
+    assert.equal(callback.mock.calls.length, 1);
   });
 });
 
@@ -102,8 +104,8 @@ describe("MessageTags test", () => {
     },
   ];
 
-  test("Basic tags", async () => {
-    const callback = jest.fn();
+  it("Basic tags", async (t) => {
+    const callback = t.mock.fn();
     render(
       React.createElement(MessageTags, {
         onTagsChange: callback,
@@ -113,16 +115,15 @@ describe("MessageTags test", () => {
     );
 
     let tags = screen.getAllByRole("listitem");
-    expect(tags).toHaveLength(SAMPLE_TAGS.length);
+    assert.equal(tags.length, SAMPLE_TAGS.length);
 
     // Make sure the name actually shows up in the tag
-    expect(tags[0].textContent).toEqual(
-      expect.stringContaining(SAMPLE_TAGS[0].name)
-    );
+    console.log(SAMPLE_TAGS[0].name);
+    assert.match(tags[0].textContent, new RegExp(SAMPLE_TAGS[0].name));
   });
 
-  test("Expanded tags", async () => {
-    const callback = jest.fn();
+  it("Expanded tags", async (t) => {
+    const callback = t.mock.fn();
     render(
       React.createElement(MessageTags, {
         onTagsChange: callback,
@@ -132,20 +133,20 @@ describe("MessageTags test", () => {
     );
 
     let tags = screen.getAllByRole("listitem");
-    expect(tags).toHaveLength(SAMPLE_TAGS.length);
+    assert.equal(tags.length, SAMPLE_TAGS.length);
 
     fireEvent.click(within(tags[0]).getByRole("button"));
-    expect(callback.mock.calls).toHaveLength(1);
+    assert.equal(callback.mock.calls.length, 1);
 
     // The callback should be called with a list of tags with the clicked
     // tag removed.
-    const payload = callback.mock.calls[0][0];
-    expect(payload).toHaveLength(SAMPLE_TAGS.length - 1);
-    expect(payload).toMatchObject(SAMPLE_TAGS.slice(1));
+    const payload = callback.mock.calls[0].arguments[0];
+    assert.equal(payload.length, SAMPLE_TAGS.length - 1);
+    assert.deepEqual(payload, SAMPLE_TAGS.slice(1));
   });
 
-  test("Unexpanded tags", async () => {
-    const callback = jest.fn();
+  it("Unexpanded tags", async (t) => {
+    const callback = t.mock.fn();
     render(
       React.createElement(MessageTags, {
         onTagsChange: callback,
@@ -155,9 +156,9 @@ describe("MessageTags test", () => {
     );
 
     let tags = screen.getAllByRole("listitem");
-    expect(tags).toHaveLength(SAMPLE_TAGS.length);
+    assert.equal(tags.length, SAMPLE_TAGS.length);
 
     // There should be no "x" button in an unexpanded tag
-    expect(within(tags[0]).queryByRole("button")).toBe(null);
+    assert.equal(within(tags[0]).queryByRole("button"), null);
   });
 });
