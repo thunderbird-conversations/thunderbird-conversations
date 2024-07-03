@@ -45,7 +45,7 @@
   },
   "overrides": {
     "web-ext": {
-      "ws": "8.17.1"
+      "ws": "8.18.0"
     }
   },
   "scripts": {
