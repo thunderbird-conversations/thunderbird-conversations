@@ -1,7 +1,7 @@
 import globals from "globals";
 import jsdoc from "eslint-plugin-jsdoc";
 import json from "eslint-plugin-json";
-import reactRecommended from "eslint-plugin-react/configs/recommended.js";
+import react from "eslint-plugin-react";
 import imports from "eslint-plugin-import";
 import mozilla from "eslint-plugin-mozilla";
 import nounsanitized from "eslint-plugin-no-unsanitized";
@@ -84,9 +84,8 @@ export default [
   },
   {
     files: ["**/*.mjs"],
-    ...reactRecommended,
+    ...react.configs.flat.recommended,
     languageOptions: {
-      ...reactRecommended.languageOptions,
       globals: {
         ...globals.browser,
         ...globals.es2021,
