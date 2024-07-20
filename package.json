@@ -43,11 +43,6 @@
     "webpack": "5.93.0",
     "webpack-cli": "5.1.4"
   },
-  "overrides": {
-    "web-ext": {
-      "ws": "8.17.1"
-    }
-  },
   "scripts": {
     "dev": "rm -rf ./dist-dev-html && (scripts/build-dev-html.sh --watch &) && sleep 4 && scripts/dev-html-serve.sh",
     "build": "./scripts/build.sh",
