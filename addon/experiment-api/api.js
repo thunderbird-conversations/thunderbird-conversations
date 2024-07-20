@@ -193,7 +193,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
               case "browser.display.background_color":
                 return Services.prefs.getCharPref(name);
             }
-          } catch (ex) {
+          } catch {
             // Do nothing
           }
           return undefined;

@@ -61,7 +61,7 @@ export async function initializeI18n(resolve, locale = "en") {
   let resp;
   try {
     resp = await fetch(`../_locales/${locale}/messages.json`);
-  } catch (ex) {
+  } catch {
     // For tests.
     resp = await fetch(`_locales/${locale}/messages.json`);
   }

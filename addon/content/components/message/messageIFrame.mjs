@@ -507,7 +507,7 @@ export class MessageIFrame extends React.Component {
         );
         this._waitingForDom = false;
         return height;
-      } catch (e) {
+      } catch {
         // message arrived and window is not displayed, arg,
         // cannot get the computed style, BAD
       }

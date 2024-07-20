@@ -325,7 +325,7 @@ async function registerColumn(
   );
   try {
     win.gDBView.addColumnHandler("betweenCol", columnHandler);
-  } catch (e) {
+  } catch {
     // This is really weird, but rkent does it for junquilla, and this solves
     //  the issue of enigmail breaking us... don't wanna know why it works,
     //  but it works.

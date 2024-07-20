@@ -378,7 +378,7 @@ export class MessageEnricher {
         msg.inView =
           currentTab.displayedFolder.accountId == message.folder.accountId &&
           currentTab.displayedFolder.path == message.folder.path;
-      } catch (ex) {
+      } catch {
         // If we can't get the current tab, we assume the message is not in
         // the current view, e.g. standalone tab.
       }
