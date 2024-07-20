@@ -43,7 +43,7 @@ export const quickReplyActions = {
             to = replyTo;
           } else {
             to = webExtMsg.author.includes(identity.email)
-              ? webExtMsg.recipients[0] ?? ""
+              ? (webExtMsg.recipients[0] ?? "")
               : webExtMsg.author;
           }
           break;
