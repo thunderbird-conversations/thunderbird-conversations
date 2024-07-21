@@ -7,26 +7,65 @@
  * columns, handling key presses etc.
  */
 export class UIHandler {
+  #lastBetweenColumnDisableValue = null;
+  #betweenColumnListener() {}
+
   async init() {
     browser.commands.onCommand.addListener(this.onKeyCommand.bind(this));
+    browser.storage.onChanged.addListener(this.onPrefsChanged.bind(this));
 
-    // const result = await browser.storage.local.get("preferences");
-    // if (!result.preferences.disableBetweenColumn) {
-    //   browser.convContacts.onColumnHandler.addListener(
-    //     () => {},
-    //     browser.i18n.getMessage("between.columnName"),
-    //     browser.i18n.getMessage("between.columnTooltip"),
-    //     browser.i18n.getMessage("message.meBetweenMeAndSomeone"),
-    //     browser.i18n.getMessage("message.meBetweenSomeoneAndMe"),
-    //     browser.i18n.getMessage("header.commaSeparator"),
-    //     browser.i18n.getMessage("header.andSeparator")
-    //   );
-    // }
+    const result = await browser.storage.local.get("preferences");
+    this.#lastBetweenColumnDisableValue =
+      result.preferences.disableBetweenColumn;
+    if (!result.preferences.disableBetweenColumn) {
+      browser.convContacts.onColumnHandler.addListener(
+        this.#betweenColumnListener,
+        browser.i18n.getMessage("between.columnName"),
+        browser.i18n.getMessage("between.columnTooltip"),
+        browser.i18n.getMessage("message.meBetweenMeAndSomeone"),
+        browser.i18n.getMessage("message.meBetweenSomeoneAndMe"),
+        browser.i18n.getMessage("header.commaSeparator"),
+        browser.i18n.getMessage("header.andSeparator")
+      );
+    }
   }
 
   onKeyCommand(command) {
     if (command == "quick_compose") {
       this.openQuickCompose().catch(console.error);
+    }
+  }
+
+  onPrefsChanged(changed, areaName) {
+    if (
+      areaName != "local" ||
+      !("preferences" in changed) ||
+      !("newValue" in changed.preferences)
+    ) {
+      return;
+    }
+
+    if (
+      changed.preferences.newValue.disableBetweenColumn !=
+      this.#lastBetweenColumnDisableValue
+    ) {
+      if (changed.preferences.newValue.disableBetweenColumn) {
+        browser.convContacts.onColumnHandler.removeListener(
+          this.#betweenColumnListener
+        );
+      } else {
+        browser.convContacts.onColumnHandler.addListener(
+          this.#betweenColumnListener,
+          browser.i18n.getMessage("between.columnName"),
+          browser.i18n.getMessage("between.columnTooltip"),
+          browser.i18n.getMessage("message.meBetweenMeAndSomeone"),
+          browser.i18n.getMessage("message.meBetweenSomeoneAndMe"),
+          browser.i18n.getMessage("header.commaSeparator"),
+          browser.i18n.getMessage("header.andSeparator")
+        );
+      }
+      this.#lastBetweenColumnDisableValue =
+        changed.preferences.newValue.disableBetweenColumn;
     }
   }
 

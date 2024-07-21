@@ -92,7 +92,7 @@
     "description": "Options - description for hiding the quick reply display."
   },
   "options.disable_between_column_title": {
-    "message": "Вимкнути стовпчик \"Учасники\" (Потрібен перезапуск)",
+    "message": "Вимкнути стовпчик \"Учасники\"",
     "description": "Options - title for disabling the between column."
   },
   "options.disable_between_column_desc": {

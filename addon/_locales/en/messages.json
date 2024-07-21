@@ -115,7 +115,7 @@
   },
 
   "options.disable_between_column_title": {
-    "message": "Disable Between Column (Requires restart)",
+    "message": "Disable Between Column",
     "description": "Options - title for disabling the between column."
   },
 
