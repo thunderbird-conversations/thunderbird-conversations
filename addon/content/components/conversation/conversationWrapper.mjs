@@ -22,10 +22,11 @@ class _ConversationWrapper extends React.PureComponent {
     this._setHTMLAttributes();
 
     // When moving to a WebExtension page this can simply be moved to CSS (see
-    // options.css).
-    browser.conversations.getLocaleDirection().then((dir) => {
-      document.documentElement.setAttribute("dir", dir);
-    });
+    // https://developer.mozilla.org/docs/Mozilla/Add-ons/WebExtensions/Internationalization).
+    document.documentElement.setAttribute(
+      "dir",
+      browser.i18n.getMessage("@@bidi_dir")
+    );
   }
 
   componentDidUpdate(prevProps) {

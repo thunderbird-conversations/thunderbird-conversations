@@ -34,13 +34,6 @@
         ]
       },
       {
-        "name": "getLocaleDirection",
-        "type": "function",
-        "description": "Temporary. Gets the current locale direction.",
-        "async": true,
-        "parameters": []
-      },
-      {
         "name": "getMessageIdForUri",
         "type": "function",
         "description": "Temporary. Gets the WebExtension message ID for a message uri (xref bug 1606573)",

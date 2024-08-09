@@ -58,7 +58,36 @@ const ALL_LOCALES = [
  * @param {string} [locale]
  */
 export async function initializeI18n(resolve, locale = "en") {
+  async function getRTL() {
+    // RTL languages taken from https://github.com/shadiabuhilal/rtl-detect/blob/master/lib/rtl-detect.js
+    const RTL_LANGUAGES = [
+      "ae" /* Avestan */,
+      "ar" /* 'العربية', Arabic */,
+      "arc" /* Aramaic */,
+      "bcc" /* 'بلوچی مکرانی', Southern Balochi */,
+      "bqi" /* 'بختياري', Bakthiari */,
+      "ckb" /* 'Soranî / کوردی', Sorani */,
+      "dv" /* Dhivehi */,
+      "fa" /* 'فارسی', Persian */,
+      "glk" /* 'گیلکی', Gilaki */,
+      "he" /* 'עברית', Hebrew */,
+      "ku" /* 'Kurdî / كوردی', Kurdish */,
+      "mzn" /* 'مازِرونی', Mazanderani */,
+      "nqo" /* N'Ko */,
+      "pnb" /* 'پنجابی', Western Punjabi */,
+      "ps" /* 'پښتو', Pashto, */,
+      "sd" /* 'سنڌي', Sindhi */,
+      "ug" /* 'Uyghurche / ئۇيغۇرچە', Uyghur */,
+      "ur" /* 'اردو', Urdu */,
+      "yi" /* 'ייִדיש', Yiddish */,
+    ];
+    if (locale && RTL_LANGUAGES.some((l) => locale.startsWith(l))) {
+      return "rtl";
+    }
+    return "ltr";
+  }
   let resp;
+  let rtl = await getRTL();
   try {
     resp = await fetch(`../_locales/${locale}/messages.json`);
   } catch {
@@ -70,6 +99,9 @@ export async function initializeI18n(resolve, locale = "en") {
   // Replace the `getMessage` function with one that retrieves
   // values from the loaded JSON.
   i18n.getMessage = (messageName, substitutions) => {
+    if (messageName == "") {
+      return rtl;
+    }
     let message =
       (i18n._messages[messageName] || {}).message ||
       `<translation not found>${messageName}`;
@@ -186,35 +218,6 @@ if (!browser.conversations) {
   browser.conversations = {
     send(details) {
       console.log(details);
-    },
-    async getLocaleDirection() {
-      // RTL languages taken from https://github.com/shadiabuhilal/rtl-detect/blob/master/lib/rtl-detect.js
-      const RTL_LANGUAGES = [
-        "ae" /* Avestan */,
-        "ar" /* 'العربية', Arabic */,
-        "arc" /* Aramaic */,
-        "bcc" /* 'بلوچی مکرانی', Southern Balochi */,
-        "bqi" /* 'بختياري', Bakthiari */,
-        "ckb" /* 'Soranî / کوردی', Sorani */,
-        "dv" /* Dhivehi */,
-        "fa" /* 'فارسی', Persian */,
-        "glk" /* 'گیلکی', Gilaki */,
-        "he" /* 'עברית', Hebrew */,
-        "ku" /* 'Kurdî / كوردی', Kurdish */,
-        "mzn" /* 'مازِرونی', Mazanderani */,
-        "nqo" /* N'Ko */,
-        "pnb" /* 'پنجابی', Western Punjabi */,
-        "ps" /* 'پښتو', Pashto, */,
-        "sd" /* 'سنڌي', Sindhi */,
-        "ug" /* 'Uyghurche / ئۇيغۇرچە', Uyghur */,
-        "ur" /* 'اردو', Urdu */,
-        "yi" /* 'ייִדיש', Yiddish */,
-      ];
-      const locale = await i18n.getUILanguage();
-      if (locale && RTL_LANGUAGES.some((l) => locale.startsWith(l))) {
-        return "rtl";
-      }
-      return "ltr";
     },
     async getCorePref(name) {
       switch (name) {

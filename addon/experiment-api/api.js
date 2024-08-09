@@ -214,9 +214,6 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             console.error(ex);
           }
         },
-        async getLocaleDirection() {
-          return Services.locale.isAppLocaleRTL ? "rtl" : "ltr";
-        },
         async getMessageIdForUri(uri) {
           const msgHdr = msgUriToMsgHdr(uri);
           if (!msgHdr) {
