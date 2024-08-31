@@ -1,675 +1,818 @@
 {
   "extensionName": {
     "message": "Thunderbird Conversations",
-    "description": "Name of the extension."
+    "description": "Eklentinin adı."
   },
   "extensionDescription": {
-    "message": "Brings a conversation view to a Thunderbird near you!",
-    "description": "Description of the extension."
+    "message": "Thunderbird'ünüze bir konuşma görünümü getirir!",
+    "description": "Eklentinin açıklaması."
   },
   "options.expand_who": {
-    "message": "By default, expand:",
-    "description": "Options - label for which messages should be expanded."
+    "message": "Varsayılan olarak genişlet:",
+    "description": "Hangi mesajların genişletilmesi gerektiğini belirten etiket."
   },
   "options.expand_auto": {
-    "message": "Automatic",
-    "description": "Options - label for automatically expanding messages."
+    "message": "Otomatik",
+    "description": "Mesajların otomatik olarak genişletilmesi için etiket."
   },
   "options.expand_auto.tooltip": {
-    "message": "If the thread is collapsed, expand all unread messages or the last message. If it is expanded, only expand the selected message in the message list.",
-    "description": "Options - tooltip for automatically expanding messages."
+    "message": "Konular küçültülmüşse, tüm okunmamış mesajları veya son mesajı genişletin. Genişletilmişse, yalnızca mesaj listesinde seçilen mesajı genişletin.",
+    "description": "Mesajların otomatik olarak genişletilmesi için ipucu."
   },
   "options.expand_none": {
-    "message": "No messages",
-    "description": "Options - label for not expanding messages."
+    "message": "Mesaj yok",
+    "description": "Mesajları genişletmeme seçeneği için etiket."
   },
   "options.expand_all": {
-    "message": "All messages",
-    "description": "Options - label for expanding all messages."
+    "message": "Tüm mesajlar",
+    "description": "Tüm mesajları genişletme seçeneği için etiket."
   },
   "options.quoting_title": {
-    "message": "Quoted text",
-    "description": "Options - title for quoted text."
+    "message": "Alıntılanan metin",
+    "description": "Alıntılanan metin için başlık."
   },
   "options.quoting_desc": {
-    "message": "Quotes higher than this number of lines will be collapsed.",
-    "description": "Options - description for quoted text."
+    "message": "Bu satır sayısından fazla olan alıntılar küçültülecektir.",
+    "description": "Alıntılanan metin için açıklama."
   },
   "options.hide_sigs_title": {
-    "message": "Hide Signatures",
-    "description": "Options - title for hiding signatures."
+    "message": "İmzaları Gizle",
+    "description": "İmzaları gizlemek için başlık."
   },
   "options.hide_sigs_desc": {
-    "message": "Whether signatures are collapsed by default.",
-    "description": "Options - description for hiding signatures."
+    "message": "İmzaların varsayılan olarak küçültülüp küçültülmeyeceğini belirtir.",
+    "description": "İmzaları gizlemek için açıklama."
   },
   "options.friendly_date_title": {
-    "message": "No friendly dates",
-    "description": "Options - title for if to show friendly dates."
+    "message": "Kullanıcı dostu tarih yok",
+    "description": "Kullanıcı dostu tarihler gösterilip gösterilmeyeceğini belirten başlık."
   },
   "options.friendly_date_desc": {
-    "message": "In the top right corner, use \"normal\" dates, just like the message list, instead of \"yesterday\" and others.",
-    "description": "Options - description for if to show friendly dates."
+    "message": "Sağ üst köşede, \"dün\" ve diğerleri yerine, mesaj listesi gibi \"normal\" tarihler kullanın.",
+    "description": "Kullanıcı dostu tarihler gösterilip gösterilmeyeceği için açıklama."
   },
   "options.tweak_chrome_title": {
-    "message": "Tweak chrome fonts",
-    "description": "Options - title for tweaking chrome fonts."
+    "message": "Chrome yazı tiplerini ayarla",
+    "description": "Chrome yazı tiplerini ayarlamak için başlık."
   },
   "options.tweak_chrome_desc": {
-    "message": "Scale down the font size for the conversation chrome (recommended, requires restart).",
-    "description": "Options - description for tweaking chrome fonts."
+    "message": "Görüşme chrome'undaki yazı tipi boyutunu küçültün (önerilir, yeniden başlatma gerektirir).",
+    "description": "Chrome yazı tiplerini ayarlamak için açıklama."
   },
   "options.tweak_bodies_title": {
-    "message": "Tweak body fonts",
-    "description": "Options - title for tweaking message body fonts."
+    "message": "Metin yazı tiplerini ayarla",
+    "description": "Mesaj metni yazı tiplerini ayarlamak için başlık."
   },
   "options.tweak_bodies_desc": {
-    "message": "Tweak the fonts in the message bodies to make them consistent with the outer font (recommended, requires restart).",
-    "description": "Options - description for tweaking message body fonts."
+    "message": "Dış yazı tipiyle uyumlu olacak şekilde mesaj metni yazı tiplerini ayarlayın (önerilir, yeniden başlatma gerektirir).",
+    "description": "Mesaj metni yazı tiplerini ayarlamak için açıklama."
   },
   "options.operate_on_conversations_title": {
-    "message": "Archive/delete behavior",
-    "description": "Options - title for archive/delete behavior."
+    "message": "Arşiv/silme davranışı",
+    "description": "Arşiv/silme davranışı için başlık."
   },
   "options.operate_on_conversations_desc": {
-    "message": "Toolbar buttons should archive and delete the entire conversation, not just selected messages.",
-    "description": "Options - description for archive/delete behavior."
+    "message": "Araç çubuğu düğmeleri, yalnızca seçilen mesajları değil, tüm konuşmayı arşivlemeli ve silmelidir.",
+    "description": "Arşiv/silme davranışı için açıklama."
   },
   "options.extra_attachments_title": {
-    "message": "I love attachments",
-    "description": "Options - title for attachment settings."
+    "message": "Ek dosyaları seviyorum",
+    "description": "Ek ayarları için başlık."
   },
   "options.extra_attachments_desc": {
-    "message": "In some corner cases, Thunderbird will fail to recognize some attachments. This option allows you to workaround the Thunderbird bug, and makes sure we try to display as many attachments as we can. Use in combination with the Show All Body Parts addon.",
-    "description": "Options - description for attachment settings."
+    "message": "Bazı durumlarda, Thunderbird bazı ekleri tanıyamayacaktır. Bu seçenek, Thunderbird hatasını aşmanıza olanak tanır ve mümkün olduğunca çok eki görüntülemeye çalışmamızı sağlar. Tüm Gövde Parçalarını Göster eklentisi ile birlikte kullanın.",
+    "description": "Ek ayarları için açıklama."
   },
-  "options.compose_in_tab_title": {
-    "message": "Hidden composition window",
-    "description": "Options - title for hidden compose window enabling."
+  "options.hide_quick_reply_title": {
+    "message": "Hızlı Yanıtı Gizle",
+    "description": "Hızlı yanıt kutusunu gizlemek için başlık."
   },
-  "options.compose_in_tab_desc": {
-    "message": "Ctrl-Shift-N opens the hidden, unsupported composition window in a new tab",
-    "description": "Options - description for hidden compose window enabling."
+  "options.hide_quick_reply_desc": {
+    "message": "Konuşmalarda hızlı yanıt kutusunu gizleyin.",
+    "description": "Hızlı yanıt kutusunu gizlemek için açıklama."
+  },
+  "options.disable_between_column_title": {
+    "message": "Aradaki Sütunu Devre Dışı Bırak",
+    "description": "Aradaki sütunu devre dışı bırakmak için başlık."
+  },
+  "options.disable_between_column_desc": {
+    "message": "Aradaki sütunu devre dışı bırakır. Bu, aradaki sütunu kullanmıyorsanız, ancak Thunderbird'ün hala her seferinde görüntülemeye çalıştığını fark ediyorsanız, bu ayarın belirlenmesi yararlı olabilir.",
+    "description": "Aradaki sütunu devre dışı bırakmak için açıklama."
+  },
+  "options.compose_in_tab2_title": {
+    "message": "Kompozisyon sekmesini etkinleştir",
+    "description": "Gizli kompozisyon sekmesi seçeneğini etkinleştirmek için başlık."
+  },
+  "options.compose_in_tab2_desc": {
+    "message": "Ctrl-Shift-N, gizli kompozisyonu yeni bir sekmede açar (deneysel).",
+    "description": "Gizli kompozisyon sekmesini etkinleştirmek için açıklama."
   },
   "options.debugging_title": {
-    "message": "Debugging",
-    "description": "Options - title for debugging setting."
+    "message": "Hata Ayıklama",
+    "description": "Hata ayıklama ayarı için başlık."
   },
   "options.debugging_desc": {
-    "message": "Enable debug output in the system console and the error console. This will generate a lot of messages.",
-    "description": "Options - description for debugging setting."
+    "message": "Sistem konsolunda ve hata konsolunda hata ayıklama çıktısını etkinleştirin. Bu çok fazla mesaj üretecektir.",
+    "description": "Hata ayıklama ayarı için açıklama."
   },
   "assistant.title": {
-    "message": "İlk çalıştırma yardımcısı",
-    "description": "The document title of the assistant page."
+    "message": "İlk çalıştırma asistanı",
+    "description": "Asistan sayfasının belge başlığı."
+  },
+  "assistant.intro2": {
+    "message": "Bu asistan, en iyi deneyimi yaşamanızı sağlamak için Thunderbird ayarlarınızı düzenleyecektir.",
+    "description": "Asistan için giriş paragrafı."
+  },
+  "assistant.settingsBetweenTitle": {
+    "message": "Aradaki sütunu varsayılan olarak görüntülemek ister misiniz?",
+    "description": "Aradaki sütunun etkinleştirilmesi için bölüm başlığı."
+  },
+  "assistant.settingsBetweenDetail": {
+    "message": "Bu, konuşmadaki tüm kişilerin adlarını göstermek için mesaj listesine bir sütun ekler.",
+    "description": "Aradaki sütunun etkinleştirilmesi için bölüm detayları."
+  },
+  "assistant.actionEnableBetween": {
+    "message": "Aradaki sütunu etkinleştir",
+    "description": "Aradaki sütunun etkinleştirilmesi için onay kutusu etiketi."
+  },
+  "assistant.settingsColumnInfo": {
+    "message": "Sütun başlıklarına sağ tıklayarak sütunları etkinleştirip devre dışı bırakabilirsiniz.",
+    "description": "Sütunların nasıl etkinleştirilip devre dışı bırakılacağını açıklayan bilgi."
+  },
+  "assistant.otherSettingsTitle": {
+    "message": "Diğer Ayarlar",
+    "description": "Diğer ayarlar için başlık."
   },
   "assistant.working": {
     "message": "Çalışıyor...",
-    "description": "An indication that the assistant is working."
+    "description": "Asistanın çalıştığını belirten bir gösterge."
+  },
+  "assistant.workingText": {
+    "message": "Bu biraz zaman alabilir. Bu sekmenin kapanmasını bekleyebilir veya sekmeyi kendiniz kapatabilir ve ilerlemeyi Araçlar > Etkinlik Yöneticisi'nden kontrol edebilirsiniz.",
+    "description": "Asistan için üçüncü detay paragrafı."
   },
   "assistant.apply": {
-    "message": "Değişikleri onayla",
-    "description": "The apply button title for the assistant."
+    "message": "Değişiklikleri uygula",
+    "description": "Asistan için değişiklikleri uygulama düğmesi başlığı."
   },
   "assistant.actionEnableGloda": {
-    "message": "Genel Arama ve dizin oluşturucunun etkin olduğundan emin ol.",
-    "description": "Option text for enabling Gloda."
+    "message": "Küresel Arama ve Dizinleyicinin etkinleştirildiğinden emin olun.",
+    "description": "Gloda'nın etkinleştirilmesi için seçenek metni."
   },
   "assistant.actionOfflineDownload": {
-    "message": "Gelen Kutusu ve Gönderilenleri çevrimdışı depolama için eşitle (şiddetle önerilir).",
-    "description": "Option text for allowing offline download."
+    "message": "Gelen Kutusu ve Gönderilenler çevrimdışı depolama için senkronize ediliyor (şiddetle tavsiye edilir).",
+    "description": "Çevrimdışı indirme seçeneği için metin."
+  },
+  "assistant.actionSetupMessageViews": {
+    "message": "Mesaj listesinin sıralı olarak görüntülenmesini sağlayın ve tarihi ile sıralayın. Tüm klasörlere uygulayın (şiddetle tavsiye edilir).",
+    "description": "Görünümün nasıl ayarlanacağına dair seçenek metni."
   },
   "assistant.actionEnsureMessagePaneVisible": {
-    "message": "İleti bölmesinin görünür olduğundan emin ol.",
-    "description": "Option text for ensuring the message pane is visible."
+    "message": "Mesaj panelinin görünür olduğundan emin olun.",
+    "description": "Mesaj panelinin görünür olduğundan emin olma seçeneği için metin."
   },
   "assistant.settings2": {
-    "message": "Daha fazla seçeneği etkinleştirmek isteseniz, \"gelişmiş\" sekmesi altındaki eklenti seçeneklerine girebilirsiniz.",
-    "description": "Paragraph informing users of the ability to change settings later."
+    "message": "Daha sonra daha fazla seçenek etkinleştirmek isterseniz, bu sihirbazı eklentinin tercihlerinden, \"ileri düzey\" bölümünden erişebilirsiniz.",
+    "description": "Kullanıcıları daha sonra ayarları değiştirebilme konusunda bilgilendiren paragraf."
   },
   "gallery.messageMovedOrDeleted": {
-    "message": "Üzgünüz, bu iletiyi taşındığı veya silindiği için galeri görünümünde gösteremiyoruz.",
-    "description": "Message displayed if the email that the gallery is trying to view cannot be found."
+    "message": "Üzgünüz, ancak bu galeri görünümünü görüntüleyemiyoruz çünkü mesaj taşınmış veya silinmiş.",
+    "description": "Galeriyi görüntülemeye çalışırken e-posta bulunamadığında gösterilen mesaj."
   },
   "gallery.title": {
-    "message": "Galeri görünümü: $1",
-    "description": "The tab title for the image gallery"
+    "message": "Galeri görünümü için : $1",
+    "description": "Görsel galerinin sekme başlığı."
   },
   "options.start_setup_assistant": {
-    "message": "Kurulum Yardımcısı'nı başlat",
-    "description": "Title of the button to open the setup assistant."
+    "message": "Kurulum asistanını başlat",
+    "description": "Kurulum asistanını açmak için düğme başlığı."
   },
   "message.movedOrDeletedConversation": {
-    "message": "Üzgünüz, bu görüşmeyi silindiği veya taşındığı için gösteremiyoruz.",
-    "description": "Error message for the conversation tab"
+    "message": "Üzgünüz, ancak bu konuşmayı görüntüleyemiyoruz çünkü mesajlar taşınmış veya silinmiş.",
+    "description": "Konuşma sekmesi için hata mesajı."
   },
   "contact.copyEmailTooltip": {
-    "message": "E-posta adresini panoya kopyala.",
-    "description": "Tooltip shown on the copy email to clipboard button"
+    "message": "E-posta adresini panoya kopyala",
+    "description": "E-postayı panoya kopyala düğmesi için ipucu."
   },
   "contact.createFilterTooltip": {
-    "message": "gönderen için filitre oluştur",
-    "description": "Tooltip shown on the create filter for contact button"
+    "message": "gönderen için filtre oluştur",
+    "description": "Kişi için filtre oluştur düğmesi için ipucu."
   },
   "contact.addContactTooltip": {
     "message": "Adres defterine ekle",
-    "description": "Tooltip shown on the add contact button"
+    "description": "Kişiyi ekle düğmesi için ipucu."
   },
   "contact.editContactTooltip": {
     "message": "Adres defterinde kişiyi düzenle",
-    "description": "Tooltip shown on the edit contact button"
+    "description": "Kişiyi düzenle düğmesi için ipucu."
+  },
+  "contact.viewContactTooltip": {
+    "message": "Adres defterinde kişiyi görüntüle",
+    "description": "Salt okunur kişiler için kişiyi görüntüleme düğmesi için ipucu."
   },
   "contact.sendEmailTooltip": {
-    "message": "posta gönder",
-    "description": "Tooltip shown on the send email button"
+    "message": "e-posta gönder",
+    "description": "E-posta gönder düğmesi için ipucu."
   },
   "contact.recentConversationsTooltip": {
     "message": "son konuşmalar",
-    "description": "Tooltip shown on the recent conversations button"
-  },
-  "message.archive.tooltip": {
-    "message": "Bu görüşmeyi arşivle",
-    "description": "Tooltip for the archive button in the conversation header"
-  },
-  "message.detach.tooltip": {
-    "message": "Bu görüşmeyi yeni sekmede göster",
-    "description": "Tooltip for the detach to new tab button in the conversation header"
-  },
-  "message.expand.tooltip": {
-    "message": "Tüm iletileri genişlet/daralt",
-    "description": "Tooltip for the expand button in the conversation header"
+    "description": "Son konuşmalar düğmesi için ipucu."
   },
   "message.forwardConversation": {
-    "message": "Bu görüşmeyi llet",
-    "description": "The link text for forwarding a conversation"
+    "message": "Bu konuşmayı ilet",
+    "description": "Bir konuşmayı iletmek için bağlantı metni."
+  },
+  "message.printConversation": {
+    "message": "Bu konuşmayı yazdır",
+    "description": "Bir konuşmayı yazdırmak için bağlantı metni."
+  },
+  "message.trash.tooltip": {
+    "message": "Bu konuşmayı sil",
+    "description": "Konuşma başlığındaki çöp kutusu düğmesi için ipucu."
+  },
+  "message.archive.tooltip": {
+    "message": "Bu konuşmayı arşivle",
+    "description": "Konuşma başlığındaki arşiv düğmesi için ipucu."
   },
   "message.junk.tooltip": {
-    "message": "Bu ileti gereksiz",
-    "description": "Tooltip for the junk button in the conversation header"
+    "message": "Bu mesajı istenmeyen olarak işaretle",
+    "description": "Konuşma başlığındaki istenmeyen düğmesi için ipucu."
+  },
+  "message.expand.tooltip": {
+    "message": "Tüm mesajları genişlet/küçült",
+    "description": "Konuşma başlığındaki genişlet düğmesi için ipucu."
+  },
+  "message.read.tooltip": {
+    "message": "Tüm mesajları okundu/okunmadı olarak işaretle",
+    "description": "Konuşma başlığındaki okundu olarak işaretle düğmesi için ipucu."
+  },
+  "message.detach.tooltip": {
+    "message": "Bu konuşmayı yeni bir sekmede göster",
+    "description": "Konuşma başlığındaki yeni sekmede göster düğmesi için ipucu."
   },
   "message.loading": {
     "message": "Yükleniyor...",
-    "description": "Displayed when the message is loading"
-  },
-  "message.printConversation": {
-    "message": "Bu görüşmeyi yazdır",
-    "description": "The link text for printing a conversation"
-  },
-  "message.read.tooltip": {
-    "message": "Mesajları okunmuş/okunmamış şeklinde değiştir",
-    "description": "Tooltip for the mark as read button in the conversation header"
-  },
-  "message.trash.tooltip": {
-    "message": "Bu görüşmeyi sil",
-    "description": "Tooltip for the trash button in the conversation header"
+    "description": "Mesaj yüklenirken görüntülenir."
   },
   "message.noSubject": {
-    "message": "(no subject)",
-    "description": "Displayed when a message has no subject"
+    "message": "(konu yok)",
+    "description": "Bir mesajın konusu olmadığında görüntülenir."
   },
   "message.showDetails.tooltip": {
     "message": "detayları göster",
-    "description": "Tooltip for showing message header details"
+    "description": "Mesaj başlığı detaylarını gösterme ipucu."
   },
   "message.hideDetails.tooltip": {
     "message": "detayları gizle",
-    "description": "Tooltip for hiding message header details"
+    "description": "Mesaj başlığı detaylarını gizleme ipucu."
   },
   "message.moreMenu.tooltip": {
     "message": "daha fazla",
-    "description": "Tooltip for the more menu"
+    "description": "Daha fazla menü için ipucu."
+  },
+  "message.addStar.tooltip": {
+    "message": "Yıldız ekle",
+    "description": "Yıldız ekle düğmesi için ipucu."
+  },
+  "message.removeStar.tooltip": {
+    "message": "Yıldızı kaldır",
+    "description": "Yıldızı kaldır düğmesi için ipucu."
   },
   "action.archive": {
-    "message": "Bu iletiyi arşivle",
-    "description": "Archive button name in the message more menu"
+    "message": "bu mesajı arşivle",
+    "description": "Mesaj daha fazla menüsünde arşivle düğmesi adı."
   },
   "action.delete": {
-    "message": "Bu iletiyi sil",
-    "description": "Delete button name in the message more menu"
+    "message": "bu mesajı sil",
+    "description": "Mesaj daha fazla menüsünde sil düğmesi adı."
   },
   "action.viewClassic": {
-    "message": "Klasik okuyucu ile görüntüle",
-    "description": "Show in classic view button name in the message more menu"
+    "message": "klasik okuyucu ile görüntüle",
+    "description": "Mesaj daha fazla menüsünde klasik görünümde göster düğmesi adı."
   },
   "action.viewSource": {
-    "message": "ileti kaynağını görüntüle",
-    "description": "View source button name in the message more menu"
+    "message": "mesaj kaynağını görüntüle",
+    "description": "Mesaj daha fazla menüsünde kaynak görünüm düğmesi adı."
   },
   "notification.scamMsg": {
-    "message": "Bu ileti bir aldatmaca olabilir:",
-    "description": "Notification message shown for a junk/scam message"
+    "message": "Bu mesaj bir dolandırıcılık olabilir:",
+    "description": "Bir istenmeyen mesaj için gösterilen bildirim mesajı."
   },
   "notification.ignoreScamWarning": {
-    "message": "uyarıyı yoksay",
-    "description": "Button title to ignore a junk/scam message"
+    "message": "uyarıyı görmezden gel",
+    "description": "Bir istenmeyen mesaj için uyarıyı görmezden gel düğmesi başlığı."
   },
   "notification.junkMsg": {
-    "message": "Bu önemsiz bir postadır",
-    "description": "Notification message shown for junk messages"
+    "message": "Bu istenmeyen posta",
+    "description": "İstenmeyen mesajlar için gösterilen bildirim mesajı."
   },
   "notification.notJunk": {
-    "message": "Önemsiz değil",
-    "description": "Button title to mark as not junk"
+    "message": "İstenmeyen değil",
+    "description": "İstenmeyen olarak işaretlenmiş bir mesaj için istenmeyen değil düğmesi başlığı."
   },
   "notification.isOutboxMsg": {
-    "message": "Bu gönderilmemiş bir iletidir.",
-    "description": "Notification message shown for a message in the outbox"
+    "message": "Bu, gönderilmemiş bir mesajdır.",
+    "description": "Gönderilmemiş bir mesaj için gösterilen bildirim mesajı."
   },
   "notification.sendUnsent": {
-    "message": "Gönderilmemiş ileti şimdi gönderilsin mi?",
-    "description": "Button title to send a message in the outbox"
+    "message": "Gönderilmemiş mesajları şimdi gönder?",
+    "description": "Gönderilmemiş mesajlar için gönder düğmesi başlığı."
   },
   "notification.remoteContentBlockedMsg": {
-    "message": "Gizlenen uzak içerik:",
-    "description": "Notification message shown when remote content is blocked"
+    "message": "Uzaktan içerik gizlendi:",
+    "description": "Uzaktan içerik engellendiğinde gösterilen bildirim mesajı."
   },
   "notification.showRemote": {
-    "message": "uzak içeriği göster",
-    "description": "Button title to show remote content"
+    "message": "uzaktan içeriği göster",
+    "description": "Uzaktan içerik göster düğmesi başlığı."
   },
   "notification.alwaysShowRemote": {
-    "message": "$fromEmail$ den gelen içeriği her zaman göster",
-    "description": "Button title to always show remote content.",
+    "message": "$fromEmail$ adresinden gelen uzaktan içeriği her zaman göster",
+    "description": "Uzaktan içerik göster düğmesi başlığı.",
     "placeholders": {
-      "fromEmail": { "content": "$1", "example": "me@example.com" }
+      "fromEmail": {
+        "content": "$1",
+        "example": "me@example.com"
+      }
     }
   },
   "action.editDraft": {
     "message": "taslağı düzenle",
-    "description": "Edit draft button name in the message more menu"
+    "description": "Taslak düzenleme düğmesi adı."
   },
   "action.reply": {
-    "message": "cevapla",
-    "description": "Reply button name in the message more menu"
+    "message": "yanıtla",
+    "description": "Yanıtla düğmesi adı."
   },
   "action.replyAll": {
-    "message": "tümünü cevapla",
-    "description": "Reply all button name in the message more menu"
+    "message": "tümünü yanıtla",
+    "description": "Tümünü yanıtla düğmesi adı."
   },
   "action.replyList": {
-    "message": "Listeyi yanıtla",
-    "description": "Reply list button name in the message more menu"
+    "message": "listeye yanıtla",
+    "description": "Listeye yanıtla düğmesi adı."
   },
   "action.editNew": {
-    "message": "düzenle",
-    "description": "Edit as new button name in the message more menu"
+    "message": "yeni olarak düzenle",
+    "description": "Yeni olarak düzenle düğmesi adı."
   },
   "action.forward": {
     "message": "ilet",
-    "description": "Forward button name in the message more menu"
+    "description": "İlet düğmesi adı."
   },
   "message.fromHeader": {
     "message": "gönderen:",
-    "description": "Header name displayed for the from field"
+    "description": "Gönderen alanı için başlık adı."
   },
   "message.toHeader": {
     "message": "alıcı:",
-    "description": "Header name displayed for the to field"
+    "description": "Alıcı alanı için başlık adı."
   },
   "message.ccHeader": {
     "message": "cc:",
-    "description": "Header name displayed for the cc field"
+    "description": "Cc alanı için başlık adı."
   },
   "header.to": {
-    "message": "",
-    "description": "Used in the header, inserted in 'from me to you'."
+    "message": "alıcı",
+    "description": "Başlıkta kullanılan, 'gönderen alıcı' içinde yer alan."
   },
   "tags.jumpToFolder.tooltip": {
-    "message": "Bu klasöre atla",
-    "description": "Tooltip for the jump to folder tag."
+    "message": "Bu klasöre git",
+    "description": "Klasöre git etiketi için ipucu."
   },
   "tags.inFolder": {
-    "message": "$folderName$",
-    "description": "Folder indication for the jump to folder tag.",
-    "placeholders": { "folderName": { "content": "$1", "example": "Sent" } }
+    "message": "$folderName$ içinde",
+    "description": "Klasör etiketi içinde gösterilen klasör adı.",
+    "placeholders": {
+      "folderName": {
+        "content": "$1",
+        "example": "Gönderilen"
+      }
+    }
+  },
+  "tags.removeButton": {
+    "message": "Etiketi kaldır",
+    "description": "Etiket kaldırma düğmesi etiketi/ipucu."
   },
   "attachments.downloadAll.tooltip": {
     "message": "tümünü kaydet",
-    "description": "Tooltip for the download all attachments button."
+    "description": "Tüm ekleri indir düğmesi için ipucu."
   },
   "attachments.gallery.tooltip": {
     "message": "galeri görünümü",
-    "description": "Tooltip for the view attachments in gallery button."
+    "description": "Ekleri galeride göster düğmesi için ipucu."
   },
   "attachments.preview.tooltip": {
     "message": "önizleme",
-    "description": "Tooltip displayed for the preview button of an attachment."
+    "description": "Bir ekin önizleme düğmesi için ipucu."
   },
   "attachments.open.tooltip": {
-    "message": "açık",
-    "description": "Tooltip displayed for the preview button of an attachment."
+    "message": "aç",
+    "description": "Bir ekin önizleme düğmesi için ipucu."
   },
   "attachments.viewAttachment.tooltip": {
-    "message": "Eki yeni sekmede göster",
-    "description": "Tooltip displayed for an attachment that can be previewed in a tab."
+    "message": "Bu eki yeni bir sekmede görüntüleyin",
+    "description": "Bir ekin yeni sekmede önizleme düğmesi için ipucu."
   },
   "attachments.download.tooltip": {
     "message": "kaydet",
-    "description": "Tooltip displayed for the download button of an attachment."
+    "description": "Bir ekin indirme düğmesi için ipucu."
   },
   "messageBody.hideQuotedText": {
-    "message": "Alıntılanmış metni gizle",
-    "description": "String displayed in a message body to collapse the quoted text."
+    "message": "alıntılanan metni gizle",
+    "description": "Mesaj gövdesinde alıntılanan metni küçültmek için gösterilen yazı."
   },
   "messageBody.showQuotedText": {
-    "message": "Alıntılanmış metni göster",
-    "description": "String displayed in a message body to expand the quoted text."
+    "message": "alıntılanan metni göster",
+    "description": "Mesaj gövdesinde alıntılanan metni genişletmek için gösterilen yazı."
   },
   "messageBody.hideSigText": {
-    "message": "imza gizle",
-    "description": "String displayed in a message body to collapse the signature."
+    "message": "imzayı gizle",
+    "description": "Mesaj gövdesinde imzayı küçültmek için gösterilen yazı."
   },
   "messageBody.showSigText": {
-    "message": "imza göster",
-    "description": "String displayed in a message body to expand the signature."
+    "message": "imzayı göster",
+    "description": "Mesaj gövdesinde imzayı genişletmek için gösterilen yazı."
   },
   "header.commaSeparator": {
     "message": ",\u0020",
-    "description": "This is used in messages, for the recipients, and the 'between' column as well. In English, space after the comma."
+    "description": "Mesajlarda alıcılar ve 'arası' sütunu için kullanılır. Türkçe'de, virgülden sonra boşluk olur."
   },
   "header.andSeparator": {
-    "message": "\u0020and\u0020",
-    "description": "This is used in messages, for the recipients, and the 'between' column as well. In English, space after and before « and »."
+    "message": "\u0020ve\u0020",
+    "description": "Mesajlarda alıcılar ve 'arası' sütunu için kullanılır. Türkçe'de, 've' öncesi ve sonrası boşluk olur."
   },
   "attachments.context.detach": {
-    "message": "Eki ayır",
-    "description": "Context menu item to detach an attachment."
+    "message": "Ek ilişiğini kes",
+    "description": "Bir ek ilişiğini kesmek için sağ tıklama menüsü öğesi."
   },
   "attachments.context.delete": {
-    "message": "Eki sil",
-    "description": "Context menu item to delete an attachment."
+    "message": "Ek sil",
+    "description": "Bir eki silmek için sağ tıklama menüsü öğesi."
   },
   "pluralForm": {
     "message": "1",
-    "description": "Please make sure you read and understood https://developer.mozilla.org/en/Localization_and_Plurals. pluralForm corresponds to the 'pluralRule' variable that's described in the page, it's just a mistake if the name doesn't match the MDC page."
+    "description": "https://developer.mozilla.org/en/Localization_and_Plurals sayfasını okuduğunuzdan ve anladığınızdan emin olun. pluralForm, sayfada açıklanan 'pluralRule' değişkenine karşılık gelir, adın eşleşmemesi sadece bir hata olur."
   },
   "attachments.numAttachments": {
     "message": "bir ek;$num$ ek",
-    "description": "The description used for how many attachments there are. This should take the form of a plural form, see also 'pluralForm'.",
-    "placeholders": { "num": { "content": "$1", "example": "2" } }
+    "description": "Kaç ek olduğu açıklaması. Çoğul formda olmalıdır, ayrıca 'pluralForm'a bakın.",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
   },
   "message.meFromMeToSomeone": {
-    "message": "benden",
-    "description": "One of four different strings are required to accomodate some languages which have specific declensions."
+    "message": "Ben",
+    "description": "Bazı dillerin belirli halleri için dört farklı dize gereklidir."
   },
   "message.meFromSomeoneToMe": {
-    "message": "bana",
-    "description": "One of four different strings are required to accomodate some languages which have specific declensions."
+    "message": "Ben",
+    "description": "Bazı dillerin belirli halleri için dört farklı dize gereklidir."
   },
   "message.meBetweenMeAndSomeone": {
-    "message": "bize",
-    "description": "One of four different strings are required to accomodate some languages which have specific declensions."
+    "message": "Ben",
+    "description": "Bazı dillerin belirli halleri için dört farklı dize gereklidir."
   },
   "message.meBetweenSomeoneAndMe": {
-    "message": "bize",
-    "description": "One of four different strings are required to accomodate some languages which have specific declensions."
+    "message": "Ben",
+    "description": "Bazı dillerin belirli halleri için dört farklı dize gereklidir."
   },
   "message.headerSubject": {
     "message": "konu",
-    "description": "Name for the Subject header that is displayed when you click the show details button."
+    "description": "Detayları göster düğmesine tıklanınca gösterilen Konu başlığı adı."
   },
   "message.headerDate": {
     "message": "tarih",
-    "description": "Name for the Date header that is displayed when you click the show details button."
+    "description": "Detayları göster düğmesine tıklanınca gösterilen Tarih başlığı adı."
   },
   "message.headerFolder": {
     "message": "klasör",
-    "description": "Name for the Folder header that is displayed when you click the show details button."
+    "description": "Detayları göster düğmesine tıklanınca gösterilen Klasör başlığı adı."
   },
   "involvingTabTitle": {
-    "message": "$contactName$ ilgili ileti",
-    "description": "This is used when we click on the \"recent conversations\" button in a contact tooltip. This is the title of the tab that opens.",
+    "message": "$contactName$ ile ilgili mesajlar",
+    "description": "Bir kişi ipucu içinde \"son konuşmalar\" düğmesine tıklandığında kullanılır. Bu, açılan sekmenin başlığıdır.",
     "placeholders": {
-      "contactName": { "content": "$1", "example": "John Smith" }
+      "contactName": {
+        "content": "$1",
+        "example": "John Smith"
+      }
     }
   },
   "compose.confirmDiscard": {
-    "message": "Bu mesajı iptal etmek istediğinizden emin misiniz?",
-    "description": "Confirmation message when discarding a compose draft."
+    "message": "Bu mesajı silmek istediğinizden emin misiniz?",
+    "description": "Bir taslak mesajı silerken onay mesajı."
   },
   "compose.attachFiles": {
-    "message": "Ek Dosya(lar)",
-    "description": "Title of the file picker to attach files to a compose draft."
+    "message": "Dosya(ları) Ekle",
+    "description": "Bir taslak mesaja dosya eklemek için dosya seçici başlığı."
   },
   "compose.attachedMessage": {
-    "message": "Ekli Message.eml",
-    "description": "The filename name to use for an attachment when attaching an email."
+    "message": "Ekli Mesaj.eml",
+    "description": "Bir e-posta eklerken kullanılacak dosya adı."
   },
   "compose.attachment": {
-    "message": "Eklenti",
-    "description": "Attachment header when composing a draft."
+    "message": "Ek",
+    "description": "Bir taslak mesajda ek başlığı."
   },
   "attachments.sizeUnknown": {
-    "message": "bilinmeyen boyut",
-    "description": "The message displayed when an attachment size is unknown."
+    "message": "boyut bilinmiyor",
+    "description": "Bir ekin boyutu bilinmediğinde görüntülenen mesaj."
   },
   "compose.sendAnEmptyMessage": {
-    "message": "Boş bir ileti gönder?",
-    "description": "Confirmation message for sending an empty email."
+    "message": "Boş bir mesaj göndermek istiyor musunuz?",
+    "description": "Boş bir e-posta göndermek için onay mesajı."
   },
   "compose.sendingMessage": {
-    "message": "İleti gönderiliyor",
-    "description": "Information text when sending an email."
+    "message": "Mesaj gönderiliyor...",
+    "description": "Bir e-posta gönderilirken bilgi metni."
   },
   "compose.messageSendingSuccess": {
-    "message": "$msgId$ iletisi başarıyla gönderildi",
-    "description": "Information text for email sent success.",
-    "placeholders": { "msgId": { "content": "$1", "example": "1234" } }
+    "message": "Mesaj $msgId$ başarıyla gönderildi",
+    "description": "E-posta gönderme başarısı için bilgi metni.",
+    "placeholders": {
+      "msgId": {
+        "content": "$1",
+        "example": "1234"
+      }
+    }
   },
   "compose.couldntSendTheMessage": {
-    "message": "İleti gönderilemedi.",
-    "description": "Information text for when sending email failed."
+    "message": "Mesaj gönderilemedi.",
+    "description": "E-posta gönderimi başarısız olduğunda bilgi metni."
   },
   "conversation.forwardFillInText": {
-    "message": "İlginç bulacağınızı düşündüğüm bir görüşme!",
-    "description": "Text displayed when a conversation is forwarded."
+    "message": "İlginç bulabileceğinizi düşündüğüm bir konuşma!",
+    "description": "Bir konuşma iletildiğinde gösterilen metin."
   },
   "compose.messageSendingCanceled": {
-    "message": "Gönderilen ileti iptal edildi.",
-    "description": "Information text when sending email was canceled."
+    "message": "Mesaj gönderimi iptal edildi.",
+    "description": "Bir e-posta gönderimi iptal edildiğinde bilgi metni."
   },
   "enigmail.attachmentsNotEncrypted": {
-    "message": "Eklenti PGP kullanılarak şifrelenmedi.\nOnun yerine PGP/MIME kullanılarak ileti gönderilsin mi?",
-    "description": "For the enigmail plugin to indicate attachments are not encrypted on sending."
+    "message": "Ekler inline-PGP kullanılarak şifrelenmeyecektir.\nMesajı PGP/MIME ile mi göndermek istiyorsunuz?",
+    "description": "Enigmail eklentisi için eklerin şifrelenmediğini belirten mesaj."
   },
   "compose.write": {
-    "message": "Yaz",
-    "description": "Document title for composing an email in a new tab."
+    "message": "Yaz...",
+    "description": "Yeni bir sekmede e-posta yazarken belge başlığı."
   },
   "between.columnName": {
-    "message": "Arasında",
-    "description": "The displayed name of the between column."
+    "message": "Aradaki",
+    "description": "Aradaki sütunun gösterilen adı."
   },
   "between.columnTooltip": {
     "message": "Katılımcılara göre sıralamak için tıklayın",
-    "description": "The tooltip of the between column."
+    "description": "Aradaki sütunun ipucu."
   },
   "message.at": {
-    "message": "at",
-    "description": "Used for concatenation of two strings, e.g. John Doe at http://bugzilla.mozilla.org"
+    "message": "üzerinde",
+    "description": "İki dizeyi birleştirmek için kullanılır, ör. John Doe at http://bugzilla.mozilla.org"
   },
   "enigmail.messageSigned": {
-    "message": "İmzalı",
-    "description": "Tag description displayed when a message is signed."
+    "message": "imzalandı",
+    "description": "Bir mesaj imzalandığında gösterilen etiket açıklaması."
   },
   "enigmail.messageSignedLong": {
-    "message": "Bu ileti imzalandı",
-    "description": "Tooltip displayed when a signature is good and verified."
+    "message": "Bu mesaj imzalanmıştır",
+    "description": "Bir imza iyi ve doğrulanmış olduğunda gösterilen ipucu."
+  },
+  "enigmail.messageBadSignature": {
+    "message": "kötü imza",
+    "description": "Bir mesajın imzalanmış ancak kötü bir imzaya sahip olduğunu belirten etiket açıklaması."
+  },
+  "enigmail.messageBadSignatureLong": {
+    "message": "Bu mesaj imzalanmış ancak imza kötü",
+    "description": "Bir imza kötü olduğunda gösterilen ipucu."
   },
   "enigmail.messageDecrypted": {
-    "message": "deşifrelendi",
-    "description": "Tag description displayed when a message has been decrypted."
+    "message": "şifresi çözüldü",
+    "description": "Bir mesajın şifresi çözüldüğünde gösterilen etiket açıklaması."
   },
   "enigmail.messageDecryptedLong": {
-    "message": "Bu ileti gösterilmeden önce deşifre edildi.",
-    "description": "Tooltip displayed when a message has been decrypted."
+    "message": "Bu mesaj görüntülenmeden önce şifresi çözüldü",
+    "description": "Bir mesajın şifresi çözüldüğünde gösterilen ipucu."
+  },
+  "openpgp.signedByLabel": {
+    "message": "İmzalayan:",
+    "description": "Bir SMIME sertifikası için imzalayanı belirten etiket."
+  },
+  "openpgp.signedByEmailLabel": {
+    "message": "E-posta adresi:",
+    "description": "Bir SMIME sertifikası için imzalayanı belirten etiket."
+  },
+  "openpgp.certificateIssuedByLabel": {
+    "message": "Sertifikayı veren:",
+    "description": "Bir SMIME sertifikası için imzalayanı belirten etiket."
   },
   "compose.addCc": {
     "message": "cc ekle",
-    "description": "Link to click to add a cc when composing messages."
+    "description": "Mesaj yazarken cc eklemek için bağlantı."
   },
   "compose.addBcc": {
     "message": "bcc ekle",
-    "description": "Link to click to add bcc when composing messages."
+    "description": "Mesaj yazarken bcc eklemek için bağlantı."
   },
   "compose.addAttachment": {
-    "message": "ekler ekle",
-    "description": "Link to add an attachment when composing messages."
+    "message": "ek ekle",
+    "description": "Mesaj yazarken ek eklemek için bağlantı."
   },
   "compose.removeAttachment": {
-    "message": "sil",
-    "description": "Link to remove an attachment when composing messages."
+    "message": "kaldır",
+    "description": "Mesaj yazarken bir eki kaldırmak için bağlantı."
   },
   "compose.fieldBcc": {
     "message": "bcc:",
-    "description": "Field name for the bcc field when composing messages."
+    "description": "Mesaj yazarken bcc alanı için alan adı."
   },
   "compose.fieldSubject": {
     "message": "konu:",
-    "description": "Field name for the subject field when composing messages."
+    "description": "Mesaj yazarken konu alanı için alan adı."
   },
   "compose.editField": {
     "message": "düzenle",
-    "description": "Link title to edit a particular field when composing messages."
+    "description": "Mesaj yazarken belirli bir alanı düzenlemek için bağlantı başlığı."
   },
   "compose.send": {
     "message": "gönder",
-    "description": "Button name to send a message."
+    "description": "Bir mesajı göndermek için düğme adı."
   },
   "compose.sendArchive": {
     "message": "gönder &amp; arşivle",
-    "description": "Button name to send and archive a message."
+    "description": "Bir mesajı göndermek ve arşivlemek için düğme adı."
   },
   "compose.save": {
     "message": "kaydet",
-    "description": "Button name to save a message as draft."
+    "description": "Bir mesajı taslak olarak kaydetmek için düğme adı."
   },
   "compose.discard": {
-    "message": "iptal",
-    "description": "Button name to discard a message draft."
+    "message": "at",
+    "description": "Bir mesaj taslağını atmak için düğme adı."
   },
   "compose.mostFrequentContacts": {
-    "message": "En sık e-posta irtibatları:",
-    "description": "Field name for showing the most frequently used contacts."
+    "message": "En sık e-posta gönderilen kişiler:",
+    "description": "En sık kullanılan kişileri gösteren alan adı."
   },
   "compose.showMore": {
-    "message": "daha fazlasını göster",
-    "description": "Show more link for showing more contacts."
+    "message": "daha fazla göster…",
+    "description": "Daha fazla kişiyi gösterme bağlantısı."
+  },
+  "enigmail.encrypt": {
+    "message": "şifrele",
+    "description": "Bir mesajın şifrelenmesini belirten onay kutusu etiketi."
+  },
+  "enigmail.sign": {
+    "message": "imzala",
+    "description": "Bir mesajın imzalanmasını belirten onay kutusu etiketi."
   },
   "enigmail.unknownGood": {
-    "message": "tanınmayan imza",
-    "description": "Tooltip displayed when a signature is good but unverified."
+    "message": "bilinmeyen iyi imza",
+    "description": "Bir imza iyi ancak doğrulanmamış olduğunda gösterilen ipucu."
+  },
+  "options.undoCustomizations": {
+    "message": "Özelleştirmeleri Geri Al",
+    "description": "Özelleştirmeleri geri al düğmesi açıklaması."
+  },
+  "options.undoCustomizations.tooltip": {
+    "message": "Kurulum sırasında uygulanan özelleştirmeleri geri alın.",
+    "description": "Özelleştirmeleri geri al düğmesi ipucu."
+  },
+  "options.undoCustomizations.finished": {
+    "message": "Özelleştirmeleri Geri Alma işlemi tamamlandı",
+    "description": "Özelleştirmeler kaldırıldığında görüntülenen mesaj."
+  },
+  "compose.reply_header_citation": {
+    "message": "$date$ $time$ tarihinde $author$ yazdı:",
+    "description": "Bir mesaja yanıt verildiğinde alıntı başlığı.",
+    "placeholders": {
+      "author": {
+        "content": "$1",
+        "example": "John Smith"
+      },
+      "date": {
+        "content": "$2",
+        "example": "12/01/21"
+      },
+      "time": {
+        "content": "$3",
+        "example": "12:14"
+      }
+    }
   },
   "calendar.imipAcceptButton.label": {
     "message": "Kabul et",
-    "description": "Calendar invite accept button."
+    "description": "Takvim davetini kabul et düğmesi."
   },
   "calendar.imipAcceptButton.tooltip": {
     "message": "Etkinlik davetini kabul et",
-    "description": "Calendar invite accept button tooltip."
+    "description": "Takvim davetini kabul et düğmesi ipucu."
   },
   "calendar.imipAcceptRecurrencesButton.label": {
-    "message": "Tümünü kabul et",
-    "description": "Calendar invite accept button."
+    "message": "Hepsini kabul et",
+    "description": "Takvim davetini kabul et düğmesi."
   },
   "calendar.imipAcceptRecurrencesButton.tooltip": {
-    "message": "Bu etkinliğin tüm kopyaları için etkinlik davetini kaydet",
-    "description": "Calendar invite accept button tooltip."
+    "message": "Etkinlik davetinin tüm tekrarlarını kabul et",
+    "description": "Takvim davetini kabul et düğmesi ipucu."
   },
   "calendar.imipAddButton.label": {
     "message": "Ekle",
-    "description": "Calendar invite update button."
+    "description": "Takvim güncelleme düğmesi."
   },
   "calendar.imipAddButton.tooltip": {
     "message": "Etkinliği takvime ekle",
-    "description": "Calendar invite update button tooltip."
+    "description": "Takvim güncelleme düğmesi ipucu."
   },
   "calendar.imipDeclineButton.label": {
     "message": "Reddet",
-    "description": "Calendar invite decline button."
+    "description": "Takvim davetini reddet düğmesi."
   },
   "calendar.imipDeclineButton.tooltip": {
     "message": "Etkinlik davetini reddet",
-    "description": "Calendar invite decline button tooltip."
+    "description": "Takvim davetini reddet düğmesi ipucu."
   },
   "calendar.imipDeclineRecurrencesButton.label": {
-    "message": "Tümünü reddet",
-    "description": "Calendar invite decline button."
+    "message": "Hepsini reddet",
+    "description": "Takvim davetini reddet düğmesi."
   },
   "calendar.imipDeclineRecurrencesButton.tooltip": {
-    "message": "Bu etkinliğin tüm kopyaları için etkinlik davetini reddet",
-    "description": "Calendar invite decline button tooltip."
+    "message": "Etkinlik davetinin tüm tekrarlarını reddet",
+    "description": "Takvim davetini reddet düğmesi ipucu."
   },
   "calendar.imipDeclineCounterButton.label": {
     "message": "Reddet",
-    "description": "Calendar invite decline button."
+    "description": "Karşı teklif düğmesini reddet."
   },
   "calendar.imipDeclineCounterButton.tooltip": {
     "message": "Karşı teklifi reddet",
-    "description": "Calendar invite decline button tooltip."
+    "description": "Karşı teklif düğmesini reddet."
   },
   "calendar.imipDeleteButton.label": {
     "message": "Sil",
-    "description": "Calendar invite update button."
+    "description": "Takvim güncelleme düğmesi."
   },
   "calendar.imipDeleteButton.tooltip": {
     "message": "Takvimden sil",
-    "description": "Calendar invite update button tooltip."
+    "description": "Takvim güncelleme düğmesi ipucu."
   },
   "calendar.imipDetailsButton.label": {
-    "message": "Ayrıntılar…",
-    "description": "Calendar invite details button."
+    "message": "Detaylar…",
+    "description": "Takvim detay düğmesi."
   },
   "calendar.imipDetailsButton.tooltip": {
-    "message": "Etkinlik ayrıntılarını göster",
-    "description": "Calendar invite details button tooltip."
+    "message": "Etkinlik detaylarını göster",
+    "description": "Takvim detay düğmesi ipucu."
   },
   "calendar.imipReconfirmButton.label": {
-    "message": "Yeniden onayla",
-    "description": "Calendar invite update button."
+    "message": "Tekrar Onayla",
+    "description": "Takvim güncelleme düğmesi."
   },
   "calendar.imipReconfirmButton.tooltip": {
-    "message": "Düzenleyene onay gönderir",
-    "description": "Calendar invite update button tooltip."
+    "message": "Düzenleyiciye bir yeniden onay gönderir",
+    "description": "Takvim güncelleme düğmesi ipucu."
   },
   "calendar.imipRescheduleButton.label": {
-    "message": "Yeniden zamanla",
-    "description": "Calendar invite tentative button."
+    "message": "Yeniden Planla",
+    "description": "Takvim deneme düğmesi."
   },
   "calendar.imipRescheduleButton.tooltip": {
-    "message": "Etkinliği yeniden zamanla",
-    "description": "Calendar invite tentative button tooltip."
+    "message": "Etkinliği yeniden planlayın",
+    "description": "Takvim deneme düğmesi ipucu."
   },
   "calendar.imipTentativeButton.label": {
-    "message": "Kesin değil",
-    "description": "Calendar invite tentative button."
+    "message": "Geçici",
+    "description": "Takvim deneme düğmesi."
   },
   "calendar.imipTentativeButton.tooltip": {
-    "message": "Etkinlik davetini kesin olmadan kabul et",
-    "description": "Calendar invite tentative button tooltip."
+    "message": "Etkinlik davetini geçici olarak kabul et",
+    "description": "Takvim deneme düğmesi ipucu."
   },
   "calendar.imipTentativeRecurrencesButton.label": {
-    "message": "Hepsi kesin değil",
-    "description": "Calendar invite tentative button."
+    "message": "Hepsini Geçici Olarak Kabul Et",
+    "description": "Takvim deneme düğmesi."
   },
   "calendar.imipTentativeRecurrencesButton.tooltip": {
-    "message": "Bu etkinliğin tüm kopyaları için etkinlik davetini kesin olmadan kabul et",
-    "description": "Calendar invite tentative button tooltip."
+    "message": "Etkinlik davetini tüm tekrarları için geçici olarak kabul et",
+    "description": "Takvim deneme düğmesi ipucu."
   },
   "calendar.imipUpdateButton.label": {
-    "message": "Kabul et",
-    "description": "Calendar invite update button."
+    "message": "Güncelle",
+    "description": "Takvim güncelleme düğmesi."
   },
   "calendar.imipUpdateButton.tooltip": {
-    "message": "Kabul et",
-    "description": "Calendar invite update button tooltip."
+    "message": "Takvimdeki etkinliği güncelle",
+    "description": "Takvim güncelleme düğmesi ipucu."
   },
   "calendar.imipGoToCalendarButton.label": {
     "message": "Takvim",
-    "description": "Calendar invite update button."
+    "description": "Takvim güncelleme düğmesi."
   },
   "calendar.imipGoToCalendarButton.tooltip": {
     "message": "Takvim sekmesine git",
-    "description": "Calendar invite update button tooltip."
+    "description": "Takvim güncelleme düğmesi ipucu."
   }
 }
