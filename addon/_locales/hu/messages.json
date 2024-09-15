@@ -6,7 +6,8 @@
   "extensionDescription": {
     "message": "Hozz egy beszélgetési nézetet a Thunderbird-be!",
     "description": "Description of the extension."
-  },  "options.expand_who": {
+  },
+  "options.expand_who": {
     "message": "Alapértelmezetten kinyit:",
     "description": "Options - label for which messages should be expanded."
   },
