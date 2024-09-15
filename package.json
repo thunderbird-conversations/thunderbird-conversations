@@ -55,7 +55,7 @@
       "eslint": "^8 || ^9",
       "eslint-plugin-json": "^3 || ^4"
     },
-    "path-to-regexp": "3.3.0"
+    "path-to-regexp": "8.1.0"
   },
   "scripts": {
     "dev": "rm -rf ./dist-dev-html && (scripts/build-dev-html.sh --watch &) && sleep 4 && scripts/dev-html-serve.sh",
