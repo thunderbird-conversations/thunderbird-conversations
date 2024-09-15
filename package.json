@@ -48,9 +48,6 @@
     "@microsoft/eslint-plugin-sdl": {
       "eslint": "^8 || ^9"
     },
-    "eslint-plugin-no-unsanitized": {
-      "eslint": "^8 || ^9"
-    },
     "eslint-plugin-import": {
       "eslint": "^8 || ^9"
     },
