@@ -41,7 +41,7 @@
     "prop-types": "15.8.1",
     "serve": "14.2.3",
     "web-ext": "8.2.0",
-    "webpack": "5.93.0",
+    "webpack": "5.94.0",
     "webpack-cli": "5.1.4"
   },
   "overrides": {
