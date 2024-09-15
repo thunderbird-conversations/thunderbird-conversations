@@ -383,23 +383,20 @@ export function MessageHeader({
             expanded: false,
             tags,
           }),
-          React.createElement(
-            SpecialMessageTags,
-            {
-              onTagClick: (event, tag) => {
-                dispatch(
-                  messageActions.tagClick({
-                    event,
-                    id,
-                    details: tag.details,
-                  })
-                );
-              },
-              folderName: shortFolderName,
-              inView: inView,
+          React.createElement(SpecialMessageTags, {
+            onTagClick: (event, tag) => {
+              dispatch(
+                messageActions.tagClick({
+                  event,
+                  id,
+                  details: tag.details,
+                })
+              );
             },
-            snippet
-          )
+            folderName: shortFolderName,
+            inView: inView,
+          }),
+          snippet
         )
     ),
     React.createElement(MessageHeaderOptions, {
