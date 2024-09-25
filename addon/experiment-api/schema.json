@@ -60,19 +60,6 @@
         ]
       },
       {
-        "name": "formatFileSize",
-        "type": "function",
-        "description": "Temporary. Formats the file size (xref bug 1606575).",
-        "async": true,
-        "parameters": [
-          {
-            "name": "size",
-            "type": "integer",
-            "description": "The size to format"
-          }
-        ]
-      },
-      {
         "name": "createTab",
         "type": "function",
         "description": "Temporary. Creates a content or chrome tab. What we'll need to replace with depends on Message Attachments API, Bug 1696764",
@@ -563,19 +550,6 @@
         ]
       },
       {
-        "name": "parseMimeLine",
-        "type": "function",
-        "description": "Extracts contact details from a mime line.",
-        "async": true,
-        "parameters": [
-          {
-            "name": "mimeLine",
-            "type": "string",
-            "description": "The line to parse for contact details."
-          }
-        ]
-      },
-      {
         "name": "getFolderOfflineDownload",
         "type": "function",
         "description": "Temporary. Gets the folder download offline preference.",
@@ -590,29 +564,6 @@
             "name": "path",
             "type": "string",
             "description": "The path of the folder."
-          }
-        ]
-      },
-      {
-        "name": "convertSnippetToPlainText",
-        "type": "function",
-        "description": "Converts a message snippet to plain text.",
-        "async": true,
-        "parameters": [
-          {
-            "name": "accountId",
-            "type": "string",
-            "description": "The account id"
-          },
-          {
-            "name": "path",
-            "type": "string",
-            "description": "The path of the folder"
-          },
-          {
-            "name": "text",
-            "type": "string",
-            "description": "The text to convert"
           }
         ]
       },

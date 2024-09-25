@@ -99,7 +99,7 @@ class MyComponent extends React.Component {
   async output(attachments, id, scrollToPartName) {
     // Get the initial data first.
     for (const attachment of attachments) {
-      attachment.size = await browser.conversations.formatFileSize(
+      attachment.size = await browser.messengerUtilities.formatFileSize(
         attachment.size
       );
     }

@@ -333,7 +333,9 @@ export class MessageEnricher {
       msg
     );
     if (message.realFrom) {
-      let real = await browser.conversations.parseMimeLine(message.realFrom);
+      let real = await browser.messengerUtilities.parseMailboxString(
+        message.realFrom
+      );
       msg.realFrom = real?.[0].email;
     }
 
@@ -418,13 +420,14 @@ export class MessageEnricher {
 
     if ("x-bugzilla-who" in fullMsg.headers) {
       msg.realFrom = msg.parsedLines.from[0]?.email;
-      msg.parsedLines.from = await browser.conversations.parseMimeLine(
-        fullMsg.headers["x-bugzilla-who"][0]
-      );
+      msg.parsedLines.from =
+        await browser.messengerUtilities.parseMailboxString(
+          fullMsg.headers["x-bugzilla-who"][0]
+        );
     }
 
     if ("reply-to" in fullMsg.headers) {
-      msg.replyTo = await browser.conversations.parseMimeLine(
+      msg.replyTo = await browser.messengerUtilities.parseMailboxString(
         fullMsg.headers["reply-to"][0]
       );
     }
@@ -459,9 +462,7 @@ export class MessageEnricher {
 
     let info = checkPart(fullMsg.parts[0]);
     if (info.html && info.body) {
-      msg.snippet = await browser.conversations.convertSnippetToPlainText(
-        msg.folderAccountId,
-        msg.folderPath,
+      msg.snippet = await browser.messengerUtilities.convertToPlainText(
         info.body
       );
     } else {
@@ -507,7 +508,7 @@ export class MessageEnricher {
   async _parseContactLines(contactData, msg) {
     msg.parsedLines = {
       from: contactData.from
-        ? await browser.conversations.parseMimeLine(contactData.from)
+        ? await browser.messengerUtilities.parseMailboxString(contactData.from)
         : [],
     };
 
@@ -524,7 +525,9 @@ export class MessageEnricher {
         continue;
       }
       for (let i of item) {
-        let data = i ? await browser.conversations.parseMimeLine(i) : [];
+        let data = i
+          ? await browser.messengerUtilities.parseMailboxString(i)
+          : [];
         msg.parsedLines[line] = msg.parsedLines[line].concat(data);
       }
     }
@@ -568,7 +571,9 @@ export class MessageEnricher {
       let formattedSize = this.sizeUnknownString;
       // -1 means size unknown
       if (att.size != -1) {
-        formattedSize = await browser.conversations.formatFileSize(att.size);
+        formattedSize = await browser.messengerUtilities.formatFileSize(
+          att.size
+        );
       }
 
       // We've got the right data, push it!

@@ -44,7 +44,7 @@ export const messageActions = {
         // -1 means size unknown
         let formattedSize = unknown;
         if (attachments[i].size != -1) {
-          formattedSize = await browser.conversations.formatFileSize(
+          formattedSize = await browser.messengerUtilities.formatFileSize(
             attachments[i].size
           );
         }

@@ -553,12 +553,11 @@ describe("messageEnricher", () => {
         };
       });
       t.mock
-        .method(browser.conversations, "parseMimeLine")
+        .method(browser.messengerUtilities, "parseMailboxString")
         .mock.mockImplementation((line) => [
           {
             email: line,
             name: "-",
-            fullName: "-",
           },
         ]);
 
@@ -595,12 +594,11 @@ describe("messageEnricher", () => {
         };
       });
       t.mock
-        .method(browser.conversations, "parseMimeLine")
+        .method(browser.messengerUtilities, "parseMailboxString")
         .mock.mockImplementation((line) => [
           {
             email: line,
             name: "-",
-            fullName: "-",
           },
         ]);
 
@@ -622,7 +620,6 @@ describe("messageEnricher", () => {
         {
           email: "actualFrom@invalid.com",
           name: "-",
-          fullName: "-",
         },
       ]);
     });

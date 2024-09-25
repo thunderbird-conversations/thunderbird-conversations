@@ -233,9 +233,6 @@ if (!browser.conversations) {
     async makeFriendlyDateAgo() {
       return "yesterday";
     },
-    async formatFileSize(size) {
-      return `${size} bars`;
-    },
     async makePlural(form, string, count) {
       return `${string} ${count}`;
     },
@@ -246,12 +243,6 @@ if (!browser.conversations) {
     async previewAttachment() {},
     async getLateAttachments() {
       return [];
-    },
-    async parseMimeLine() {
-      return [{ email: "", name: "-", fullName: "-" }];
-    },
-    async convertSnippetToPlainText() {
-      return "short snippet";
     },
     async getReplyOnTop() {
       return 1;
@@ -658,6 +649,20 @@ if (!browser.convOpenPgp) {
   browser.convOpenPgp = {
     beforeStreamingMessage() {},
     handleMessageStreamed() {},
+  };
+}
+
+if (!browser.messengerUtilities) {
+  browser.messengerUtilities = {
+    async convertToPlainText() {
+      return "short snippet";
+    },
+    async formatFileSize(size) {
+      return `${size} bars`;
+    },
+    async parseMailboxString() {
+      return [{ email: "", name: "-" }];
+    },
   };
 }
 

@@ -22,6 +22,7 @@ const SUPPORTED_APIS_NO_EVENTS = [
   // MUST be tested very carefully. Last time this was tried, it would end up
   // clearing the starred flag when marking a message as read.
   "messages",
+  "messengerUtilities",
   "windows",
   // This is a temporary workaround so that we can "message" the background script.
   "_background",

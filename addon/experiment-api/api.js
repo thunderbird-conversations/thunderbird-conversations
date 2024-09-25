@@ -228,9 +228,6 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           }
           return msgHdr.folder.getUriForMsg(msgHdr);
         },
-        async formatFileSize(size) {
-          return messenger.formatFileSize(size);
-        },
         async createTab(createTabProperties) {
           const params = {
             url: createTabProperties.url,
@@ -670,36 +667,6 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
               bubbles: true,
             })
           );
-        },
-        /**
-         * Wraps the low-level header parser stuff.
-         *
-         * @param {string} mimeLine
-         *   A line that looks like "John &lt;john@cheese.com&gt;, Jane &lt;jane@wine.com&gt;"
-         * @returns {Array}
-         *   A list of { email, name, fullName } objects
-         */
-        parseMimeLine(mimeLine) {
-          if (mimeLine == null) {
-            console.warn("Empty aMimeLine?!!");
-            return [{ email: "", name: "-", fullName: "-" }];
-          }
-          let addresses =
-            lazy.MailServices.headerParser.parseDecodedHeader(mimeLine);
-          if (addresses.length) {
-            return addresses.map((addr) => {
-              return {
-                email: addr.email,
-                name: addr.name,
-                fullName: addr.toString(),
-              };
-            });
-          }
-          return [{ email: "", name: "-", fullName: "-" }];
-        },
-        convertSnippetToPlainText(accountId, path, text) {
-          let msgFolder = context.extension.folderManager.get(accountId, path);
-          return msgFolder.convertMsgSnippetToPlainText(text);
         },
         async getAccountOfflineDownload(accountId) {
           let account = lazy.MailServices.accounts.getAccount(accountId);
