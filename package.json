@@ -45,12 +45,6 @@
     "webpack-cli": "5.1.4"
   },
   "overrides": {
-    "@microsoft/eslint-plugin-sdl": {
-      "eslint": "^8 || ^9"
-    },
-    "eslint-plugin-import": {
-      "eslint": "^8 || ^9"
-    },
     "eslint-plugin-mozilla": {
       "eslint": "^8 || ^9",
       "eslint-plugin-json": "^3 || ^4"
