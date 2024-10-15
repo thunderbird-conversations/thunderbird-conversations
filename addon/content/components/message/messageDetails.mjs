@@ -22,7 +22,7 @@ function ContactList({ label, contacts, className = "", msgId }) {
         React.createElement(DetailedContactLabel, {
           className: "",
           contact,
-          msgId: msgId,
+          msgId,
         }),
         React.createElement("br")
       )

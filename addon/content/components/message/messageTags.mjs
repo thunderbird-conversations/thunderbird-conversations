@@ -84,7 +84,7 @@ export function MessageTags({ expanded, tags = [], onTagsChange }) {
     tags.map((tag, i) =>
       React.createElement(MessageTag, {
         color: tag.color,
-        expanded: expanded,
+        expanded,
         key: i,
         name: tag.name,
         onClickX: () => {

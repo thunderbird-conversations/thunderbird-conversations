@@ -284,7 +284,7 @@ export function TextOption({
         id: name,
         type: "text",
         className: "pref",
-        value: value,
+        value,
         onChange: (e) => {
           onChange(name, e.target.value);
         },
@@ -330,7 +330,7 @@ export function NumericOption({
         className: "pref hidespinbuttons",
         min: 0,
         max: 100,
-        value: value,
+        value,
         onChange: (e) => {
           onChange(name, parseInt(e.target.value || value, 10));
         },
@@ -524,11 +524,11 @@ export function Main() {
     ReactRedux.Provider,
     { store },
     React.createElement(ConversationOptions, {
-      localizedPrefsInfo: localizedPrefsInfo,
-      localizedName: localizedName,
-      localizedStartAssistant: localizedStartAssistant,
-      localizedUndoCustomizations: localizedUndoCustomizations,
-      localizedUndoCustomizationsTooltip: localizedUndoCustomizationsTooltip,
+      localizedPrefsInfo,
+      localizedName,
+      localizedStartAssistant,
+      localizedUndoCustomizations,
+      localizedUndoCustomizationsTooltip,
       startSetupAssistant: openSetupAssistant,
       startUndoConversations: runUndoConversations,
     })

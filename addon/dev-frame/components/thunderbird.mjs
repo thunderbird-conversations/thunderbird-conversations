@@ -175,10 +175,10 @@ function Thread({ thread, position = 0 }) {
     thread.map((message, i) =>
       React.createElement(MessageRow, {
         key: i,
-        message: message,
+        message,
         position: i,
         numMessages: thread.length,
-        onClick: onClick,
+        onClick,
       })
     )
   );

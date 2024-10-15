@@ -149,7 +149,7 @@ export function DetailedContactLabel({ contact, className, msgId }) {
       popup: React.createElement(ContactDetail, {
         name: contact.name,
         email: contact.displayEmail,
-        msgId: msgId,
+        msgId,
         realEmail: contact.email,
         avatar: contact.avatar,
         contactId: contact.contactId,
@@ -193,7 +193,7 @@ export function ContactLabel({ contact, className, msgId }) {
       popup: React.createElement(ContactDetail, {
         name: contact.name,
         email: contact.displayEmail,
-        msgId: msgId,
+        msgId,
         realEmail: contact.email,
         avatar: contact.avatar,
         contactId: contact.contactId,
@@ -316,7 +316,7 @@ export function MessageHeader({
           const contact = allToMap.get(item.value);
           return React.createElement(ContactLabel, {
             className: "to",
-            contact: contact,
+            contact,
             key: item.value,
             msgId: id,
           });
@@ -394,22 +394,22 @@ export function MessageHeader({
               );
             },
             folderName: shortFolderName,
-            inView: inView,
+            inView,
           }),
           snippet
         )
     ),
     React.createElement(MessageHeaderOptions, {
-      dispatch: dispatch,
-      date: date,
-      detailsShowing: detailsShowing,
-      expanded: expanded,
-      fullDate: fullDate,
+      dispatch,
+      date,
+      detailsShowing,
+      expanded,
+      fullDate,
       id,
-      attachments: attachments,
-      multipleRecipients: multipleRecipients,
-      recipientsIncludeLists: recipientsIncludeLists,
-      isDraft: isDraft,
+      attachments,
+      multipleRecipients,
+      recipientsIncludeLists,
+      isDraft,
     })
   );
 }

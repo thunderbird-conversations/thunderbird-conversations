@@ -73,7 +73,7 @@ export function ActionButton({ type, callback, className, showString }) {
 
   return React.createElement(
     "button",
-    { className: className || "", title: title, onClick: action },
+    { className: className || "", title, onClick: action },
     React.createElement(SvgIcon, { ariaHidden: true, hash: info.icon }),
     " ",
     !!showString && title

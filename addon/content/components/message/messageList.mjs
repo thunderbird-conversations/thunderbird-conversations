@@ -45,7 +45,7 @@ function _MessageList(props) {
           displayingMultipleMsgs: !!props.messages.length,
           hideQuickReply: props.summary.prefs.hideQuickReply,
           iframesLoading: props.summary.iframesLoading,
-          index: index,
+          index,
           isInTab: props.summary.isInTab,
           isLastMessage: index == props.messages.msgData.length - 1,
           isStandalone: props.summary.isStandalone,

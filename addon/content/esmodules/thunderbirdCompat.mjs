@@ -407,7 +407,7 @@ if (!browser.folders) {
     async getParentFolders(accountId) {
       return [
         {
-          accountId: accountId,
+          accountId,
           name: "Fake",
           path: "/Fake",
         },

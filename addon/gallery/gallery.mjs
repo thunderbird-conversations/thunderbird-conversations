@@ -9,7 +9,7 @@ import PropTypes from "prop-types";
 const Photo = React.forwardRef(({ index, length, name, size, src }, ref) =>
   React.createElement(
     "div",
-    { className: "photoWrap", ref: ref },
+    { className: "photoWrap", ref },
     React.createElement("img", { src }),
     React.createElement(
       "div",
