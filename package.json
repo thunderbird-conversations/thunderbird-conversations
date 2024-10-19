@@ -30,7 +30,7 @@
     "eslint-plugin-import": "2.31.0",
     "eslint-plugin-jsdoc": "50.3.2",
     "eslint-plugin-json": "4.0.1",
-    "eslint-plugin-mozilla": "3.7.5",
+    "eslint-plugin-mozilla": "4.0.0",
     "eslint-plugin-no-unsanitized": "4.1.2",
     "eslint-plugin-react": "7.37.1",
     "global-jsdom": "25.0.0",
