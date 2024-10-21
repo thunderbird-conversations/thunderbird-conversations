@@ -3,6 +3,7 @@
 DIST=dist
 VENDOR_DIR=$DIST/content/vendor
 ADDON_DIR=addon
+EXTENSIONS="*.{css,html,mjs,js,jsm,json,gif,png,svg}"
 
 rm -rf $DIST
 mkdir -p $VENDOR_DIR
@@ -23,22 +24,25 @@ if [ $? -ne 0 ]; then
 fi
 #
 pushd $ADDON_DIR
-# Copy the top-level add-on files.
-for a in $(git ls-files ':!:**/**'); do
-  mkdir -p $(dirname "../${DIST}/${a}")
-  cp $a ../$DIST/$a
-done
+REGEXTENSIONS=".*\.(html|mjs|js|jsm|json|gif|png|svg)"
+mkdir -p "../$DIST"
+find -E . -regex $REGEXTENSIONS -maxdepth 1 -exec cp {} ../$DIST/ \;
 # Other items we need that aren't handled by webpack.
-for a in $(git ls-files \
-'::_locales' \
-'::assistant' \
-'::background' \
-'::content/icons' '::content/modules' 'content/stubGlobals.js' \
-'content/stubWrapper.*' \
-'::experiment-api' '::*.css' ); do
-  mkdir -p $(dirname "../${DIST}/${a}")
-  cp $a ../$DIST/$a
+DIRECTORIES=(assistant background content/icons content/modules \
+experiment-api)
+for a in "${DIRECTORIES[@]}"; do
+  mkdir -p ../$DIST/${a}/
+  find -E $a -regex $REGEXTENSIONS -exec cp {} ../$DIST/$a/ \;
 done
+for dir in _locales/*; do
+  mkdir -p ../$DIST/${dir}/
+  find -E $dir -regex $REGEXTENSIONS -exec cp {} ../$DIST/$dir/ \;
+done
+# This directory just needs the css file.
+mkdir -p ../$DIST/content/components/compose
+find -E . -name "*.css" -exec cp {} ../$DIST/{} \;
+cp content/stubGlobals.js ../${DIST}/content/
+cp content/stubWrapper.* ../${DIST}/content/
 
 popd
 
