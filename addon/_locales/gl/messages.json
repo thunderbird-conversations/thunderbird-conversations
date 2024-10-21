@@ -347,6 +347,17 @@
     "message": "gardar",
     "description": "Tooltip displayed for the download button of an attachment."
   },
+  "attachments.delete.warning": {
+    "message": "Eliminaranse permanentemente desta mensaxe os seguintes anexos:\n$attachmentNames$\nNon poderá desfacer esta acción. Desexa continuar?",
+    "description": "Warning message displayed when attempting to delete an attachment.",
+    "placeholders": {
+      "attachmentNames": {
+        "content": "$1",
+        "example": "myAttachment.png"
+      }
+    }
+  },
+
   "messageBody.hideQuotedText": {
     "message": "agochar o texto citado",
     "description": "String displayed in a message body to collapse the quoted text."

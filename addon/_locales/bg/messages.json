@@ -347,6 +347,17 @@
     "message": "запазване",
     "description": "Tooltip displayed for the download button of an attachment."
   },
+  "attachments.delete.warning": {
+    "message": "Следните прикачени файлове ще бъдат трайно изтрити от писмото:\n$attachmentNames$\nТова действие е необратимо. Желаете ли да продължите?",
+    "description": "Warning message displayed when attempting to delete an attachment.",
+    "placeholders": {
+      "attachmentNames": {
+        "content": "$1",
+        "example": "myAttachment.png"
+      }
+    }
+  },
+
   "messageBody.hideQuotedText": {
     "message": "скриване на цитираното съдържание",
     "description": "String displayed in a message body to collapse the quoted text."

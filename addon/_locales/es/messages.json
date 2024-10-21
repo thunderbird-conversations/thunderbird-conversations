@@ -347,6 +347,17 @@
     "message": "guardar",
     "description": "Tooltip displayed for the download button of an attachment."
   },
+  "attachments.delete.warning": {
+    "message": "Los siguientes adjuntos serán permanentemente borrados de este mensaje:\n$attachmentNames$\nEsta acción no puede deshacerse. ¿Quiere continuar?",
+    "description": "Warning message displayed when attempting to delete an attachment.",
+    "placeholders": {
+      "attachmentNames": {
+        "content": "$1",
+        "example": "myAttachment.png"
+      }
+    }
+  },
+
   "messageBody.hideQuotedText": {
     "message": "ocultar texto citado",
     "description": "String displayed in a message body to collapse the quoted text."

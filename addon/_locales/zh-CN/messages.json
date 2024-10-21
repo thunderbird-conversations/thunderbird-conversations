@@ -347,6 +347,17 @@
     "message": "保存",
     "description": "Tooltip displayed for the download button of an attachment."
   },
+  "attachments.delete.warning": {
+    "message": "将从该消息中永久删除下列附件：\n$attachmentNames$\n该操作不可逆。请问您确定要继续吗？",
+    "description": "Warning message displayed when attempting to delete an attachment.",
+    "placeholders": {
+      "attachmentNames": {
+        "content": "$1",
+        "example": "myAttachment.png"
+      }
+    }
+  },
+
   "messageBody.hideQuotedText": {
     "message": "隐藏所引文字",
     "description": "String displayed in a message body to collapse the quoted text."

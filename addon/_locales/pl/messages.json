@@ -347,6 +347,17 @@
     "message": "Zapisz",
     "description": "Tooltip displayed for the download button of an attachment."
   },
+  "attachments.delete.warning": {
+    "message": "Następujące załączniki zostaną nieodwracalnie usunięte z tej wiadomości:\n$attachmentNames$\nCzynności tej nie można cofnąć. Czy kontynuować?",
+    "description": "Warning message displayed when attempting to delete an attachment.",
+    "placeholders": {
+      "attachmentNames": {
+        "content": "$1",
+        "example": "myAttachment.png"
+      }
+    }
+  },
+
   "messageBody.hideQuotedText": {
     "message": "ukryj cytowany tekst",
     "description": "String displayed in a message body to collapse the quoted text."

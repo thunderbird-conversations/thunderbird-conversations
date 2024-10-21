@@ -347,6 +347,17 @@
     "message": "save",
     "description": "Tooltip displayed for the download button of an attachment."
   },
+  "attachments.delete.warning": {
+    "message": "הקבצים המצורפים הבאים ימחקו לצמיתות מהודעה זו:\n$attachmentNames$\nפעולה זו אינה ניתנת לביטול. האם ברצונך להמשיך?",
+    "description": "Warning message displayed when attempting to delete an attachment.",
+    "placeholders": {
+      "attachmentNames": {
+        "content": "$1",
+        "example": "myAttachment.png"
+      }
+    }
+  },
+
   "messageBody.hideQuotedText": {
     "message": "הסתר טקסט מצוטט",
     "description": "String displayed in a message body to collapse the quoted text."

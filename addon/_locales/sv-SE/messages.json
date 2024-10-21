@@ -347,6 +347,17 @@
     "message": "spara",
     "description": "Tooltip displayed for the download button of an attachment."
   },
+  "attachments.delete.warning": {
+    "message": "Följande bilagor kommer att tas bort från det här meddelandet:\n$attachmentNames$\nDen här åtgärden kan inte ångras. Vill du fortsätta?",
+    "description": "Warning message displayed when attempting to delete an attachment.",
+    "placeholders": {
+      "attachmentNames": {
+        "content": "$1",
+        "example": "myAttachment.png"
+      }
+    }
+  },
+
   "messageBody.hideQuotedText": {
     "message": "dölj citerad text",
     "description": "String displayed in a message body to collapse the quoted text."

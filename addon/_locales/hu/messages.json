@@ -419,6 +419,17 @@
     "message": "Mentés",
     "description": "Tooltip displayed for the download button of an attachment."
   },
+  "attachments.delete.warning": {
+    "message": "A következő mellékletek véglegesen törlődnek az üzenetből:\n$attachmentNames$\nA műveletet nem lehet visszavonni. Biztosan folytatja?",
+    "description": "Warning message displayed when attempting to delete an attachment.",
+    "placeholders": {
+      "attachmentNames": {
+        "content": "$1",
+        "example": "myAttachment.png"
+      }
+    }
+  },
+
   "messageBody.hideQuotedText": {
     "message": "Idézett szöveg elrejtése",
     "description": "String displayed in a message body to collapse the quoted text."

@@ -389,10 +389,6 @@
               "partName": {
                 "type": "string",
                 "description": "The attachment Url to detach the attachment for."
-              },
-              "shouldSave": {
-                "type": "boolean",
-                "description": "If the file being detached should be saved or not."
               }
             }
           }

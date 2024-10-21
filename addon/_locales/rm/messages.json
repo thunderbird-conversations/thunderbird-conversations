@@ -347,6 +347,17 @@
     "message": "memorisar",
     "description": "Tooltip displayed for the download button of an attachment."
   },
+  "attachments.delete.warning": {
+    "message": "Las suandantas agiuntas vegnan stizzadas definitivamain ord quest messadi:\n$attachmentNames$\nQuesta acziun na po betg vegnir revocada. Vuls ti cuntinuar?",
+    "description": "Warning message displayed when attempting to delete an attachment.",
+    "placeholders": {
+      "attachmentNames": {
+        "content": "$1",
+        "example": "myAttachment.png"
+      }
+    }
+  },
+
   "messageBody.hideQuotedText": {
     "message": "zuppentar il text cità",
     "description": "String displayed in a message body to collapse the quoted text."

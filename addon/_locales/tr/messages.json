@@ -419,6 +419,17 @@
     "message": "kaydet",
     "description": "Bir ekin indirme düğmesi için ipucu."
   },
+  "attachments.delete.warning": {
+    "message": "Aşağıdaki ekler bu iletiden kalıcı olarak silinecek:\n$attachmentNames$\nBu işlem geri alınamaz. Devam etmek istiyor musunuz?",
+    "description": "Warning message displayed when attempting to delete an attachment.",
+    "placeholders": {
+      "attachmentNames": {
+        "content": "$1",
+        "example": "myAttachment.png"
+      }
+    }
+  },
+
   "messageBody.hideQuotedText": {
     "message": "alıntılanan metni gizle",
     "description": "Mesaj gövdesinde alıntılanan metni küçültmek için gösterilen yazı."

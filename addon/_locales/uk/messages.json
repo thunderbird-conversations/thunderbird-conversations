@@ -411,6 +411,17 @@
     "message": "Зберегти",
     "description": "Tooltip displayed for the download button of an attachment."
   },
+  "attachments.delete.warning": {
+    "message": "З цього повідомлення будуть остаточно видалені наступні вкладення:\n$attachmentNames$\nЦю дію неможливо скасувати. Бажаєте продовжити?",
+    "description": "Warning message displayed when attempting to delete an attachment.",
+    "placeholders": {
+      "attachmentNames": {
+        "content": "$1",
+        "example": "myAttachment.png"
+      }
+    }
+  },
+
   "messageBody.hideQuotedText": {
     "message": "Приховати цитований текст",
     "description": "String displayed in a message body to collapse the quoted text."

@@ -347,6 +347,17 @@
     "message": "αποθήκευση",
     "description": "Tooltip displayed for the download button of an attachment."
   },
+  "attachments.delete.warning": {
+    "message": "Τα ακόλουθα συνημμένα θα διαγραφούν οριστικά από αυτό το μήνυμα:\n$attachmentNames$\nΑυτή η ενέργεια δεν είναι αναστρέψιμη. Θέλετε να συνεχίσετε;",
+    "description": "Warning message displayed when attempting to delete an attachment.",
+    "placeholders": {
+      "attachmentNames": {
+        "content": "$1",
+        "example": "myAttachment.png"
+      }
+    }
+  },
+
   "messageBody.hideQuotedText": {
     "message": "Απόκρυψη κειμένου σε παράθεση",
     "description": "String displayed in a message body to collapse the quoted text."

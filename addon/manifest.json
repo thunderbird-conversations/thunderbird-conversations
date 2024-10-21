@@ -28,6 +28,7 @@
     "accountsRead",
     "addressBooks",
     "messagesRead",
+    "messagesModifyPermanent",
     "messagesMove",
     "messagesDelete",
     "messagesUpdate",

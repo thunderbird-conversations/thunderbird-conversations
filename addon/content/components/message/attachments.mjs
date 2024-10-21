@@ -159,6 +159,7 @@ function Attachment({
       attachmentActions.detachAttachment({
         id,
         partName,
+        fileName: name,
         shouldSave: false,
       })
     );

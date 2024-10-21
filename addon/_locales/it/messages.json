@@ -347,6 +347,17 @@
     "message": "Salva",
     "description": "Tooltip displayed for the download button of an attachment."
   },
+  "attachments.delete.warning": {
+    "message": "I seguenti allegati saranno eliminati permanentemente da questo messaggio:\n$attachmentNames$\nQuesta operazione non potrà essere annullata. Continuare?",
+    "description": "Warning message displayed when attempting to delete an attachment.",
+    "placeholders": {
+      "attachmentNames": {
+        "content": "$1",
+        "example": "myAttachment.png"
+      }
+    }
+  },
+
   "messageBody.hideQuotedText": {
     "message": "Nascondi il testo citato",
     "description": "String displayed in a message body to collapse the quoted text."

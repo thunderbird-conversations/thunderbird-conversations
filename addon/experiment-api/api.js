@@ -480,7 +480,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             );
           }
         },
-        async detachAttachment({ winId, tabId, msgId, partName, shouldSave }) {
+        async detachAttachment({ winId, tabId, msgId, partName }) {
           let { win } = getWinBrowserFromIds(context, winId, tabId);
           let msgHdr = context.extension.messageManager.get(msgId);
           let attachment = await findAttachment(msgHdr, partName);
@@ -496,10 +496,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
               Ci.nsIMsgWindow
             )
           );
-          getAttachmentInfo(msgUri, attachment).detach(
-            attachMessenger,
-            shouldSave
-          );
+          getAttachmentInfo(msgUri, attachment).detach(attachMessenger, true);
         },
         async makeFriendlyDateAgo(date) {
           return lazy.makeFriendlyDateAgo(new Date(date));

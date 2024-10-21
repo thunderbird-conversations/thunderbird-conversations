@@ -347,6 +347,17 @@
     "message": "save",
     "description": "Tooltip displayed for the download button of an attachment."
   },
+  "attachments.delete.warning": {
+    "message": "Следећи прилози ће трајно бити уклоњени из ове поруке:\n$attachmentNames$\nОва радња се не може опозвати. Да ли желите да наставите?",
+    "description": "Warning message displayed when attempting to delete an attachment.",
+    "placeholders": {
+      "attachmentNames": {
+        "content": "$1",
+        "example": "myAttachment.png"
+      }
+    }
+  },
+
   "messageBody.hideQuotedText": {
     "message": "сакриј наведени текст",
     "description": "String displayed in a message body to collapse the quoted text."

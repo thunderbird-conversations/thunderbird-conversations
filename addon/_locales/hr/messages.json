@@ -347,6 +347,17 @@
     "message": "spremi",
     "description": "Tooltip displayed for the download button of an attachment."
   },
+  "attachments.delete.warning": {
+    "message": "Sljedeći privici će biti trajno obrisani iz ove poruke:\n$attachmentNames$\nOva radnja se ne može poništiti. Želite li nastaviti?",
+    "description": "Warning message displayed when attempting to delete an attachment.",
+    "placeholders": {
+      "attachmentNames": {
+        "content": "$1",
+        "example": "myAttachment.png"
+      }
+    }
+  },
+
   "messageBody.hideQuotedText": {
     "message": "sakrij citirani tekst",
     "description": "String displayed in a message body to collapse the quoted text."

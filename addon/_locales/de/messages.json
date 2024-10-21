@@ -347,6 +347,17 @@
     "message": "Speichern",
     "description": "Tooltip displayed for the download button of an attachment."
   },
+  "attachments.delete.warning": {
+    "message": "Folgende Anhänge werden endgültig von der Nachricht gelöscht:\n$attachmentNames$\n\nDies kann NICHT rückgängig gemacht werden. Soll trotzdem gelöscht werden?",
+    "description": "Warning message displayed when attempting to delete an attachment.",
+    "placeholders": {
+      "attachmentNames": {
+        "content": "$1",
+        "example": "myAttachment.png"
+      }
+    }
+  },
+
   "messageBody.hideQuotedText": {
     "message": "Zitierten Text ausblenden",
     "description": "String displayed in a message body to collapse the quoted text."

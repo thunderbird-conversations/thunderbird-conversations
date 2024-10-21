@@ -347,6 +347,17 @@
     "message": "保存",
     "description": "Tooltip displayed for the download button of an attachment."
   },
+  "attachments.delete.warning": {
+    "message": "次の添付ファイルをこのメッセージから完全に削除します:\n$attachmentNames$\nこの操作は取り消すことができません。削除してもよろしいですか？",
+    "description": "Warning message displayed when attempting to delete an attachment.",
+    "placeholders": {
+      "attachmentNames": {
+        "content": "$1",
+        "example": "myAttachment.png"
+      }
+    }
+  },
+
   "messageBody.hideQuotedText": {
     "message": "元のメッセージを隠す",
     "description": "String displayed in a message body to collapse the quoted text."

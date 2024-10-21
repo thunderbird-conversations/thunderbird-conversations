@@ -347,6 +347,17 @@
     "message": "išsaugoti",
     "description": "Tooltip displayed for the download button of an attachment."
   },
+  "attachments.delete.warning": {
+    "message": "Iš šio laiško bus pašalinti priedai:\n$attachmentNames$\nŠis veiksmas negalės būti atšauktas. Ar tęsti?",
+    "description": "Warning message displayed when attempting to delete an attachment.",
+    "placeholders": {
+      "attachmentNames": {
+        "content": "$1",
+        "example": "myAttachment.png"
+      }
+    }
+  },
+
   "messageBody.hideQuotedText": {
     "message": "slėpti cituojamą tekstą",
     "description": "String displayed in a message body to collapse the quoted text."
