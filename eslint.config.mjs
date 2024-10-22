@@ -2,9 +2,8 @@ import globals from "globals";
 import jsdoc from "eslint-plugin-jsdoc";
 import json from "eslint-plugin-json";
 import react from "eslint-plugin-react";
-import imports from "eslint-plugin-import";
+import importPlugin from "eslint-plugin-import";
 import mozilla from "eslint-plugin-mozilla";
-import { fixupPluginRules } from "@eslint/compat";
 import eslintConfigPrettier from "eslint-config-prettier";
 
 export default [
@@ -29,17 +28,15 @@ export default [
   },
   {
     files: ["**/*.mjs", "**/*.js"],
+    ...importPlugin.flatConfigs.recommended,
     languageOptions: {
       parserOptions: {
+        ...importPlugin.flatConfigs.recommended.languageOptions.parserOptions,
         sourceType: "module",
       },
     },
-    plugins: { import: fixupPluginRules(imports) },
     rules: {
-      "import/default": "error",
-      "import/export": "error",
-      "import/named": "error",
-      "import/namespace": "error",
+      ...importPlugin.flatConfigs.recommended.rules,
       "import/newline-after-import": "error",
       "import/no-duplicates": "error",
       "import/no-absolute-path": "error",
@@ -48,20 +45,10 @@ export default [
       "import/no-named-as-default-member": "error",
       "import/no-self-import": "error",
       "import/no-unassigned-import": "error",
-      "import/no-unresolved": "error",
       "import/no-useless-path-segments": "error",
     },
     settings: {
       "import/extensions": [".mjs"],
-      // To work around the flat configuration not working yet in
-      // eslint-plugin-import.
-      // https://github.com/import-js/eslint-plugin-import/issues/2556
-      "import/parsers": {
-        espree: [".mjs"],
-      },
-      "import/resolver": {
-        node: true,
-      },
     },
   },
   {

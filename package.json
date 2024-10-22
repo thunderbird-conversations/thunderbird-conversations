@@ -22,7 +22,6 @@
     "redux": "5.0.1"
   },
   "devDependencies": {
-    "@eslint/compat": "1.2.1",
     "@microsoft/eslint-plugin-sdl": "1.0.0",
     "@testing-library/react": "16.0.1",
     "eslint": "9.13.0",
