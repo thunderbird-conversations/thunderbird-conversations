@@ -331,7 +331,10 @@
     "message": "Завжди показувати зовнішній вміст від $fromEmail$",
     "description": "Button title to always show remote content.",
     "placeholders": {
-      "fromEmail": { "content": "$1", "example": "me@example.com" }
+      "fromEmail": {
+        "content": "$1",
+        "example": "me@example.com"
+      }
     }
   },
   "action.editDraft": {
@@ -381,7 +384,12 @@
   "tags.inFolder": {
     "message": "$folderName$",
     "description": "Folder indication for the jump to folder tag.",
-    "placeholders": { "folderName": { "content": "$1", "example": "Sent" } }
+    "placeholders": {
+      "folderName": {
+        "content": "$1",
+        "example": "Sent"
+      }
+    }
   },
   "tags.removeButton": {
     "message": "Вилучити тег",
@@ -412,7 +420,7 @@
     "description": "Tooltip displayed for the download button of an attachment."
   },
   "attachments.delete.warning": {
-    "message": "З цього повідомлення будуть остаточно видалені наступні вкладення:\n$attachmentNames$\nЦю дію неможливо скасувати. Бажаєте продовжити?",
+    "message": "Зазначені вкладення будуть остаточно видалені з цього повідомлення:\n$attachmentNames$\nЦю дію неможливо скасувати. Бажаєте продовжити?",
     "description": "Warning message displayed when attempting to delete an attachment.",
     "placeholders": {
       "attachmentNames": {
@@ -421,7 +429,6 @@
       }
     }
   },
-
   "messageBody.hideQuotedText": {
     "message": "Приховати цитований текст",
     "description": "String displayed in a message body to collapse the quoted text."
@@ -461,7 +468,12 @@
   "attachments.numAttachments": {
     "message": "Один вкладений файл;$num$ вкладені файли;$num$ вкладених файлів",
     "description": "The description used for how many attachments there are. This should take the form of a plural form, see also 'pluralForm'.",
-    "placeholders": { "num": { "content": "$1", "example": "2" } }
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
   },
   "message.meFromMeToSomeone": {
     "message": "Я",
@@ -495,7 +507,10 @@
     "message": "Повідомлення стосуються $contactName$",
     "description": "This is used when we click on the \"recent conversations\" button in a contact tooltip. This is the title of the tab that opens.",
     "placeholders": {
-      "contactName": { "content": "$1", "example": "John Smith" }
+      "contactName": {
+        "content": "$1",
+        "example": "John Smith"
+      }
     }
   },
   "compose.confirmDiscard": {
@@ -529,7 +544,12 @@
   "compose.messageSendingSuccess": {
     "message": "Повідомлення $msgId$ успішно надіслано",
     "description": "Information text for email sent success.",
-    "placeholders": { "msgId": { "content": "$1", "example": "1234" } }
+    "placeholders": {
+      "msgId": {
+        "content": "$1",
+        "example": "1234"
+      }
+    }
   },
   "compose.couldntSendTheMessage": {
     "message": "Не вдається надіслати повідомлення.",
@@ -679,9 +699,18 @@
     "message": "Повідомлення від $author$, $date$ $time$:",
     "description": "Citation header when replying to a message.",
     "placeholders": {
-      "author": { "content": "$1", "example": "John Smith" },
-      "date": { "content": "$2", "example": "12/01/21" },
-      "time": { "content": "$3", "example": "12:14" }
+      "author": {
+        "content": "$1",
+        "example": "John Smith"
+      },
+      "date": {
+        "content": "$2",
+        "example": "12/01/21"
+      },
+      "time": {
+        "content": "$3",
+        "example": "12:14"
+      }
     }
   },
   "calendar.imipAcceptButton.label": {
