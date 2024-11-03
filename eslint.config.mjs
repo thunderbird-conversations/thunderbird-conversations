@@ -173,4 +173,10 @@ export default [
     },
   },
   eslintConfigPrettier,
+  {
+    files: ["**/*.*js*"],
+    rules: {
+      curly: "error",
+    },
+  },
 ];
