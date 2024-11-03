@@ -167,6 +167,8 @@ async function runUntilValid(func, validator) {
  * which attempts to avoid a sub-scroll.
  */
 export class MessageIFrame extends React.Component {
+  #addedRemoteContentListener = false;
+
   constructor(props) {
     super(props);
     this.index = index++;
@@ -174,6 +176,7 @@ export class MessageIFrame extends React.Component {
     this.loading = false;
     this.onClickIframe = this.onClickIframe.bind(this);
     this._waitingForDom = false;
+    this._remoteContentListener = this._onMsgHasRemoteContent.bind(this);
   }
 
   get iframeName() {
@@ -187,10 +190,10 @@ export class MessageIFrame extends React.Component {
     // want to scroll the message to view, since the user may be viewing somewhere
     // else.
     this.dueToExpansion = undefined;
-    this.iframe.classList.remove(`convIframe${prevProps.id}`);
-    this.iframe.classList.add(this.iframeName);
-    this.reRegisterContentListener(`convIframe${prevProps.id}`);
     if (prevProps.id != this.props.id) {
+      this.iframe.classList.remove(`convIframe${prevProps.id}`);
+      this.iframe.classList.add(this.iframeName);
+      this.reRegisterContentListener(`convIframe${prevProps.id}`);
       this.props.dispatch(
         summaryActions.messageUnloaded({
           msgId: prevProps.id,
@@ -291,22 +294,22 @@ export class MessageIFrame extends React.Component {
   }
 
   reRegisterContentListener(previousFrameName) {
-    if (this._remoteContentListener) {
+    if (this.#addedRemoteContentListener) {
       browser.convMsgWindow.onMsgHasRemoteContent.removeListener(
         this._remoteContentListener,
         this.props.tabId,
         this.props.winId,
         previousFrameName
       );
-      this._remoteContentListener = null;
+      this.#addedRemoteContentListener = false;
     }
-    this._remoteContentListener = this._onMsgHasRemoteContent.bind(this);
     browser.convMsgWindow.onMsgHasRemoteContent.addListener(
       this._remoteContentListener,
       this.props.tabId,
       this.props.winId,
       this.iframeName
     );
+    this.#addedRemoteContentListener = true;
   }
 
   registerListeners() {
@@ -316,13 +319,13 @@ export class MessageIFrame extends React.Component {
         capture: true,
       });
       this._domloadListener = this._onDOMLoaded.bind(this);
-      this._remoteContentListener = this._onMsgHasRemoteContent.bind(this);
       browser.convMsgWindow.onMsgHasRemoteContent.addListener(
         this._remoteContentListener,
         this.props.tabId,
         this.props.winId,
         this.iframeName
       );
+      this.#addedRemoteContentListener = true;
       if (window.browsingContext) {
         // We don't apply the click listener when in a tab as Thunderbird's
         // click handling already manages that.
@@ -361,7 +364,7 @@ export class MessageIFrame extends React.Component {
       this.props.winId,
       this.iframeName
     );
-    this._remoteContentListener = null;
+    this.#addedRemoteContentListener = false;
 
     if (window.browsingContext?.embedderElement) {
       window.browsingContext.embedderElement.removeEventListener(
