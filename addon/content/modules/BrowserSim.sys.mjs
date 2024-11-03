@@ -2,9 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-// eslint-disable-next-line no-unused-vars
-var EXPORTED_SYMBOLS = ["BrowserSim"];
-
 // For these APIs, we don't currently need the events API. Use the
 // proxy set-up so that we can gain the benefit of the field validation
 // that going through the APIs provides (namely setting unused fields
@@ -97,6 +94,7 @@ class _BrowserSim {
     let { extension } = this.#context;
 
     const browser = {};
+    // eslint-disable-next-line no-shadow
     const self = this;
     for (const apiName of SUPPORTED_BASE_APIS) {
       if (apiName == "i18n") {
@@ -236,5 +234,4 @@ class _BrowserSim {
   }
 }
 
-// eslint-disable-next-line no-unused-vars
-var BrowserSim = new _BrowserSim();
+export const BrowserSim = new _BrowserSim();

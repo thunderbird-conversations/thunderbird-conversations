@@ -17,9 +17,16 @@ ChromeUtils.defineESModuleGetters(lazy, {
   NetUtil: "resource://gre/modules/NetUtil.sys.mjs",
 });
 
-// eslint-disable-next-line mozilla/reject-chromeutils-import
-XPCOMUtils.defineLazyModuleGetters(this, {
-  BrowserSim: "chrome://conversations/content/modules/browserSim.js",
+ChromeUtils.defineLazyGetter(lazy, "BrowserSim", () => {
+  let subLazy = {};
+  ChromeUtils.defineESModuleGetters(subLazy, {
+    BrowserSim:
+      "chrome://conversations/content/modules/BrowserSim.sys.mjs?rand=" +
+      Services.prefs.getCharPref(
+        "extensions.thunderbirdconversations.browserSim"
+      ),
+  });
+  return subLazy.BrowserSim;
 });
 
 // eslint-disable-next-line mozilla/reject-importGlobalProperties
@@ -46,15 +53,6 @@ function msgUriToMsgHdr(aUri) {
     return null;
   }
 }
-
-// To help updates to apply successfully, we need to properly unload the modules
-// that Conversations loads.
-const conversationModules = [
-  // Don't unload these until we can find a way of unloading the attribute
-  // providers. Unloading these will break gloda when someone updates.
-  // "chrome://conversations/content/modules/glodaAttrProviders.sys.mjs",
-  "chrome://conversations/content/modules/browserSim.js",
-];
 
 /**
  * @typedef nsIMsgDBHdr
@@ -145,18 +143,22 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
     this.chromeHandle = aomStartup.registerChrome(manifestURI, [
       ["content", "conversations", "content/"],
     ]);
+    Services.prefs.setCharPref(
+      "extensions.thunderbirdconversations.browserSim",
+      Services.uuid.generateUUID().toString()
+    );
   }
 
   onShutdown(isAppShutdown) {
+    Services.prefs.clearUserPref(
+      "extensions.thunderbirdconversations.browserSim"
+    );
+
     if (isAppShutdown) {
       return;
     }
 
-    BrowserSim.setBrowserListener(null);
-
-    for (const module of conversationModules) {
-      Cu.unload(module);
-    }
+    lazy.BrowserSim.setBrowserListener(null);
 
     this.chromeHandle.destruct();
     this.chromeHandle = null;
@@ -698,7 +700,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           return identity.replyOnTop;
         },
         async postMessageViaBrowserSim(msg) {
-          BrowserSim.sendMessage(msg);
+          lazy.BrowserSim.sendMessage(msg);
         },
         onCallAPI: new ExtensionCommon.EventManager({
           context,
@@ -716,9 +718,9 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
               return fire.async(apiName, apiItem, apiSubItem, args);
             }
 
-            BrowserSim.setBrowserListener(callback, context);
+            lazy.BrowserSim.setBrowserListener(callback, context);
             return function () {
-              BrowserSim.setBrowserListener(null);
+              lazy.BrowserSim.setBrowserListener(null);
             };
           },
         }).api(),

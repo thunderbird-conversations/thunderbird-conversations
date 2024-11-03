@@ -3,12 +3,14 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 /* exported BrowserSim */
-// eslint-disable-next-line no-unused-vars, mozilla/reject-chromeutils-import
-ChromeUtils.defineModuleGetter(
-  this,
-  "BrowserSim",
-  "chrome://conversations/content/modules/browserSim.js"
-);
+// eslint-disable-next-line no-unused-vars
+ChromeUtils.defineESModuleGetters(this, {
+  BrowserSim:
+    "chrome://conversations/content/modules/BrowserSim.sys.mjs?rand=" +
+    Services.prefs.getCharPref(
+      "extensions.thunderbirdconversations.browserSim"
+    ),
+});
 
 this.gMessageSummary = {
   clear() {},
