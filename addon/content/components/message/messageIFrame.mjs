@@ -142,7 +142,10 @@ async function runUntilValid(func, validator) {
   if (validator(ret)) {
     return ret;
   }
-  const TIMEOUTS = [0, 0, 10, 10, 10];
+  // Wait for up to half a second.
+  const TIMEOUTS = [
+    0, 0, 10, 10, 10, 10, 20, 20, 20, 50, 50, 50, 50, 50, 50, 50, 50,
+  ];
   for (const timeout of TIMEOUTS) {
     await sleep(timeout);
     ret = func();
