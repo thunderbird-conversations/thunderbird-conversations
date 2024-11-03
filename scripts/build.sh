@@ -3,7 +3,7 @@
 DIST=dist
 VENDOR_DIR=$DIST/content/vendor
 ADDON_DIR=addon
-EXTENSIONS="*.{css,html,mjs,js,jsm,json,gif,png,svg}"
+EXTENSIONS="*.{css,html,mjs,js,json,gif,png,svg}"
 
 rm -rf $DIST
 mkdir -p $VENDOR_DIR
@@ -24,7 +24,7 @@ if [ $? -ne 0 ]; then
 fi
 #
 pushd $ADDON_DIR
-REGEXTENSIONS=".*\.(html|mjs|js|jsm|json|gif|png|svg)"
+REGEXTENSIONS=".*\.(html|mjs|js|json|gif|png|svg)"
 mkdir -p "../$DIST"
 find -E . -regex $REGEXTENSIONS -maxdepth 1 -exec cp {} ../$DIST/ \;
 # Other items we need that aren't handled by webpack.
