@@ -71,6 +71,14 @@ const PREFS_INFO = [
   },
   {
     props: {
+      title: "options.reverse_order_title",
+      desc: "options.reverse_order_desc",
+      name: "reverse_order",
+    },
+    component: BinaryOption,
+  },
+  {
+    props: {
       title: "options.hide_sigs_title",
       desc: "options.hide_sigs_desc",
       name: "hide_sigs",

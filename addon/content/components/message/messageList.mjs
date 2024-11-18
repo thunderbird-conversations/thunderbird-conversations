@@ -30,11 +30,22 @@ function _MessageList(props) {
     ref.focus();
   }
 
+  // Get the messages data, reversing if option `reverseOrder` is true
+  // TODO: Consider directly using "props.messages.msgData.reverse();",
+  //       but it will reverse in place, might cause unexpected error if props.messages.msgData is used anywhere else.
+  let messages = [];
+
+  if (props.messages.msgData) {
+    messages = props.summary.prefs.reverseOrder
+      ? props.messages.msgData.slice().reverse()
+      : props.messages.msgData;
+  }
+
   return React.createElement(
     "ul",
     { id: "messageList" },
-    !!props.messages.msgData &&
-      props.messages.msgData.map((message, index) =>
+    !!messages &&
+      messages.map((message, index) =>
         React.createElement(Message, {
           key: index,
           autoMarkAsRead: props.summary.autoMarkAsRead,
