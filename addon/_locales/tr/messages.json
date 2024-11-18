@@ -35,6 +35,22 @@
     "message": "Bu satır sayısından fazla olan alıntılar küçültülecektir.",
     "description": "Alıntılanan metin için açıklama."
   },
+  "options.dark_mode_title": {
+    "message": "Dark mode",
+    "description": "Options - title for dark mode."
+  },
+  "options.dark_mode_desc": {
+    "message": "Change the background of the content when in dark mode",
+    "description": "Options - description for dark mode."
+  },
+  "options.reverse_order_title": {
+    "message": "Reverse order of message list",
+    "description": "Options - title for reverse order."
+  },
+  "options.reverse_order_desc": {
+    "message": "Reverse order of messages shown in the conversation",
+    "description": "Options - description for reverse order."
+  },
   "options.hide_sigs_title": {
     "message": "İmzaları Gizle",
     "description": "İmzaları gizlemek için başlık."
