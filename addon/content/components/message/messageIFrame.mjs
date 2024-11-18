@@ -570,21 +570,6 @@ export class MessageIFrame extends React.Component {
     }
   }
 
-  // injectCss(iframeDoc) {
-  //   // !important because messageContents.css is appended after us when the html
-  //   // is rendered
-  //   return [
-  //     'blockquote[type="cite"] {',
-  //     "  border-right-width: 0px;",
-  //     "  border-left: 1px #ccc solid;",
-  //     "  color: #666 !important;",
-  //     "}",
-  //     "span.moz-txt-formfeed {",
-  //     "  height: auto;",
-  //     "}",
-  //   ];
-  // }
-
   injectCss(iframeDoc, isDarkMode = false) {
     // Base CSS rules
     let cssRules = [
@@ -604,7 +589,7 @@ export class MessageIFrame extends React.Component {
         `@media not print {
           body.tc_dark_mode {
             filter: invert(100%) hue-rotate(180deg) !important;
-            background: #27272A !important;
+            background: #1C1B22 !important;
           }
           body.tc_dark_mode :is(img, [style*="background-image:"]:not([style*="background-image: none"]), [background*="."], g-emoji) {
             filter: invert(100%) hue-rotate(180deg) !important;
