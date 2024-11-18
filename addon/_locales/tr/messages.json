@@ -35,6 +35,14 @@
     "message": "Bu satır sayısından fazla olan alıntılar küçültülecektir.",
     "description": "Alıntılanan metin için açıklama."
   },
+  "options.dark_mode_title": {
+    "message": "Dark mode",
+    "description": "Options - title for dark mode."
+  },
+  "options.dark_mode_desc": {
+    "message": "Change the background of the content when in dark mode",
+    "description": "Options - description for dark mode."
+  },
   "options.hide_sigs_title": {
     "message": "İmzaları Gizle",
     "description": "İmzaları gizlemek için başlık."

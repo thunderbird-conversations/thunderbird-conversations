@@ -63,6 +63,14 @@ const PREFS_INFO = [
   },
   {
     props: {
+      title: "options.dark_mode_title",
+      desc: "options.dark_mode_desc",
+      name: "is_dark_mode",
+    },
+    component: BinaryOption,
+  },
+  {
+    props: {
       title: "options.hide_sigs_title",
       desc: "options.hide_sigs_desc",
       name: "hide_sigs",
