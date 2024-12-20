@@ -1,7 +1,7 @@
 {
-  "name": "thunderbirdconversations",
   "version": "4.2.3",
   "description": "Thunderbird Conversations",
+  "note(description)": "This file is for build purposes only",
   "repository": {
     "type": "git",
     "url": "git@github.com:thunderbird-conversations/thunderbird-conversations.git"

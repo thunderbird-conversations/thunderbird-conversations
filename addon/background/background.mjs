@@ -76,11 +76,6 @@ browser.runtime.onInstalled.addListener((details) => {
     browser.tabs.create({
       url: "../assistant/assistant.html",
     });
-  } else if (details.reason == "update") {
-    // Hopefully just needed whilst we still have jsms to ensure the cache
-    // is invalidated to work around previous issues with the startup cache
-    // caching jsms that we didn't want it to.
-    browser.conversations.invalidateCache().catch(console.error);
   }
 });
 
