@@ -40,7 +40,7 @@
     "prettier": "3.4.2",
     "prop-types": "15.8.1",
     "serve": "14.2.4",
-    "web-ext": "8.3.0",
+    "web-ext": "8.4.0",
     "webpack": "5.97.1",
     "webpack-cli": "6.0.1"
   },
