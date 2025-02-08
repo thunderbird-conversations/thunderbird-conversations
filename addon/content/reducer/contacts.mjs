@@ -21,7 +21,7 @@ import { messageActions } from "./reducerMessages.mjs";
  *   Whether or not to show condensed names.
  */
 async function enrichWithDisplayData({
-  contact,
+  contact = {},
   email,
   field,
   nameFromEmail,
@@ -88,7 +88,7 @@ export async function mergeContactDetails(msgData) {
 
     for (const contacts of Object.values(message.parsedLines)) {
       for (const contact of contacts) {
-        if (contactMap.has(contact.email)) {
+        if (contact.email == undefined || contactMap.has(contact.email)) {
           continue;
         }
         let promise = new Promise((resolve, reject) => {

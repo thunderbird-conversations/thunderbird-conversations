@@ -145,6 +145,10 @@ export class ContactManager {
    *   The contact information.
    */
   async get(email) {
+    if (!email) {
+      // We don't have anything, just return an empty object.
+      return {};
+    }
     email = email.toLocaleLowerCase();
     let cachedValue = this._cache.get(email);
     if (cachedValue) {
