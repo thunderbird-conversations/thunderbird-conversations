@@ -92,6 +92,7 @@ export function QuickReply({ id, multipleRecipients, recipientsIncludeLists }) {
             null,
             browser.i18n.getMessage("action.replyAll")
           ),
+          " ",
           React.createElement(SvgIcon, { hash: "reply_all" })
         )
     )
