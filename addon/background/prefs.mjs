@@ -6,6 +6,8 @@ export const kCurrentLegacyMigration = 3;
 
 export const kPrefDefaults = {
   hide_quote_length: 5,
+  is_dark_mode: false,
+  reverse_order: false,
   expand_who: 4, // kExpandAuto
   no_friendly_date: false,
   uninstall_infos: "{}",

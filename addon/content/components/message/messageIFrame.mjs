@@ -570,10 +570,9 @@ export class MessageIFrame extends React.Component {
     }
   }
 
-  injectCss(iframeDoc) {
-    // !important because messageContents.css is appended after us when the html
-    // is rendered
-    return [
+  injectCss(iframeDoc, isDarkMode = false) {
+    // Base CSS rules
+    let cssRules = [
       'blockquote[type="cite"] {',
       "  border-right-width: 0px;",
       "  border-left: 1px #ccc solid;",
@@ -583,6 +582,23 @@ export class MessageIFrame extends React.Component {
       "  height: auto;",
       "}",
     ];
+
+    if (isDarkMode) {
+      // Additional CSS for dark mode
+      cssRules.push(
+        `@media not print {
+          body.tc_dark_mode {
+            filter: invert(100%) hue-rotate(180deg) !important;
+            background: #1C1B22 !important;
+          }
+          body.tc_dark_mode :is(img, [style*="background-image:"]:not([style*="background-image: none"]), [background*="."], g-emoji) {
+            filter: invert(100%) hue-rotate(180deg) !important;
+          }
+        }`
+      );
+    }
+
+    return cssRules;
   }
 
   async _onDOMLoaded(event) {
@@ -590,6 +606,9 @@ export class MessageIFrame extends React.Component {
       return;
     }
     const iframeDoc = this.iframe.contentDocument;
+
+    const isDarkMode = this.props.prefs.isDarkMode; // Set based on your app’s theme setting
+
     let styleRules = this.tweakFonts(iframeDoc);
     if (
       !(this.props.realFrom && this.props.realFrom.includes("bugzilla-daemon"))
@@ -597,7 +616,7 @@ export class MessageIFrame extends React.Component {
       await this.detectQuotes(this.iframe);
     }
     this.detectSigs(this.iframe);
-    styleRules = styleRules.concat(this.injectCss(iframeDoc));
+    styleRules = styleRules.concat(this.injectCss(iframeDoc, isDarkMode));
 
     // Ugly hack (once again) to get the style inside the
     // <iframe>. I don't think we can use a chrome:// url for
@@ -606,6 +625,13 @@ export class MessageIFrame extends React.Component {
     style.appendChild(iframeDoc.createTextNode(styleRules.join("\n")));
     let head = iframeDoc.body.previousElementSibling;
     head.appendChild(style);
+
+    // Apply the tc_dark_mode class based on dark mode status
+    if (isDarkMode) {
+      iframeDoc.body.classList.add("tc_dark_mode");
+    } else {
+      iframeDoc.body.classList.remove("tc_dark_mode");
+    }
 
     this.adjustHeight();
   }

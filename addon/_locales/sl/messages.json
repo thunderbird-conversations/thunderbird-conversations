@@ -35,6 +35,22 @@
     "message": "Navedki, večji od tega števila vrstic, bodo strnjeni.",
     "description": "Options - description for quoted text."
   },
+  "options.dark_mode_title": {
+    "message": "Dark mode",
+    "description": "Options - title for dark mode."
+  },
+  "options.dark_mode_desc": {
+    "message": "Change the background of the content when in dark mode",
+    "description": "Options - description for dark mode."
+  },
+  "options.reverse_order_title": {
+    "message": "Reverse order of message list",
+    "description": "Options - title for reverse order."
+  },
+  "options.reverse_order_desc": {
+    "message": "Reverse order of messages shown in the conversation",
+    "description": "Options - description for reverse order."
+  },
   "options.hide_sigs_title": {
     "message": "Skrij podpise",
     "description": "Options - title for hiding signatures."

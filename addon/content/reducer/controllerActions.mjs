@@ -454,6 +454,8 @@ async function setupUserPreferences(dispatch, getState) {
         extraAttachments: newPrefs.preferences?.extra_attachments ?? false,
         hideQuickReply: newPrefs.preferences?.hide_quick_reply ?? false,
         hideQuoteLength: newPrefs.preferences?.hide_quote_length ?? 5,
+        isDarkMode: newPrefs.preferences?.is_dark_mode ?? false,
+        reverseOrder: newPrefs.preferences?.reverse_order ?? false,
         hideSigs: newPrefs.preferences?.hide_sigs ?? false,
         loggingEnabled: newPrefs.preferences?.logging_enabled ?? false,
         noFriendlyDate: newPrefs.preferences?.no_friendly_date ?? false,
