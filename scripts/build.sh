@@ -25,22 +25,28 @@ fi
 #
 pushd $ADDON_DIR
 REGEXTENSIONS=".*\.(html|mjs|js|json|gif|png|svg)"
+platform=`uname`
+if [ $platform == 'Darwin' ]; then
+    EXTENDED1="-E"
+else
+    EXTENDED2="-regextype posix-extended"
+fi
 mkdir -p "../$DIST"
-find -E . -regex $REGEXTENSIONS -maxdepth 1 -exec cp {} ../$DIST/ \;
+find $EXTENDED1 . $EXTENDED2 -regex $REGEXTENSIONS -maxdepth 1 -exec cp {} ../$DIST/ \;
 # Other items we need that aren't handled by webpack.
 DIRECTORIES=(assistant background content/icons content/modules \
 experiment-api)
 for a in "${DIRECTORIES[@]}"; do
   mkdir -p ../$DIST/${a}/
-  find -E $a -regex $REGEXTENSIONS -exec cp {} ../$DIST/$a/ \;
+  find $EXTENDED1 $a $EXTENDED2 -regex $REGEXTENSIONS -exec cp {} ../$DIST/$a/ \;
 done
 for dir in _locales/*; do
   mkdir -p ../$DIST/${dir}/
-  find -E $dir -regex $REGEXTENSIONS -exec cp {} ../$DIST/$dir/ \;
+  find $EXTENDED1 $dir $EXTENDED2 -regex $REGEXTENSIONS -exec cp {} ../$DIST/$dir/ \;
 done
 # This directory just needs the css file.
 mkdir -p ../$DIST/content/components/compose
-find -E . -name "*.css" -exec cp {} ../$DIST/{} \;
+find $EXTENDED1 . $EXTENDED2 -name "*.css" -exec cp {} ../$DIST/{} \;
 cp content/stubGlobals.js ../${DIST}/content/
 cp content/stubWrapper.* ../${DIST}/content/
 
