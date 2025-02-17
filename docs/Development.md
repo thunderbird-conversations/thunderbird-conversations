@@ -18,6 +18,9 @@ branch, and we may then decide to back-port them to the current release branch.
 
 You will need to do the last step every time you change something.
 
+**Note: For releases, `npm run prod` is used. For more details see the
+[Releases](./Releases.md) page.**
+
 ## Running in Thunderbird
 
 Note: At the moment when making changes, especially to the modules, it is best
