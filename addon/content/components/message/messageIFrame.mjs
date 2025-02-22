@@ -571,9 +571,8 @@ export class MessageIFrame extends React.Component {
   }
 
   injectCss(iframeDoc) {
-    // !important because messageContents.css is appended after us when the html
-    // is rendered
-    return [
+    // Base CSS rules
+    let cssRules = [
       'blockquote[type="cite"] {',
       "  border-right-width: 0px;",
       "  border-left: 1px #ccc solid;",
@@ -583,6 +582,21 @@ export class MessageIFrame extends React.Component {
       "  height: auto;",
       "}",
     ];
+
+    // Additional CSS for dark mode
+    cssRules.push(
+      `@media not print and (prefers-color-scheme: dark){
+          body {
+            filter: invert(100%) hue-rotate(180deg) !important;
+            background: rgb(28, 27, 34) !important;
+          }
+          body :is(img, [style*="background-image:"]:not([style*="background-image: none"]), [background*="."], g-emoji) {
+            filter: invert(100%) hue-rotate(180deg) !important;
+          }
+      }`
+    );
+
+    return cssRules;
   }
 
   async _onDOMLoaded(event) {
