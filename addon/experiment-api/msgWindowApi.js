@@ -327,7 +327,10 @@ function summarizeThreadHandler(contentWin, tabId, context) {
       }
     }
 
-    if ("clearAll" in contentWin.messagePane) {
+    // Bug 1923206 rewrote the messagePane code and added `multiMessageFindbar`
+    // we use that as a proxy for "is this the latest", since `clearAll` already
+    // existed previously.
+    if ("multiMessageFindbar" in contentWin.messagePane) {
       contentWin.messagePane.clearAll({ alwaysClearWebBrowser: true });
     } else {
       contentWin.messagePane._keepStartPageOpen = false;
