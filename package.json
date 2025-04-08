@@ -45,7 +45,8 @@
     "webpack-cli": "6.0.1"
   },
   "overrides": {
-    "path-to-regexp": "8.2.0"
+    "path-to-regexp": "8.2.0",
+    "image-size": "2.0.2"
   },
   "scripts": {
     "dev": "rm -rf ./dist-dev-html && (scripts/build-dev-html.sh --watch &) && sleep 4 && scripts/dev-html-serve.sh",
