@@ -25,7 +25,7 @@
     "@microsoft/eslint-plugin-sdl": "1.1.0",
     "@testing-library/react": "16.3.0",
     "eslint": "9.16.0",
-    "eslint-config-prettier": "10.1.1",
+    "eslint-config-prettier": "10.1.2",
     "eslint-plugin-html": "8.1.2",
     "eslint-plugin-import": "2.31.0",
     "eslint-plugin-jsdoc": "50.6.9",
@@ -41,7 +41,7 @@
     "prop-types": "15.8.1",
     "serve": "14.2.4",
     "web-ext": "8.5.0",
-    "webpack": "5.99.2",
+    "webpack": "5.99.5",
     "webpack-cli": "6.0.1"
   },
   "overrides": {
