@@ -3,16 +3,12 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 :root {
-  --application-background-color: white;
-  --application-foreground-color: black;
+  --application-background-color: light-dark(white, rgb(56, 56, 61));
+  --application-foreground-color: light-dark(black, rgb(249, 249, 250));
+  --dull-foreground-color: light-dark(#666, #999);
+  --email-address-dull-color: light-dark(#888a85, #b6b6b6);
+  color-scheme: light dark;
 }
-
-/* @media screen and (prefers-color-scheme: dark) {
-  :root {
-    --application-background-color: rgb(56, 56, 61);
-    --application-foreground-color: rgb(249, 249, 250);
-  }
-} */
 
 * {
   box-sizing: border-box;
@@ -99,8 +95,9 @@ a img {
 
 .icon-link {
   display: inline-block;
-  color: #666;
+  color: var(--dull-foreground-color);
 }
+
 .icon-link:focus,
 .icon-link:hover {
   color: -moz-CellHighlight;
@@ -149,7 +146,7 @@ a img {
   text-align: center;
   height: 24px;
   margin: 0 0 0 3px;
-  color: #666;
+  color: var(--dull-foreground-color);
 }
 
 .actions .unread {
@@ -216,7 +213,7 @@ a img {
 
 .to,
 .bzTo {
-  color: #888a85;
+  color: var(--email-address-dull-color);
 }
 
 /* That's what makes the ellipsis appear */
@@ -394,7 +391,7 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
 
 .smallEmail {
   font-size: 85%;
-  color: #888a85;
+  color: var(--email-address-dull-color);
   font-weight: normal;
 }
 
@@ -427,7 +424,7 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
 .authorEmail {
   display: flex;
   width: 100%;
-  color: #888a85;
+  color: var(--email-address-dull-color);
   overflow: hidden;
   padding-top: 3px;
 }
@@ -475,7 +472,7 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
 }
 
 .snippet {
-  color: #888a85;
+  color: var(--email-address-dull-color);
 }
 
 .message .messageBody {
@@ -614,11 +611,11 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
 .detailsLine {
   font-size: 1.1rem;
   padding: 0 10px;
-  color: #888a85;
+  color: var(--email-address-dull-color);
 }
 
 .attachmentIcon {
-  color: #666;
+  color: var(--dull-foreground-color);
 }
 
 .attachmentIcon .icon {
@@ -718,7 +715,7 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
   font-size: 120%;
   background: none;
   border: 0;
-  color: #666;
+  color: var(--dull-foreground-color);
   width: 2em;
   height: 2em;
   border-radius: 1em;
@@ -749,7 +746,7 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
 .star {
   display: inline;
   margin-inline-end: 3px;
-  color: #888a85;
+  color: var(--email-address-dull-color);
   font-size: 80%;
   border: none !important;
   background: transparent;
