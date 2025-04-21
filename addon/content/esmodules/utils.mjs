@@ -4,7 +4,7 @@
 
 /**
  * Take a name and extract initials from it.
- * If `name` is an email address, get the part before the @.
+ * If `name` is an email address, get the part before the `@`.
  * Then, capitalize the first letter of the first and last word (or the first
  * two letters of the first word if only one exists).
  *

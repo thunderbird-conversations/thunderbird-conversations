@@ -9,20 +9,20 @@
 
 /**
  * @typedef {object} Contact
- * @property {string} color
+ * @property {string} [color]
  *   A string denoting the color to use for this contact,, the same email address
  *   will always return the same color.
- * @property {string} contactId
+ * @property {string} [contactId]
  *   The id of the associated ContactNode from the WebExtension APIs (if any).
- * @property {string} identityId
+ * @property {string} [identityId]
  *   The id of the associated MailIdentiy from the WebExtension APIs (if any).
- * @property {string} contactName
+ * @property {string} [contactName]
  *   The name from the associated ContactNode. This is only returned if the
  *   ContactNode has "Always prefer display name over message header" set for
  *   the contact.
- * @property {string} photoURI
+ * @property {string} [photoURI]
  *   A uri to use for the avator photo for the contact (if any).
- * @property {boolean} readOnly
+ * @property {boolean} [readOnly]
  *   True if the card is read-only.
  */
 
@@ -31,14 +31,16 @@
  */
 class ExtendedContact {
   constructor({
+    color = undefined,
     contactId,
-    email,
+    // Email may be skipped if color is defined.
+    email = undefined,
     identityId = undefined,
     contactName,
     photoURI,
     readOnly,
   }) {
-    this.color = freshColor(email);
+    this.color = color ?? freshColor(email);
     this.contactId = contactId;
     this.identityId = identityId;
     this.contactName = contactName;
@@ -54,16 +56,31 @@ class ExtendedContact {
   }
 
   /**
+   * Returns a direct copy of this contact.
+   *
+   * @returns {ExtendedContact}
+   */
+  clone() {
+    return new ExtendedContact({
+      color: this.color,
+      contactId: this.contactId,
+      identityId: this.identityId,
+      contactName: this.contactName,
+      photoURI: this.photoURI,
+      readOnly: this.readOnly,
+    });
+  }
+
+  /**
    * Returns a copy of the details for this contact which are used for display.
    *
    * @returns {Contact}
    */
-  clone() {
+  cloneAsContact() {
     return {
       color: this.color,
       contactId: this.contactId,
       identityId: this.identityId,
-      lastAccessed: this.lastAccessed,
       contactName: this.contactName,
       photoURI: this.photoURI,
       readOnly: this.readOnly,
@@ -141,7 +158,7 @@ export class ContactManager {
    *
    * @param {string} email
    *   The email address to get the contact information for.
-   * @returns {Contact}
+   * @returns {Promise<Contact>}
    *   The contact information.
    */
   async get(email) {
@@ -159,15 +176,15 @@ export class ContactManager {
     let identityEmails = await this._getIdentityEmails();
     let activeFetch = this._activeFetches.get(email);
     if (activeFetch) {
-      let [, contact] = await activeFetch;
+      let { contact } = await activeFetch;
       contact.identityId = identityEmails.get(email);
-      return contact.clone();
+      return contact.cloneAsContact();
     }
 
     let fetchPromise = this._fetchContactDetails(email);
     this._activeFetches.set(email, fetchPromise);
 
-    let [emails, contact] = await fetchPromise;
+    let { emails, contact } = await fetchPromise;
     let contactResult = contact.clone();
 
     for (let contactEmail of emails) {
@@ -189,7 +206,7 @@ export class ContactManager {
     }
     this._activeFetches.delete(email);
 
-    return contactResult;
+    return contactResult.cloneAsContact();
   }
 
   /**
@@ -197,7 +214,6 @@ export class ContactManager {
    *
    * @param {string} email
    *   The email address to fetch contact details for.
-   * @returns {ExtendedContact}
    */
   async _fetchContactDetails(email) {
     let matchingCards = [];
@@ -222,6 +238,9 @@ export class ContactManager {
     );
 
     let contactId = undefined;
+    /**
+     * @type {string[]}
+     */
     let emails = [];
     let contactName = undefined;
     let photoURI = undefined;
@@ -263,16 +282,16 @@ export class ContactManager {
       emails.push(email);
     }
 
-    return [
+    return {
       emails,
-      new ExtendedContact({
+      contact: new ExtendedContact({
         contactId,
         email: emailAddressForColor,
         contactName,
         photoURI,
         readOnly,
       }),
-    ];
+    };
   }
 
   /**
@@ -280,28 +299,33 @@ export class ContactManager {
    *
    * Currently there is no refresh when account changes are made - Thunderbird
    * will need to be restart.
-   *
-   * @returns {string[]}
-   *   An array of emails.
    */
   async _getIdentityEmails() {
     if (this._identityEmails) {
       return this._identityEmails;
     }
 
+    /**
+     * @type {Map<string, string>}
+     */
     let emails = new Map();
-    let accounts = await browser.accounts.list().catch(console.error);
+    let accounts = await browser.accounts.list().catch((ex) => {
+      console.error(ex);
+      return [];
+    });
     for (let account of accounts) {
       if (account.type == "nntp") {
         continue;
       }
 
       for (let identity of account.identities) {
-        let idEmail = identity.email.toLocaleLowerCase();
+        let idEmail = /** @type {string} */ (
+          identity.email.toLocaleLowerCase()
+        );
         // The default identity for the account is returned first, so
         // if subsequent identites have the same email, then skip them.
         if (!emails.has(idEmail)) {
-          emails.set(idEmail, identity.id);
+          emails.set(idEmail, /** @type {string} */ (identity.id));
         }
       }
     }

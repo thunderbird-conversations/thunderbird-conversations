@@ -32,7 +32,10 @@ export class Window {
       if (!listeners) {
         return;
       }
-      browser.convMsgWindow.onMonkeyPatch.removeListener(listeners.monkey);
+      browser.convMsgWindow.onMonkeyPatch.removeListener(
+        listeners.monkey,
+        tabId
+      );
       browser.convMsgWindow.onThreadPaneActivate.removeListener(
         listeners.doubleClick,
         tabId
@@ -63,11 +66,10 @@ export class Window {
      *   The optional tooltip of the pill.
      */
     browser.runtime.onConnectExternal.addListener(async (port) => {
-      port.onMessage.addListener((msg) => {
+      port.onMessage.addListener((/** @type {AddPillMessage} */ msg) => {
         if (msg.type != "addPill") {
           return;
         }
-        /** @type {AddPillMessage} */
         const pillMessage = msg;
 
         if (

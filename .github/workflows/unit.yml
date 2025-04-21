@@ -25,7 +25,7 @@ on:
       - .github/workflows/unit.yml
 
 jobs:
-  eslint:
+  unittests:
     name: unittests
     runs-on: ubuntu-latest
     steps:

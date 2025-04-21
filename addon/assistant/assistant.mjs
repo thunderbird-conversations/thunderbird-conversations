@@ -33,7 +33,9 @@ async function onFinish() {
   document.getElementById("intro").classList.add("hidden");
   document.getElementById("applyButton").classList.add("hidden");
 
-  const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+  const checkboxes = /** @type {NodeListOf<HTMLInputElement>} */ (
+    document.querySelectorAll('input[type="checkbox"]')
+  );
   const itemsToInstall = [];
   for (let checkbox of checkboxes) {
     if (checkbox.checked) {
@@ -53,7 +55,9 @@ window.addEventListener(
   () => {
     // This section based on https://github.com/erosman/HTML-Internationalization
     // MPL2 License: https://discourse.mozilla.org/t/translating-options-pages/19604/23
-    for (const node of document.querySelectorAll("[data-i18n]")) {
+    for (const node of /** @type {NodeListOf<HTMLElement>} */ (
+      document.querySelectorAll("[data-i18n]")
+    )) {
       let [text, attr] = node.dataset.i18n.split("|");
       text = browser.i18n.getMessage(text);
       attr

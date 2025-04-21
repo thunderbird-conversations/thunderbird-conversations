@@ -26,7 +26,7 @@ class SimpleCustomization {
 
   async uninstall(oldValue) {
     let currentValue = await this._get();
-    if (currentValue == this.desiredValue && currentValue != oldValue) {
+    if (currentValue == this._desiredValue && currentValue != oldValue) {
       await this._set(oldValue);
     }
   }
@@ -37,16 +37,16 @@ class SimpleCustomization {
  */
 class PrefCustomization extends SimpleCustomization {
   constructor({ prefName, value }) {
-    super(value);
+    super(
+      value,
+      () => {
+        return browser.conversations.getCorePref(this._prefName);
+      },
+      (val) => {
+        return browser.conversations.setCorePref(this._prefName, val);
+      }
+    );
     this._prefName = prefName;
-  }
-
-  _get() {
-    return browser.conversations.getCorePref(this._prefName);
-  }
-
-  _set(value) {
-    return browser.conversations.setCorePref(this._prefName, value);
   }
 }
 
@@ -58,6 +58,12 @@ class MultipleCustomization {
     this._customizations = customizations;
   }
 
+  /**
+   * Install the customisations.
+   *
+   * @param {browser.mailTabs.MailTab} mailTab
+   * @returns {Promise<string[]>}
+   */
   async install(mailTab) {
     let result = [];
     for (let c of this._customizations) {
@@ -93,8 +99,21 @@ const installActions = {
       value: 1,
     }),
     {
+      /**
+       * Install the customisation.
+       *
+       * @param {browser.mailTabs.MailTab} mailTab
+       * @returns {Promise<any>}
+       */
       async install(mailTab) {
-        let newParams = {};
+        let newParams = {
+          /** @type {browser.mailTabs._MailTabPropertiesSortType} */
+          sortType: undefined,
+          /** @type {browser.mailTabs._MailTabPropertiesSortOrder} */
+          sortOrder: undefined,
+          /** @type {browser.mailTabs._MailTabPropertiesViewType} */
+          viewType: undefined,
+        };
         let original = {};
         if (mailTab.sortType != "date" || mailTab.sortOrder != "ascending") {
           original.sortType = mailTab.sortType;
@@ -230,7 +249,7 @@ export class Assistant {
       await this.handleInstall(message);
       await browser.tabs.remove(message.tabId);
     } else {
-      await this.handleUninstall(message);
+      await this.handleUninstall();
     }
   }
 

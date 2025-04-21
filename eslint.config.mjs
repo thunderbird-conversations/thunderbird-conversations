@@ -84,6 +84,9 @@ export default [
         version: "detect",
       },
     },
+    rules: {
+      "react/prop-types": "off",
+    },
   },
   {
     files: ["**/*.json"],
@@ -134,7 +137,7 @@ export default [
       // "jsdoc/newline-after-description": "error",
       "jsdoc/no-undefined-types": [
         "error",
-        { definedTypes: ["MessageHeader"] },
+        { definedTypes: ["MessageHeader", "NodeListOf"] },
       ],
       "jsdoc/require-jsdoc": [
         "error",
@@ -160,6 +163,9 @@ export default [
         },
       ],
       "no-undef": "error",
+    },
+    settings: {
+      jsdoc: { mode: "typescript" },
     },
   },
   {

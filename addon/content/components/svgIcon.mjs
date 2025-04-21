@@ -12,7 +12,7 @@ import PropTypes from "prop-types";
  * @param {object} root0
  * @param {string} [root0.fullPath]
  * @param {string} [root0.hash]
- * @param {string} [root0.ariaHidden]
+ * @param {boolean} [root0.ariaHidden]
  * @returns {React.ReactNode}
  */
 export function SvgIcon({ fullPath, hash, ariaHidden = false }) {

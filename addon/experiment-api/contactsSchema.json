@@ -150,17 +150,7 @@
             "type": "string",
             "description": "Temp additional string whilst we get the API working"
           }
-        ],
-        "returns": {
-          "type": "object",
-          "properties": {
-            "tbd": {
-              "type": "boolean",
-              "optional": true,
-              "description": "Cancels the middle click, e.g. the add-on has handled it."
-            }
-          }
-        }
+        ]
       }
     ]
   }

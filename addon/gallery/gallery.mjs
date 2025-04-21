@@ -4,31 +4,37 @@
 
 import React from "react";
 import ReactDOMClient from "react-dom/client";
-import PropTypes from "prop-types";
 
-// eslint-disable-next-line no-shadow
-const Photo = React.forwardRef(({ index, length, name, size, src }, ref) =>
-  React.createElement(
-    "div",
-    { className: "photoWrap", ref },
-    React.createElement("img", { src }),
+/**
+ * @typedef PhotoProps
+ * @property {number} index
+ * @property {number} length
+ * @property {string} name
+ * @property {string} size
+ * @property {string} [src]
+ */
+
+const Photo = React.forwardRef(
+  // eslint-disable-next-line no-shadow
+  (/** @type {PhotoProps} */ { index, length, name, size, src }, ref) =>
     React.createElement(
       "div",
-      { className: "informationline" },
-      React.createElement("div", { className: "filename" }, name),
-      React.createElement("div", { className: "size" }, size),
-      React.createElement("div", { className: "count" }, index + " / " + length)
+      { className: "photoWrap", ref },
+      React.createElement("img", { src }),
+      React.createElement(
+        "div",
+        { className: "informationline" },
+        React.createElement("div", { className: "filename" }, name),
+        React.createElement("div", { className: "size" }, size),
+        React.createElement(
+          "div",
+          { className: "count" },
+          index + " / " + length
+        )
+      )
     )
-  )
 );
 Photo.displayName = "Photo";
-Photo.propTypes = {
-  index: PropTypes.number.isRequired,
-  length: PropTypes.number.isRequired,
-  name: PropTypes.string.isRequired,
-  size: PropTypes.string.isRequired,
-  src: PropTypes.string,
-};
 
 /**
  * Handles display of the gallery views.
@@ -94,7 +100,7 @@ class MyComponent extends React.Component {
    *  DOM node.
    *
    * @param {object[]} attachments
-   * @param {string} id
+   * @param {number} id
    * @param {string} scrollToPartName
    */
   async output(attachments, id, scrollToPartName) {
@@ -147,7 +153,6 @@ class MyComponent extends React.Component {
 
         size: image.size,
         src: image.src,
-        className: "gallery",
         length: this.state.images.length,
       })
     );

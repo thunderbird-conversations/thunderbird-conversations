@@ -208,7 +208,7 @@ DisplayInfo.propTypes = {
  * @param {object} root0.displayInfo
  * @param {string} root0.name
  * @param {string} root0.title
- * @param {string} root0.tooltip
+ * @param {object} root0.tooltip
  * @param {Function} root0.onClick
  */
 export function SpecialMessageTag({

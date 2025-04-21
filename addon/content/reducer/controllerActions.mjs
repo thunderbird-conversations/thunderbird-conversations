@@ -338,6 +338,9 @@ let unloadListeners;
  *   Function to get the current store state.
  */
 function setupListeners(dispatch, getState) {
+  /**
+   * @param {browser.messages.MessageHeader[]} msgs
+   */
   async function msgSelectionChanged(msgs) {
     dispatch(
       conversationActions.showConversation({ msgIds: msgs.map((m) => m.id) })
