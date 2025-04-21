@@ -220,6 +220,7 @@ export class Message extends React.PureComponent {
         this.props.dispatch(
           messageActions.forward({
             id: this.props.message.id,
+            shiftKey,
           })
         );
         break;
@@ -334,6 +335,7 @@ export class Message extends React.PureComponent {
         dispatch: this.props.dispatch,
         bcc: this.props.message.bcc,
         cc: this.props.message.cc,
+        overrideDarkMode: this.props.message.overrideDarkMode ?? false,
         date: this.props.message.date,
         detailsShowing: this.props.message.detailsShowing,
         expanded: this.props.message.expanded,
@@ -350,7 +352,6 @@ export class Message extends React.PureComponent {
         snippet: this.props.message.snippet,
         starred: this.props.message.starred,
         tags: this.props.message.tags,
-        specialTags: this.props.message.specialTags,
       }),
       this.props.message.expanded &&
         this.props.message.detailsShowing &&
@@ -435,6 +436,7 @@ export class Message extends React.PureComponent {
             isInTab: this.props.isInTab,
             initialPosition: this.props.message.initialPosition,
             isStandalone: this.props.isStandalone,
+            overrideDarkMode: this.props.message.overrideDarkMode,
             tenPxFactor: this.props.tenPxFactor,
             prefs: this.props.prefs,
             realFrom: this.props.message.realFrom,

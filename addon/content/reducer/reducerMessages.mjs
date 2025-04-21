@@ -432,6 +432,20 @@ export const messageActions = {
       dispatch(messagesSlice.actions.msgSetIsJunk(action));
     };
   },
+  toggleOverrideDarkMode({ msgId }) {
+    return async (dispatch, getState) => {
+      let currentMsg = getState().messages.msgData.find(
+        (msg) => msg.id == msgId
+      );
+
+      dispatch(
+        messagesSlice.actions.setOverrideDarkMode({
+          id: currentMsg.id,
+          overrideDarkMode: !currentMsg.overrideDarkMode,
+        })
+      );
+    };
+  },
 };
 
 export const messagesSlice = RTK.createSlice({
@@ -532,6 +546,12 @@ export const messagesSlice = RTK.createSlice({
       return modifyOnlyMsg(state, payload.id, (msg) => ({
         ...msg,
         smimeReload: payload.smimeReload,
+      }));
+    },
+    setOverrideDarkMode(state, { payload }) {
+      return modifyOnlyMsg(state, payload.id, (msg) => ({
+        ...msg,
+        overrideDarkMode: payload.overrideDarkMode,
       }));
     },
     updateAttachmentData(state, { payload }) {

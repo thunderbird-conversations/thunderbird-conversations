@@ -586,16 +586,16 @@ export class MessageIFrame extends React.Component {
     // Additional CSS for dark mode
     cssRules.push(
       `@media screen and (prefers-color-scheme: dark) {
-          html {
+          html:not(.overrideDarkMode) {
           /* Override Thunderbird's styles in 138+ */
             background-color: inherit;
             color: inherit;
           }
-          body {
+          html:not(.overrideDarkMode) > body {
             filter: invert(100%) hue-rotate(180deg) !important;
             background: rgb(28, 27, 34) !important;
           }
-          body :is(img, [style*="background-image:"]:not([style*="background-image: none"]), [background*="."], g-emoji) {
+          html:not(.overrideDarkMode) > body :is(img, [style*="background-image:"]:not([style*="background-image: none"]), [background*="."], g-emoji) {
             filter: invert(100%) hue-rotate(180deg) !important;
           }
       }`
@@ -655,6 +655,17 @@ export class MessageIFrame extends React.Component {
   }
 
   render() {
+    if (this.iframe?.contentDocument) {
+      if (this.props.overrideDarkMode) {
+        this.iframe.contentDocument.documentElement.classList.add(
+          "overrideDarkMode"
+        );
+      } else {
+        this.iframe.contentDocument.documentElement.classList.remove(
+          "overrideDarkMode"
+        );
+      }
+    }
     // TODO: See comment in componentDidMount
     // <iframe className={`iframe${this.index}`} type="content" ref={f => this.iframe = f}/>
     return React.createElement("div", {
@@ -675,6 +686,7 @@ MessageIFrame.propTypes = {
   isInTab: PropTypes.bool.isRequired,
   isStandalone: PropTypes.bool.isRequired,
   initialPosition: PropTypes.number.isRequired,
+  overrideDarkMode: PropTypes.bool.isRequired,
   smimeReload: PropTypes.bool.isRequired,
   tenPxFactor: PropTypes.number.isRequired,
   prefs: PropTypes.object.isRequired,

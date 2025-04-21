@@ -206,6 +206,7 @@ a img {
 .dropDown > .icon-link,
 .attachmentsDropDown > .icon-link,
 .details-hidden > .icon-link,
+.invert-colors > .icon-link,
 .optionsButton {
   background: none;
   border: 0;
@@ -247,7 +248,8 @@ html[dir="rtl"] .tooltip {
   right: 16px;
 }
 
-.options > .details-hidden {
+.options > .details-hidden,
+.options > .invert-colors {
   color: -moz-CellHighlight;
 }
 

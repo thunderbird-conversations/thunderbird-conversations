@@ -349,6 +349,16 @@
     "description": "Tooltip for the remove star button"
   },
 
+  "message.turnDarkModeOn.tooltip": {
+    "message": "Turn dark mode on",
+    "description": "Toolitp shown for the dark mode toggle button to turn dark mode back on"
+  },
+
+  "message.turnDarkModeOff.tooltip": {
+    "message": "Turn dark mode off",
+    "description": "Toolitp shown for the dark mode toggle button to turn dark mode back off"
+  },
+
   "action.archive": {
     "message": "archive this message",
     "description": "Archive button name in the message more menu"

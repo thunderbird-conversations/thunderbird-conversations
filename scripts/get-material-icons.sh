@@ -8,7 +8,7 @@ fi
 
 echo '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">'
 echo '    <!-- Material icons are published under Apache License Version 2.0. https://fonts.google.com/icons?selected=Material+Icons -->'
-for icon in "archive" "attachment" "calendar_today" "code" "content_copy" "dangerous" "delete" "delete_forever" "edit" "vpn_key" "expand_less" "expand_more" "forward" "file_download" "inbox" "whatshot" "list" "more_vert" "open_in_new" "person" "print" "reply_all" "reply" "save_alt" "send" "star" "visibility" "visibility_off" "warning" "info" "add" "mail" "history" "photo_library" "search" "account" "account_circle" "save"; do
+for icon in "archive" "attachment" "calendar_today" "code" "content_copy" "dangerous" "delete" "delete_forever" "edit" "vpn_key" "expand_less" "expand_more" "forward" "file_download" "inbox" "invert_colors" "invert_colors_off" "whatshot" "list" "more_vert" "open_in_new" "person" "print" "reply_all" "reply" "save_alt" "send" "star" "visibility" "visibility_off" "warning" "info" "add" "mail" "history" "photo_library" "search" "account" "account_circle" "save"; do
     wget -q "https://fonts.gstatic.com/s/i/materialicons/${icon}/v1/24px.svg?download=true" -O - \
         | $HEAD -n 1 \
         | sed "s/<path d=\"[a-zA-Z0-9 ]*\" fill=\"none\"\/>//g" \
