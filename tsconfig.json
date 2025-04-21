@@ -5,6 +5,7 @@
     "addon/assistant/*.mjs",
     "addon/background/*.mjs",
     "addon/gallery/*.mjs",
+    "addon/content/components/message/messageHeader.mjs",
     "addon/content/components/message/messageHeaderOptions.mjs"
   ],
 

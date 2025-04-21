@@ -508,7 +508,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
          *  that's suitable for quoting (strip signature, remove images, stuff like
          *  that).
          *
-         * @param {id} id The message id that you want to quote
+         * @param {number} id The message id that you want to quote
          * @param {boolean} plainText True if to return the message in plain text format.
          * @returns {Promise}
          *   Returns a quoted string suitable for insertion in an HTML editor.

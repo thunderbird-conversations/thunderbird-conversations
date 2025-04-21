@@ -91,6 +91,15 @@ declare namespace browser {
   }
 
   export namespace convOpenPgp {
+    export function beforeStreamingMessage(
+      tabId: number,
+      msgId: number,
+      dueToReload?: boolean
+    ): Promise<void>;
+    export function handleMessageStreamed(
+      tabId: number,
+      msgId: number
+    ): Promise<void>;
     export function handleTagClick(tabId: number, msgId: number): Promise<void>;
   }
 
@@ -158,7 +167,7 @@ declare namespace browser {
     export function makeFriendlyDateAgo({ date: number }): Promise<string>;
     export function quoteMsgHdr(
       id: number,
-      plainText: boolean
+      plainText?: boolean
     ): Promise<string>;
 
     interface bodyAsTextProperties {

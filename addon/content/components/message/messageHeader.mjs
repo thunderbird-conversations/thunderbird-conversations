@@ -4,7 +4,6 @@
 
 import React from "react";
 import ReactDOM from "react-dom";
-import PropTypes from "prop-types";
 import { ContactDetail } from "../contactDetail.mjs";
 import { messageActions } from "../../reducer/reducerMessages.mjs";
 import { MessageHeaderOptions } from "./messageHeaderOptions.mjs";
@@ -31,12 +30,12 @@ function contactToString(contact) {
  * near the root of the DOM. The children elements are rendered,
  * absolutely positions, inside the popup-container.
  *
- * @param {object} root0
- * @param {object} root0.children
- * @param {object} root0.popup
- * @returns {React.Node}
+ * @param {object} props
+ * @param {object} [props.children]
+ * @param {object} props.popup
+ * @param {object} [props.style]
  */
-function HoverFade({ children, popup, ...rest }) {
+function HoverFade({ children, popup, style }) {
   const [isHovering, setIsHovering] = React.useState(false);
   const [shouldShowPopup, setShouldShowPopup] = React.useState(false);
   const spanRef = React.useRef(null);
@@ -85,7 +84,7 @@ function HoverFade({ children, popup, ...rest }) {
       {
         ref: spanRef,
         className: "fade-parent",
-        ...rest,
+        style,
         onMouseEnter: () => {
           setIsHovering(true);
         },
@@ -112,23 +111,25 @@ function HoverFade({ children, popup, ...rest }) {
       )
   );
 }
-HoverFade.propTypes = {
-  children: PropTypes.node,
-  popup: PropTypes.node,
-};
 
 /**
  * Display an email address wrapped in <...> braces.
  *
- * @param {object} root0
- * @param {string} root0.email
- * @returns {React.Node}
+ * @param {object} props
+ * @param {string} props.email
  */
 function Email({ email }) {
   return `<${email.trim()}>`;
 }
-Email.propTypes = { email: PropTypes.string.isRequired };
 
+/**
+ * A detailed contact label.
+ *
+ * @param {object} props
+ * @param {string} props.className
+ * @param {object} props.contact
+ * @param {number} props.msgId
+ */
 export function DetailedContactLabel({ contact, className, msgId }) {
   // This component conditionally renders.
   // In a detail view, there is a star at the start of the contact
@@ -170,12 +171,15 @@ export function DetailedContactLabel({ contact, className, msgId }) {
     )
   );
 }
-DetailedContactLabel.propTypes = {
-  className: PropTypes.string.isRequired,
-  contact: PropTypes.object.isRequired,
-  msgId: PropTypes.number.isRequired,
-};
 
+/**
+ * Displays a contact label.
+ *
+ * @param {object} props
+ * @param {string} props.className
+ * @param {object} props.contact
+ * @param {number} props.msgId
+ */
 export function ContactLabel({ contact, className, msgId }) {
   // This component conditionally renders.
   let emailLabel =
@@ -212,13 +216,16 @@ export function ContactLabel({ contact, className, msgId }) {
     )
   );
 }
-ContactLabel.propTypes = {
-  className: PropTypes.string.isRequired,
-  contact: PropTypes.object.isRequired,
-  msgId: PropTypes.number.isRequired,
-};
 
-function Avatar({ url, initials, isDefault, style }) {
+/**
+ * Renders and Avatar icon.
+ *
+ * @param {object} props
+ * @param {string} [props.url]
+ * @param {string} [props.initials]
+ * @param {object} [props.style]
+ */
+function Avatar({ url, initials, style }) {
   if (!url) {
     return React.createElement(
       "abbr",
@@ -235,16 +242,30 @@ function Avatar({ url, initials, isDefault, style }) {
     "\u00a0"
   );
 }
-Avatar.propTypes = {
-  url: PropTypes.string,
-  initials: PropTypes.string,
-  isDefault: PropTypes.bool,
-  style: PropTypes.object,
-};
 
-// eslint-disable-next-line jsdoc/require-param
 /**
  * Handles display for the header of a message.
+ *
+ * @param {object} props
+ * @param {object[]} props.bcc
+ * @param {object[]} props.cc
+ * @param {Function} props.dispatch
+ * @param {string} props.date
+ * @param {boolean} props.detailsShowing
+ * @param {boolean} props.expanded
+ * @param {object} [props.from]
+ * @param {string} props.fullDate
+ * @param {number} props.id
+ * @param {boolean} props.inView
+ * @param {object[]} props.attachments
+ * @param {boolean} props.multipleRecipients
+ * @param {boolean} props.recipientsIncludeLists
+ * @param {boolean} props.isDraft
+ * @param {string} [props.shortFolderName]
+ * @param {string} props.snippet
+ * @param {boolean} props.starred
+ * @param {object[]} props.tags
+ * @param {object[]} props.to
  */
 export function MessageHeader({
   starred,
@@ -266,7 +287,6 @@ export function MessageHeader({
   snippet,
   tags,
   to,
-  specialTags,
 }) {
   function onClickHeader() {
     dispatch(
@@ -413,26 +433,3 @@ export function MessageHeader({
     })
   );
 }
-
-MessageHeader.propTypes = {
-  bcc: PropTypes.array.isRequired,
-  cc: PropTypes.array.isRequired,
-  dispatch: PropTypes.func.isRequired,
-  date: PropTypes.string.isRequired,
-  detailsShowing: PropTypes.bool.isRequired,
-  expanded: PropTypes.bool.isRequired,
-  from: PropTypes.object,
-  fullDate: PropTypes.string.isRequired,
-  id: PropTypes.number.isRequired,
-  inView: PropTypes.bool.isRequired,
-  attachments: PropTypes.array.isRequired,
-  multipleRecipients: PropTypes.bool.isRequired,
-  recipientsIncludeLists: PropTypes.bool.isRequired,
-  isDraft: PropTypes.bool.isRequired,
-  shortFolderName: PropTypes.string,
-  snippet: PropTypes.string.isRequired,
-  starred: PropTypes.bool.isRequired,
-  tags: PropTypes.array.isRequired,
-  to: PropTypes.array.isRequired,
-  specialTags: PropTypes.array,
-};

@@ -223,12 +223,12 @@ export function SpecialMessageTag({
   const [detailsExpanded, setDetailsExpanded] = React.useState(false);
   let closeExpandedDetails = React.useCallback(() => {
     setDetailsExpanded(false);
-  });
+  }, []);
   let closeExpandedKeypress = React.useCallback((event) => {
     if (event.key == "Escape") {
       setDetailsExpanded(false);
     }
-  });
+  }, []);
 
   React.useEffect(() => {
     document.addEventListener("blur", closeExpandedDetails);
@@ -291,12 +291,12 @@ SpecialMessageTag.propTypes = {
 /**
  * Handles display of all tags for a message.
  *
- * @param {object} root0
- * @param {Function} root0.onTagClick
- * @param {Function} root0.onFolderClick
- * @param {object[]} root0.specialTags
- * @param {string} root0.folderName
- * @param {boolean} root0.inView
+ * @param {object} props
+ * @param {Function} props.onTagClick
+ * @param {Function} [props.onFolderClick]
+ * @param {object[]} [props.specialTags]
+ * @param {string} [props.folderName]
+ * @param {boolean} [props.inView]
  */
 export function SpecialMessageTags({
   onTagClick,
@@ -337,11 +337,3 @@ export function SpecialMessageTags({
     folderItem
   );
 }
-
-SpecialMessageTags.propTypes = {
-  onTagClick: PropTypes.func.isRequired,
-  onFolderClick: PropTypes.func,
-  folderName: PropTypes.string,
-  inView: PropTypes.bool,
-  specialTags: PropTypes.array,
-};

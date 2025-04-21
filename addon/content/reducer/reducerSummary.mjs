@@ -88,12 +88,10 @@ export const summaryActions = {
       });
       let msg = getState().messages.msgData.find((m) => m.id == msgId);
       let account = await browser.accounts.get(msg.folderAccountId);
-      let identityId;
       if (!account) {
-        identityId = (await browser.accounts.list())[0].identityId;
-      } else {
-        identityId = account.identities[0]?.id;
+        account = await browser.accounts.getDefault();
       }
+      let identityId = account.identities[0]?.id;
       await browser.compose.beginNew({
         identityId,
         to: dest,
@@ -190,7 +188,6 @@ export const summaryActions = {
       }
 
       await browser.convOpenPgp.handleMessageStreamed(
-        getState().summary.winId,
         getState().summary.tabId,
         id
       );
