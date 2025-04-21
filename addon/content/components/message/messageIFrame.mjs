@@ -586,6 +586,11 @@ export class MessageIFrame extends React.Component {
     // Additional CSS for dark mode
     cssRules.push(
       `@media screen and (prefers-color-scheme: dark) {
+          html {
+          /* Override Thunderbird's styles in 138+ */
+            background-color: inherit;
+            color: inherit;
+          }
           body {
             filter: invert(100%) hue-rotate(180deg) !important;
             background: rgb(28, 27, 34) !important;
