@@ -142,9 +142,8 @@ export const messageActions = {
         .then((allTags) => {
           // browser.messages.update works via arrays of tag keys only,
           // so strip away all non-key information
-          allTags = allTags.map((t) => t.key);
           tags = tags.map((t) => t.key);
-          const toggledTag = allTags[index];
+          const toggledTag = allTags[index].key;
 
           // Toggling a tag that is out of range does nothing.
           if (!toggledTag) {
@@ -257,6 +256,7 @@ export const messageActions = {
   clickIframe({ event }) {
     return () => {
       // Hand this off to Thunderbird's content clicking algorithm as that's simplest.
+      // @ts-expect-error
       if (!window.browsingContext.topChromeWindow.contentAreaClick(event)) {
         event.preventDefault();
         event.stopPropagation();
@@ -297,6 +297,7 @@ export const messageActions = {
       for (let m of state.messages.msgData) {
         urls.push(await browser.conversations.getMessageUriForId(m.id));
       }
+      // @ts-expect-error
       BrowserSim.callBackgroundFunc("_window", "openConversation", [
         state.summary.windowId,
         urls,

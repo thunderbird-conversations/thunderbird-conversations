@@ -4,7 +4,8 @@
     "*.mjs",
     "addon/assistant/*.mjs",
     "addon/background/*.mjs",
-    "addon/gallery/*.mjs"
+    "addon/gallery/*.mjs",
+    "addon/content/components/message/messageHeaderOptions.mjs"
   ],
 
   "compilerOptions": {

@@ -3,7 +3,6 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import React from "react";
-import PropTypes from "prop-types";
 import { SvgIcon } from "../svgIcon.mjs";
 
 const ActionsToInfoMap = {
@@ -57,6 +56,22 @@ const ActionsToInfoMap = {
   },
 };
 
+/**
+ * @typedef callbackParams
+ * @property {object} args
+ * @property {string} args.type
+ * @property {boolean} args.shiftKey
+ */
+
+/**
+ * Defines an action button.
+ *
+ * @param {object} props
+ * @param {(callbackParams, Event) => void} props.callback
+ * @param {string} [props.className]
+ * @param {boolean} [props.showString]
+ * @param {string} props.type
+ */
 export function ActionButton({ type, callback, className, showString }) {
   const info = ActionsToInfoMap[type];
   const title = browser.i18n.getMessage(info.title);
@@ -79,9 +94,3 @@ export function ActionButton({ type, callback, className, showString }) {
     !!showString && title
   );
 }
-ActionButton.propTypes = {
-  callback: PropTypes.func.isRequired,
-  className: PropTypes.string,
-  showString: PropTypes.bool,
-  type: PropTypes.string.isRequired,
-};

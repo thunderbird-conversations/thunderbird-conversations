@@ -21,19 +21,19 @@ export let messageUtils = new (class {
    *
    * @param {object} msg
    *   The message data from the store to respond to.
-   * @returns {number}
+   * @returns {Promise<string>}
    *   The identity id to use for the message.
    */
   async getBestIdentityForReply(msg) {
-    let identityId = -1;
+    let identityId = "";
     for (let contact of [...msg.to, ...msg.cc, ...msg.bcc]) {
       if (contact.identityId) {
         identityId = contact.identityId;
         break;
       }
     }
-
-    if (identityId == -1) {
+    console.log(identityId);
+    if (!identityId) {
       let account = await browser.accounts.get(msg.folderAccountId);
       if (!account?.identities.length) {
         let defaultAccount = await browser.accounts.getDefault();

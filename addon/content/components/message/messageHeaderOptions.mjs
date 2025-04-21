@@ -165,8 +165,7 @@ export class MessageHeaderOptions extends React.PureComponent {
       case "reply":
       case "replyAll":
       case "replyList":
-        payload.type = msg.type;
-        action = messageActions.reply(payload);
+        action = messageActions.reply({ ...payload, type: msg.type });
         break;
       case "forward":
         action = messageActions.forward(payload);

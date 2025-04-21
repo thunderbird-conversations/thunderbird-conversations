@@ -3,7 +3,17 @@ interface WebExtEventWithParam<
   TParam,
 > {
   addListener(cb: TCallback, param: TParam): void;
-  removeListener(cb: TCallback, param?: TParam): void;
+  removeListener(cb: TCallback, param: TParam): void;
+  hasListener(cb: TCallback): boolean;
+}
+
+interface WebExtEventWith2Param<
+  TCallback extends (...args: any[]) => any,
+  TParam,
+  TParam2,
+> {
+  addListener(cb: TCallback, param: TParam, param2: TParam2): void;
+  removeListener(cb: TCallback, param: TParam, param2: TParam2): void;
   hasListener(cb: TCallback): boolean;
 }
 
@@ -11,6 +21,27 @@ declare namespace browser {
   // TODO: Add to core types.
   export namespace messengerUtilities {
     export function formatFileSize(sizeInBytes: number): Promise<string>;
+  }
+
+  export namespace convCalendar {
+    export function onMessageNotification(
+      winId: number,
+      tabId: number,
+      msgId: number,
+      action: string
+    ): Promise<void>;
+
+    export function messageUnloaded(
+      winId: number,
+      tabId: number,
+      msgId: number
+    ): Promise<void>;
+
+    export const onListenForInvites: WebExtEventWith2Param<
+      () => void,
+      number,
+      number
+    >;
   }
 
   export namespace convContacts {
@@ -59,6 +90,10 @@ declare namespace browser {
     export const onColumnHandler: ColumnHandlerEvent;
   }
 
+  export namespace convOpenPgp {
+    export function handleTagClick(tabId: number, msgId: number): Promise<void>;
+  }
+
   export namespace conversations {
     export function getCorePref(name: string): Promise<any>;
     export function setCorePref(name: string, value: any): Promise<void>;
@@ -95,7 +130,7 @@ declare namespace browser {
     export function showRemoteContent(id: number): Promise<void>;
     export function alwaysShowRemoteContent(email: string): Promise<void>;
     export function beginEdit(id: number, type: string): Promise<void>;
-    export function ignorePhishinG(id: number): Promise<void>;
+    export function ignorePhishing(id: number): Promise<void>;
 
     interface downloadAllAttachmentsProperties {
       winId?: number;
