@@ -7,6 +7,8 @@
   --application-foreground-color: light-dark(black, rgb(249, 249, 250));
   --dull-foreground-color: light-dark(#666, #999);
   --email-address-dull-color: light-dark(#888a85, #b6b6b6);
+  --notification-bar-background-color: light-dark(rgb(204, 255, 255), rgb(6, 8, 145));
+  --notification-bar-foreground-color: light-dark(black, white);
   color-scheme: light dark;
 }
 
@@ -571,8 +573,8 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
   border-width: 1px 0;
   border-style: solid;
   border-color: ThreeDShadow;
-  background-color: rgb(204, 255, 255);
-  color: black;
+  background-color:var(--notification-bar-background-color);
+  color: var(--notification-bar-foreground-color);
 }
 
 .openpgpBar {
@@ -592,7 +594,7 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
 .notificationBar a {
   text-decoration: underline;
   font-weight: bold;
-  color: black;
+  color: var(--notification-bar-foreground-color);
   cursor: pointer;
 }
 
