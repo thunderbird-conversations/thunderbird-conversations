@@ -3,158 +3,162 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import React from "react";
-import PropTypes from "prop-types";
 import { ActionButton } from "./messageActionButton.mjs";
 import { messageActions } from "../../reducer/reducerMessages.mjs";
 import { SvgIcon } from "../svgIcon.mjs";
 
 /**
  * Handles display of the options menu.
+ *
+ * @param {object} props
+ * @param {boolean} props.multipleRecipients
+ * @param {boolean} props.recipientsIncludeLists
+ * @param {(object, KeyboardEvent) => void} props.msgSendAction
  */
-class OptionsMoreMenu extends React.PureComponent {
-  render() {
-    return React.createElement(
-      "div",
-      { className: "tooltip tooltip-menu menu" },
-      React.createElement("div", { className: "arrow" }),
-      React.createElement("div", { className: "arrow inside" }),
+export function OptionsMoreMenu({
+  multipleRecipients,
+  recipientsIncludeLists,
+  msgSendAction,
+}) {
+  return React.createElement(
+    "div",
+    { className: "tooltip tooltip-menu menu" },
+    React.createElement("div", { className: "arrow" }),
+    React.createElement("div", { className: "arrow inside" }),
+    React.createElement(
+      "ul",
+      null,
       React.createElement(
-        "ul",
-        null,
+        "li",
+        { className: "action-reply" },
+        React.createElement(ActionButton, {
+          callback: msgSendAction,
+          className: "optionsButton",
+          showString: true,
+          type: "reply",
+        })
+      ),
+      multipleRecipients &&
         React.createElement(
           "li",
-          { className: "action-reply" },
+          { className: "action-replyAll" },
           React.createElement(ActionButton, {
-            callback: this.props.msgSendAction,
+            callback: msgSendAction,
             className: "optionsButton",
             showString: true,
-            type: "reply",
+            type: "replyAll",
           })
         ),
-        this.props.multipleRecipients &&
-          React.createElement(
-            "li",
-            { className: "action-replyAll" },
-            React.createElement(ActionButton, {
-              callback: this.props.msgSendAction,
-              className: "optionsButton",
-              showString: true,
-              type: "replyAll",
-            })
-          ),
-        this.props.recipientsIncludeLists &&
-          React.createElement(
-            "li",
-            { className: "action-replyList" },
-            React.createElement(ActionButton, {
-              callback: this.props.msgSendAction,
-              className: "optionsButton",
-              showString: true,
-              type: "replyList",
-            })
-          ),
+      recipientsIncludeLists &&
         React.createElement(
           "li",
-          { className: "action-editNew" },
+          { className: "action-replyList" },
           React.createElement(ActionButton, {
-            callback: this.props.msgSendAction,
+            callback: msgSendAction,
             className: "optionsButton",
             showString: true,
-            type: "editAsNew",
+            type: "replyList",
           })
         ),
-        React.createElement(
-          "li",
-          { className: "action-forward dropdown-sep" },
-          React.createElement(ActionButton, {
-            callback: this.props.msgSendAction,
-            className: "optionsButton",
-            showString: true,
-            type: "forward",
-          })
-        ),
-        React.createElement(
-          "li",
-          { className: "action-archive" },
-          React.createElement(ActionButton, {
-            callback: this.props.msgSendAction,
-            className: "optionsButton",
-            showString: true,
-            type: "archive",
-          })
-        ),
-        React.createElement(
-          "li",
-          { className: "action-delete" },
-          React.createElement(ActionButton, {
-            callback: this.props.msgSendAction,
-            className: "optionsButton",
-            showString: true,
-            type: "delete",
-          })
-        ),
-        React.createElement(
-          "li",
-          { className: "action-classic" },
-          React.createElement(ActionButton, {
-            callback: this.props.msgSendAction,
-            className: "optionsButton",
-            showString: true,
-            type: "classic",
-          })
-        ),
-        React.createElement(
-          "li",
-          { className: "action-source" },
-          React.createElement(ActionButton, {
-            callback: this.props.msgSendAction,
-            className: "optionsButton",
-            showString: true,
-            type: "source",
-          })
-        )
+      React.createElement(
+        "li",
+        { className: "action-editNew" },
+        React.createElement(ActionButton, {
+          callback: msgSendAction,
+          className: "optionsButton",
+          showString: true,
+          type: "editAsNew",
+        })
+      ),
+      React.createElement(
+        "li",
+        { className: "action-forward dropdown-sep" },
+        React.createElement(ActionButton, {
+          callback: msgSendAction,
+          className: "optionsButton",
+          showString: true,
+          type: "forward",
+        })
+      ),
+      React.createElement(
+        "li",
+        { className: "action-archive" },
+        React.createElement(ActionButton, {
+          callback: msgSendAction,
+          className: "optionsButton",
+          showString: true,
+          type: "archive",
+        })
+      ),
+      React.createElement(
+        "li",
+        { className: "action-delete" },
+        React.createElement(ActionButton, {
+          callback: msgSendAction,
+          className: "optionsButton",
+          showString: true,
+          type: "delete",
+        })
+      ),
+      React.createElement(
+        "li",
+        { className: "action-classic" },
+        React.createElement(ActionButton, {
+          callback: msgSendAction,
+          className: "optionsButton",
+          showString: true,
+          type: "classic",
+        })
+      ),
+      React.createElement(
+        "li",
+        { className: "action-source" },
+        React.createElement(ActionButton, {
+          callback: msgSendAction,
+          className: "optionsButton",
+          showString: true,
+          type: "source",
+        })
       )
-    );
-  }
+    )
+  );
 }
-
-OptionsMoreMenu.propTypes = {
-  multipleRecipients: PropTypes.bool.isRequired,
-  recipientsIncludeLists: PropTypes.bool.isRequired,
-  msgSendAction: PropTypes.func.isRequired,
-};
 
 /**
  * Handles display of options in the message header.
+ *
+ * @param {object} props
+ * @param {Function} props.dispatch
+ * @param {string} props.date
+ * @param {boolean} props.detailsShowing
+ * @param {boolean} props.expanded
+ * @param {string} props.fullDate
+ * @param {number} props.id
+ * @param {object[]} props.attachments
+ * @param {boolean} props.multipleRecipients
+ * @param {boolean} props.recipientsIncludeLists
+ * @param {boolean} props.isDraft
  */
-export class MessageHeaderOptions extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    this.replyAction = this.replyAction.bind(this);
-    this.showDetails = this.showDetails.bind(this);
-    this.displayMenu = this.displayMenu.bind(this);
-    this.state = {
-      expanded: false,
-    };
-  }
+export function MessageHeaderOptions({
+  dispatch,
+  date,
+  detailsShowing,
+  expanded,
+  fullDate,
+  id,
+  attachments,
+  multipleRecipients,
+  recipientsIncludeLists,
+  isDraft,
+}) {
+  let [displayMenu, setDisplayMenu] = React.useState(false);
 
-  componentWillUnmount() {
-    if (this.clickListener) {
-      document.removeEventListener("click", this.clickListener);
-      document.removeEventListener("keypress", this.keyListener);
-      document.removeEventListener("blur", this.onBlur);
-      this.clickListener = null;
-      this.keyListener = null;
-      this.onBlur = null;
-    }
-  }
-
-  replyAction(msg, event) {
+  function replyAction(msg, event) {
     event.stopPropagation();
     event.preventDefault();
 
     const payload = {
-      id: this.props.id,
+      id,
       shiftKey: msg.shiftKey,
     };
     let action = null;
@@ -174,10 +178,10 @@ export class MessageHeaderOptions extends React.PureComponent {
         action = messageActions.editAsNew(payload);
         break;
       case "archive":
-        action = messageActions.archive({ id: this.props.id });
+        action = messageActions.archive({ id });
         break;
       case "delete":
-        action = messageActions.delete({ id: this.props.id });
+        action = messageActions.delete({ id });
         break;
       case "classic":
         action = messageActions.openClassic(payload);
@@ -188,153 +192,130 @@ export class MessageHeaderOptions extends React.PureComponent {
       default:
         console.error("Don't know how to create an action for", msg);
     }
-    this.props.dispatch(action);
+    dispatch(action);
   }
 
-  showDetails(event) {
+  function showDetails(event) {
     event.preventDefault();
     event.stopPropagation();
-    this.props.dispatch(
+    dispatch(
       messageActions.showMsgDetails({
-        id: this.props.id,
-        detailsShowing: !this.props.detailsShowing,
+        id,
+        detailsShowing: !detailsShowing,
       })
     );
   }
 
-  displayMenu(event) {
+  React.useEffect(() => {
+    function clickOrBlurListener() {
+      clearMenu();
+    }
+    function keyListener(event) {
+      if (event.key == "Escape") {
+        clearMenu();
+      }
+    }
+
+    if (displayMenu) {
+      document.addEventListener("click", clickOrBlurListener);
+      document.addEventListener("keypress", keyListener);
+      document.addEventListener("blur", clickOrBlurListener);
+    }
+    return () => {
+      document.removeEventListener("click", clickOrBlurListener);
+      document.removeEventListener("keypress", keyListener);
+      document.removeEventListener("blur", clickOrBlurListener);
+    };
+  }, [displayMenu]);
+
+  function handleDisplayMenu(event) {
     event.preventDefault();
     event.stopPropagation();
-    if (!this.clickListener) {
-      this.clickListener = (event) => {
-        this.clearMenu();
-      };
-      this.keyListener = (event) => {
-        if (event.key == "Escape") {
-          this.clearMenu();
-        }
-      };
-      this.onBlur = (event) => {
-        this.clearMenu();
-      };
-      document.addEventListener("click", this.clickListener);
-      document.addEventListener("keypress", this.keyListener);
-      document.addEventListener("blur", this.onBlur);
-    }
-
-    this.setState((prevState) => ({ expanded: !prevState.expanded }));
+    setDisplayMenu(!displayMenu);
   }
 
-  clearMenu() {
-    this.setState({ expanded: false });
-    if (this.clickListener) {
-      document.removeEventListener("click", this.clickListener);
-      document.removeEventListener("keypress", this.keyListener);
-      document.removeEventListener("blur", this.onBlur);
-      this.clickListener = null;
-      this.keyListener = null;
-      this.onBlur = null;
-    }
+  function clearMenu() {
+    setDisplayMenu(false);
   }
 
-  render() {
-    let actionButtonType = "reply";
-    if (this.props.isDraft) {
-      actionButtonType = "draft";
-    } else if (this.props.recipientsIncludeLists) {
-      actionButtonType = "replyList";
-    } else if (this.props.multipleRecipients) {
-      actionButtonType = "replyAll";
-    }
+  let actionButtonType = "reply";
+  if (isDraft) {
+    actionButtonType = "draft";
+  } else if (recipientsIncludeLists) {
+    actionButtonType = "replyList";
+  } else if (multipleRecipients) {
+    actionButtonType = "replyAll";
+  }
 
-    return React.createElement(
-      "div",
-      { className: "options" },
-      !!this.props.attachments.length &&
-        React.createElement(
-          "span",
-          { className: "attachmentIcon" },
-          React.createElement(SvgIcon, { hash: "attachment" })
-        ),
+  return React.createElement(
+    "div",
+    { className: "options" },
+    !!attachments.length &&
       React.createElement(
         "span",
-        { className: "date" },
+        { className: "attachmentIcon" },
+        React.createElement(SvgIcon, { hash: "attachment" })
+      ),
+    React.createElement(
+      "span",
+      { className: "date" },
+      React.createElement("span", { title: fullDate }, date)
+    ),
+    expanded &&
+      React.createElement(
+        "span",
+        { className: "mainActionButton" },
+        React.createElement(ActionButton, {
+          callback: replyAction,
+          className: "icon-link",
+          type: actionButtonType,
+        })
+      ),
+    expanded &&
+      React.createElement(
+        "span",
+        {
+          className: "details" + detailsShowing ? "details-hidden" : "",
+        },
         React.createElement(
-          "span",
-          { title: this.props.fullDate },
-          this.props.date
+          "button",
+          {
+            className: "icon-link",
+            onClick: showDetails,
+            title: browser.i18n.getMessage(
+              detailsShowing
+                ? "message.hideDetails.tooltip"
+                : "message.showDetails.tooltip"
+            ),
+          },
+          React.createElement(SvgIcon, {
+            ariaHidden: true,
+            hash: detailsShowing ? "info" : "info_outline",
+          })
         )
       ),
-      this.props.expanded &&
+    expanded &&
+      React.createElement(
+        "span",
+        { className: "dropDown" },
         React.createElement(
-          "span",
-          { className: "mainActionButton" },
-          React.createElement(ActionButton, {
-            callback: this.replyAction,
-            className: "icon-link",
-            type: actionButtonType,
+          "button",
+          {
+            onClick: handleDisplayMenu,
+            className: "icon-link top-right-more",
+            title: browser.i18n.getMessage("message.moreMenu.tooltip"),
+          },
+          React.createElement(SvgIcon, {
+            ariaHidden: true,
+            hash: "more_vert",
           })
         ),
-      this.props.expanded &&
-        React.createElement(
-          "span",
-          {
-            className:
-              "details" + this.props.detailsShowing ? "details-hidden" : "",
-          },
-          React.createElement(
-            "button",
-            {
-              className: "icon-link",
-              onClick: this.showDetails,
-              title: browser.i18n.getMessage(
-                this.props.detailsShowing
-                  ? "message.hideDetails.tooltip"
-                  : "message.showDetails.tooltip"
-              ),
-            },
-            React.createElement(SvgIcon, {
-              ariaHidden: true,
-              hash: this.props.detailsShowing ? "info" : "info_outline",
-            })
-          )
-        ),
-      this.props.expanded &&
-        React.createElement(
-          "span",
-          { className: "dropDown" },
-          React.createElement(
-            "button",
-            {
-              onClick: this.displayMenu,
-              className: "icon-link top-right-more",
-              title: browser.i18n.getMessage("message.moreMenu.tooltip"),
-            },
-            React.createElement(SvgIcon, {
-              ariaHidden: true,
-              hash: "more_vert",
-            })
-          ),
-          this.state.expanded &&
-            React.createElement(OptionsMoreMenu, {
-              recipientsIncludeLists: this.props.recipientsIncludeLists,
-              msgSendAction: this.replyAction,
-              multipleRecipients: this.props.multipleRecipients,
-            })
-        )
-    );
-  }
+        displayMenu &&
+          React.createElement(OptionsMoreMenu, {
+            recipientsIncludeLists,
+            msgSendAction: replyAction,
+            multipleRecipients,
+          })
+      )
+  );
 }
-
-MessageHeaderOptions.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-  date: PropTypes.string.isRequired,
-  detailsShowing: PropTypes.bool.isRequired,
-  expanded: PropTypes.bool.isRequired,
-  fullDate: PropTypes.string.isRequired,
-  id: PropTypes.number.isRequired,
-  attachments: PropTypes.array.isRequired,
-  multipleRecipients: PropTypes.bool.isRequired,
-  recipientsIncludeLists: PropTypes.bool.isRequired,
-  isDraft: PropTypes.bool.isRequired,
-};
