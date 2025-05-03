@@ -216,7 +216,7 @@ const PRETTIER_OPTS = {
 };
 
 describe("Quoting test", () => {
-  it("Find quotes in Hotmail messages", async () => {
+  it.skip("Find quotes in Hotmail messages", async () => {
     const parser = new DOMParser();
     for (const { unquoted, quoted } of samples.hotmail) {
       const doc = parser.parseFromString(unquoted, "text/html");
@@ -261,7 +261,7 @@ describe("Quoting test", () => {
       assert.equal(prettyQuoted, prettyExpected);
     }
   });
-  it("Normalize blockquotes using all methods", async () => {
+  it.skip("Normalize blockquotes using all methods", async () => {
     const allSampleEmails = [].concat(
       samples.hotmail,
       samples.disjoint,

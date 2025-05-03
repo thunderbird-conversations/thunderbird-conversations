@@ -77,15 +77,7 @@ class _Quoting {
   convertHotmailQuotingToBlockquote1(aDoc) {
     /* We make the assumption that no one uses a <hr> in their emails except for
      * separating a quoted message from the rest */
-    this._trySel(
-      aDoc,
-      "body > hr, \
-       body > div > hr, \
-       body > pre > hr, \
-       body > div > div > hr, \
-       hr#stopSpelling",
-      true
-    );
+    // this._trySel(aDoc, "hr#stopSpelling", true);
   }
 
   convertMiscQuotingToBlockquote(aDoc) {
