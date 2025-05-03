@@ -4,15 +4,17 @@
 
 import React from "react";
 import * as ReactRedux from "react-redux";
-import PropTypes from "prop-types";
 import { Message } from "./message.mjs";
 
 /**
  * Handles display of the list of messages.
  *
- * @param {object} props
+ * @param {object} options
+ * @param {Function} options.dispatch
+ * @param {object} options.messages
+ * @param {object} options.summary
  */
-function _MessageList(props) {
+function _MessageList({ dispatch, messages, summary }) {
   // Keep a reference to child elements so `.focus()`
   // can be called on them in response to a `advanceMessage()`
   // call. The actual ref is stored in `React.useRef().current`
@@ -33,47 +35,44 @@ function _MessageList(props) {
   return React.createElement(
     "ul",
     { id: "messageList" },
-    !!props.messages.msgData &&
-      props.messages.msgData.map((message, index) =>
+    !!messages.msgData &&
+      messages.msgData.map((message, index) =>
         React.createElement(Message, {
           key: index,
-          autoMarkAsRead: props.summary.autoMarkAsRead,
-          browserBackgroundColor: props.summary.browserBackgroundColor,
-          browserForegroundColor: props.summary.browserForegroundColor,
-          defaultFontSize: props.summary.defaultFontSize,
-          dispatch: props.dispatch,
-          displayingMultipleMsgs: !!props.messages.length,
-          hideQuickReply: props.summary.prefs.hideQuickReply,
-          iframesLoading: props.summary.iframesLoading,
+          autoMarkAsRead: summary.autoMarkAsRead,
+          browserBackgroundColor: summary.browserBackgroundColor,
+          browserForegroundColor: summary.browserForegroundColor,
+          defaultFontSize: summary.defaultFontSize,
+          dispatch,
+          displayingMultipleMsgs: !!messages.length,
+          hideQuickReply: summary.prefs.hideQuickReply,
+          iframesLoading: summary.iframesLoading,
           index,
-          isInTab: props.summary.isInTab,
-          isLastMessage: index == props.messages.msgData.length - 1,
-          isStandalone: props.summary.isStandalone,
+          isInTab: summary.isInTab,
+          isLastMessage: index == messages.msgData.length - 1,
+          isStandalone: summary.isStandalone,
           message,
-          tenPxFactor: props.summary.tenPxFactor,
-          prefs: props.summary.prefs,
+          tenPxFactor: summary.tenPxFactor,
+          prefs: summary.prefs,
           advanceMessage: (step = 1) => {
             advanceMessage(index, step);
           },
           setRef: (ref) => {
             setRef(index, ref);
           },
-          tabId: props.summary.tabId,
-          winId: props.summary.windowId,
+          tabId: summary.tabId,
+          winId: summary.windowId,
         })
       )
   );
 }
 
-_MessageList.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-  messages: PropTypes.object.isRequired,
-  summary: PropTypes.object.isRequired,
-};
-
-export const MessageList = ReactRedux.connect((state) => {
-  return {
-    messages: state.messages,
-    summary: state.summary,
-  };
-})(_MessageList);
+export const MessageList = ReactRedux.connect(
+  /** @param {{messages: object[], summary: object}} state */
+  (state) => {
+    return {
+      messages: state.messages,
+      summary: state.summary,
+    };
+  }
+)(_MessageList);

@@ -3,14 +3,12 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import React from "react";
-import PropTypes from "prop-types";
 import { SvgIcon } from "../svgIcon.mjs";
 
 /**
  * Determine if a background color is light enough to require dark text.
  *
  * @param {string} color
- * @returns {boolean}
  */
 function isColorLight(color) {
   const rgb = color.substr(1) || "FFFFFF";
@@ -54,12 +52,6 @@ export function MessageTag({ onClickX, expanded, name, color }) {
       )
   );
 }
-MessageTag.propTypes = {
-  onClickX: PropTypes.func.isRequired,
-  expanded: PropTypes.bool.isRequired,
-  name: PropTypes.string.isRequired,
-  color: PropTypes.string.isRequired,
-};
 
 /**
  * Handles display of message tags within a message.
@@ -94,18 +86,12 @@ export function MessageTags({ expanded, tags = [], onTagsChange }) {
     )
   );
 }
-MessageTags.propTypes = {
-  expanded: PropTypes.bool.isRequired,
-  tags: PropTypes.array.isRequired,
-  onTagsChange: PropTypes.func.isRequired,
-};
 
 /**
  * A basic icon from e.g. a different extension.
  *
  * @param {object} root0
  * @param {string} [root0.fullPath]
- * @returns {React.ReactNode}
  */
 export function SpecialMessageTagIcon({ fullPath }) {
   return React.createElement("img", {
@@ -113,7 +99,6 @@ export function SpecialMessageTagIcon({ fullPath }) {
     src: fullPath,
   });
 }
-SpecialMessageTagIcon.propTypes = { fullPath: PropTypes.string };
 
 /**
  * Handles display of the SpecialMessageTag tooltip.
@@ -133,8 +118,13 @@ function SpecialMessageTagTooltip({ strings }) {
 
   return React.createElement("span", null, tooltip);
 }
-SpecialMessageTagTooltip.propTypes = { strings: PropTypes.array.isRequired };
 
+/**
+ * Handles displaying of the tag information.
+ *
+ * @param {object} options
+ * @param {object} options.info
+ */
 function DisplayInfo({ info }) {
   return React.createElement(
     "div",
@@ -195,9 +185,6 @@ function DisplayInfo({ info }) {
     )
   );
 }
-DisplayInfo.propTypes = {
-  info: PropTypes.object.isRequired,
-};
 
 /**
  * A generic handler for display of message tags.
@@ -277,16 +264,6 @@ export function SpecialMessageTag({
       })
   );
 }
-
-SpecialMessageTag.propTypes = {
-  classNames: PropTypes.string.isRequired,
-  displayInfo: PropTypes.object,
-  icon: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  title: PropTypes.string,
-  onClick: PropTypes.func,
-  tooltip: PropTypes.object,
-};
 
 /**
  * Handles display of all tags for a message.
