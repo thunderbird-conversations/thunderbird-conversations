@@ -20,7 +20,21 @@ interface WebExtEventWith2Param<
 declare namespace browser {
   // TODO: Add to core types.
   export namespace messengerUtilities {
+    interface ParsedMailbox {
+      name?: string;
+      email?: string;
+      group?: ParsedMailbox[];
+    }
+
+    export function convertToPlainText(
+      body: string,
+      options?: { flowed?: boolean }
+    ): Promise<string>;
     export function formatFileSize(sizeInBytes: number): Promise<string>;
+    export function parseMailboxString(
+      maiboxString: string,
+      preserveGroups?: boolean
+    ): Promise<ParsedMailbox>;
   }
 
   export namespace convCalendar {
@@ -90,6 +104,14 @@ declare namespace browser {
     export const onColumnHandler: ColumnHandlerEvent;
   }
 
+  export namespace convGloda {
+    export const queryConversationMessages: WebExtEventWith2Param<
+      (event: object) => void,
+      number[],
+      number
+    >;
+  }
+
   export namespace convOpenPgp {
     export function beforeStreamingMessage(
       tabId: number,
@@ -101,6 +123,20 @@ declare namespace browser {
       msgId: number
     ): Promise<void>;
     export function handleTagClick(tabId: number, msgId: number): Promise<void>;
+
+    export const onSMIMEReload: WebExtEvent<(id: number) => Promise<any>>;
+    export const onSMIMEStatus: WebExtEvent<
+      (id: number, signedStatus: string) => Promise<any>
+    >;
+    export const onUpdateSecurityStatus: WebExtEvent<
+      (
+        id: number,
+        signedStatus: string,
+        encryptionStatus: string,
+        encryptionNotification: string,
+        details: any
+      ) => Promise<any>
+    >;
   }
 
   export namespace conversations {
@@ -164,7 +200,7 @@ declare namespace browser {
     export function detachAttachment(
       genericAttachmentProperties
     ): Promise<void>;
-    export function makeFriendlyDateAgo({ date: number }): Promise<string>;
+    export function makeFriendlyDateAgo(date: number): Promise<string>;
     export function quoteMsgHdr(
       id: number,
       plainText?: boolean

@@ -17,6 +17,39 @@ const kExpandAuto = 4;
 const kSnippetLength = 700;
 
 /**
+ * @typedef FullMessageDetails
+ * @property {number} id
+ * @property {number} initialPosition
+ * @property {string} type
+ * @property {string} headerMessageId
+ * @property {boolean} detailsShowing
+ * @property {boolean} recipientsIncludeLists
+ * @property {boolean} needsLateAttachments
+ * @property {boolean} [invalid]
+ * @property {string} [realFrom]
+ * @property {number} [rawDate]
+ * @property {boolean} [hasRemoteContent]
+ * @property {boolean} [smimeReload]
+ * @property {boolean} [isPhishing]
+ * @property {number} [folderAccountId]
+ * @property {string} [folderPath]
+ * @property {boolean} [isArchives]
+ * @property {boolean} [isDraft]
+ * @property {boolean} [isInbox]
+ * @property {boolean} [isJunk]
+ * @property {boolean} [isSent]
+ * @property {boolean} [isTemplate]
+ * @property {boolean} [isOutbox]
+ * @property {boolean} [read]
+ * @property {string} [subject]
+ * @property {boolean} [starred]
+ * @property {object[]} [tags]
+ * @property {boolean} [inView]
+ * @property {string} [folderName]
+ * @property {string} [shortFolderName]
+ */
+
+/**
  * Used to enrich basic message data with additional information for display.
  *
  * Some of these actions happen async, or are potentially expensive, which
@@ -50,6 +83,7 @@ export class MessageEnricher {
 
     let msgs = await Promise.all(
       msgData.map(async (message) => {
+        /** @type {FullMessageDetails} */
         let msg = {};
         try {
           msg = await this._addDetailsFromHeader(
@@ -305,11 +339,12 @@ export class MessageEnricher {
    *   The message to get the additional details for.
    * @param {Array} userTags
    *   An array of the current tags the user has defined in Thunderbird.
-   * @param {MessageHeader[]} selectedMessages
+   * @param {number[]} selectedMessages
    *   An array of the currently selected messages.
    */
   async _addDetailsFromHeader(tabId, message, userTags, selectedMessages) {
     // TODO: Maybe only clone msg & start using more fields directly.
+    /** @type {FullMessageDetails} */
     let msg = {
       id: message.id,
       initialPosition: message.initialPosition,
@@ -413,7 +448,7 @@ export class MessageEnricher {
     const fullMsg = await browser.messages.getFull(message.id);
     if (
       "list-post" in fullMsg.headers &&
-      RE_LIST_POST.exec(fullMsg.headers["list-post"])
+      RE_LIST_POST.exec(fullMsg.headers["list-post"].toString())
     ) {
       msg.recipientsIncludeLists = true;
     }
@@ -544,13 +579,13 @@ export class MessageEnricher {
    *   The message to get the additional details for.
    * @param {number} message.initialPosition
    *   The initial position of the message.
-   * @param {string} message.source
+   * @param {string} [message.source]
    *   The source of the message (gloda or standard).
    * @param {object[]} message.attachments
    *   The attachment data already extracted for the message.
    * @param {object} msg
    *   The new message to put the details into.
-   * @param {boolean} extraAttachments
+   * @param {boolean} [extraAttachments]
    *   Whether or not the user wants to display extra attachments.
    */
   async _addDetailsFromAttachments(

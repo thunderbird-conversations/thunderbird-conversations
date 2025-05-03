@@ -28,7 +28,6 @@ var convGloda = class extends ExtensionCommon.ExtensionAPI {
           name: "convContacts.queryConversationMessages",
           register(fire, msgIds, conversationId) {
             let status = { stopQuery: false, conversationId };
-
             let msgHdrs = msgIds.map((id) =>
               context.extension.messageManager.get(id)
             );

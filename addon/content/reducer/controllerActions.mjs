@@ -52,7 +52,7 @@ async function setupConversationInTab(params, dispatch) {
 export const controllerActions = {
   waitForStartup() {
     return async (dispatch, getState) => {
-      const params = new URL(document.location).searchParams;
+      const params = new URLSearchParams(document.location.search);
 
       const isInTab = params.has("urls");
       const isStandalone = params.has("standalone");
@@ -62,12 +62,16 @@ export const controllerActions = {
       // page to startup, and hence tab id isn't set.
       let windowId;
       let tabId;
+      // @ts-ignore
       if (!BrowserSim && isInTab) {
         windowId = (await browser.windows.getCurrent()).id;
         tabId = (await browser.tabs.getCurrent()).id;
       } else {
+        // @ts-ignore
         const topWin = window.browsingContext.topChromeWindow;
+        // @ts-ignore
         windowId = BrowserSim.getWindowId(topWin);
+        // @ts-ignore
         tabId = isStandalone ? null : BrowserSim.getTabId(topWin, window);
       }
 
@@ -327,8 +331,6 @@ function onExternalMessages(dispatch, msg) {
   }
 }
 
-let unloadListeners;
-
 /**
  * Sets up any listeners required.
  *
@@ -408,34 +410,34 @@ function setupListeners(dispatch, getState) {
   let externalMessagesListener = onExternalMessages.bind(this, dispatch);
   port.onMessage.addListener(externalMessagesListener);
 
-  unloadListeners = () => {
-    unloadListeners = null;
-    window.removeEventListener("unload", unloadListeners, { once: true });
+  window.addEventListener(
+    "unload",
+    () => {
+      browser.convCalendar.onListenForInvites.removeListener(
+        invitesListener,
+        winId,
+        tabId
+      );
 
-    browser.convCalendar.onListenForInvites.removeListener(
-      invitesListener,
-      winId,
-      tabId
-    );
-
-    browser.convMsgWindow.onSelectedMessagesChanged.removeListener(
-      msgSelectionChanged,
-      tabId
-    );
-    browser.messageDisplay.onMessagesDisplayed.removeListener(
-      selectionChangedListener
-    );
-    browser.convOpenPgp.onUpdateSecurityStatus.removeListener(
-      updateSecurityStatusListener
-    );
-    browser.convOpenPgp.onSMIMEStatus.removeListener(
-      updateSecurityStatusListener
-    );
-    browser.convOpenPgp.onSMIMEReload.removeListener(smimeReloadListener);
-    port.onMessage.removeListener(externalMessagesListener);
-    port.disconnect();
-  };
-  window.addEventListener("unload", unloadListeners, { once: true });
+      browser.convMsgWindow.onSelectedMessagesChanged.removeListener(
+        msgSelectionChanged,
+        tabId
+      );
+      browser.messageDisplay.onMessagesDisplayed.removeListener(
+        selectionChangedListener
+      );
+      browser.convOpenPgp.onUpdateSecurityStatus.removeListener(
+        updateSecurityStatusListener
+      );
+      browser.convOpenPgp.onSMIMEStatus.removeListener(
+        updateSecurityStatusListener
+      );
+      browser.convOpenPgp.onSMIMEReload.removeListener(smimeReloadListener);
+      port.onMessage.removeListener(externalMessagesListener);
+      port.disconnect();
+    },
+    { once: true }
+  );
 }
 
 /**

@@ -22,6 +22,8 @@ export const initialConversation = {
   currentId: 0,
 };
 
+let currentId = 0;
+
 let currentQueryListener;
 let currentQueryListenerArgs;
 
@@ -37,7 +39,8 @@ async function removeListeners() {
   if (currentQueryListener) {
     await browser.convGloda.queryConversationMessages.removeListener(
       currentQueryListener,
-      currentQueryListenerArgs
+      currentQueryListenerArgs,
+      currentId
     );
     currentQueryListener = null;
     currentQueryListenerArgs = null;
@@ -79,7 +82,7 @@ export const conversationActions = {
 
       await removeListeners();
 
-      let currentId = getState().conversation.currentId + 1;
+      currentId = getState().conversation.currentId + 1;
       await dispatch(conversationActions.setConversationId({ currentId }));
       await dispatch(composeSlice.actions.resetStore());
       await dispatch(
@@ -145,7 +148,7 @@ export const conversationActions = {
     return async (dispatch, getState) => {
       let currentState = getState();
       await handleShowDetails(msgs, currentState, dispatch, async () => {
-        let phase2StartTime = new Date();
+        let phase2StartTime = Date.now();
         let messages = msgs
           .map((msg, i) => {
             return {

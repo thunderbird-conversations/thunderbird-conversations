@@ -52,10 +52,10 @@ export const composeSlice = RTK.createSlice({
 export const composeActions = {
   initCompose({
     identityId,
-    inReplyTo,
-    to,
-    subject,
-    body,
+    inReplyTo = undefined,
+    to = undefined,
+    subject = undefined,
+    body = undefined,
     showSubject,
     replyOnTop = null,
   }) {
