@@ -3,6 +3,13 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 /**
+ * Error class to help with early exiting when walking the tree.
+ */
+class ExitWithFoundError extends Error {
+  found = false;
+}
+
+/**
  * Handles heuristics for finding quoted parts in a given email.
  */
 class _Quoting {
@@ -112,7 +119,7 @@ class _Quoting {
           child.parentNode.insertBefore(tn2, child);
           child.remove();
           this._encloseInBlockquote(aDoc, tn2);
-          let ex = new Error();
+          let ex = new ExitWithFoundError();
           ex.found = true;
           throw ex;
         } else if (m?.length) {
@@ -203,6 +210,7 @@ class _Quoting {
     }
 
     if (typeof originalDoc === "string") {
+      // @ts-ignore
       return doc.outerHTML;
     }
     return doc;

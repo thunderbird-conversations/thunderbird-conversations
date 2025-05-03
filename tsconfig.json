@@ -13,7 +13,8 @@
     "addon/content/components/message/messageHeaderOptions.mjs",
     "addon/content/components/message/messageNotification.mjs",
     "addon/content/components/message/messageTags.mjs",
-    "addon/content/reducer/*.mjs"
+    "addon/content/reducer/*.mjs",
+    "addon/content/utils/*.mjs"
   ],
 
   "compilerOptions": {
