@@ -661,7 +661,7 @@ export class MessageIFrame extends React.Component {
           "overrideDarkMode"
         );
       } else {
-        this.iframe.contentDocument.documentElement.classList.remove(
+        this.iframe.contentDocument.documentElement?.classList.remove(
           "overrideDarkMode"
         );
       }
