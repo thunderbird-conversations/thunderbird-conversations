@@ -3,22 +3,29 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import React from "react";
-import PropTypes from "prop-types";
 import { ActionButton } from "./messageActionButton.mjs";
 import { messageActions } from "../../reducer/reducerMessages.mjs";
 
 /**
  * Handles display for the footer of a message.
+ *
+ * @param {object} options
+ * @param {Function} options.dispatch
+ * @param {number} options.id
+ * @param {boolean} options.multipleRecipients
+ * @param {boolean} options.recipientsIncludeLists
+ * @param {boolean} options.isDraft
  */
-export class MessageFooter extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    this.onActionButtonClick = this.onActionButtonClick.bind(this);
-  }
-
-  onActionButtonClick(msg) {
+export function MessageFooter({
+  dispatch,
+  id,
+  multipleRecipients,
+  recipientsIncludeLists,
+  isDraft,
+}) {
+  function onActionButtonClick(msg) {
     const payload = {
-      id: this.props.id,
+      id,
       shiftKey: msg.shiftKey,
     };
     let action = null;
@@ -29,8 +36,7 @@ export class MessageFooter extends React.PureComponent {
       case "reply":
       case "replyAll":
       case "replyList":
-        payload.type = msg.type;
-        action = messageActions.reply(payload);
+        action = messageActions.reply({ ...payload, type: msg.type });
         break;
       case "forward":
         action = messageActions.forward(payload);
@@ -38,52 +44,42 @@ export class MessageFooter extends React.PureComponent {
       default:
         console.error("Don't know how to create an action for", msg);
     }
-    this.props.dispatch(action);
+    dispatch(action);
   }
 
-  render() {
-    return React.createElement(
+  return React.createElement(
+    "div",
+    { className: "messageFooter" },
+    React.createElement(
       "div",
-      { className: "messageFooter" },
-      React.createElement(
-        "div",
-        { className: "footerActions" },
-        this.props.isDraft &&
-          React.createElement(ActionButton, {
-            callback: this.onActionButtonClick,
-            type: "draft",
-          }),
-        !this.props.isDraft &&
-          React.createElement(ActionButton, {
-            callback: this.onActionButtonClick,
-            type: "reply",
-          }),
-        !this.props.isDraft &&
-          this.props.multipleRecipients &&
-          React.createElement(ActionButton, {
-            callback: this.onActionButtonClick,
-            type: "replyAll",
-          }),
-        !this.props.isDraft &&
-          this.props.recipientsIncludeLists &&
-          React.createElement(ActionButton, {
-            callback: this.onActionButtonClick,
-            type: "replyList",
-          }),
-        !this.props.isDraft &&
-          React.createElement(ActionButton, {
-            callback: this.onActionButtonClick,
-            type: "forward",
-          })
-      )
-    );
-  }
+      { className: "footerActions" },
+      isDraft &&
+        React.createElement(ActionButton, {
+          callback: onActionButtonClick,
+          type: "draft",
+        }),
+      !isDraft &&
+        React.createElement(ActionButton, {
+          callback: onActionButtonClick,
+          type: "reply",
+        }),
+      !isDraft &&
+        multipleRecipients &&
+        React.createElement(ActionButton, {
+          callback: onActionButtonClick,
+          type: "replyAll",
+        }),
+      !isDraft &&
+        recipientsIncludeLists &&
+        React.createElement(ActionButton, {
+          callback: onActionButtonClick,
+          type: "replyList",
+        }),
+      !isDraft &&
+        React.createElement(ActionButton, {
+          callback: onActionButtonClick,
+          type: "forward",
+        })
+    )
+  );
 }
-
-MessageFooter.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-  id: PropTypes.number.isRequired,
-  multipleRecipients: PropTypes.bool.isRequired,
-  recipientsIncludeLists: PropTypes.bool.isRequired,
-  isDraft: PropTypes.bool.isRequired,
-};
