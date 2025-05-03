@@ -177,17 +177,19 @@ class _Quoting {
    * Use heuristics to find common types of email quotes and
    * wrap them in `<blockquote></blockquote>` tags.
    *
-   * @param {HTMLDocument | string} doc
-   * @returns {HTMLDocument | string}
+   * @param {Document | string} originalDoc
+   * @returns {Document | string}
    * @memberof _Quoting
    */
-  normalizeBlockquotes(doc) {
+  normalizeBlockquotes(originalDoc) {
     // We want to return the same type of object that was passed to us. We allow
     // both a string and an HTMLDom object.
-    const origType = typeof doc;
-    if (origType === "string") {
+    let doc;
+    if (typeof originalDoc === "string") {
       const parser = new DOMParser();
-      doc = parser.parseFromString(doc, "text/html");
+      doc = parser.parseFromString(originalDoc, "text/html");
+    } else {
+      doc = originalDoc;
     }
 
     try {
@@ -200,7 +202,7 @@ class _Quoting {
       console.log(e);
     }
 
-    if (origType === "string") {
+    if (typeof originalDoc === "string") {
       return doc.outerHTML;
     }
     return doc;

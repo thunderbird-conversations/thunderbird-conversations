@@ -3,70 +3,80 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import React from "react";
-import PropTypes from "prop-types";
 
-export const TextBox = React.forwardRef(
-  ({ disabled = false, title, value = "", name, onChange = () => {} }, ref) => {
-    return React.createElement(
-      React.Fragment,
-      null,
+/**
+ * A renderer for a text box.
+ *
+ * @param {object} options
+ * @param {boolean} options.disabled
+ * @param {string} options.title
+ * @param {string} options.value
+ * @param {string} options.name
+ * @param {(name: string, value: string) => void} options.onChange
+ * @param {*} ref
+ */
+function TextBoxRenderer(
+  { disabled = false, title, value = "", name, onChange },
+  ref
+) {
+  return React.createElement(
+    React.Fragment,
+    null,
+    React.createElement(
+      "div",
+      { className: "headerField" },
+      React.createElement(
+        "label",
+        { htmlFor: name },
+        browser.i18n.getMessage(title)
+      ),
       React.createElement(
         "div",
-        { className: "headerField" },
-        React.createElement(
-          "label",
-          { htmlFor: name },
-          browser.i18n.getMessage(title)
-        ),
-        React.createElement(
-          "div",
-          { className: "headerEntry" },
-          React.createElement("input", {
-            id: name,
-            type: "text",
-            ref,
-            value,
-            onChange: (e) => {
-              onChange(name, e.target.value);
-            },
-            disabled,
-          })
-        )
-      )
-    );
-  }
-);
-TextBox.displayName = "TextBox";
-TextBox.propTypes = {
-  disabled: PropTypes.bool,
-  title: PropTypes.string.isRequired,
-  value: PropTypes.string,
-  name: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-};
-
-export const TextArea = React.forwardRef(
-  ({ value = "", name, onChange = () => {} }, ref) => {
-    return React.createElement(
-      React.Fragment,
-      null,
-      React.createElement(
-        "div",
-        { className: `${name}Wrapper` },
-        React.createElement("textarea", {
+        { className: "headerEntry" },
+        React.createElement("input", {
           id: name,
-          className: name,
+          type: "text",
           ref,
           value,
-          onChange: (e) => onChange(name, e.target.value),
+          onChange: (e) => {
+            onChange(name, e.target.value);
+          },
+          disabled,
         })
       )
-    );
-  }
-);
+    )
+  );
+}
+
+export const TextBox = React.forwardRef(TextBoxRenderer);
+TextBox.displayName = "TextBox";
+
+/**
+ * Renderer for a text area.
+ *
+ * @param {object} options
+ * @param {string} [options.value]
+ * @param {string} options.name
+ * @param {(name: string, value: string) => void} options.onChange
+ * @param {*} ref
+ */
+function TextAreaRenderer({ value = "", name, onChange = () => {} }, ref) {
+  return React.createElement(
+    React.Fragment,
+    null,
+    React.createElement(
+      "div",
+      { className: `${name}Wrapper` },
+      React.createElement("textarea", {
+        id: name,
+        className: name,
+        ref,
+        value,
+        onChange: (e) => onChange(name, e.target.value),
+      })
+    )
+  );
+}
+
+export const TextArea = React.forwardRef(TextAreaRenderer);
 TextArea.displayName = "TextArea";
-TextArea.propTypes = {
-  value: PropTypes.string,
-  name: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-};

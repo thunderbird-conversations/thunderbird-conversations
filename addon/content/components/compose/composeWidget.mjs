@@ -11,7 +11,10 @@ import { SvgIcon } from "../svgIcon.mjs";
 
 export function ComposeWidget({ discard }) {
   const dispatch = ReactRedux.useDispatch();
-  const composeState = ReactRedux.useSelector((state) => state.compose);
+  const composeState = ReactRedux.useSelector(
+    /** @param {object} state */
+    (state) => state.compose
+  );
   const bodyInput = React.createRef();
   const subjectInput = React.createRef();
 
@@ -50,6 +53,10 @@ export function ComposeWidget({ discard }) {
     dispatch(composeActions.sendMessage());
   }
 
+  /**
+   * @param {string} name
+   * @param {string} value
+   */
   function setValue(name, value) {
     dispatch(composeActions.setValue(name, value));
   }

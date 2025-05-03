@@ -211,7 +211,7 @@ declare namespace browser {
       value: boolean
     ): Promise<void>;
 
-    export function getReplyOnTop(identityId: string): Promise<boolean>;
+    export function getReplyOnTop(identityId: string): Promise<number>;
 
     export function postMessageViaBrowserSim(msg: any): Promise<any>;
 
@@ -222,6 +222,18 @@ declare namespace browser {
     export const onCorePrefChanged: WebExtEventWithParam<() => void, string>;
 
     export const onSetConversationPreferences: WebExtEvent<() => void>;
+  }
+
+  export namespace convCompose {
+    interface sendProperties {
+      from: string;
+      to: string;
+      subject: string;
+      body: string;
+      originalMsgId: number;
+    }
+
+    export function send(sendProperties): Promise<void>;
   }
 
   export namespace convMsgWindow {
