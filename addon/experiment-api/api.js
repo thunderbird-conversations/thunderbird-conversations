@@ -437,22 +437,34 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           );
         },
         async downloadAttachment({ winId, tabId, msgId, partName }) {
-          let { win } = getWinBrowserFromIds(context, winId, tabId);
           let msgHdr = context.extension.messageManager.get(msgId);
           let attachment = await findAttachment(msgHdr, partName);
           let msgUri = msgHdrGetUri(msgHdr);
-          // Unfortunately, we still need a messenger with a msgWindow for
-          // this to work.
-          let attachMessenger = Cc["@mozilla.org/messenger;1"].createInstance(
-            Ci.nsIMessenger
-          );
-          attachMessenger.setWindow(
-            win,
-            Cc["@mozilla.org/messenger/msgwindow;1"].createInstance(
-              Ci.nsIMsgWindow
-            )
-          );
-          getAttachmentInfo(msgUri, attachment).save(attachMessenger);
+
+          // For Thunderbird 128 support.
+          if (Services.vc.compare(Services.appinfo.version, "137.0a1") < 1) {
+            let { win } = getWinBrowserFromIds(context, winId, tabId);
+
+            // Unfortunately, we still need a messenger with a msgWindow for
+            // this to work.
+            let attachMessenger = Cc["@mozilla.org/messenger;1"].createInstance(
+              Ci.nsIMessenger
+            );
+            attachMessenger.setWindow(
+              win,
+              Cc["@mozilla.org/messenger/msgwindow;1"].createInstance(
+                Ci.nsIMsgWindow
+              )
+            );
+            getAttachmentInfo(msgUri, attachment).save(attachMessenger);
+          } else {
+            let tabObject = context.extension.tabManager.get(tabId);
+            let contentWin = tabObject.nativeTab.chromeBrowser.contentWindow;
+
+            getAttachmentInfo(msgUri, attachment).save(
+              contentWin.multiMessageBrowser.browsingContext
+            );
+          }
         },
         async openAttachment({ winId, tabId, msgId, partName }) {
           let msgHdr = context.extension.messageManager.get(msgId);
