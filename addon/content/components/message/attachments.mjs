@@ -3,7 +3,6 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import React from "react";
-import PropTypes from "prop-types";
 import { attachmentActions } from "../../reducer/reducerAttachments.mjs";
 import { SvgIcon } from "../svgIcon.mjs";
 import { ActionButton } from "./messageActionButton.mjs";
@@ -36,6 +35,13 @@ const FALLBACK_ICON_MAPPING = new Map([
   ["text/", "text-x-generic"],
 ]);
 
+/**
+ * The more menu for attachments
+ *
+ * @param {object} options
+ * @param {() => void} options.detachCallback
+ * @param {() => void} options.deleteCallback
+ */
 function AttachmentMoreMenu({ detachCallback, deleteCallback }) {
   return React.createElement(
     "div",
@@ -68,14 +74,19 @@ function AttachmentMoreMenu({ detachCallback, deleteCallback }) {
     )
   );
 }
-AttachmentMoreMenu.propTypes = {
-  detachCallback: PropTypes.func.isRequired,
-  deleteCallback: PropTypes.func.isRequired,
-};
 
-// eslint-disable-next-line jsdoc/require-param
 /**
  * Handles display of an individual attachment.
+ *
+ * @param {object} options
+ * @param {string} options.anchor
+ * @param {Function} options.dispatch
+ * @param {string} options.contentType
+ * @param {string} options.formattedSize
+ * @param {string} options.name
+ * @param {number} options.size
+ * @param {string} options.partName
+ * @param {number} options.id
  */
 function Attachment({
   anchor,
@@ -319,95 +330,67 @@ function Attachment({
   );
 }
 
-Attachment.propTypes = {
-  anchor: PropTypes.string.isRequired,
-  dispatch: PropTypes.func.isRequired,
-  contentType: PropTypes.string.isRequired,
-  formattedSize: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  size: PropTypes.number.isRequired,
-  partName: PropTypes.string.isRequired,
-  id: PropTypes.number.isRequired,
-};
-
 /**
  * Handles display of attachments within a message, including options that
  * apply to all attachments.
+ *
+ * @param {object} options
+ * @param {Function} options.dispatch
+ * @param {object[]} options.attachments
+ * @param {string} options.attachmentsPlural
+ * @param {number} options.id
  */
-export class Attachments extends React.PureComponent {
-  constructor() {
-    super();
-    this.showGalleryView = this.showGalleryView.bind(this);
-    this.downloadAll = this.downloadAll.bind(this);
+export function Attachments({ dispatch, attachments, attachmentsPlural, id }) {
+  function showGalleryView() {
+    dispatch(attachmentActions.showGalleryView({ id }));
   }
 
-  showGalleryView() {
-    this.props.dispatch(
-      attachmentActions.showGalleryView({
-        id: this.props.id,
-      })
-    );
+  function downloadAll() {
+    dispatch(attachmentActions.downloadAll({ id }));
   }
 
-  downloadAll() {
-    this.props.dispatch(
-      attachmentActions.downloadAll({
-        id: this.props.id,
-      })
-    );
-  }
-
-  render() {
-    const showGalleryLink = this.props.attachments.some((a) =>
-      a.contentType.startsWith("image/")
-    );
-    return React.createElement(
-      "ul",
-      { className: "attachments" },
+  const showGalleryLink = attachments.some((a) =>
+    a.contentType.startsWith("image/")
+  );
+  return React.createElement(
+    "ul",
+    { className: "attachments" },
+    React.createElement(
+      "div",
+      { className: "attachHeader" },
+      attachmentsPlural,
       React.createElement(
-        "div",
-        { className: "attachHeader" },
-        this.props.attachmentsPlural,
+        "a",
+        {
+          className: "icon-link download-all",
+          onClick: downloadAll,
+          title: browser.i18n.getMessage("attachments.downloadAll.tooltip"),
+        },
+        React.createElement(SvgIcon, { hash: "file_download" })
+      ),
+      showGalleryLink &&
         React.createElement(
           "a",
           {
-            className: "icon-link download-all",
-            onClick: this.downloadAll,
-            title: browser.i18n.getMessage("attachments.downloadAll.tooltip"),
+            onClick: showGalleryView,
+            className: "icon-link view-all",
+            title: browser.i18n.getMessage("attachments.gallery.tooltip"),
           },
-          React.createElement(SvgIcon, { hash: "file_download" })
-        ),
-        showGalleryLink &&
-          React.createElement(
-            "a",
-            {
-              onClick: this.showGalleryView,
-              className: "icon-link view-all",
-              title: browser.i18n.getMessage("attachments.gallery.tooltip"),
-            },
-            React.createElement(SvgIcon, { hash: "photo_library" })
-          )
-      ),
-      this.props.attachments.map((attachment) =>
-        React.createElement(Attachment, {
-          anchor: attachment.anchor,
-          dispatch: this.props.dispatch,
-          key: attachment.anchor,
-          contentType: attachment.contentType,
-          formattedSize: attachment.formattedSize,
-          id: this.props.id,
-          name: attachment.name,
-          partName: attachment.partName,
-          size: attachment.size,
-        })
-      )
-    );
-  }
+          React.createElement(SvgIcon, { hash: "photo_library" })
+        )
+    ),
+    attachments.map((attachment) =>
+      React.createElement(Attachment, {
+        anchor: attachment.anchor,
+        dispatch,
+        key: attachment.anchor,
+        contentType: attachment.contentType,
+        formattedSize: attachment.formattedSize,
+        id,
+        name: attachment.name,
+        partName: attachment.partName,
+        size: attachment.size,
+      })
+    )
+  );
 }
-
-Attachments.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-  attachments: PropTypes.array.isRequired,
-  attachmentsPlural: PropTypes.string.isRequired,
-  id: PropTypes.number.isRequired,
-};

@@ -68,7 +68,7 @@ export const attachmentActions = {
       return browser.messages.openAttachment(id, partName, state.summary.tabId);
     };
   },
-  detachAttachment({ id, fileName, partName, shouldSave }) {
+  detachAttachment({ id, fileName = null, partName, shouldSave }) {
     return async (dispatch, getState) => {
       if (!shouldSave) {
         if (
