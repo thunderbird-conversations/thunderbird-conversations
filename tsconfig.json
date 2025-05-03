@@ -6,6 +6,8 @@
     "addon/background/*.mjs",
     "addon/gallery/*.mjs",
     "addon/content/components/message/attachments.mjs",
+    "addon/content/components/message/messageActionButton.mjs",
+    "addon/content/components/message/messageDetails.mjs",
     "addon/content/components/message/messageFooter.mjs",
     "addon/content/components/message/messageHeader.mjs",
     "addon/content/components/message/messageHeaderOptions.mjs"

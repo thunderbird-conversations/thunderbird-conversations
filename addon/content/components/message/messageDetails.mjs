@@ -3,9 +3,17 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import React from "react";
-import PropTypes from "prop-types";
 import { DetailedContactLabel } from "./messageHeader.mjs";
 
+/**
+ * Handles the contact list on the message information.
+ *
+ * @param {object} options
+ * @param {string} options.label
+ * @param {object[]} options.contacts
+ * @param {string} [options.className]
+ * @param {number} options.msgId
+ */
 function ContactList({ label, contacts, className = "", msgId }) {
   if (contacts.length === 0) {
     return null;
@@ -29,73 +37,64 @@ function ContactList({ label, contacts, className = "", msgId }) {
     )
   );
 }
-ContactList.propTypes = {
-  label: PropTypes.string.isRequired,
-  contacts: PropTypes.array.isRequired,
-  className: PropTypes.string,
-  msgId: PropTypes.number.isRequired,
-};
 
 /**
  * Handles display of the extended details for a message - the header lines.
+ *
+ * @param {object} options
+ * @param {object[]} options.bcc
+ * @param {object[]} options.cc
+ * @param {{key: string, value: string}[]} options.extraLines
+ * @param {object} options.from
+ * @param {number} options.id
+ * @param {object[]} options.to
  */
-export class MessageDetails extends React.PureComponent {
-  render() {
-    return React.createElement(
-      "div",
-      null,
-      !!this.props.from &&
+export function MessageDetails({ bcc, cc, extraLines, from, id, to }) {
+  return React.createElement(
+    "div",
+    null,
+    !!from &&
+      React.createElement(
+        "div",
+        { className: "detailsLine fromLine" },
         React.createElement(
-          "div",
-          { className: "detailsLine fromLine" },
-          React.createElement(
-            "u",
-            null,
-            browser.i18n.getMessage("message.fromHeader")
-          ),
-          " ",
-          React.createElement(DetailedContactLabel, {
-            className: "",
-            contact: this.props.from,
-            msgId: this.props.id,
-          })
+          "u",
+          null,
+          browser.i18n.getMessage("message.fromHeader")
         ),
-      React.createElement(ContactList, {
-        className: "detailsLine toLine",
-        label: browser.i18n.getMessage("message.toHeader"),
-        contacts: this.props.to,
-        msgId: this.props.id,
-      }),
-      React.createElement(ContactList, {
-        className: "detailsLine ccLine",
-        label: browser.i18n.getMessage("message.ccHeader"),
-        contacts: this.props.cc,
-        msgId: this.props.id,
-      }),
-      React.createElement(ContactList, {
-        className: "detailsLine bccLine",
-        label: browser.i18n.getMessage("compose.fieldBcc"),
-        contacts: this.props.bcc,
-        msgId: this.props.id,
-      }),
-      !!this.props.extraLines?.length &&
-        this.props.extraLines.map((line, i) => {
-          return React.createElement(
-            "div",
-            { className: "detailsLine", key: i },
-            React.createElement("u", null, `${line.key}:`),
-            ` ${line.value}`
-          );
+        " ",
+        React.createElement(DetailedContactLabel, {
+          className: "",
+          contact: from,
+          msgId: id,
         })
-    );
-  }
+      ),
+    React.createElement(ContactList, {
+      className: "detailsLine toLine",
+      label: browser.i18n.getMessage("message.toHeader"),
+      contacts: to,
+      msgId: id,
+    }),
+    React.createElement(ContactList, {
+      className: "detailsLine ccLine",
+      label: browser.i18n.getMessage("message.ccHeader"),
+      contacts: cc,
+      msgId: id,
+    }),
+    React.createElement(ContactList, {
+      className: "detailsLine bccLine",
+      label: browser.i18n.getMessage("compose.fieldBcc"),
+      contacts: bcc,
+      msgId: id,
+    }),
+    !!extraLines?.length &&
+      extraLines.map((line, i) => {
+        return React.createElement(
+          "div",
+          { className: "detailsLine", key: i },
+          React.createElement("u", null, `${line.key}:`),
+          ` ${line.value}`
+        );
+      })
+  );
 }
-
-MessageDetails.propTypes = {
-  bcc: PropTypes.array.isRequired,
-  cc: PropTypes.array.isRequired,
-  extraLines: PropTypes.array,
-  from: PropTypes.object,
-  id: PropTypes.number.isRequired,
-  to: PropTypes.array.isRequired,
-};
