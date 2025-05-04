@@ -10,11 +10,19 @@ import { ComposeWidget } from "../content/components/compose/composeWidget.mjs";
 
 export const store = RTK.configureStore({ reducer: composeApp });
 
+/**
+ * @typedef {ReturnType<store["getState"]>} RootState
+ * @typedef {store["dispatch"]} AppDispatch
+ * */
+
+/** @type {ReturnType<typeof ReactRedux.useSelector.withTypes<RootState>>} */
+const useAppSelector = ReactRedux.useSelector;
+
 function ComposeWrapper() {
-  const OS = ReactRedux.useSelector((state) => state.summary.OS);
+  const OS = useAppSelector((state) => state.summary.OS);
 
   // TODO: Maybe should handle the tweak chrome option here.
-  window.document.body.parentNode.setAttribute("os", OS);
+  window.document.body.parentElement.setAttribute("os", OS);
 
   return React.createElement(ComposeWidget);
 }
@@ -23,7 +31,7 @@ function ComposeWrapper() {
 export function Main() {
   return React.createElement(
     ReactRedux.Provider,
-    { store },
+    { store, children: undefined },
     React.createElement(ComposeWrapper, null)
   );
 }

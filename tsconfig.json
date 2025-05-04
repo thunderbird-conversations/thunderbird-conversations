@@ -5,6 +5,7 @@
     "addon/assistant/*.mjs",
     "addon/background/*.mjs",
     "addon/gallery/*.mjs",
+    "addon/compose/compose.mjs",
     "addon/content/components/message/attachments.mjs",
     "addon/content/components/message/messageActionButton.mjs",
     "addon/content/components/message/messageDetails.mjs",
@@ -23,6 +24,6 @@
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "target": "es2024",
-    "types": ["thunderbird-webext-browser"]
+    "types": ["react-redux", "thunderbird-webext-browser"]
   }
 }
