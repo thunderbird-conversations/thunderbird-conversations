@@ -5,7 +5,6 @@
     "addon/assistant/*.mjs",
     "addon/background/*.mjs",
     "addon/gallery/*.mjs",
-    "addon/compose/compose.mjs",
     "addon/content/components/message/attachments.mjs",
     "addon/content/components/message/messageActionButton.mjs",
     "addon/content/components/message/messageDetails.mjs",
