@@ -279,6 +279,14 @@
     "message": "Odstrani zvezdico",
     "description": "Tooltip for the remove star button"
   },
+  "message.turnDarkModeOn.tooltip": {
+    "message": "Vklopi temni način",
+    "description": "Toolitp shown for the dark mode toggle button to turn dark mode back on"
+  },
+  "message.turnDarkModeOff.tooltip": {
+    "message": "Izklopi temni način",
+    "description": "Toolitp shown for the dark mode toggle button to turn dark mode back off"
+  },
   "action.archive": {
     "message": "arhiviraj ta pogovor",
     "description": "Archive button name in the message more menu"
@@ -331,7 +339,10 @@
     "message": "vedno prikaži oddaljeno vsebino od $fromEmail$",
     "description": "Button title to always show remote content.",
     "placeholders": {
-      "fromEmail": { "content": "$1", "example": "me@example.com" }
+      "fromEmail": {
+        "content": "$1",
+        "example": "me@example.com"
+      }
     }
   },
   "action.editDraft": {
@@ -381,7 +392,12 @@
   "tags.inFolder": {
     "message": "V $folderName$",
     "description": "Folder indication for the jump to folder tag.",
-    "placeholders": { "folderName": { "content": "$1", "example": "Sent" } }
+    "placeholders": {
+      "folderName": {
+        "content": "$1",
+        "example": "Sent"
+      }
+    }
   },
   "tags.removeButton": {
     "message": "Odstrani oznako",
@@ -461,7 +477,12 @@
   "attachments.numAttachments": {
     "message": "$num$ priponka;$num$ priponki;$num$ priponke;$num$ priponk",
     "description": "The description used for how many attachments there are. This should take the form of a plural form, see also 'pluralForm'.",
-    "placeholders": { "num": { "content": "$1", "example": "2" } }
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
   },
   "message.meFromMeToSomeone": {
     "message": "Jaz",
@@ -495,7 +516,10 @@
     "message": "Sporočila, ki vključujejo $contactName$",
     "description": "This is used when we click on the \"recent conversations\" button in a contact tooltip. This is the title of the tab that opens.",
     "placeholders": {
-      "contactName": { "content": "$1", "example": "John Smith" }
+      "contactName": {
+        "content": "$1",
+        "example": "John Smith"
+      }
     }
   },
   "compose.confirmDiscard": {
@@ -529,7 +553,12 @@
   "compose.messageSendingSuccess": {
     "message": "Sporočilo $msgId$ je bilo uspešno poslano",
     "description": "Information text for email sent success.",
-    "placeholders": { "msgId": { "content": "$1", "example": "1234" } }
+    "placeholders": {
+      "msgId": {
+        "content": "$1",
+        "example": "1234"
+      }
+    }
   },
   "compose.couldntSendTheMessage": {
     "message": "Sporočila ni bilo mogoče poslati.",
@@ -679,9 +708,18 @@
     "message": "$date$ $time$ je $author$ napisal:",
     "description": "Citation header when replying to a message.",
     "placeholders": {
-      "author": { "content": "$1", "example": "John Smith" },
-      "date": { "content": "$2", "example": "12/01/21" },
-      "time": { "content": "$3", "example": "12:14" }
+      "author": {
+        "content": "$1",
+        "example": "John Smith"
+      },
+      "date": {
+        "content": "$2",
+        "example": "12/01/21"
+      },
+      "time": {
+        "content": "$3",
+        "example": "12:14"
+      }
     }
   },
   "calendar.imipAcceptButton.label": {
