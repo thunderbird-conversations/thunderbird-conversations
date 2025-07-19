@@ -27,7 +27,7 @@
     "@types/react": "19.1.8",
     "@types/react-dom": "19.1.6",
     "@types/thunderbird-webext-browser": "127.0.0",
-    "eslint": "9.31.0",
+    "eslint": "9.16.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-html": "8.1.3",
     "eslint-plugin-import": "2.32.0",
@@ -49,7 +49,8 @@
     "webpack-cli": "6.0.1"
   },
   "overrides": {
-    "compression": "1.8.1"
+    "compression": "1.8.1",
+    "@eslint/plugin-kit": "0.3.3"
   },
   "scripts": {
     "dev": "rm -rf ./dist-dev-html && (scripts/build-dev-html.sh --watch &) && sleep 4 && scripts/dev-html-serve.sh",
