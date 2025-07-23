@@ -1,5 +1,9 @@
 /* Quick reply */
 
+:root {
+  --border-color: #e3e3e3;
+}
+
 .quickReply a {
   text-decoration: none;
   color: -moz-nativehyperlinktext;
@@ -8,7 +12,7 @@
 .quickReply {
   font-size: 1.2rem;
   background-color: rgba(160, 160, 160, 0.06);
-  border-top: 1px solid ThreeDShadow;
+  border-top: 1px solid var(--border-color);
   padding: 10px;
   position: relative;
 }
@@ -38,7 +42,7 @@
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
-  border: 1px solid ThreeDShadow;
+  border: 1px solid var(--border-color);
   cursor: pointer;
 }
 

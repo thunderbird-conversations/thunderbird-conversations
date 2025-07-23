@@ -13,6 +13,7 @@
   );
   --notification-bar-foreground-color: light-dark(black, white);
   color-scheme: light dark;
+  --border-color: #e3e3e3;
 }
 
 * {
@@ -74,7 +75,7 @@ button {
 }
 .button-flat:hover,
 .button-flat:focus {
-  border-color: ThreeDShadow;
+  border-color: var(--border-color);
 }
 
 a img {
@@ -129,7 +130,7 @@ a img {
 .conversationHeader {
   padding: 5px 10px;
   background-color: Menu;
-  border-bottom: 1px solid ThreeDShadow;
+  border-bottom: 1px solid var(--border-color);
   color: MenuText;
   display: flex;
   flex-direction: row;
@@ -178,12 +179,12 @@ a img {
 
 .message {
   margin: 0 10px 1px;
-  border: 1px solid ThreeDShadow;
+  border: 1px solid var(--border-color);
   list-style-type: none;
 }
 
 .message:focus {
-  border: 1px solid ThreeDShadow;
+  border: 1px solid var(--border-color);
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.25);
   /* force shadow to the front */
   position: relative;
@@ -237,7 +238,7 @@ a img {
   max-width: 45rem;
   background-color: -moz-Field;
   color: -moz-FieldText;
-  border: 1px solid ThreeDShadow;
+  border: 1px solid var(--border-color);
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.25);
   z-index: 1000;
   line-height: 1.8;
@@ -331,11 +332,11 @@ html[dir="rtl"] .attachmentsDropDown .tooltip {
 }
 
 .dropdown-sep {
-  border-bottom: 1px solid ThreeDShadow;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .arrow {
-  border-color: transparent transparent ThreeDShadow transparent;
+  border-color: transparent transparent var(--border-color) transparent;
   border-style: solid;
   border-width: 7px;
   height: 0;
@@ -456,7 +457,7 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
   width: 100%;
   padding: 5px 10px;
   background-color: rgba(160, 160, 160, 0.1);
-  border-top: 1px solid ThreeDShadow;
+  border-top: 1px solid var(--border-color);
   float: inline-start;
   border-radius: 0 0 5px 5px;
 }
@@ -465,7 +466,7 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
   padding: 0 5px;
   float: inline-start;
   margin: 0 3px 0 0;
-  border: 1px solid ThreeDShadow;
+  border: 1px solid var(--border-color);
   height: 1.86em;
   border-radius: 7px;
 }
@@ -577,7 +578,7 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
   margin: 0 0 10px 0;
   border-width: 1px 0;
   border-style: solid;
-  border-color: ThreeDShadow;
+  border-color: var(--border-color);
   background-color: var(--notification-bar-background-color);
   color: var(--notification-bar-foreground-color);
 }
@@ -637,7 +638,7 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
 .attachHeader {
   display: inline;
   padding-top: 10px;
-  border-top: 1px solid ThreeDShadow;
+  border-top: 1px solid var(--border-color);
 }
 
 .attachment {
@@ -651,7 +652,7 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
 .attachmentThumb {
   width: 130px;
   padding: 4px;
-  border: 1px solid ThreeDShadow;
+  border: 1px solid var(--border-color);
   background-color: #fff;
   background-image: linear-gradient(to bottom, #fff 0%, #f2f2f2 100%);
   margin: 0 20px 0 0;
