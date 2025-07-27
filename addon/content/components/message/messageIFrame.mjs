@@ -482,6 +482,8 @@ export class MessageIFrame extends React.Component {
     styleRules = styleRules.concat([
       "body {",
       "  margin: 0; padding: 0;",
+      "}",
+      "body:has(> .moz-text-html) {",
       "  color: " + fg + "; background-color: " + bg + ";",
       "}",
     ]);
