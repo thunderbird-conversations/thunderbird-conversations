@@ -24,8 +24,8 @@
   "devDependencies": {
     "@microsoft/eslint-plugin-sdl": "1.1.0",
     "@testing-library/react": "16.3.0",
-    "@types/react": "19.1.8",
-    "@types/react-dom": "19.1.6",
+    "@types/react": "19.1.12",
+    "@types/react-dom": "19.1.9",
     "@types/thunderbird-webext-browser": "127.0.0",
     "eslint": "9.16.0",
     "eslint-config-prettier": "10.1.8",
@@ -38,14 +38,14 @@
     "eslint-plugin-react": "7.37.5",
     "global-jsdom": "26.0.0",
     "globals": "16.3.0",
-    "html-webpack-plugin": "5.6.3",
+    "html-webpack-plugin": "5.6.4",
     "jsdom": "26.1.0",
     "prettier": "3.6.2",
     "prop-types": "15.8.1",
     "serve": "14.2.4",
-    "typescript": "5.8.3",
+    "typescript": "5.9.2",
     "web-ext": "8.9.0",
-    "webpack": "5.100.2",
+    "webpack": "5.101.3",
     "webpack-cli": "6.0.1"
   },
   "overrides": {
