@@ -34,7 +34,7 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22.17.x
+          node-version: 22.19.x
       - name: Install dependencies
         run: npm ci --force
       - name: eslint
