@@ -4,14 +4,14 @@
     "gecko": {
       "id": "gconversation@xulforum.org",
       "strict_min_version": "140.0a1",
-      "strict_max_version": "143.0a1"
+      "strict_max_version": "144.0a1"
     }
   },
   "author": "Jonathan Protzenko",
   "name": "__MSG_extensionName__",
   "default_locale": "en",
   "description": "__MSG_extensionDescription__",
-  "version": "4.3.2",
+  "version": "4.3.3",
   "homepage_url": "http://github.com/thunderbird-conversations/thunderbird-conversations/wiki",
   "background": {
     "scripts": ["background/background.mjs"],
