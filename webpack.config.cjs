@@ -39,12 +39,6 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       hash: false,
-      template: "./addon/options/options.html",
-      chunks: ["options"],
-      filename: "../options/options.html",
-    }),
-    new HtmlWebpackPlugin({
-      hash: false,
       template: "./addon/content/stub.html",
       chunks: ["stub"],
       filename: "stub.html",

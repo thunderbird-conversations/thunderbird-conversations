@@ -7,24 +7,32 @@ body {
   color: var(--application-foreground-color);
 }
 
-#preferencesGrid {
+.preferencesGrid {
   display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  grid-gap: 1ch 0px;
+  grid-template-columns: 1fr;
   grid-auto-rows: auto;
 }
 
-#preferencesGrid > div {
+.prefSectionContent {
+  display: grid;
+  grid-template-columns: 50% 50%;
+}
+
+.inputWrapper {
+  align-content: center;
+  margin-left: 1em;
+  margin-right: auto;
+}
+
+.inputWrapper,
+.descriptionWrapper {
   padding: 0.5em 1em;
   border-bottom: 1px solid grey;
+  width: 100%;
 }
 
-#preferencesGrid > .prefSectionContent {
-  padding-top: 1.5em;
-}
-
-#preferencesGrid > div > input[type="text"] {
-  width: 90%;
+.inputWrapper > input[type="number"] {
+  width: 3em;
 }
 
 .title {

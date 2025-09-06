@@ -2,48 +2,31 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-// eslint-disable-next-line no-shadow
-import { browser, i18n } from "../content/esmodules/thunderbirdCompat.mjs";
-import React from "react";
-import * as RTK from "@reduxjs/toolkit";
-import * as ReactRedux from "react-redux";
-import PropTypes from "prop-types";
+/**
+ * @typedef {object} OptionChoice
+ * @property {string} desc
+ * @property {number} value
+ */
 
-const prefsSlice = RTK.createSlice({
-  name: "prefs",
-  initialState: {},
-  reducers: {
-    set(state, { payload }) {
-      return { ...state, ...payload };
-    },
-  },
-});
-export const actions = {
-  initPrefs() {
-    return async function (dispatch) {
-      const prefs = await browser.storage.local.get("preferences");
-      dispatch(prefsSlice.actions.set(prefs.preferences));
-    };
-  },
-  savePref(name, value) {
-    return async function (dispatch, getState) {
-      const newPrefs = { ...getState(), [name]: value };
-      await browser.storage.local.set({ preferences: newPrefs });
-      dispatch(prefsSlice.actions.set(newPrefs));
-    };
-  },
-};
+/**
+ * @typedef {object} OptionProperties
+ * @property {string} title
+ * @property {string} desc
+ * @property {string} name
+ * @property {OptionChoice[]} [choices]
+ */
 
-export const store = RTK.configureStore({ reducer: prefsSlice.reducer });
-store.dispatch(actions.initPrefs());
-
-// A list of all preferences that can be set via the GUI.
-// `desc` and `name` will get run through l10n before being rendered
+/**
+ * A list of all preferences that can be set via the GUI.
+ * `desc` and `name` will get run through l10n before being rendered.
+ *
+ * @type {{props: OptionProperties, component: string}[]}
+ */
 const PREFS_INFO = [
   {
     props: {
-      title: "",
-      desc: "options.expand_who",
+      title: "options.expand_who",
+      desc: "",
       name: "expand_who",
       choices: [
         { desc: "options.expand_none", value: 1 },
@@ -51,7 +34,7 @@ const PREFS_INFO = [
         { desc: "options.expand_auto", value: 4 },
       ],
     },
-    component: ChoiceOption,
+    component: "choice-option",
   },
   {
     props: {
@@ -59,7 +42,7 @@ const PREFS_INFO = [
       desc: "options.quoting_desc",
       name: "hide_quote_length",
     },
-    component: NumericOption,
+    component: "numeric-option",
   },
   {
     props: {
@@ -67,7 +50,7 @@ const PREFS_INFO = [
       desc: "options.hide_sigs_desc",
       name: "hide_sigs",
     },
-    component: BinaryOption,
+    component: "binary-option",
   },
   {
     props: {
@@ -75,7 +58,7 @@ const PREFS_INFO = [
       desc: "options.friendly_date_desc",
       name: "no_friendly_date",
     },
-    component: BinaryOption,
+    component: "binary-option",
   },
   {
     props: {
@@ -83,7 +66,7 @@ const PREFS_INFO = [
       desc: "options.tweak_chrome_desc",
       name: "tweak_chrome",
     },
-    component: BinaryOption,
+    component: "binary-option",
   },
   {
     props: {
@@ -91,7 +74,7 @@ const PREFS_INFO = [
       desc: "options.tweak_bodies_desc",
       name: "tweak_bodies",
     },
-    component: BinaryOption,
+    component: "binary-option",
   },
   {
     props: {
@@ -99,7 +82,7 @@ const PREFS_INFO = [
       desc: "options.operate_on_conversations_desc",
       name: "operate_on_conversations",
     },
-    component: BinaryOption,
+    component: "binary-option",
   },
   {
     props: {
@@ -107,7 +90,7 @@ const PREFS_INFO = [
       desc: "options.extra_attachments_desc",
       name: "extra_attachments",
     },
-    component: BinaryOption,
+    component: "binary-option",
   },
   {
     props: {
@@ -115,7 +98,7 @@ const PREFS_INFO = [
       desc: "options.hide_quick_reply_desc",
       name: "hide_quick_reply",
     },
-    component: BinaryOption,
+    component: "binary-option",
   },
   {
     props: {
@@ -123,7 +106,7 @@ const PREFS_INFO = [
       desc: "options.disable_between_column_desc",
       name: "disableBetweenColumn",
     },
-    component: BinaryOption,
+    component: "binary-option",
   },
   {
     props: {
@@ -131,7 +114,7 @@ const PREFS_INFO = [
       desc: "options.compose_in_tab2_desc",
       name: "compose_in_tab",
     },
-    component: BinaryOption,
+    component: "binary-option",
   },
   {
     props: {
@@ -139,258 +122,235 @@ const PREFS_INFO = [
       desc: "options.debugging_desc",
       name: "logging_enabled",
     },
-    component: BinaryOption,
+    component: "binary-option",
   },
 ];
 
 /**
- * Localize `PREFS_INFO` or a single string using
- * `i18n.getMessage(...)`
- *
- * @param {(string | object[])} prefsInfo
- * @param {object} [i18n]
- * @returns {(string | object[])}
+ * Base class for all options.
  */
-// eslint-disable-next-line no-shadow
-function localize(prefsInfo, i18n = browser.i18n) {
-  if (!i18n) {
-    throw new Error("`i18n` object not specified");
-  }
-  if (typeof prefsInfo === "string") {
-    return i18n.getMessage(prefsInfo);
-  }
-  // If `prefsInfo` is an array, it is an array of information used
-  // to render the preference setting GUI. Localize all `desc` and `title`
-  // properties
-  if (Array.isArray(prefsInfo)) {
-    return prefsInfo.map((pref) => {
-      const retProps = { ...pref.props };
-      if (retProps.desc) {
-        retProps.desc = i18n.getMessage(retProps.desc);
-      }
-      if (retProps.title) {
-        retProps.title = i18n.getMessage(retProps.title);
-      }
-      if (retProps.choices) {
-        retProps.choices = retProps.choices.map((choice) => {
-          if (choice.desc) {
-            return { ...choice, desc: i18n.getMessage(choice.desc) };
-          }
-          return choice;
-        });
-      }
-      return { ...pref, props: retProps };
+class OptionBase extends HTMLElement {
+  /**
+   * @abstract
+   * @param {OptionProperties} properties
+   * @param {any} initialValue
+   */
+  setProps(properties, initialValue) {}
+
+  /**
+   * Saves a preference,
+   *
+   * @param {string} name
+   * @param {any} value
+   */
+  async savePref(name, value) {
+    let prefs = await browser.storage.local.get("preferences");
+    await browser.storage.local.set({
+      preferences: { ...prefs.preferences, [name]: value },
     });
   }
-  throw new Error("Don't know how to localize the object", prefsInfo);
 }
 
-function openSetupAssistant() {
-  browser.tabs.create({
-    url: "../assistant/assistant.html",
-  });
-}
+/**
+ * Options class to support numeric options.
+ */
+export class ChoiceOption extends OptionBase {
+  static get fragment() {
+    if (!this._template) {
+      let parser = new DOMParser();
+      let doc = parser.parseFromString(
+        `
+        <template>
+          <link rel="stylesheet" href="options.css" />
+          <link rel="stylesheet" href="../common.css" type="text/css" />
+          <div class="descriptionWrapper">
+            <label class="title"></label>
+            <br>
+            <label class="desc"></label>
+          </div>
+          <div class="inputWrapper">
+            <span class="inputDetail"></span>
+          </div>
+        </template>
+        `,
+        "text/html"
+      );
+      this._template = document.importNode(doc.querySelector("template"), true);
+    }
+    return this._template.content.cloneNode(true);
+  }
 
-async function runUndoConversations() {
-  let port = browser.runtime.connect({ name: "assistant" });
-  port.postMessage({});
-}
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+    this.shadowRoot.appendChild(ChoiceOption.fragment);
+  }
 
-//
-// React components to render the options types
-//
+  /**
+   * @param {OptionProperties} properties
+   * @param {any} initialValue
+   */
+  setProps(properties, initialValue) {
+    let title = /** @type {HTMLLabelElement} */ (
+      this.shadowRoot.querySelector(".title")
+    );
+    title.innerText = browser.i18n.getMessage(properties.title);
+    title.htmlFor = properties.name;
+    /** @type {HTMLLabelElement} */ (
+      this.shadowRoot.querySelector(".desc")
+    ).innerText = browser.i18n.getMessage(properties.desc);
 
-export function ChoiceOption({
-  title,
-  desc,
-  choices = [],
-  value,
-  name,
-  onChange,
-}) {
-  const elementName = `choice_${title}`.replace(/\s+/g, "");
-  return React.createElement(
-    React.Fragment,
-    null,
-    React.createElement(
-      "div",
-      null,
-      React.createElement("label", { className: "title" }, title),
-      React.createElement("br"),
-      React.createElement("label", null, desc)
-    ),
-    React.createElement(
-      "div",
-      null,
-      choices.map((choice, i) =>
-        React.createElement(
-          "span",
-          { key: i },
-          React.createElement("input", {
-            type: "radio",
-            className: "pref",
-            id: `${elementName}-${i}`,
-            name: elementName,
-            value: choice.value,
-            checked: choice.value === value,
-            onChange: () => {
-              onChange(name, choice.value);
-            },
-          }),
-          React.createElement(
-            "label",
-            { htmlFor: `${elementName}-${i}` },
-            choice.desc
-          )
-        )
-      )
-    )
-  );
-}
-ChoiceOption.propTypes = {
-  title: PropTypes.string,
-  desc: PropTypes.string,
-  value: PropTypes.any.isRequired,
-  name: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-  choices: PropTypes.arrayOf(
-    PropTypes.shape({ value: PropTypes.any, desc: PropTypes.string })
-  ).isRequired,
-};
+    let inputDetail = this.shadowRoot.querySelector(".inputDetail");
+    let elementName = `choice_${properties.title}`.replace(/\s+/g, "");
 
-export function TextOption({
-  title,
-  desc,
-  value = "",
-  name,
-  onChange = () => {},
-}) {
-  return React.createElement(
-    React.Fragment,
-    null,
-    React.createElement(
-      "div",
-      null,
-      React.createElement(
-        "label",
-        { htmlFor: name, className: "title" },
-        title
-      ),
-      React.createElement("br"),
-      React.createElement("label", null, desc)
-    ),
-    React.createElement(
-      "div",
-      null,
-      React.createElement("input", {
-        id: name,
-        type: "text",
-        className: "pref",
-        value,
-        onChange: (e) => {
-          onChange(name, e.target.value);
-        },
-      })
-    )
-  );
-}
-TextOption.propTypes = {
-  title: PropTypes.string,
-  desc: PropTypes.string,
-  value: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-};
+    for (let [i, choice] of properties.choices.entries()) {
+      let input = document.createElement("input");
+      input.setAttribute("name", properties.name);
+      input.id = `${elementName}-${i}`;
+      input.type = "radio";
+      input.value = choice.value.toString();
+      input.checked = choice.value == initialValue;
+      input.addEventListener("change", this.onChange.bind(this));
+      inputDetail.appendChild(input);
+      let label = document.createElement("label");
+      label.htmlFor = input.id;
+      label.innerText = browser.i18n.getMessage(choice.desc);
+      inputDetail.appendChild(label);
+    }
+  }
 
-export function NumericOption({
-  title,
-  desc,
-  value = 0,
-  name,
-  onChange = () => {},
-}) {
-  return React.createElement(
-    React.Fragment,
-    null,
-    React.createElement(
-      "div",
-      null,
-      React.createElement(
-        "label",
-        { htmlFor: name, className: "title" },
-        title
-      ),
-      React.createElement("br"),
-      React.createElement("label", null, desc)
-    ),
-    React.createElement(
-      "div",
-      null,
-      React.createElement("input", {
-        id: name,
-        type: "number",
-        className: "pref hidespinbuttons",
-        min: 0,
-        max: 100,
-        value,
-        onChange: (e) => {
-          onChange(name, parseInt(e.target.value || value, 10));
-        },
-      })
-    )
-  );
+  onChange(event) {
+    this.savePref(
+      event.target.getAttribute("name"),
+      parseInt(event.target.value, 10)
+    ).catch(console.error);
+  }
 }
-NumericOption.propTypes = {
-  title: PropTypes.string,
-  desc: PropTypes.string,
-  value: PropTypes.number.isRequired,
-  name: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-};
+customElements.define("choice-option", ChoiceOption);
 
-export function BinaryOption({
-  title,
-  desc,
-  value = false,
-  name,
-  onChange = () => {},
-}) {
-  return React.createElement(
-    React.Fragment,
-    null,
-    React.createElement(
-      "div",
-      null,
-      React.createElement(
-        "label",
-        { htmlFor: name, className: "title" },
-        title
-      ),
-      React.createElement("br"),
-      React.createElement("label", null, desc)
-    ),
-    React.createElement(
-      "div",
-      null,
-      React.createElement("input", {
-        id: name,
-        type: "checkbox",
-        className: "pref",
-        checked: value,
-        onChange: (e) => {
-          onChange(name, e.target.checked);
-        },
-      })
-    )
-  );
+/**
+ * Options class to support numeric options.
+ */
+export class NumericOption extends OptionBase {
+  static get fragment() {
+    if (!this._template) {
+      let parser = new DOMParser();
+      let doc = parser.parseFromString(
+        `
+        <template>
+          <link rel="stylesheet" href="options.css" />
+          <link rel="stylesheet" href="../common.css" type="text/css" />
+          <div class="descriptionWrapper">
+            <label class="title"></label>
+            <br>
+            <label class="desc"></label>
+          </div>
+          <div class="inputWrapper">
+            <input type="number" class="pref hidespinbuttons" min="0" max="100">
+          </div>
+        </template>
+        `,
+        "text/html"
+      );
+      this._template = document.importNode(doc.querySelector("template"), true);
+    }
+    return this._template.content.cloneNode(true);
+  }
+
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+    this.shadowRoot.appendChild(NumericOption.fragment);
+  }
+
+  /**
+   * @param {OptionProperties} properties
+   * @param {any} initialValue
+   */
+  setProps(properties, initialValue) {
+    let title = /** @type {HTMLLabelElement} */ (
+      this.shadowRoot.querySelector(".title")
+    );
+    title.innerText = browser.i18n.getMessage(properties.title);
+    title.htmlFor = properties.name;
+    /** @type {HTMLLabelElement} */ (
+      this.shadowRoot.querySelector(".desc")
+    ).innerText = browser.i18n.getMessage(properties.desc);
+    let input = this.shadowRoot.querySelector("input");
+    input.id = properties.name;
+    input.value = initialValue;
+    input.addEventListener("change", this.onChange.bind(this));
+  }
+
+  onChange(event) {
+    if (isNaN(parseInt(event.target.value))) {
+      event.target.value = event.target.getAttribute("min");
+    }
+    this.savePref(event.target.id, parseInt(event.target.value, 10)).catch(
+      console.error
+    );
+  }
 }
-BinaryOption.propTypes = {
-  title: PropTypes.string,
-  desc: PropTypes.string,
-  value: PropTypes.bool.isRequired,
-  name: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-};
+customElements.define("numeric-option", NumericOption);
+
+/**
+ * Options class to support binary options.
+ */
+export class BinaryOption extends OptionBase {
+  static get fragment() {
+    if (!this._template) {
+      let parser = new DOMParser();
+      let doc = parser.parseFromString(
+        `
+        <template>
+          <link rel="stylesheet" href="options.css" />
+          <div class="descriptionWrapper">
+            <label class="title"></label>
+            <br>
+            <label class="desc"></label>
+          </div>
+          <div class="inputWrapper">
+            <input type="checkbox" class="pref">
+          </div>
+        </template>
+        `,
+        "text/html"
+      );
+      this._template = document.importNode(doc.querySelector("template"), true);
+    }
+    return this._template.content.cloneNode(true);
+  }
+
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+    this.shadowRoot.appendChild(BinaryOption.fragment);
+  }
+
+  /**
+   * @param {OptionProperties} properties
+   * @param {any} initialValue
+   */
+  setProps(properties, initialValue) {
+    let title = /** @type {HTMLLabelElement} */ (
+      this.shadowRoot.querySelector(".title")
+    );
+    title.innerText = browser.i18n.getMessage(properties.title);
+    title.htmlFor = properties.name;
+    /** @type {HTMLLabelElement} */ (
+      this.shadowRoot.querySelector(".desc")
+    ).innerText = browser.i18n.getMessage(properties.desc);
+    let input = this.shadowRoot.querySelector("input");
+    input.id = properties.name;
+    input.checked = initialValue;
+    input.addEventListener("change", this.onChange.bind(this));
+  }
+
+  onChange(event) {
+    this.savePref(event.target.id, event.target.checked).catch(console.error);
+  }
+}
+customElements.define("binary-option", BinaryOption);
 
 /**
  * Render the options list for Conversations. `localizedPrefsInfo`
@@ -399,140 +359,84 @@ BinaryOption.propTypes = {
  * `prefs` should be an object whose keys are the `name`s mentioned in
  * `localizedPrefsInfo`. And, `setPref` should be a function that accepts
  * `(name, value)` pairs and saves them as preferences.
- *
- * @param {object} root0
- * @param {object[]} root0.localizedPrefsInfo
- * @param {string} root0.localizedName
- * @param {string}root0.localizedStartAssistant
- * @param {string} root0.localizedUndoCustomizations
- * @param {string} root0.localizedUndoCustomizationsTooltip
- * @param {object} root0.prefs
- * @param {Function} root0.setPref
- * @param {Function} root0.startSetupAssistant
- * @param {Function} root0.startUndoConversations
- * @returns {React.Node}
  */
-function _ConversationOptions({
-  localizedPrefsInfo,
-  localizedName,
-  localizedStartAssistant,
-  localizedUndoCustomizations,
-  localizedUndoCustomizationsTooltip,
-  prefs,
-  setPref,
-  startSetupAssistant,
-  startUndoConversations,
-}) {
-  return React.createElement(
-    React.Fragment,
-    null,
-    React.createElement("h1", null, localizedName),
-    React.createElement(
-      "form",
-      { id: "conversationOptions" },
-      React.createElement(
-        "div",
-        { id: "preferencesGrid" },
-        localizedPrefsInfo.map((Item, i) =>
-          React.createElement(Item.component, {
-            ...Item.props,
-            key: i,
-            value: prefs[Item.props.name],
-            onChange: setPref,
-          })
-        )
-      )
-    ),
-    React.createElement(
-      "button",
-      { className: "start", onClick: startSetupAssistant },
-      localizedStartAssistant
-    ),
-    React.createElement(
-      "button",
-      {
-        className: "undo",
-        onClick: startUndoConversations,
-        title: localizedUndoCustomizationsTooltip,
-      },
-      localizedUndoCustomizations
-    )
-  );
-}
-_ConversationOptions.propTypes = {
-  localizedPrefsInfo: PropTypes.array.isRequired,
-  localizedName: PropTypes.string.isRequired,
-  localizedStartAssistant: PropTypes.string.isRequired,
-  localizedUndoCustomizations: PropTypes.string.isRequired,
-  localizedUndoCustomizationsTooltip: PropTypes.string.isRequired,
-  prefs: PropTypes.object.isRequired,
-  setPref: PropTypes.func.isRequired,
-  startSetupAssistant: PropTypes.func.isRequired,
-  startUndoConversations: PropTypes.func.isRequired,
-};
-
-const ConversationOptions = ReactRedux.connect((state) => ({ prefs: state }), {
-  setPref: actions.savePref,
-})(_ConversationOptions);
-
-// The entry point for the options page
-export function Main() {
-  const [localizedName, setLocalizedName] = React.useState(
-    localize("extensionName", i18n)
-  );
-  const [localizedPrefsInfo, setLocalizedPrefsInfo] = React.useState(
-    localize(PREFS_INFO, i18n)
-  );
-  const [localizedStartAssistant, setLocalizedStartAssistant] = React.useState(
-    localize("options.start_setup_assistant", i18n)
-  );
-  const [localizedUndoCustomizations, setLocalizedUndoCustomizations] =
-    React.useState(localize("options.undoCustomizations", i18n));
-  const [
-    localizedUndoCustomizationsTooltip,
-    setLocalizedUndoCustomizationsTooltip,
-  ] = React.useState(localize("options.undoCustomizations.tooltip", i18n));
-
-  // When the i18n library is loaded, we want to translate all
-  // the localized strings.
-  React.useEffect(() => {
-    if (!i18n.isPolyfilled) {
-      // The native `browser.i18n` is synchronous, so if we're using
-      // that version, the translations have already been loaded; do
-      // nothing here
-      return;
+export class ConversationOptions extends HTMLElement {
+  static get fragment() {
+    if (!this._template) {
+      let parser = new DOMParser();
+      let doc = parser.parseFromString(
+        `
+        <template>
+          <link rel="stylesheet" href="options.css" type="text/css" />
+          <link rel="stylesheet" href="../common.css" type="text/css" />
+          <h1 class="pageTitle">Foo</h1>
+          <form class="conversationOptions">
+            <div class="preferencesGrid">
+            </div>
+          </form>
+          <button class="start"></button>
+          <button class="undo"></button>
+        </template>
+      `,
+        "text/html"
+      );
+      this._template = document.importNode(doc.querySelector("template"), true);
     }
-    i18n.initialize();
-    i18n.isLoaded
-      .then(() => {
-        setLocalizedName(localize("extensionName", i18n));
-        setLocalizedPrefsInfo(localize(PREFS_INFO, i18n));
-        setLocalizedStartAssistant(
-          localize("options.start_setup_assistant", i18n)
-        );
-        setLocalizedUndoCustomizations(
-          localize("options.undoCustomizations", i18n)
-        );
-        setLocalizedUndoCustomizationsTooltip(
-          localize("options.undoCustomizations.tooltip", i18n)
-        );
-      })
-      .catch((e) => {
-        throw e;
-      });
-  }, []);
+    return this._template.content.cloneNode(true);
+  }
 
-  return React.createElement(
-    ReactRedux.Provider,
-    { store },
-    React.createElement(ConversationOptions, {
-      localizedPrefsInfo,
-      localizedName,
-      localizedStartAssistant,
-      localizedUndoCustomizations,
-      localizedUndoCustomizationsTooltip,
-      startSetupAssistant: openSetupAssistant,
-      startUndoConversations: runUndoConversations,
-    })
-  );
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+    this.shadowRoot.appendChild(ConversationOptions.fragment);
+    this.shadowRoot.querySelector(".pageTitle").textContent =
+      browser.i18n.getMessage("extensionName");
+
+    let startButton = /** @type {HTMLButtonElement} */ (
+      this.shadowRoot.querySelector(".start")
+    );
+    startButton.innerText = browser.i18n.getMessage(
+      "options.start_setup_assistant"
+    );
+    startButton.addEventListener("click", this.startSetupAssistant.bind(this));
+
+    let undoButton = /** @type {HTMLButtonElement} */ (
+      this.shadowRoot.querySelector(".undo")
+    );
+    undoButton.innerText = browser.i18n.getMessage(
+      "options.undoCustomizations"
+    );
+    undoButton.title = browser.i18n.getMessage(
+      "options.undoCustomizations.tooltip"
+    );
+    undoButton.addEventListener(
+      "click",
+      this.startUndoConversations.bind(this)
+    );
+  }
+
+  async connectedCallback() {
+    let prefsGrid = this.shadowRoot.querySelector(".preferencesGrid");
+    let prefs = await browser.storage.local.get("preferences");
+
+    for (let prefInfo of PREFS_INFO) {
+      let option = /** @type {OptionBase} */ (
+        document.createElement(prefInfo.component)
+      );
+      option.className = "prefSectionContent";
+      option.setProps(prefInfo.props, prefs.preferences[prefInfo.props.name]);
+      prefsGrid.appendChild(option);
+    }
+  }
+
+  startSetupAssistant() {
+    browser.tabs.create({
+      url: "../assistant/assistant.html",
+    });
+  }
+
+  startUndoConversations() {
+    let port = browser.runtime.connect({ name: "assistant" });
+    port.postMessage({});
+  }
 }
