@@ -36,7 +36,7 @@ find $EXTENDED1 . $EXTENDED2 -regex $REGEXTENSIONS -maxdepth 1 -exec cp {} ../$D
 # Other items we need that aren't handled by webpack, or things that we
 # need outside of webpage as well.
 DIRECTORIES=(assistant background content/icons content/modules \
-experiment-api options content/esmodules)
+experiment-api options gallery content/esmodules)
 for a in "${DIRECTORIES[@]}"; do
   mkdir -p ../$DIST/${a}/
   find $EXTENDED1 $a $EXTENDED2 -regex $REGEXTENSIONS -exec cp {} ../$DIST/$a/ \;

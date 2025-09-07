@@ -2,67 +2,79 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import React from "react";
-import ReactDOMClient from "react-dom/client";
-
 /**
  * @typedef PhotoProps
  * @property {number} index
- * @property {number} length
+ * @property {number} total
  * @property {string} name
  * @property {string} size
  * @property {string} [src]
  */
 
-const Photo = React.forwardRef(
-  // eslint-disable-next-line no-shadow
-  (/** @type {PhotoProps} */ { index, length, name, size, src }, ref) =>
-    React.createElement(
-      "div",
-      { className: "photoWrap", ref },
-      React.createElement("img", { src }),
-      React.createElement(
-        "div",
-        { className: "informationline" },
-        React.createElement("div", { className: "filename" }, name),
-        React.createElement("div", { className: "size" }, size),
-        React.createElement(
-          "div",
-          { className: "count" },
-          index + " / " + length
-        )
-      )
-    )
-);
-Photo.displayName = "Photo";
+/**
+ * Photo class for displaying pictures.
+ */
+class Photo extends HTMLElement {
+  static get fragment() {
+    if (!this._template) {
+      let parser = new DOMParser();
+      let doc = parser.parseFromString(
+        `
+        <template>
+          <link rel="stylesheet" href="style.css" />
+          <div class="photoWrap">
+            <img>
+            <div class="informationline">
+              <div class="filename"></div>
+              <div class="size"></div>
+              <div class="count"></div>
+            </div>
+          </div>
+        </template>
+        `,
+        "text/html"
+      );
+      this._template = document.importNode(doc.querySelector("template"), true);
+    }
+    return this._template.content.cloneNode(true);
+  }
+
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+    this.shadowRoot.appendChild(Photo.fragment);
+  }
+
+  /**
+   * Sets the properties of this picture.
+   *
+   * @param {PhotoProps} properties
+   */
+  setProps(properties) {
+    this.shadowRoot.querySelector(".photoWrap").id = "photo" + properties.index;
+    this.shadowRoot.querySelector("img").src = properties.src;
+    this.shadowRoot.querySelector(".filename").textContent = properties.name;
+    this.shadowRoot.querySelector(".size").textContent = properties.size;
+    this.shadowRoot.querySelector(".count").textContent =
+      properties.index + " / " + properties.total;
+  }
+}
+customElements.define("photo-element", Photo);
 
 /**
  * Handles display of the gallery views.
  */
-class MyComponent extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      images: [],
-      scrollToPartName: null,
-    };
-    this.scrollTo = React.createRef();
+class Gallery extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
   }
 
-  componentDidMount() {
+  connectedCallback() {
     let params = new URLSearchParams(document.location.search);
     let uri = params.get("msgUri");
     let scrollToPartName = params.get("partName");
     this.load(uri, scrollToPartName).catch(console.error);
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (this.state.scrollToPartName && !prevState.scrollToPartName) {
-      setTimeout(
-        () => this.scrollTo.current.scrollIntoView({ behavior: "smooth" }),
-        100
-      );
-    }
   }
 
   /**
@@ -99,72 +111,43 @@ class MyComponent extends React.Component {
    * It runs the handlebars template and then appends the result to the root
    *  DOM node.
    *
-   * @param {object[]} attachments
+   * @param {browser.messages.MessageAttachment[]} attachments
    * @param {number} id
    * @param {string} scrollToPartName
    */
   async output(attachments, id, scrollToPartName) {
+    let scrollToElement;
     // Get the initial data first.
-    for (const attachment of attachments) {
-      attachment.size = await browser.messengerUtilities.formatFileSize(
-        attachment.size
-      );
-    }
-    this.setState({
-      images: attachments.map((attachment, i) => {
-        return {
-          index: i + 1,
-          name: attachment.name,
-          partName: attachment.partName,
-          size: attachment.size,
-          src: null,
-        };
-      }),
-      scrollToPartName: null,
-    });
     for (const [i, attachment] of attachments.entries()) {
+      let photo = /** @type {Photo} */ (
+        document.createElement("photo-element")
+      );
+
       let file = await browser.messages.getAttachmentFile(
         id,
         attachment.partName
       );
-      let newState = {
-        images: [...this.state.images],
-        scrollToPartName: this.state.scrollToPartName,
-      };
-      newState.images[i] = {
-        ...newState.images[i],
+      photo.setProps({
+        index: i + 1,
+        total: attachments.length,
+        name: attachment.name,
+        size: await browser.messengerUtilities.formatFileSize(attachment.size),
         src: URL.createObjectURL(file),
-      };
-      if (scrollToPartName == newState.images[i].partName) {
-        newState.scrollToPartName = scrollToPartName;
+      });
+
+      if (scrollToPartName && attachment.partName == scrollToPartName) {
+        scrollToElement = photo;
       }
-      this.setState(newState);
+
+      this.shadowRoot.appendChild(photo);
+    }
+
+    if (scrollToElement) {
+      setTimeout(
+        () => scrollToElement.scrollIntoView({ behavior: "smooth" }),
+        100
+      );
     }
   }
-
-  render() {
-    return this.state.images.map((image) =>
-      React.createElement(Photo, {
-        index: image.index,
-        key: image.index,
-        name: image.name,
-        ref:
-          this.state.scrollToPartName == image.partName ? this.scrollTo : null,
-
-        size: image.size,
-        src: image.src,
-        length: this.state.images.length,
-      })
-    );
-  }
 }
-
-window.addEventListener(
-  "load",
-  () => {
-    const domContainer = document.getElementById("gallery");
-    let root = ReactDOMClient.createRoot(domContainer);
-    root.render(React.createElement(MyComponent));
-  },
-  { once: true }
-);
+customElements.define("gallery-element", Gallery);

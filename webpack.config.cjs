@@ -6,8 +6,6 @@ module.exports = {
   devtool: development ? "source-map" : false,
   entry: {
     compose: "./addon/compose/composeRender.mjs",
-    gallery: "./addon/gallery/gallery.mjs",
-    options: "./addon/options/optionsRender.mjs",
     stub: "./addon/content/stub.mjs",
     "dev-frame": "./addon/dev-frame/dev-frame-render.mjs",
   },
@@ -30,12 +28,6 @@ module.exports = {
       template: "./addon/compose/compose.html",
       chunks: ["compose"],
       filename: "../compose/compose.html",
-    }),
-    new HtmlWebpackPlugin({
-      hash: false,
-      template: "./addon/gallery/index.html",
-      chunks: ["gallery"],
-      filename: "../gallery/index.html",
     }),
     new HtmlWebpackPlugin({
       hash: false,
