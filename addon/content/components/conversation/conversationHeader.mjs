@@ -13,71 +13,86 @@ const LINKS_REGEX = /((\w+):\/\/[^<>()'"\s]+|www(\.[-\w]+){2,})/;
 /**
  * Handles inserting links into the subject of a message.
  */
-class LinkifiedSubject extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    this.handleClick = this.handleClick.bind(this);
+class LinkifiedSubject extends HTMLElement {
+  static observedAttributes = ["subject", "loading"];
+  static dispatch;
+
+  static get fragment() {
+    if (!this._template) {
+      let parser = new DOMParser();
+      let doc = parser.parseFromString(
+        `
+        <template>
+          <link rel="stylesheet" href="conversation.css" />
+          <div class="subject">
+          </div>
+        </template>
+        `,
+        "text/html"
+      );
+      this._template = document.importNode(doc.querySelector("template"), true);
+    }
+    return this._template.content.cloneNode(true);
   }
 
-  handleClick(event) {
-    this.props.dispatch(summaryActions.openLink({ url: event.target.title }));
-    event.preventDefault();
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+    this.shadowRoot.appendChild(LinkifiedSubject.fragment);
   }
 
-  render() {
-    let subject = this.props.subject;
-    if (this.props.loading) {
-      subject = browser.i18n.getMessage("message.loading");
+  /**
+   * Handles an attribute change.
+   *
+   * @param {string} name
+   * @param {string} oldValue
+   * @param {string} newValue
+   */
+  attributeChangedCallback(name, oldValue, newValue) {
+    let subjectElement = this.shadowRoot.querySelector(".subject");
+    let subject = this.getAttribute("subject");
+
+    if (this.getAttribute("loading") != "false") {
+      subjectElement.textContent = browser.i18n.getMessage("message.loading");
     } else if (!subject) {
-      subject = browser.i18n.getMessage("message.noSubject");
+      subjectElement.textContent = browser.i18n.getMessage("message.noSubject");
     } else if (LINKS_REGEX.test(subject)) {
-      let contents = [];
+      let contents = document.createDocumentFragment();
       let text = subject;
-      let i = 0;
+
       while (text && LINKS_REGEX.test(text)) {
         let matches = LINKS_REGEX.exec(text);
         let [pre, ...post] = text.split(matches[1]);
-        let link = React.createElement(
-          "a",
-          {
-            href: matches[1],
-            title: matches[1],
-            className: "link",
-            onClick: this.handleClick,
-            key: i++,
-          },
-          matches[1]
-        );
+        let link = document.createElement("a");
+        link.href = matches[1];
+        link.title = matches[1];
+        link.class = "link";
+        link.addEventListener("click", this.handleClick.bind(this));
+        link.textContent = matches[1];
         if (pre) {
-          contents.push(pre);
+          contents.append(pre);
         }
-        contents.push(link);
+        contents.append(link);
         text = post.join(matches[1]);
       }
       if (text) {
-        contents.push(text);
+        contents.append(text);
       }
 
-      return React.createElement(
-        "div",
-        { className: "subject", title: subject },
-        React.createElement("span", null, contents)
-      );
+      subjectElement.replaceChildren(contents);
+    } else {
+      subjectElement.textContent = subject;
     }
+  }
 
-    return React.createElement(
-      "div",
-      { className: "subject", title: subject },
-      subject
+  handleClick(event) {
+    LinkifiedSubject.dispatch(
+      summaryActions.openLink({ url: event.target.title })
     );
+    event.preventDefault();
   }
 }
-
-LinkifiedSubject.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-  loading: PropTypes.bool.isRequired,
-  subject: PropTypes.string.isRequired,
-};
+customElements.define("linkified-subject", LinkifiedSubject);
 
 /**
  * Handles display for the header of the conversation.
@@ -167,14 +182,15 @@ class _ConversationHeader extends React.PureComponent {
 
   render() {
     document.title = this.props.subject;
+    LinkifiedSubject.dispatch = this.props.dispatch;
+
     return React.createElement(
       "div",
       { className: "conversationHeaderWrapper" },
       React.createElement(
         "div",
         { className: "conversationHeader" },
-        React.createElement(LinkifiedSubject, {
-          dispatch: this.props.dispatch,
+        React.createElement("linkified-subject", {
           loading: this.props.loading,
           subject: this.props.subject,
         }),

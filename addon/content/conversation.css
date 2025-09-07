@@ -144,6 +144,9 @@ a img {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+linkified-subject {
   flex: 1;
 }
 
