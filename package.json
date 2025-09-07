@@ -57,7 +57,7 @@
     "build": "./scripts/build.sh",
     "start": "web-ext run",
     "prod": "./scripts/build.sh --prod",
-    "format": "prettier --write .",
+    "format": "prettier --experimental-cli --write .",
     "test": "npm run test:lint && npm run test:typescript && npm run test:format && npm run test:node",
     "test:lint": "eslint .",
     "test:format": "prettier --check .",
