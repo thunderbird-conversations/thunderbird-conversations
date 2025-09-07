@@ -4,7 +4,6 @@
 
 import React from "react";
 import { messageActions } from "../../reducer/reducerMessages.mjs";
-import { SvgIcon } from "../svgIcon.mjs";
 
 /**
  * Handles display of the remote content notification.
@@ -75,7 +74,7 @@ function GenericSingleButtonNotification({
   return React.createElement(
     "div",
     { className: barClassName + " notificationBar" },
-    React.createElement(SvgIcon, { hash: iconName }),
+    React.createElement("svg-icon", { hash: iconName }),
     notificationText + " ",
     React.createElement(
       "span",
@@ -119,7 +118,7 @@ function GenericMultiButtonNotification({
   return React.createElement(
     "div",
     { className: barClassName + " notificationBar" },
-    React.createElement(SvgIcon, { hash: iconName }),
+    React.createElement("svg-icon", { hash: iconName }),
     notificationText + " ",
     buttons.map((button, i) =>
       React.createElement(

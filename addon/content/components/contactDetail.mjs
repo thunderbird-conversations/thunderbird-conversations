@@ -6,7 +6,6 @@ import React from "react";
 import * as ReactRedux from "react-redux";
 import PropTypes from "prop-types";
 import { summaryActions } from "../reducer/reducerSummary.mjs";
-import { SvgIcon } from "./svgIcon.mjs";
 
 function _ContactDetail({
   name,
@@ -91,7 +90,7 @@ function _ContactDetail({
             title: browser.i18n.getMessage("contact.viewContactTooltip"),
             onClick: editContact,
           },
-          React.createElement(SvgIcon, { hash: "person" })
+          React.createElement("svg-icon", { hash: "person" })
         )
       : React.createElement(
           "button",
@@ -100,7 +99,7 @@ function _ContactDetail({
             title: browser.i18n.getMessage("contact.editContactTooltip"),
             onClick: editContact,
           },
-          React.createElement(SvgIcon, { hash: "edit" })
+          React.createElement("svg-icon", { hash: "edit" })
         );
   } else {
     contactEdit = React.createElement(
@@ -110,7 +109,7 @@ function _ContactDetail({
         title: browser.i18n.getMessage("contact.addContactTooltip"),
         onClick: addContact,
       },
-      React.createElement(SvgIcon, { hash: "add" })
+      React.createElement("svg-icon", { hash: "add" })
     );
   }
 
@@ -144,7 +143,7 @@ function _ContactDetail({
               title: browser.i18n.getMessage("contact.copyEmailTooltip"),
               onClick: copyEmail,
             },
-            React.createElement(SvgIcon, { hash: "content_copy" })
+            React.createElement("svg-icon", { hash: "content_copy" })
           )
         )
       ),
@@ -164,7 +163,7 @@ function _ContactDetail({
           title: browser.i18n.getMessage("contact.sendEmailTooltip"),
           onClick: sendEmail,
         },
-        React.createElement(SvgIcon, { hash: "mail" })
+        React.createElement("svg-icon", { hash: "mail" })
       ),
       React.createElement(
         "button",
@@ -173,7 +172,7 @@ function _ContactDetail({
           title: browser.i18n.getMessage("contact.recentConversationsTooltip"),
           onClick: showInvolving,
         },
-        React.createElement(SvgIcon, { hash: "history" })
+        React.createElement("svg-icon", { hash: "history" })
       ),
       contactEdit,
       React.createElement(

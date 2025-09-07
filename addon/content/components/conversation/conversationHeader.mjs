@@ -7,7 +7,6 @@ import * as ReactRedux from "react-redux";
 import PropTypes from "prop-types";
 import { messageActions } from "../../reducer/reducerMessages.mjs";
 import { summaryActions } from "../../reducer/reducerSummary.mjs";
-import { SvgIcon } from "../svgIcon.mjs";
 
 const LINKS_REGEX = /((\w+):\/\/[^<>()'"\s]+|www(\.[-\w]+){2,})/;
 
@@ -189,8 +188,8 @@ class _ConversationHeader extends React.PureComponent {
               title: browser.i18n.getMessage("message.detach.tooltip"),
               onClick: this.detachTab,
             },
-            React.createElement(SvgIcon, {
-              ariaHidden: true,
+            React.createElement("svg-icon", {
+              "aria-hidden": true,
               hash: "open_in_new",
             })
           ),
@@ -203,7 +202,10 @@ class _ConversationHeader extends React.PureComponent {
               title: browser.i18n.getMessage("message.read.tooltip"),
               onClick: this.toggleRead,
             },
-            React.createElement(SvgIcon, { ariaHidden: true, hash: "new" })
+            React.createElement("svg-icon", {
+              "aria-hidden": true,
+              hash: "new",
+            })
           ),
           React.createElement(
             "button",
@@ -241,8 +243,8 @@ class _ConversationHeader extends React.PureComponent {
                 title: browser.i18n.getMessage("message.junk.tooltip"),
                 onClick: this.junkConversation,
               },
-              React.createElement(SvgIcon, {
-                ariaHidden: true,
+              React.createElement("svg-icon", {
+                "aria-hidden": true,
                 hash: "whatshot",
               })
             ),
@@ -253,7 +255,10 @@ class _ConversationHeader extends React.PureComponent {
               title: browser.i18n.getMessage("message.archive.tooltip"),
               onClick: this.archiveToolbar,
             },
-            React.createElement(SvgIcon, { ariaHidden: true, hash: "archive" })
+            React.createElement("svg-icon", {
+              "aria-hidden": true,
+              hash: "archive",
+            })
           ),
           React.createElement(
             "button",
@@ -262,7 +267,10 @@ class _ConversationHeader extends React.PureComponent {
               title: browser.i18n.getMessage("message.trash.tooltip"),
               onClick: this.delete,
             },
-            React.createElement(SvgIcon, { ariaHidden: true, hash: "delete" })
+            React.createElement("svg-icon", {
+              "aria-hidden": true,
+              hash: "delete",
+            })
           )
         )
       )

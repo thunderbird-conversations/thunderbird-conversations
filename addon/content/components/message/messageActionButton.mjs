@@ -3,7 +3,6 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import React from "react";
-import { SvgIcon } from "../svgIcon.mjs";
 
 const ActionsToInfoMap = {
   draft: {
@@ -89,7 +88,7 @@ export function ActionButton({ type, callback, className, showString }) {
   return React.createElement(
     "button",
     { className: className || "", title, onClick: action },
-    React.createElement(SvgIcon, { ariaHidden: true, hash: info.icon }),
+    React.createElement("svg-icon", { "aria-hidden": true, hash: info.icon }),
     " ",
     !!showString && title
   );

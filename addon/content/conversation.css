@@ -604,11 +604,11 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
   cursor: pointer;
 }
 
-.notificationBar > .icon {
+.notificationBar > svg-icon::part(svg) {
   font-size: 1.8em;
 }
 
-.openpgpBar > .icon {
+.openpgpBar > svg-icon::part(svg) {
   font-size: 1em;
 }
 
@@ -626,7 +626,7 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
   color: var(--dull-foreground-color);
 }
 
-.attachmentIcon .icon {
+.attachmentIcon svg-icon::part(svg) {
   transform: rotate(-50deg);
 }
 
@@ -760,7 +760,7 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
   background: transparent;
 }
 
-.star .icon {
+.star svg-icon::part(svg) {
   fill: none;
   stroke: currentColor;
   stroke-width: 2;
@@ -769,7 +769,7 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
 .star.starred {
   color: #fcb040;
 }
-.star.starred .icon {
+.star.starred svg-icon::part(svg) {
   fill: currentColor;
   stroke: currentColor;
 }

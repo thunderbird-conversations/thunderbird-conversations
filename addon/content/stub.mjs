@@ -3,6 +3,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 /* global BrowserSim */
+// eslint-disable-next-line import/no-unassigned-import
+import "./components/svgIcon.mjs";
 import React from "react";
 import ReactDOMClient from "react-dom/client";
 import * as RTK from "@reduxjs/toolkit";

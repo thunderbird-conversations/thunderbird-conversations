@@ -5,7 +5,6 @@
 import React from "react";
 import { ActionButton } from "./messageActionButton.mjs";
 import { messageActions } from "../../reducer/reducerMessages.mjs";
-import { SvgIcon } from "../svgIcon.mjs";
 
 /**
  * Handles display of the options menu.
@@ -283,7 +282,7 @@ export function MessageHeaderOptions({
       React.createElement(
         "span",
         { className: "attachmentIcon" },
-        React.createElement(SvgIcon, { hash: "attachment" })
+        React.createElement("svg-icon", { hash: "attachment" })
       ),
     React.createElement(
       "span",
@@ -318,8 +317,8 @@ export function MessageHeaderOptions({
                 : "message.turnDarkModeOff.tooltip"
             ),
           },
-          React.createElement(SvgIcon, {
-            ariaHidden: true,
+          React.createElement("svg-icon", {
+            "aria-hidden": true,
             hash: overrideDarkMode ? "invert_colors_off" : "invert_colors",
           })
         )
@@ -341,8 +340,8 @@ export function MessageHeaderOptions({
                 : "message.showDetails.tooltip"
             ),
           },
-          React.createElement(SvgIcon, {
-            ariaHidden: true,
+          React.createElement("svg-icon", {
+            "aria-hidden": true,
             hash: detailsShowing ? "info" : "info_outline",
           })
         )
@@ -358,8 +357,8 @@ export function MessageHeaderOptions({
             className: "icon-link top-right-more",
             title: browser.i18n.getMessage("message.moreMenu.tooltip"),
           },
-          React.createElement(SvgIcon, {
-            ariaHidden: true,
+          React.createElement("svg-icon", {
+            "aria-hidden": true,
             hash: "more_vert",
           })
         ),

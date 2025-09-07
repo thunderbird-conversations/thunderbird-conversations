@@ -3,7 +3,6 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import React from "react";
-import { SvgIcon } from "../svgIcon.mjs";
 
 /**
  * Determine if a background color is light enough to require dark text.
@@ -255,7 +254,7 @@ export function SpecialMessageTag({
       React.createElement(DisplayInfo, { info: displayInfo }),
     icon.startsWith("moz-extension://")
       ? React.createElement(SpecialMessageTagIcon, { fullPath: icon })
-      : React.createElement(SvgIcon, { fullPath: icon }),
+      : React.createElement("svg-icon", { fullPath: icon }),
     name,
     tooltip.strings &&
       !!tooltip.strings.length &&

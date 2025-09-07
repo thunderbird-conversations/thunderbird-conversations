@@ -7,7 +7,6 @@ import React from "react";
 import * as ReactRedux from "react-redux";
 import { TextArea, TextBox } from "./composeFields.mjs";
 import PropTypes from "prop-types";
-import { SvgIcon } from "../svgIcon.mjs";
 
 export function ComposeWidget({ discard }) {
   const dispatch = ReactRedux.useDispatch();
@@ -125,8 +124,8 @@ export function ComposeWidget({ discard }) {
           onClick: discard,
           disabled: !discard,
         },
-        React.createElement(SvgIcon, {
-          ariaHidden: true,
+        React.createElement("svg-icon", {
+          "aria-hidden": true,
           hash: "delete_forever",
         }),
         browser.i18n.getMessage("compose.discard")
@@ -139,7 +138,7 @@ export function ComposeWidget({ discard }) {
           disabled:
             composeState.sending || !composeState.to || !composeState.subject,
         },
-        React.createElement(SvgIcon, { ariaHidden: true, hash: "send" }),
+        React.createElement("svg-icon", { "aria-hidden": true, hash: "send" }),
         browser.i18n.getMessage("compose.send")
       )
     )

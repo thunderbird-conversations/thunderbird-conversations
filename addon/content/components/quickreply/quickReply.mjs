@@ -6,7 +6,6 @@ import React from "react";
 import * as ReactRedux from "react-redux";
 import { ComposeWidget } from "../compose/composeWidget.mjs";
 import { quickReplyActions } from "../../reducer/reducerQuickReply.mjs";
-import { SvgIcon } from "../svgIcon.mjs";
 import PropTypes from "prop-types";
 
 export function QuickReply({ id, multipleRecipients, recipientsIncludeLists }) {
@@ -58,7 +57,7 @@ export function QuickReply({ id, multipleRecipients, recipientsIncludeLists }) {
           browser.i18n.getMessage("action.reply")
         ),
         " ",
-        React.createElement(SvgIcon, { hash: "reply" })
+        React.createElement("svg-icon", { hash: "reply" })
       ),
       recipientsIncludeLists &&
         React.createElement(
@@ -75,7 +74,7 @@ export function QuickReply({ id, multipleRecipients, recipientsIncludeLists }) {
             browser.i18n.getMessage("action.replyList")
           ),
           " ",
-          React.createElement(SvgIcon, { hash: "list" })
+          React.createElement("svg-icon", { hash: "list" })
         ),
       !recipientsIncludeLists &&
         multipleRecipients &&
@@ -93,7 +92,7 @@ export function QuickReply({ id, multipleRecipients, recipientsIncludeLists }) {
             browser.i18n.getMessage("action.replyAll")
           ),
           " ",
-          React.createElement(SvgIcon, { hash: "reply_all" })
+          React.createElement("svg-icon", { hash: "reply_all" })
         )
     )
   );

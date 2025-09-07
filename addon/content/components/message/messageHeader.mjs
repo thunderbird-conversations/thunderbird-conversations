@@ -8,7 +8,6 @@ import { ContactDetail } from "../contactDetail.mjs";
 import { messageActions } from "../../reducer/reducerMessages.mjs";
 import { MessageHeaderOptions } from "./messageHeaderOptions.mjs";
 import { MessageTags, SpecialMessageTags } from "./messageTags.mjs";
-import { SvgIcon } from "../svgIcon.mjs";
 
 /**
  * Normalize a contact into a string (used for i18n formatting).
@@ -370,7 +369,7 @@ export function MessageHeader({
           title: starTitle,
           onClick: onClickStar,
         },
-        React.createElement(SvgIcon, { ariaHidden: true, hash: "star" })
+        React.createElement("svg-icon", { "aria-hidden": true, hash: "star" })
       ),
       !!from &&
         React.createElement(
