@@ -7,7 +7,7 @@ import eslintConfigPrettier from "eslint-config-prettier";
 
 export default [
   {
-    ignores: ["dist**", "package-lock.json"],
+    ignores: ["dist**", "package-lock.json", "**/*.html", "**/*.xhtml"],
   },
   ...mozilla.configs["flat/recommended"],
   {

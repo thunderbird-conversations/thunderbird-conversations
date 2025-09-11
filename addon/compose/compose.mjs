@@ -10,10 +10,12 @@ import { ComposeWidget } from "../content/components/compose/composeWidget.mjs";
 
 export const store = RTK.configureStore({ reducer: composeApp });
 
+/* eslint-disable jsdoc/no-undefined-types */
 /**
  * @typedef {ReturnType<store["getState"]>} RootState
  * @typedef {store["dispatch"]} AppDispatch
  * */
+/* eslint-enable jsdoc/no-undefined-types */
 
 /** @type {ReturnType<typeof ReactRedux.useSelector.withTypes<RootState>>} */
 const useAppSelector = ReactRedux.useSelector;

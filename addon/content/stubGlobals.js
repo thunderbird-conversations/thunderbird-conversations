@@ -3,7 +3,6 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 /* exported BrowserSim */
-// eslint-disable-next-line no-unused-vars
 ChromeUtils.defineESModuleGetters(this, {
   BrowserSim:
     "chrome://conversations/content/modules/BrowserSim.sys.mjs?rand=" +

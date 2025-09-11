@@ -8,10 +8,6 @@
       "groupSlug": "dev-dependencies"
     },
     {
-      "matchPackageNames": ["eslint"],
-      "enabled": "false"
-    },
-    {
       "matchDepTypes": ["dependencies"],
       "matchUpdateTypes": ["patch", "minor"],
       "groupName": "dependencies (non-major)",
