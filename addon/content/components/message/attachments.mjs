@@ -197,6 +197,8 @@ function Attachment({
   }, [displayMenu]);
 
   function handleDisplayMenu(event) {
+    event.preventDefault();
+    event.stopPropagation();
     setDisplayMenu(!displayMenu);
   }
 
