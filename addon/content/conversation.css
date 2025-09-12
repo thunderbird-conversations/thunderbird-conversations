@@ -151,7 +151,7 @@ linkified-subject {
   overflow: hidden;
 }
 
-.actions button {
+.actions-button {
   min-width: 30px;
   text-align: center;
   height: 24px;
@@ -159,11 +159,12 @@ linkified-subject {
   color: var(--dull-foreground-color);
 }
 
-.actions .unread {
+.actions-button.unread {
   color: #3079e0;
 }
 
-.actions .expand {
+.expand-less,
+.expand-more {
   /* relatively scale arrow to match with other icons */
   transform: scale(1.6, 1.6);
 }
@@ -173,8 +174,9 @@ linkified-subject {
   display: none;
 }
 
+.expand .expand-more,
 .expand.collapse .expand-less {
-  display: initial;
+  display: inline-block;
 }
 
 #messageList {
