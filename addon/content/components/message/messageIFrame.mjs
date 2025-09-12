@@ -588,16 +588,16 @@ export class MessageIFrame extends React.Component {
     // Additional CSS for dark mode
     cssRules.push(
       `@media screen and (prefers-color-scheme: dark) {
-          html:not(.overrideDarkMode) {
+          html.darkReaderEnabled { 
           /* Override Thunderbird's styles in 138+ */
             background-color: inherit;
             color: inherit;
           }
-          html:not(.overrideDarkMode) > body {
+          html.darkReaderEnabled > body {
             filter: invert(100%) hue-rotate(180deg) !important;
             background: rgb(28, 27, 34) !important;
           }
-          html:not(.overrideDarkMode) > body :is(img, [style*="background-image:"]:not([style*="background-image: none"]), [background*="."], g-emoji) {
+          html.darkReaderEnabled > body :is(img, [style*="background-image:"]:not([style*="background-image: none"]), [background*="."], g-emoji) {
             filter: invert(100%) hue-rotate(180deg) !important;
           }
       }`
@@ -658,13 +658,13 @@ export class MessageIFrame extends React.Component {
 
   render() {
     if (this.iframe?.contentDocument) {
-      if (this.props.overrideDarkMode) {
-        this.iframe.contentDocument.documentElement.classList.add(
-          "overrideDarkMode"
+      if (this.props.darkReaderEnabled) {
+        this.iframe.contentDocument.documentElement?.classList.add(
+          "darkReaderEnabled"
         );
       } else {
         this.iframe.contentDocument.documentElement?.classList.remove(
-          "overrideDarkMode"
+          "darkReaderEnabled"
         );
       }
     }
@@ -680,6 +680,7 @@ export class MessageIFrame extends React.Component {
 MessageIFrame.propTypes = {
   browserBackgroundColor: PropTypes.string.isRequired,
   browserForegroundColor: PropTypes.string.isRequired,
+  darkReaderEnabled: PropTypes.bool.isRequired,
   defaultFontSize: PropTypes.number.isRequired,
   dispatch: PropTypes.func.isRequired,
   expanded: PropTypes.bool.isRequired,
@@ -688,7 +689,6 @@ MessageIFrame.propTypes = {
   isInTab: PropTypes.bool.isRequired,
   isStandalone: PropTypes.bool.isRequired,
   initialPosition: PropTypes.number.isRequired,
-  overrideDarkMode: PropTypes.bool.isRequired,
   smimeReload: PropTypes.bool.isRequired,
   tenPxFactor: PropTypes.number.isRequired,
   prefs: PropTypes.object.isRequired,

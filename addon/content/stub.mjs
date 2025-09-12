@@ -12,6 +12,17 @@ import * as ReactRedux from "react-redux";
 import { conversationApp } from "./reducer/reducer.mjs";
 import { ConversationWrapper } from "./components/conversation/conversationWrapper.mjs";
 import { controllerActions } from "./reducer/controllerActions.mjs";
+import { summarySlice } from "./reducer/reducerSummary.mjs";
+
+let gStore;
+
+function handlePrefUpdate(value) {
+  gStore.dispatch(
+    summarySlice.actions.setDarkReaderEnabled({
+      darkReaderEnabled: value,
+    })
+  );
+}
 
 document.addEventListener(
   "DOMContentLoaded",
@@ -40,6 +51,19 @@ document.addEventListener(
 
     // Kick everything off.
     store.dispatch(controllerActions.waitForStartup());
+    gStore = store;
+
+    browser.conversations.onCorePrefChanged.addListener(
+      handlePrefUpdate,
+      "mail.dark-reader.enabled"
+    );
   },
   { once: true }
 );
+
+document.addEventListener("unload", () => {
+  browser.conversations.onCorePrefChanged.removeListener(
+    handlePrefUpdate,
+    "mail.dark-reader.enabled"
+  );
+});

@@ -128,7 +128,6 @@ export function OptionsMoreMenu({
  *
  * @param {object} props
  * @param {Function} props.dispatch
- * @param {boolean} props.overrideDarkMode
  * @param {string} props.date
  * @param {boolean} props.detailsShowing
  * @param {boolean} props.expanded
@@ -141,7 +140,6 @@ export function OptionsMoreMenu({
  */
 export function MessageHeaderOptions({
   dispatch,
-  overrideDarkMode,
   date,
   detailsShowing,
   expanded,
@@ -153,27 +151,6 @@ export function MessageHeaderOptions({
   isDraft,
 }) {
   let [displayMenu, setDisplayMenu] = React.useState(false);
-  let prefersDarkQuery = window.matchMedia("(prefers-color-scheme: dark)");
-
-  let [inDarkMode, setInDarkMode] = React.useState(prefersDarkQuery.matches);
-
-  React.useEffect(() => {
-    /**
-     * @param {MediaQueryListEvent} event
-     */
-    function changeDarkMode(event) {
-      setInDarkMode(event.matches);
-      if (!event.matches && overrideDarkMode) {
-        dispatch(messageActions.toggleOverrideDarkMode({ msgId: id }));
-      }
-    }
-
-    prefersDarkQuery.addEventListener("change", changeDarkMode);
-
-    return () => {
-      prefersDarkQuery.removeEventListener("change", changeDarkMode);
-    };
-  }, [overrideDarkMode]);
 
   function replyAction(msg, event) {
     event.stopPropagation();
@@ -260,12 +237,6 @@ export function MessageHeaderOptions({
     setDisplayMenu(false);
   }
 
-  function toggleDarkMode(event) {
-    event.preventDefault();
-    event.stopPropagation();
-    dispatch(messageActions.toggleOverrideDarkMode({ msgId: id }));
-  }
-
   let actionButtonType = "reply";
   if (isDraft) {
     actionButtonType = "draft";
@@ -298,30 +269,6 @@ export function MessageHeaderOptions({
           className: "icon-link",
           type: actionButtonType,
         })
-      ),
-    expanded &&
-      inDarkMode &&
-      React.createElement(
-        "span",
-        {
-          className: "invert-colors",
-        },
-        React.createElement(
-          "button",
-          {
-            className: "icon-link",
-            onClick: toggleDarkMode,
-            title: browser.i18n.getMessage(
-              overrideDarkMode
-                ? "message.turnDarkModeOn.tooltip"
-                : "message.turnDarkModeOff.tooltip"
-            ),
-          },
-          React.createElement("svg-icon", {
-            "aria-hidden": true,
-            hash: overrideDarkMode ? "invert_colors_off" : "invert_colors",
-          })
-        )
       ),
     expanded &&
       React.createElement(

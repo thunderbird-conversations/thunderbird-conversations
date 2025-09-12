@@ -106,12 +106,16 @@ export const controllerActions = {
         !(await browser.conversations.getCorePref(
           "mailnews.mark_message_read.delay"
         ));
+      const darkReaderEnabled = await browser.conversations.getCorePref(
+        "mail.dark-reader.enabled"
+      );
 
       await dispatch(
         summaryActions.setSystemOptions({
           autoMarkAsRead,
           browserForegroundColor,
           browserBackgroundColor,
+          darkReaderEnabled,
           defaultDetailsShowing,
           defaultFontSize,
           OS: platformInfo.os,

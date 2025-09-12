@@ -102,6 +102,7 @@ class ConversationActionButtons extends HTMLElement {
     "aresomemessagesunread",
     "aresomemessagescollapsed",
     "canjunk",
+    "darkreaderenabled",
   ];
   static dispatch;
 
@@ -112,6 +113,9 @@ class ConversationActionButtons extends HTMLElement {
         `
         <template>
           <link rel="stylesheet" href="conversation.css" />
+          <button class="button-flat actions-button hidden dark-mode-toggle">
+            <svg-icon aria-hidden="true" hash="invert_colors"></svg-icon>
+          </button>
           <button class="button-flat actions-button open-in-new">
             <svg-icon aria-hidden="true" hash="open_in_new"></svg-icon>
           </button>
@@ -144,6 +148,22 @@ class ConversationActionButtons extends HTMLElement {
     super();
     this.attachShadow({ mode: "open" });
     this.shadowRoot.appendChild(ConversationActionButtons.fragment);
+
+    let prefersDarkQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    let darkModeToggle = this.shadowRoot.querySelector(".dark-mode-toggle");
+
+    darkModeToggle.title = browser.i18n.getMessage(
+      "message.turnDarkModeOff.tooltip"
+    );
+    darkModeToggle.addEventListener("click", this.#toggleDarkMode.bind(this));
+
+    if (prefersDarkQuery.matches) {
+      darkModeToggle.classList.remove("hidden");
+    }
+    prefersDarkQuery.addEventListener(
+      "change",
+      this.#darkModeUpdated.bind(this)
+    );
 
     let openInNew = this.shadowRoot.querySelector(".open-in-new");
     openInNew.title = browser.i18n.getMessage("message.detach.tooltip");
@@ -206,6 +226,21 @@ class ConversationActionButtons extends HTMLElement {
         }
         break;
       }
+      case "darkreaderenabled": {
+        let darkToggle = this.shadowRoot.querySelector(".dark-mode-toggle");
+        darkToggle.title = browser.i18n.getMessage(
+          newValue === "true"
+            ? "message.turnDarkModeOff.tooltip"
+            : "message.turnDarkModeOn.tooltip"
+        );
+        darkToggle
+          .querySelector("svg-icon")
+          .setAttribute(
+            "hash",
+            newValue === "true" ? "invert_colors" : "invert_colors_off"
+          );
+        break;
+      }
     }
   }
 
@@ -214,6 +249,21 @@ class ConversationActionButtons extends HTMLElement {
       summaryActions.openLink({ url: event.target.title })
     );
     event.preventDefault();
+  }
+
+  #darkModeUpdated(event) {
+    let darkModeToggle = this.shadowRoot.querySelector(".dark-mode-toggle");
+    if (event.matches) {
+      darkModeToggle.classList.remove("hidden");
+    } else {
+      darkModeToggle.classList.add("hidden");
+    }
+  }
+
+  #toggleDarkMode(event) {
+    ConversationActionButtons.dispatch(
+      summaryActions.toggleDarkReaderEnabled()
+    );
   }
 
   /**
@@ -314,6 +364,7 @@ class _ConversationHeader extends React.PureComponent {
           aresomemessagesunread: this.areSomeMessagesUnread.toString(),
           aresomemessagescollapsed: this.areSomeMessagesCollapsed.toString(),
           canjunk: this.canJunk.toString(),
+          darkreaderenabled: this.props.darkReaderEnabled.toString(),
           firstid: this.props.msgData?.[0]?.id,
         })
       )
@@ -324,6 +375,7 @@ class _ConversationHeader extends React.PureComponent {
 _ConversationHeader.propTypes = {
   dispatch: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
+  darkReaderEnabled: PropTypes.bool.isRequired,
   subject: PropTypes.string.isRequired,
   msgData: PropTypes.array.isRequired,
 };
@@ -332,6 +384,7 @@ export const ConversationHeader = ReactRedux.connect((state) => {
   return {
     loading: state.summary.loading,
     subject: state.summary.subject,
+    darkReaderEnabled: state.summary.darkReaderEnabled,
     msgData: state.messages.msgData,
   };
 })(_ConversationHeader);

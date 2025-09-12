@@ -42,6 +42,7 @@ function _MessageList({ dispatch, messages, summary }) {
           autoMarkAsRead: summary.autoMarkAsRead,
           browserBackgroundColor: summary.browserBackgroundColor,
           browserForegroundColor: summary.browserForegroundColor,
+          darkReaderEnabled: summary.darkReaderEnabled,
           defaultFontSize: summary.defaultFontSize,
           dispatch,
           displayingMultipleMsgs: !!messages.length,

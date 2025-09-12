@@ -24,6 +24,7 @@ export const initialSummary = {
   subject: "",
   windowId: null,
   defaultDetailsShowing: false,
+  darkReaderEnabled: true,
   initialSet: [],
   prefs: {
     expandWho: 4,
@@ -240,6 +241,22 @@ export const summaryActions = {
       );
     };
   },
+  toggleDarkReaderEnabled() {
+    return async (dispatch, getState) => {
+      let state = getState();
+
+      await browser.conversations.setCorePref(
+        "mail.dark-reader.enabled",
+        !state.summary.darkReaderEnabled
+      );
+
+      dispatch(
+        summarySlice.actions.setDarkReaderEnabled({
+          darkReaderEnabled: !state.summary.darkReaderEnabled,
+        })
+      );
+    };
+  },
 };
 
 export const summarySlice = RTK.createSlice({
@@ -263,12 +280,16 @@ export const summarySlice = RTK.createSlice({
       const { isInTab, isStandalone, tabId, windowId } = payload;
       return { ...state, isInTab, isStandalone, tabId, windowId };
     },
+    setDarkReaderEnabled(state, { payload }) {
+      return { ...state, darkReaderEnabled: payload.darkReaderEnabled };
+    },
     setSystemOptions(state, { payload }) {
       const {
         OS,
         autoMarkAsRead,
         browserForegroundColor,
         browserBackgroundColor,
+        darkReaderEnabled,
         defaultFontSize,
         defaultDetailsShowing,
       } = payload;
@@ -284,6 +305,7 @@ export const summarySlice = RTK.createSlice({
         autoMarkAsRead,
         browserForegroundColor,
         browserBackgroundColor,
+        darkReaderEnabled,
         defaultFontSize,
         defaultDetailsShowing,
         OS,

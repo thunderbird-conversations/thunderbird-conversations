@@ -181,6 +181,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
               case "mail.phishing.detection.disallow_form_actions":
               case "mail.showCondensedAddresses":
               case "mailnews.database.global.indexer.enabled":
+              case "mail.dark-reader.enabled":
                 return Services.prefs.getBoolPref(name);
               case "font.size.variable.x-western":
               case "mail.forward_message_mode":
@@ -204,6 +205,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           try {
             switch (name) {
               case "mailnews.database.global.indexer.enabled":
+              case "mail.dark-reader.enabled":
                 Services.prefs.setBoolPref(name, value);
                 break;
               case "mailnews.default_sort_order":

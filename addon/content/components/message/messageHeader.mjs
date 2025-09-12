@@ -248,7 +248,6 @@ function Avatar({ url, initials, style }) {
  * @param {object} props
  * @param {object[]} props.bcc
  * @param {object[]} props.cc
- * @param {boolean} props.overrideDarkMode
  * @param {Function} props.dispatch
  * @param {string} props.date
  * @param {boolean} props.detailsShowing
@@ -272,7 +271,6 @@ export function MessageHeader({
   expanded,
   from,
   id,
-  overrideDarkMode,
   dispatch,
   bcc,
   cc,
@@ -422,7 +420,6 @@ export function MessageHeader({
     ),
     React.createElement(MessageHeaderOptions, {
       dispatch,
-      overrideDarkMode,
       date,
       detailsShowing,
       expanded,
