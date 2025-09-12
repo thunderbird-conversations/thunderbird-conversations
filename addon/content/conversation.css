@@ -59,7 +59,7 @@ p {
 }
 
 button {
-  -moz-appearance: button;
+  appearance: button;
 }
 
 .hidden {
@@ -67,7 +67,7 @@ button {
 }
 
 .button-flat {
-  -moz-appearance: none;
+  appearance: none;
   background: none;
   border: 1px solid transparent;
   cursor: pointer;
@@ -699,11 +699,6 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
 
 .view-all {
   font-weight: bold;
-}
-
-.attachmentInfo {
-  display: inline-block;
-  float: inline-start;
 }
 
 .filename,
