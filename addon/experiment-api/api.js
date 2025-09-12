@@ -69,12 +69,15 @@ function msgHdrGetUri(aMsg) {
   return aMsg.folder.getUriForMsg(aMsg);
 }
 
-function getAttachmentInfo(msgUri, attachment) {
+function getAttachmentInfo(msgHdr, attachment) {
+  let msgUri = msgHdrGetUri(msgHdr);
+
   const attInfo = new lazy.AttachmentInfo({
     contentType: attachment.contentType,
     url: attachment.url,
     name: attachment.name,
     uri: msgUri,
+    message: msgHdr,
     isExternalAttachment: attachment.isExternal,
   });
   attInfo.size = attachment.size;
@@ -441,7 +444,6 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
         async downloadAttachment({ winId, tabId, msgId, partName }) {
           let msgHdr = context.extension.messageManager.get(msgId);
           let attachment = await findAttachment(msgHdr, partName);
-          let msgUri = msgHdrGetUri(msgHdr);
 
           // For Thunderbird 128 support.
           if (Services.vc.compare(Services.appinfo.version, "137.0a1") < 1) {
@@ -458,12 +460,12 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
                 Ci.nsIMsgWindow
               )
             );
-            getAttachmentInfo(msgUri, attachment).save(attachMessenger);
+            getAttachmentInfo(msgHdr, attachment).save(attachMessenger);
           } else {
             let tabObject = context.extension.tabManager.get(tabId);
             let contentWin = tabObject.nativeTab.chromeBrowser.contentWindow;
 
-            getAttachmentInfo(msgUri, attachment).save(
+            getAttachmentInfo(msgHdr, attachment).save(
               contentWin.multiMessageBrowser.browsingContext
             );
           }
@@ -500,19 +502,26 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           let { win } = getWinBrowserFromIds(context, winId, tabId);
           let msgHdr = context.extension.messageManager.get(msgId);
           let attachment = await findAttachment(msgHdr, partName);
-          let msgUri = msgHdrGetUri(msgHdr);
-          // Unfortunately, we still need a messenger with a msgWindow for
-          // this to work.
-          let attachMessenger = Cc["@mozilla.org/messenger;1"].createInstance(
-            Ci.nsIMessenger
-          );
-          attachMessenger.setWindow(
-            win,
-            Cc["@mozilla.org/messenger/msgwindow;1"].createInstance(
-              Ci.nsIMsgWindow
-            )
-          );
-          getAttachmentInfo(msgUri, attachment).detach(attachMessenger, true);
+
+          let attachmentInfo = getAttachmentInfo(msgHdr, attachment);
+          if ("detachFromMessage" in attachmentInfo) {
+            attachmentInfo.detachFromMessage(win.browsingContext);
+          } else {
+            // Supports Thunderbird 141 and earlier.
+
+            // Unfortunately, we still need a messenger with a msgWindow for
+            // this to work.
+            let attachMessenger = Cc["@mozilla.org/messenger;1"].createInstance(
+              Ci.nsIMessenger
+            );
+            attachMessenger.setWindow(
+              win,
+              Cc["@mozilla.org/messenger/msgwindow;1"].createInstance(
+                Ci.nsIMsgWindow
+              )
+            );
+            attachmentInfo.detach(attachMessenger, true);
+          }
         },
         async makeFriendlyDateAgo(date) {
           return lazy.makeFriendlyDateAgo(new Date(date));
