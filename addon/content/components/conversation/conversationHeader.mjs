@@ -52,7 +52,7 @@ class LinkifiedSubject extends HTMLElement {
     let subjectElement = this.shadowRoot.querySelector(".subject");
     let subject = this.getAttribute("subject");
 
-    if (this.getAttribute("loading") != "false") {
+    if (this.getAttribute("loading") == "true") {
       subjectElement.textContent = browser.i18n.getMessage("message.loading");
     } else if (!subject) {
       subjectElement.textContent = browser.i18n.getMessage("message.noSubject");
@@ -191,7 +191,7 @@ class _ConversationHeader extends React.PureComponent {
         "div",
         { className: "conversationHeader" },
         React.createElement("linkified-subject", {
-          loading: this.props.loading,
+          loading: this.props.loading ? "true" : "false",
           subject: this.props.subject,
         }),
         React.createElement(

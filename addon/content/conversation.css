@@ -148,6 +148,7 @@ a img {
 
 linkified-subject {
   flex: 1;
+  overflow: hidden;
 }
 
 .actions button {
