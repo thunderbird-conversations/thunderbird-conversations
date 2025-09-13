@@ -51,6 +51,8 @@ class _ConversationWrapper extends React.PureComponent {
   }
 
   render() {
+    ConversationFooter.dispatch = this.props.dispatch;
+
     if (this.props.messageNotFound) {
       return React.createElement(
         React.Fragment,
@@ -64,7 +66,7 @@ class _ConversationWrapper extends React.PureComponent {
       React.createElement("div", { id: "popup-container" }),
       React.createElement(ConversationHeader),
       React.createElement(MessageList),
-      React.createElement(ConversationFooter)
+      React.createElement("conversation-footer")
     );
   }
 }
