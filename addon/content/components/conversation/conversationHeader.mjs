@@ -2,9 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import React from "react";
-import * as ReactRedux from "react-redux";
-import PropTypes from "prop-types";
 import { messageActions } from "../../reducer/reducerMessages.mjs";
 import { summaryActions } from "../../reducer/reducerSummary.mjs";
 
@@ -15,7 +12,6 @@ const LINKS_REGEX = /((\w+):\/\/[^<>()'"\s]+|www(\.[-\w]+){2,})/;
  */
 class LinkifiedSubject extends HTMLElement {
   static observedAttributes = ["subject", "loading"];
-  static dispatch;
 
   static get fragment() {
     if (!this._template) {
@@ -66,7 +62,7 @@ class LinkifiedSubject extends HTMLElement {
         let link = document.createElement("a");
         link.href = matches[1];
         link.title = matches[1];
-        link.class = "link";
+        link.classList.add("link");
         link.addEventListener("click", this.handleClick.bind(this));
         link.textContent = matches[1];
         if (pre) {
@@ -86,7 +82,7 @@ class LinkifiedSubject extends HTMLElement {
   }
 
   handleClick(event) {
-    LinkifiedSubject.dispatch(
+    ConversationHeader.dispatch(
       summaryActions.openLink({ url: event.target.title })
     );
     event.preventDefault();
@@ -104,7 +100,6 @@ class ConversationActionButtons extends HTMLElement {
     "canjunk",
     "darkreaderenabled",
   ];
-  static dispatch;
 
   static get fragment() {
     if (!this._template) {
@@ -150,7 +145,9 @@ class ConversationActionButtons extends HTMLElement {
     this.shadowRoot.appendChild(ConversationActionButtons.fragment);
 
     let prefersDarkQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    let darkModeToggle = this.shadowRoot.querySelector(".dark-mode-toggle");
+    let darkModeToggle = /** @type {HTMLButtonElement} */ (
+      this.shadowRoot.querySelector(".dark-mode-toggle")
+    );
 
     darkModeToggle.title = browser.i18n.getMessage(
       "message.turnDarkModeOff.tooltip"
@@ -165,27 +162,39 @@ class ConversationActionButtons extends HTMLElement {
       this.#darkModeUpdated.bind(this)
     );
 
-    let openInNew = this.shadowRoot.querySelector(".open-in-new");
+    let openInNew = /** @type {HTMLButtonElement} */ (
+      this.shadowRoot.querySelector(".open-in-new")
+    );
     openInNew.title = browser.i18n.getMessage("message.detach.tooltip");
     openInNew.addEventListener("click", this.#detachTab.bind(this));
 
-    let toggleUnread = this.shadowRoot.querySelector(".toggle-unread");
+    let toggleUnread = /** @type {HTMLButtonElement} */ (
+      this.shadowRoot.querySelector(".toggle-unread")
+    );
     toggleUnread.title = browser.i18n.getMessage("message.read.tooltip");
     toggleUnread.addEventListener("click", this.#toggleRead.bind(this));
 
-    let expand = this.shadowRoot.querySelector(".expand");
+    let expand = /** @type {HTMLButtonElement} */ (
+      this.shadowRoot.querySelector(".expand")
+    );
     expand.title = browser.i18n.getMessage("message.expand.tooltip");
     expand.addEventListener("click", this.#expandCollapse.bind(this));
 
-    let junk = this.shadowRoot.querySelector(".junk");
+    let junk = /** @type {HTMLButtonElement} */ (
+      this.shadowRoot.querySelector(".junk")
+    );
     junk.title = browser.i18n.getMessage("message.junk.tooltip");
     junk.addEventListener("click", this.#junk.bind(this));
 
-    let archive = this.shadowRoot.querySelector(".archive");
+    let archive = /** @type {HTMLButtonElement} */ (
+      this.shadowRoot.querySelector(".archive")
+    );
     archive.title = browser.i18n.getMessage("message.archive.tooltip");
     archive.addEventListener("click", this.#archive.bind(this));
 
-    let trash = this.shadowRoot.querySelector(".trash");
+    let trash = /** @type {HTMLButtonElement} */ (
+      this.shadowRoot.querySelector(".trash")
+    );
     trash.title = browser.i18n.getMessage("message.trash.tooltip");
     trash.addEventListener("click", this.#trash.bind(this));
   }
@@ -227,7 +236,9 @@ class ConversationActionButtons extends HTMLElement {
         break;
       }
       case "darkreaderenabled": {
-        let darkToggle = this.shadowRoot.querySelector(".dark-mode-toggle");
+        let darkToggle = /** @type {HTMLButtonElement} */ (
+          this.shadowRoot.querySelector(".dark-mode-toggle")
+        );
         darkToggle.title = browser.i18n.getMessage(
           newValue === "true"
             ? "message.turnDarkModeOff.tooltip"
@@ -245,7 +256,7 @@ class ConversationActionButtons extends HTMLElement {
   }
 
   handleClick(event) {
-    ConversationActionButtons.dispatch(
+    ConversationHeader.dispatch(
       summaryActions.openLink({ url: event.target.title })
     );
     event.preventDefault();
@@ -261,9 +272,7 @@ class ConversationActionButtons extends HTMLElement {
   }
 
   #toggleDarkMode(event) {
-    ConversationActionButtons.dispatch(
-      summaryActions.toggleDarkReaderEnabled()
-    );
+    ConversationHeader.dispatch(summaryActions.toggleDarkReaderEnabled());
   }
 
   /**
@@ -274,14 +283,14 @@ class ConversationActionButtons extends HTMLElement {
    * @param {Event} event
    */
   #detachTab(event) {
-    ConversationActionButtons.dispatch(messageActions.detachTab());
+    ConversationHeader.dispatch(messageActions.detachTab());
   }
 
   // Mark the current conversation as read/unread. The conversation driver
   //  takes care of setting the right class on us whenever the state
   //  changes...
   #toggleRead(event) {
-    ConversationActionButtons.dispatch(
+    ConversationHeader.dispatch(
       messageActions.toggleConversationRead({
         read: this.getAttribute("aresomemessagesunread") === "true",
       })
@@ -289,7 +298,7 @@ class ConversationActionButtons extends HTMLElement {
   }
 
   #expandCollapse(event) {
-    ConversationActionButtons.dispatch(
+    ConversationHeader.dispatch(
       messageActions.toggleConversationExpanded({
         expand: this.getAttribute("aresomemessagescollapsed") === "true",
       })
@@ -300,7 +309,7 @@ class ConversationActionButtons extends HTMLElement {
     // This callback is only activated when the conversation is not a
     //  conversation in a tab AND there's only one message in the conversation,
     //  i.e. the currently selected message
-    ConversationActionButtons.dispatch(
+    ConversationHeader.dispatch(
       messageActions.markAsJunk({
         id: this.getAttribute("firstid"),
         isJunk: true,
@@ -309,82 +318,132 @@ class ConversationActionButtons extends HTMLElement {
   }
 
   #archive(event) {
-    ConversationActionButtons.dispatch(messageActions.archiveConversation());
+    ConversationHeader.dispatch(messageActions.archiveConversation());
   }
 
   #trash(event) {
-    ConversationActionButtons.dispatch(messageActions.deleteConversation());
+    ConversationHeader.dispatch(messageActions.deleteConversation());
   }
 }
 customElements.define("conv-actions-buttons", ConversationActionButtons);
 
 /**
- * Handles display for the header of the conversation.
+ * Defines the custom element for the conversation header.
  */
-class _ConversationHeader extends React.PureComponent {
-  get areSomeMessagesCollapsed() {
-    return !this.props.msgData?.some((msg) => msg.expanded);
+export class ConversationHeader extends HTMLElement {
+  static dispatch;
+
+  static get fragment() {
+    if (!this._template) {
+      let parser = new DOMParser();
+      let doc = parser.parseFromString(
+        `
+        <template>
+          <link rel="stylesheet" href="conversation.css" />
+          <div class="conversationHeaderWrapper" />
+            <div class="conversationHeader">
+              <linkified-subject></linkified-subject>
+              <conv-actions-buttons class="actions"></conv-actions-buttons>
+            </div>
+          </div>
+        </template>
+        `,
+        "text/html"
+      );
+      this._template = document.importNode(doc.querySelector("template"), true);
+    }
+    return this._template.content.cloneNode(true);
   }
 
-  get areSomeMessagesUnread() {
-    return !!this.props.msgData?.some((msg) => !msg.read);
+  /** @type {LinkifiedSubject} */
+  #linkifiedSubject;
+  /** @type {ConversationActionButtons} */
+  #convActionButtons;
+
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+    this.shadowRoot.appendChild(ConversationHeader.fragment);
   }
 
-  get canJunk() {
+  connectedCallback() {
+    this.#linkifiedSubject = this.shadowRoot.querySelector("linkified-subject");
+    this.#convActionButtons = this.shadowRoot.querySelector(
+      "conv-actions-buttons"
+    );
+  }
+
+  disconnectedCallback() {
+    this.#linkifiedSubject = null;
+    this.#convActionButtons = null;
+  }
+
+  areSomeMessagesCollapsed(msgData) {
+    return !msgData?.some((msg) => msg.expanded);
+  }
+
+  areSomeMessagesUnread(msgData) {
+    return !!msgData?.some((msg) => !msg.read);
+  }
+
+  canJunk(msgData) {
     // TODO: Disable if in just a new tab? (e.g. double-click)
     // as per old comment:
     // We can never junk a conversation in a new tab, because the junk
     // command only operates on selected messages, and we're not in a
     // 3pane context anymore.
 
-    return (
-      this.props.msgData &&
-      this.props.msgData.length <= 1 &&
-      this.props.msgData.some((msg) => !msg.isJunk)
-    );
+    return msgData.length <= 1 && msgData.some((msg) => !msg.isJunk);
   }
 
-  render() {
-    document.title = this.props.subject;
-    LinkifiedSubject.dispatch = this.props.dispatch;
-    ConversationActionButtons.dispatch = this.props.dispatch;
+  setData(summary, msgData) {
+    if (
+      this.#linkifiedSubject.getAttribute("loading") !=
+      summary.loading.toString()
+    ) {
+      this.#linkifiedSubject.setAttribute("loading", summary.loading);
+    }
+    if (this.#linkifiedSubject.getAttribute("subject") != summary.subject) {
+      this.#linkifiedSubject.setAttribute("subject", summary.subject);
+    }
+    if (
+      this.#convActionButtons.getAttribute("darkreaderenabled") !=
+      summary.darkReaderEnabled.toString()
+    ) {
+      this.#convActionButtons.setAttribute(
+        "darkreaderenabled",
+        summary.darkReaderEnabled
+      );
+    }
 
-    return React.createElement(
-      "div",
-      { className: "conversationHeaderWrapper" },
-      React.createElement(
-        "div",
-        { className: "conversationHeader" },
-        React.createElement("linkified-subject", {
-          loading: this.props.loading ? "true" : "false",
-          subject: this.props.subject,
-        }),
-        React.createElement("conv-actions-buttons", {
-          className: "actions",
-          aresomemessagesunread: this.areSomeMessagesUnread.toString(),
-          aresomemessagescollapsed: this.areSomeMessagesCollapsed.toString(),
-          canjunk: this.canJunk.toString(),
-          darkreaderenabled: this.props.darkReaderEnabled.toString(),
-          firstid: this.props.msgData?.[0]?.id,
-        })
-      )
-    );
+    if (msgData) {
+      let someCollapsed = this.areSomeMessagesCollapsed(msgData);
+      if (
+        this.#convActionButtons.getAttribute("aresomemessagescollapsed") !=
+        someCollapsed.toString()
+      ) {
+        this.#convActionButtons.setAttribute(
+          "aresomemessagescollapsed",
+          someCollapsed.toString()
+        );
+      }
+      let someUnread = this.areSomeMessagesUnread(msgData);
+      if (
+        this.#convActionButtons.getAttribute("aresomemessagesunread") !=
+        someUnread.toString()
+      ) {
+        this.#convActionButtons.setAttribute(
+          "aresomemessagesunread",
+          someUnread.toString()
+        );
+      }
+      let canJunk = this.canJunk(msgData);
+      if (
+        this.#convActionButtons.getAttribute("canjunk") != canJunk.toString()
+      ) {
+        this.#convActionButtons.setAttribute("canjunk", canJunk.toString());
+      }
+    }
   }
 }
-
-_ConversationHeader.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-  loading: PropTypes.bool.isRequired,
-  darkReaderEnabled: PropTypes.bool.isRequired,
-  subject: PropTypes.string.isRequired,
-  msgData: PropTypes.array.isRequired,
-};
-
-export const ConversationHeader = ReactRedux.connect((state) => {
-  return {
-    loading: state.summary.loading,
-    subject: state.summary.subject,
-    darkReaderEnabled: state.summary.darkReaderEnabled,
-    msgData: state.messages.msgData,
-  };
-})(_ConversationHeader);
+customElements.define("conversation-header", ConversationHeader);

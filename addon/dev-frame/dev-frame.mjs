@@ -13,7 +13,7 @@ import {
   ThreadView,
   ThreePanelThunderbird,
 } from "./components/thunderbird.mjs";
-import { ConversationWrapper } from "../content/components/conversation/conversationWrapper.mjs";
+// import { ConversationWrapper } from "../content/components/conversation/conversationWrapper.mjs";
 import { store } from "./reducer.mjs";
 
 globalThis.browser = browser;
@@ -87,11 +87,11 @@ export function Main() {
           "Inbox (200)"
         ),
         topRight: React.createElement(ThreadView),
-        bottomRight: React.createElement(
-          "div",
-          { id: "conversationWrapper" },
-          React.createElement(ConversationWrapper)
-        ),
+        // bottomRight: React.createElement(
+        //   "div",
+        //   { id: "conversationWrapper" },
+        //   React.createElement(ConversationWrapper)
+        // ),
       })
     )
   );

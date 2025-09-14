@@ -8,7 +8,6 @@ import { summaryActions } from "../../reducer/reducerSummary.mjs";
  * Handles the ConversationFooter layout.
  */
 export class ConversationFooter extends HTMLElement {
-  static observedAttributes = ["subject", "loading"];
   static dispatch;
 
   static get fragment() {
