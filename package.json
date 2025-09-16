@@ -31,7 +31,7 @@
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-html": "8.1.3",
     "eslint-plugin-import": "2.32.0",
-    "eslint-plugin-jsdoc": "^54.1.1",
+    "eslint-plugin-jsdoc": "^57.0.0",
     "eslint-plugin-json": "4.0.1",
     "eslint-plugin-mozilla": "4.3.1",
     "eslint-plugin-no-unsanitized": "4.1.4",
