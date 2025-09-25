@@ -79,6 +79,9 @@ class LinkifiedSubject extends HTMLElement {
     } else {
       subjectElement.textContent = subject;
     }
+    if (name == "subject") {
+      document.title = subjectElement.textContent;
+    }
   }
 
   handleClick(event) {
