@@ -19,7 +19,7 @@ class LinkifiedSubject extends HTMLElement {
       let doc = parser.parseFromString(
         `
         <template>
-          <link rel="stylesheet" href="conversation.css" />
+          <link rel="stylesheet" href="conversation.css?v=1" />
           <div class="subject">
           </div>
         </template>
@@ -110,7 +110,7 @@ class ConversationActionButtons extends HTMLElement {
       let doc = parser.parseFromString(
         `
         <template>
-          <link rel="stylesheet" href="conversation.css" />
+          <link rel="stylesheet" href="conversation.css?v=1" />
           <button class="button-flat actions-button hidden dark-mode-toggle">
             <svg-icon aria-hidden="true" hash="invert_colors"></svg-icon>
           </button>
@@ -342,7 +342,7 @@ export class ConversationHeader extends HTMLElement {
       let doc = parser.parseFromString(
         `
         <template>
-          <link rel="stylesheet" href="conversation.css" />
+          <link rel="stylesheet" href="conversation.css?v=1" />
           <div class="conversationHeaderWrapper" />
             <div class="conversationHeader">
               <linkified-subject></linkified-subject>
