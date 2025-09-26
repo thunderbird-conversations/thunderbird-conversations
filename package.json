@@ -24,7 +24,7 @@
   "devDependencies": {
     "@microsoft/eslint-plugin-sdl": "1.1.0",
     "@testing-library/react": "16.3.0",
-    "@types/react": "19.1.13",
+    "@types/react": "19.1.14",
     "@types/react-dom": "19.1.9",
     "@types/thunderbird-webext-browser": "127.0.0",
     "eslint": "9.36.0",
