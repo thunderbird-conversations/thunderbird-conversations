@@ -4,7 +4,6 @@
 
 import React from "react";
 import ReactDOM from "react-dom";
-import { ContactDetail } from "../contactDetail.mjs";
 import { messageActions } from "../../reducer/reducerMessages.mjs";
 import { MessageHeaderOptions } from "./messageHeaderOptions.mjs";
 import { MessageTags, SpecialMessageTags } from "./messageTags.mjs";
@@ -146,7 +145,7 @@ export function DetailedContactLabel({ contact, className, msgId }) {
   return React.createElement(
     HoverFade,
     {
-      popup: React.createElement(ContactDetail, {
+      popup: React.createElement("contact-detail", {
         name: contact.name,
         email: contact.displayEmail,
         msgId,
@@ -193,7 +192,7 @@ export function ContactLabel({ contact, className, msgId }) {
   return React.createElement(
     HoverFade,
     {
-      popup: React.createElement(ContactDetail, {
+      popup: React.createElement("contact-detail", {
         name: contact.name,
         email: contact.displayEmail,
         msgId,

@@ -2,199 +2,231 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import React from "react";
-import * as ReactRedux from "react-redux";
-import PropTypes from "prop-types";
 import { summaryActions } from "../reducer/reducerSummary.mjs";
 
-function _ContactDetail({
-  name,
-  email,
-  realEmail,
-  avatar,
-  contactId,
-  contactIsReadOnly,
-  dispatch,
-  msgId,
-}) {
-  function onGeneralClick(event) {
-    event.stopPropagation();
-    event.preventDefault();
+const DEFAULT_AVATAR_URI =
+  "chrome://messenger/skin/addressbook/icons/contact-generic.svg";
+
+/**
+ * Handles the ConversationFooter layout.
+ */
+export class ContactDetail extends HTMLElement {
+  static observedAttributes = [
+    "avatar",
+    "contactid",
+    "contactisreadonly",
+    "name",
+    "realemail",
+  ];
+
+  static dispatch;
+
+  static get fragment() {
+    if (!this._template) {
+      let parser = new DOMParser();
+      let doc = parser.parseFromString(
+        `
+        <template>
+          <link rel="stylesheet" href="conversation.css?v=1" />
+          <div class="tooltip">
+            <div class="arrow"></div>
+            <div class="arrow inside"></div>
+            <div class="authorInfoContainer">
+              <div class="authorInfo">
+                <span class="name"></span>
+                <span class="authorEmail">
+                  <span class="authorEmailAddress"></span>
+                  <button class="copyEmail">
+                    <svg-icon hash="content_copy"></svg-icon>
+                  </button>
+                </span>
+              </div>
+              <div class="authorPicture">
+                <img src="${DEFAULT_AVATAR_URI}">
+              </div>
+            </div>
+            <div class="tipFooter">
+              <button class="sendEmail">
+                <svg-icon hash="mail"><svg-icon>
+              </button>
+              <button class="showInvolving">
+                <svg-icon hash="history"><svg-icon>
+              </button>
+              <button id="contact">
+                <svg-icon hash="person">
+              </button>
+              <button class="createFilter">
+              </button>
+          </div>
+        </template>
+        `,
+        "text/html"
+      );
+      this._template = document.importNode(doc.querySelector("template"), true);
+    }
+    return this._template.content.cloneNode(true);
   }
 
-  function addContact(event) {
-    event.stopPropagation();
-    event.preventDefault();
-    dispatch(
-      summaryActions.addContact({
-        name,
-        email: realEmail,
-      })
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+    this.shadowRoot.appendChild(ContactDetail.fragment);
+
+    let tooltip = this.shadowRoot.querySelector(".tooltip");
+    tooltip.addEventListener("click", (event) => {
+      event.stopPropagation();
+      event.preventDefault();
+    });
+
+    let copyEmail = /** @type {HTMLButtonElement} */ (
+      this.shadowRoot.querySelector(".copyEmail")
     );
-  }
+    copyEmail.title = browser.i18n.getMessage("contact.copyEmailTooltip");
+    copyEmail.addEventListener("click", (event) => {
+      event.stopPropagation();
+      event.preventDefault();
+      ContactDetail.dispatch(
+        summaryActions.copyEmail({ email: this.getAttribute("realEmail") })
+      );
+    });
 
-  function createFilter(event) {
-    event.stopPropagation();
-    event.preventDefault();
-    dispatch(
-      summaryActions.createFilter({
-        email: realEmail,
-      })
+    let sendEmail = /** @type {HTMLButtonElement} */ (
+      this.shadowRoot.querySelector(".sendEmail")
     );
-  }
+    sendEmail.title = browser.i18n.getMessage("contact.sendEmailTooltip");
+    sendEmail.addEventListener("click", (event) => {
+      event.stopPropagation();
+      event.preventDefault();
+      ContactDetail.dispatch(
+        summaryActions.sendEmail({
+          msgId: this.getAttribute("msgId"),
+          name: this.getAttribute("name"),
+          email: this.getAttribute("realEmail"),
+        })
+      );
+    });
 
-  function copyEmail(event) {
-    event.stopPropagation();
-    event.preventDefault();
-    dispatch(summaryActions.copyEmail({ email: realEmail }));
-  }
-
-  function editContact(event) {
-    event.stopPropagation();
-    event.preventDefault();
-    dispatch(summaryActions.editContact({ contactId }));
-  }
-
-  function sendEmail(event) {
-    event.stopPropagation();
-    event.preventDefault();
-    dispatch(
-      summaryActions.sendEmail({
-        msgId,
-        name,
-        email: realEmail,
-      })
+    let showInvolving = /** @type {HTMLButtonElement} */ (
+      this.shadowRoot.querySelector(".showInvolving")
     );
-  }
-
-  function showInvolving(event) {
-    event.stopPropagation();
-    event.preventDefault();
-    dispatch(
-      summaryActions.showMessagesInvolving({
-        name,
-        email: realEmail,
-      })
+    showInvolving.title = browser.i18n.getMessage(
+      "contact.recentConversationsTooltip"
     );
-  }
+    showInvolving.addEventListener("click", (event) => {
+      event.stopPropagation();
+      event.preventDefault();
+      ContactDetail.dispatch(
+        summaryActions.showMessagesInvolving({
+          name: this.getAttribute("name"),
+          email: this.getAttribute("realEmail"),
+        })
+      );
+    });
 
-  // If there is a card for the contact, provide the option to
-  // edit the card. Otherwise, provide an add button.
-  let contactEdit;
-  if (contactId) {
-    contactEdit = contactIsReadOnly
-      ? React.createElement(
-          "button",
-          {
-            className: "viewContact",
-            title: browser.i18n.getMessage("contact.viewContactTooltip"),
-            onClick: editContact,
-          },
-          React.createElement("svg-icon", { hash: "person" })
-        )
-      : React.createElement(
-          "button",
-          {
-            className: "editContact",
-            title: browser.i18n.getMessage("contact.editContactTooltip"),
-            onClick: editContact,
-          },
-          React.createElement("svg-icon", { hash: "edit" })
+    let contactButton = /** @type {HTMLButtonElement} */ (
+      this.shadowRoot.querySelector("#contact")
+    );
+    contactButton.title = browser.i18n.getMessage("contact.addContactTooltip");
+    contactButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      event.preventDefault();
+      let contactId = this.getAttribute("contactId");
+      if (contactId) {
+        ContactDetail.dispatch(summaryActions.editContact({ contactId }));
+      } else {
+        ContactDetail.dispatch(
+          summaryActions.addContact({
+            name: this.getAttribute("name"),
+            email: this.getAttribute("realEmail"),
+          })
         );
-  } else {
-    contactEdit = React.createElement(
-      "button",
-      {
-        className: "addContact",
-        title: browser.i18n.getMessage("contact.addContactTooltip"),
-        onClick: addContact,
-      },
-      React.createElement("svg-icon", { hash: "add" })
+      }
+    });
+
+    let createFilter = /** @type {HTMLButtonElement} */ (
+      this.shadowRoot.querySelector(".createFilter")
     );
+    createFilter.textContent = browser.i18n.getMessage(
+      "contact.createFilterTooltip"
+    );
+    createFilter.addEventListener("click", (event) => {
+      event.stopPropagation();
+      event.preventDefault();
+      ContactDetail.dispatch(
+        summaryActions.createFilter({
+          email: this.getAttribute("realEmail"),
+        })
+      );
+    });
   }
 
-  let avatarURI =
-    avatar ?? "chrome://messenger/skin/addressbook/icons/contact-generic.svg";
+  /**
+   * Handles an attribute change.
+   *
+   * @param {string} name
+   * @param {string} oldValue
+   * @param {string} newValue
+   */
+  attributeChangedCallback(name, oldValue, newValue) {
+    switch (name) {
+      case "avatar": {
+        let avatarElement = /** @type {HTMLImageElement} */ (
+          this.shadowRoot.querySelector(".authorPicture > img")
+        );
+        avatarElement.src = newValue || DEFAULT_AVATAR_URI;
+        break;
+      }
+      case "contactid": {
+        this.setupContactDetails();
+        break;
+      }
+      case "contactisreadonly": {
+        this.setupContactDetails();
+        break;
+      }
+      case "name": {
+        let nameElement = /** @type {HTMLButtonElement} */ (
+          this.shadowRoot.querySelector(".name")
+        );
+        nameElement.title = newValue;
+        nameElement.textContent = newValue;
+        break;
+      }
+      case "realemail": {
+        let emailElement = /** @type {HTMLButtonElement} */ (
+          this.shadowRoot.querySelector(".authorEmailAddress")
+        );
+        emailElement.title = newValue;
+        emailElement.textContent = newValue;
+        break;
+      }
+    }
+  }
 
-  return React.createElement(
-    "div",
-    { className: "tooltip", onClick: onGeneralClick },
-    React.createElement("div", { className: "arrow" }),
-    React.createElement("div", { className: "arrow inside" }),
-    React.createElement(
-      "div",
-      { className: "authorInfoContainer" },
-      React.createElement(
-        "div",
-        { className: "authorInfo" },
-        React.createElement("span", { className: "name", title: name }, name),
-        React.createElement(
-          "span",
-          { className: "authorEmail" },
-          React.createElement(
-            "span",
-            { className: "authorEmailAddress", title: realEmail },
-            realEmail
-          ),
-          React.createElement(
-            "button",
-            {
-              className: "copyEmail",
-              title: browser.i18n.getMessage("contact.copyEmailTooltip"),
-              onClick: copyEmail,
-            },
-            React.createElement("svg-icon", { hash: "content_copy" })
-          )
-        )
-      ),
-      React.createElement(
-        "div",
-        { className: "authorPicture" },
-        React.createElement("img", { src: avatarURI })
-      )
-    ),
-    React.createElement(
-      "div",
-      { className: "tipFooter" },
-      React.createElement(
-        "button",
-        {
-          className: "sendEmail",
-          title: browser.i18n.getMessage("contact.sendEmailTooltip"),
-          onClick: sendEmail,
-        },
-        React.createElement("svg-icon", { hash: "mail" })
-      ),
-      React.createElement(
-        "button",
-        {
-          className: "showInvolving",
-          title: browser.i18n.getMessage("contact.recentConversationsTooltip"),
-          onClick: showInvolving,
-        },
-        React.createElement("svg-icon", { hash: "history" })
-      ),
-      contactEdit,
-      React.createElement(
-        "button",
-        {
-          className: "createFilter",
-          onClick: createFilter,
-        },
-        browser.i18n.getMessage("contact.createFilterTooltip")
-      )
-    )
-  );
+  setupContactDetails() {
+    let contactButton = /** @type {HTMLButtonElement} */ (
+      this.shadowRoot.querySelector("#contact")
+    );
+    let contactImage = this.shadowRoot.querySelector("#contact > svg-icon");
+
+    if (this.getAttribute("contactId")) {
+      if (this.getAttribute("contactisreadonly")) {
+        contactButton.title = browser.i18n.getMessage(
+          "contact.viewContactTooltip"
+        );
+        contactImage.setAttribute("hash", "person");
+      } else {
+        contactButton.title = browser.i18n.getMessage(
+          "contact.editContactTooltip"
+        );
+        contactImage.setAttribute("hash", "edit");
+      }
+    } else {
+      contactButton.title = browser.i18n.getMessage(
+        "contact.addContactTooltip"
+      );
+      contactImage.setAttribute("hash", "add");
+    }
+  }
 }
-_ContactDetail.propTypes = {
-  avatar: PropTypes.string,
-  contactId: PropTypes.string,
-  contactIsReadOnly: PropTypes.bool,
-  dispatch: PropTypes.func.isRequired,
-  email: PropTypes.string.isRequired,
-  msgId: PropTypes.number.isRequired,
-  name: PropTypes.string.isRequired,
-  realEmail: PropTypes.string.isRequired,
-};
-
-export const ContactDetail = ReactRedux.connect()(_ContactDetail);
+customElements.define("contact-detail", ContactDetail);

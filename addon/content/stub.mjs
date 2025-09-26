@@ -109,6 +109,8 @@ document.addEventListener(
       "./components/conversation/conversationFooter.mjs"
     );
     ConversationFooter.dispatch = store.dispatch;
+    let { ContactDetail } = await import("./components/contactDetail.mjs");
+    ContactDetail.dispatch = store.dispatch;
 
     store.subscribe(handleStoreUpdate);
 
