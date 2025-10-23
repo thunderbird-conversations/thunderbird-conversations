@@ -3,8 +3,6 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import React from "react";
-import { ActionButton } from "./messageActionButton.mjs";
-import { messageActions } from "../../reducer/reducerMessages.mjs";
 
 /**
  * Handles display for the footer of a message.
@@ -17,36 +15,11 @@ import { messageActions } from "../../reducer/reducerMessages.mjs";
  * @param {boolean} options.isDraft
  */
 export function MessageFooter({
-  dispatch,
   id,
   multipleRecipients,
   recipientsIncludeLists,
   isDraft,
 }) {
-  function onActionButtonClick(msg) {
-    const payload = {
-      id,
-      shiftKey: msg.shiftKey,
-    };
-    let action = null;
-    switch (msg.type) {
-      case "draft":
-        action = messageActions.editDraft(payload);
-        break;
-      case "reply":
-      case "replyAll":
-      case "replyList":
-        action = messageActions.reply({ ...payload, type: msg.type });
-        break;
-      case "forward":
-        action = messageActions.forward(payload);
-        break;
-      default:
-        console.error("Don't know how to create an action for", msg);
-    }
-    dispatch(action);
-  }
-
   return React.createElement(
     "div",
     { className: "messageFooter" },
@@ -54,31 +27,36 @@ export function MessageFooter({
       "div",
       { className: "footerActions" },
       isDraft &&
-        React.createElement(ActionButton, {
-          callback: onActionButtonClick,
+        React.createElement("action-button", {
+          additionalclass: "footerActions",
           type: "draft",
+          msgId: id,
         }),
       !isDraft &&
-        React.createElement(ActionButton, {
-          callback: onActionButtonClick,
+        React.createElement("action-button", {
+          additionalclass: "footerActions",
           type: "reply",
+          msgId: id,
         }),
       !isDraft &&
         multipleRecipients &&
-        React.createElement(ActionButton, {
-          callback: onActionButtonClick,
+        React.createElement("action-button", {
+          additionalclass: "footerActions",
           type: "replyAll",
+          msgId: id,
         }),
       !isDraft &&
         recipientsIncludeLists &&
-        React.createElement(ActionButton, {
-          callback: onActionButtonClick,
+        React.createElement("action-button", {
+          additionalclass: "footerActions",
           type: "replyList",
+          msgId: id,
         }),
       !isDraft &&
-        React.createElement(ActionButton, {
-          callback: onActionButtonClick,
+        React.createElement("action-button", {
+          additionalclass: "footerActions",
           type: "forward",
+          msgId: id,
         })
     )
   );

@@ -18,18 +18,6 @@ function modifyOnlyMsg(state, id, modifier) {
   };
 }
 
-async function getParamsForCompose(msg, shiftKey) {
-  let identityId = await messageUtils.getBestIdentityForReply(msg);
-  let params = {
-    identityId,
-  };
-  if (shiftKey) {
-    let identity = await browser.identities.get(identityId);
-    params.isPlainText = identity.composeHtml;
-  }
-  return params;
-}
-
 export const messageActions = {
   getLateAttachments({ id }) {
     return async (dispatch, getState) => {
@@ -62,67 +50,6 @@ export const messageActions = {
           needsLateAttachments: false,
         })
       );
-    };
-  },
-  editDraft({ id, shiftKey }) {
-    return async (dispatch, getState) => {
-      browser.conversations.beginEdit(id).catch(console.error);
-    };
-  },
-  editAsNew({ id, shiftKey }) {
-    return async (dispatch, getState) => {
-      let msg = getState().messages.msgData.find((m) => m.id == id);
-      let params = await getParamsForCompose(msg, shiftKey);
-      browser.compose.beginNew(id, params);
-    };
-  },
-  reply({ id, type, shiftKey }) {
-    return async (dispatch, getState) => {
-      const mode = {
-        reply: "replyToSender",
-        replyAll: "replyToAll",
-        replyList: "replyToList",
-      };
-      let msg = getState().messages.msgData.find((m) => m.id == id);
-      let params = await getParamsForCompose(msg, shiftKey);
-      browser.compose.beginReply(id, mode[type], params).catch(console.error);
-    };
-  },
-  forward({ id, shiftKey }) {
-    return async (dispatch, getState) => {
-      let forwardMode =
-        (await browser.conversations.getCorePref(
-          "mail.forward_message_mode"
-        )) ?? 0;
-      let msg = getState().messages.msgData.find((m) => m.id == id);
-      let params = await getParamsForCompose(msg, shiftKey);
-      browser.compose
-        .beginForward(
-          id,
-          forwardMode == 0 ? "forwardAsAttachment" : "forwardInline",
-          params
-        )
-        .catch(console.error);
-    };
-  },
-  archive({ id }) {
-    return async () => {
-      browser.messages.archive([id]).catch(console.error);
-    };
-  },
-  delete({ id }) {
-    return async () => {
-      browser.messages.delete([id]).catch(console.error);
-    };
-  },
-  openClassic({ id }) {
-    return async () => {
-      browser.messageDisplay.open({ messageId: id });
-    };
-  },
-  openSource({ id }) {
-    return async () => {
-      browser.conversations.openInSourceView(id).catch(console.error);
     };
   },
   setTags({ id, tags }) {

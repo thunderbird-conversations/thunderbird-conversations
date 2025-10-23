@@ -210,12 +210,8 @@ linkified-subject {
   flex-direction: row;
 }
 
-.mainActionButton > .icon-link,
 .dropDown > .icon-link,
-.attachmentsDropDown > .icon-link,
-.details-hidden > .icon-link,
-.invert-colors > .icon-link,
-.optionsButton {
+.details-hidden > .icon-link {
   background: none;
   border: 0;
 }
@@ -719,22 +715,6 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
 
 .footerActions {
   float: inline-end;
-}
-
-.footerActions button {
-  font-size: 120%;
-  background: none;
-  border: 0;
-  color: var(--dull-foreground-color);
-  width: 2em;
-  height: 2em;
-  border-radius: 1em;
-  cursor: pointer;
-}
-
-.footerActions button:hover,
-.footerActions button:focus {
-  color: -moz-CellHighlight;
 }
 
 .messageFooter.hide .footerActions {

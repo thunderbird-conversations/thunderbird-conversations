@@ -13,6 +13,7 @@ import { MessageIFrame } from "./messageIFrame.mjs";
 import { MessageNotification } from "./messageNotification.mjs";
 import { MessageTags, SpecialMessageTags } from "./messageTags.mjs";
 import { QuickReply } from "../quickreply/quickReply.mjs";
+import { messageUtils } from "../../reducer/messageUtils.mjs";
 
 function isAccel(event) {
   if (window.navigator.platform.includes("Mac")) {
@@ -208,35 +209,19 @@ export class Message extends React.PureComponent {
     switch (shortcut) {
       case "accel-r":
       case "accel-R":
-        this.props.dispatch(
-          messageActions.reply({
-            id: this.props.message.id,
-            shiftKey,
-          })
-        );
+        messageUtils.replyMessage(this.props.message.id, shiftKey);
         stopEvent();
         break;
       case "accel-l":
-        this.props.dispatch(
-          messageActions.forward({
-            id: this.props.message.id,
-            shiftKey,
-          })
-        );
+        messageUtils.forwardMessage(this.props.messageId, shiftKey);
         break;
       case "accel-u":
-        this.props.dispatch(
-          messageActions.openSource({
-            id: this.props.message.id,
-          })
-        );
+        browser.conversations
+          .openInSourceView(this.props.message.id)
+          .catch(console.error);
         break;
       case "a":
-        this.props.dispatch(
-          messageActions.archive({
-            id: this.props.message.id,
-          })
-        );
+        browser.messages.archive([this.props.message.id]).catch(console.error);
         break;
       case "o":
         this.props.dispatch(
@@ -456,7 +441,6 @@ export class Message extends React.PureComponent {
       ),
       this.props.message.expanded &&
         React.createElement(MessageFooter, {
-          dispatch: this.props.dispatch,
           id: this.props.message.id,
           multipleRecipients: this.props.message.multipleRecipients,
           recipientsIncludeLists: this.props.message.recipientsIncludeLists,

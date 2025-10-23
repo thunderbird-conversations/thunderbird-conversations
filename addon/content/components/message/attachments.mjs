@@ -4,7 +4,6 @@
 
 import React from "react";
 import { attachmentActions } from "../../reducer/reducerAttachments.mjs";
-import { ActionButton } from "./messageActionButton.mjs";
 
 const ICON_MAPPING = new Map([
   ["application/msword", "x-office-document"],
@@ -38,10 +37,11 @@ const FALLBACK_ICON_MAPPING = new Map([
  * The more menu for attachments
  *
  * @param {object} options
- * @param {() => void} options.detachCallback
- * @param {() => void} options.deleteCallback
+ * @param {number} options.msgId
+ * @param {string} options.fileName
+ * @param {string} options.partName
  */
-function AttachmentMoreMenu({ detachCallback, deleteCallback }) {
+function AttachmentMoreMenu({ msgId, fileName, partName }) {
   return React.createElement(
     "div",
     { className: "tooltip tooltip-menu menu" },
@@ -53,21 +53,25 @@ function AttachmentMoreMenu({ detachCallback, deleteCallback }) {
       React.createElement(
         "li",
         { className: "action-detach" },
-        React.createElement(ActionButton, {
-          callback: detachCallback,
-          className: "optionsButton",
-          showString: true,
+        React.createElement("action-button", {
+          showString: "true",
           type: "detachAttachment",
+          additionalclass: "dropDown",
+          msgId,
+          fileName,
+          partName,
         })
       ),
       React.createElement(
         "li",
         { className: "action-delete" },
-        React.createElement(ActionButton, {
-          callback: deleteCallback,
-          className: "optionsButton",
-          showString: true,
+        React.createElement("action-button", {
+          showString: "true",
           type: "deleteAttachment",
+          additionalclass: "dropDown",
+          msgId,
+          fileName,
+          partName,
         })
       )
     )
@@ -150,27 +154,6 @@ function Attachment({
       attachmentActions.openAttachment({
         id,
         partName,
-      })
-    );
-  }
-
-  function detachAttachment() {
-    dispatch(
-      attachmentActions.detachAttachment({
-        id,
-        partName,
-        shouldSave: true,
-      })
-    );
-  }
-
-  function deleteAttachment() {
-    dispatch(
-      attachmentActions.detachAttachment({
-        id,
-        partName,
-        fileName: name,
-        shouldSave: false,
       })
     );
   }
@@ -322,8 +305,9 @@ function Attachment({
             ),
             displayMenu &&
               React.createElement(AttachmentMoreMenu, {
-                detachCallback: detachAttachment,
-                deleteCallback: deleteAttachment,
+                msgId: id,
+                fileName: name,
+                partName,
               })
           )
         )

@@ -27,7 +27,7 @@ export const quickReplyActions = {
   expand({ id, type }) {
     return async function (dispatch, getState) {
       let msg = getState().messages.msgData.find((m) => m.id == id);
-      let identityId = await messageUtils.getBestIdentityForReply(msg);
+      let identityId = await messageUtils.getBestIdentityForReply(id);
       let identity = await browser.identities.get(identityId);
       let to;
 
@@ -87,7 +87,7 @@ export const quickReplyActions = {
           messageUtils.dateFormatter.format(msg.rawDate),
           messageUtils.timeFormatter.format(msg.rawDate),
         ]) + "\n";
-      let body = await browser.conversations.quoteMsgHdr(msg.id, true);
+      let body = await browser.conversations.quoteMsgHdr(id, true);
       body =
         (replyOnTop == 1 ? "\n\n" : "") +
         citation +

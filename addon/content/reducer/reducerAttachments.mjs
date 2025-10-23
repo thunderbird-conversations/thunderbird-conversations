@@ -63,34 +63,6 @@ export const attachmentActions = {
       return browser.messages.openAttachment(id, partName, tabId);
     };
   },
-  detachAttachment({ id, fileName = null, partName, shouldSave }) {
-    return async (dispatch, getState) => {
-      if (!shouldSave) {
-        if (
-          window.confirm(
-            browser.i18n.getMessage("attachments.delete.warning", [
-              `\n${fileName}\n`,
-            ])
-          )
-        ) {
-          await browser.messages.deleteAttachments(id, [partName]);
-        }
-        return;
-      }
-
-      let state = getState();
-      let options = {
-        msgId: id,
-        partName,
-      };
-      if (state.summary.isStandalone) {
-        options.winId = state.summary.windowId;
-      } else {
-        options.tabId = state.summary.tabId;
-      }
-      await browser.conversations.detachAttachment(options);
-    };
-  },
   showGalleryView({ id }) {
     return async (dispatch, getState) => {
       let msgUri = await browser.conversations.getMessageUriForId(id);

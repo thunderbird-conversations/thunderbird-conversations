@@ -3,7 +3,6 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import React from "react";
-import { ActionButton } from "./messageActionButton.mjs";
 import { messageActions } from "../../reducer/reducerMessages.mjs";
 
 /**
@@ -11,13 +10,13 @@ import { messageActions } from "../../reducer/reducerMessages.mjs";
  *
  * @param {object} props
  * @param {boolean} props.multipleRecipients
+ * @param {number} props.msgId
  * @param {boolean} props.recipientsIncludeLists
- * @param {(object, KeyboardEvent) => void} props.msgSendAction
  */
 export function OptionsMoreMenu({
   multipleRecipients,
+  msgId,
   recipientsIncludeLists,
-  msgSendAction,
 }) {
   return React.createElement(
     "div",
@@ -30,10 +29,10 @@ export function OptionsMoreMenu({
       React.createElement(
         "li",
         { className: "action-reply" },
-        React.createElement(ActionButton, {
-          callback: msgSendAction,
-          className: "optionsButton",
-          showString: true,
+        React.createElement("action-button", {
+          msgId,
+          additionalclass: "dropDown",
+          showString: "true",
           type: "reply",
         })
       ),
@@ -41,10 +40,10 @@ export function OptionsMoreMenu({
         React.createElement(
           "li",
           { className: "action-replyAll" },
-          React.createElement(ActionButton, {
-            callback: msgSendAction,
-            className: "optionsButton",
-            showString: true,
+          React.createElement("action-button", {
+            msgId,
+            additionalclass: "dropDown",
+            showString: "true",
             type: "replyAll",
           })
         ),
@@ -52,70 +51,70 @@ export function OptionsMoreMenu({
         React.createElement(
           "li",
           { className: "action-replyList" },
-          React.createElement(ActionButton, {
-            callback: msgSendAction,
-            className: "optionsButton",
-            showString: true,
+          React.createElement("action-button", {
+            msgId,
+            additionalclass: "dropDown",
+            showString: "true",
             type: "replyList",
           })
         ),
       React.createElement(
         "li",
         { className: "action-editNew" },
-        React.createElement(ActionButton, {
-          callback: msgSendAction,
-          className: "optionsButton",
-          showString: true,
+        React.createElement("action-button", {
+          msgId,
+          additionalclass: "dropDown",
+          showString: "true",
           type: "editAsNew",
         })
       ),
       React.createElement(
         "li",
         { className: "action-forward dropdown-sep" },
-        React.createElement(ActionButton, {
-          callback: msgSendAction,
-          className: "optionsButton",
-          showString: true,
+        React.createElement("action-button", {
+          msgId,
+          additionalclass: "dropDown",
+          showString: "true",
           type: "forward",
         })
       ),
       React.createElement(
         "li",
         { className: "action-archive" },
-        React.createElement(ActionButton, {
-          callback: msgSendAction,
-          className: "optionsButton",
-          showString: true,
+        React.createElement("action-button", {
+          msgId,
+          additionalclass: "dropDown",
+          showString: "true",
           type: "archive",
         })
       ),
       React.createElement(
         "li",
         { className: "action-delete" },
-        React.createElement(ActionButton, {
-          callback: msgSendAction,
-          className: "optionsButton",
-          showString: true,
+        React.createElement("action-button", {
+          msgId,
+          additionalclass: "dropDown",
+          showString: "true",
           type: "delete",
         })
       ),
       React.createElement(
         "li",
         { className: "action-classic" },
-        React.createElement(ActionButton, {
-          callback: msgSendAction,
-          className: "optionsButton",
-          showString: true,
+        React.createElement("action-button", {
+          msgId,
+          additionalclass: "dropDown",
+          showString: "true",
           type: "classic",
         })
       ),
       React.createElement(
         "li",
         { className: "action-source" },
-        React.createElement(ActionButton, {
-          callback: msgSendAction,
-          className: "optionsButton",
-          showString: true,
+        React.createElement("action-button", {
+          msgId,
+          additionalclass: "dropDown",
+          showString: "true",
           type: "source",
         })
       )
@@ -152,48 +151,6 @@ export function MessageHeaderOptions({
 }) {
   let [displayMenu, setDisplayMenu] = React.useState(false);
 
-  function replyAction(msg, event) {
-    event.stopPropagation();
-    event.preventDefault();
-
-    const payload = {
-      id,
-      shiftKey: msg.shiftKey,
-    };
-    let action = null;
-    switch (msg.type) {
-      case "draft":
-        action = messageActions.editDraft(payload);
-        break;
-      case "reply":
-      case "replyAll":
-      case "replyList":
-        action = messageActions.reply({ ...payload, type: msg.type });
-        break;
-      case "forward":
-        action = messageActions.forward(payload);
-        break;
-      case "editAsNew":
-        action = messageActions.editAsNew(payload);
-        break;
-      case "archive":
-        action = messageActions.archive({ id });
-        break;
-      case "delete":
-        action = messageActions.delete({ id });
-        break;
-      case "classic":
-        action = messageActions.openClassic(payload);
-        break;
-      case "source":
-        action = messageActions.openSource(payload);
-        break;
-      default:
-        console.error("Don't know how to create an action for", msg);
-    }
-    dispatch(action);
-  }
-
   function showDetails(event) {
     event.preventDefault();
     event.stopPropagation();
@@ -216,11 +173,13 @@ export function MessageHeaderOptions({
     }
 
     if (displayMenu) {
+      document.addEventListener("button-clicked", clickOrBlurListener);
       document.addEventListener("click", clickOrBlurListener);
       document.addEventListener("keypress", keyListener);
       document.addEventListener("blur", clickOrBlurListener);
     }
     return () => {
+      document.removeEventListener("button-clicked", clickOrBlurListener);
       document.removeEventListener("click", clickOrBlurListener);
       document.removeEventListener("keypress", keyListener);
       document.removeEventListener("blur", clickOrBlurListener);
@@ -264,10 +223,10 @@ export function MessageHeaderOptions({
       React.createElement(
         "span",
         { className: "mainActionButton" },
-        React.createElement(ActionButton, {
-          callback: replyAction,
-          className: "icon-link",
+        React.createElement("action-button", {
           type: actionButtonType,
+          additionalclass: "header",
+          msgId: id,
         })
       ),
     expanded &&
@@ -301,7 +260,7 @@ export function MessageHeaderOptions({
           "button",
           {
             onClick: handleDisplayMenu,
-            className: "icon-link top-right-more",
+            className: "icon-link",
             title: browser.i18n.getMessage("message.moreMenu.tooltip"),
           },
           React.createElement("svg-icon", {
@@ -312,7 +271,7 @@ export function MessageHeaderOptions({
         displayMenu &&
           React.createElement(OptionsMoreMenu, {
             recipientsIncludeLists,
-            msgSendAction: replyAction,
+            msgId: id,
             multipleRecipients,
           })
       )

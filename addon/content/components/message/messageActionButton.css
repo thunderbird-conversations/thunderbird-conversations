@@ -1,0 +1,36 @@
+button {
+  background: none;
+  border: 0;
+}
+
+button.dropDown {
+  width: 100%;
+  height: 100%;
+  text-align: start;
+  padding: 3px 5px;
+}
+
+button.footerActions {
+  font-size: 120%;
+  color: var(--dull-foreground-color);
+  width: 2em;
+  height: 2em;
+  border-radius: 1em;
+  cursor: pointer;
+  padding: 0;
+}
+
+button.header {
+  display: inline-block;
+  font-size: 120%;
+  line-height: 1;
+  padding: 0;
+  color: var(--dull-foreground-color);
+}
+
+button:hover.footerActions,
+button:focus.footerActions,
+button:hover.header,
+button:focus.header {
+  color: -moz-CellHighlight;
+}

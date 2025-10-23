@@ -48,7 +48,8 @@ done
 # This directory just needs the css file.
 mkdir -p ../$DIST/content/components/compose
 find $EXTENDED1 . $EXTENDED2 -name "*.css" -exec cp {} ../$DIST/{} \;
-pwd
+mkdir -p ../$DIST/content/components/message
+find $EXTENDED1 . $EXTENDED2 -name "*.css" -exec cp {} ../$DIST/{} \;
 cp experiment-api/stubGlobals.js ../${DIST}/experiment-api/
 cp experiment-api/stubWrapper.* ../${DIST}/experiment-api/
 

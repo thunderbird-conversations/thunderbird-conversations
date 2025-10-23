@@ -7,21 +7,17 @@
 import "../content/components/svgIcon.mjs";
 import React from "react";
 import ReactDOMClient from "react-dom/client";
-import * as RTK from "@reduxjs/toolkit";
 import * as ReactRedux from "react-redux";
-import { conversationApp } from "../content/reducer/reducer.mjs";
 import { MessageList } from "../content/components/message/messageList.mjs";
 import { controllerActions } from "../content/reducer/controllerActions.mjs";
 import { summarySlice } from "../content/reducer/reducerSummary.mjs";
-
+import { storeUtils } from "../content/reducer/storeUtils.mjs";
 /**
  * @import {ConversationHeader} from "./components/conversation/conversationHeader.mjs"
  */
 
-let gStore;
-
 function handlePrefUpdate(value) {
-  gStore.dispatch(
+  storeUtils.store.dispatch(
     summarySlice.actions.setDarkReaderEnabled({
       darkReaderEnabled: value,
     })
@@ -36,7 +32,7 @@ let previousMessageNotFound = false;
 let conversationHeader;
 
 function handleStoreUpdate() {
-  let state = gStore.getState();
+  let state = storeUtils.store.getState();
 
   if (previousMessageNotFound != state.summary.messageNotFound) {
     const msgNotFound = document.getElementById("messageNotFound");
@@ -89,11 +85,6 @@ document.addEventListener(
       browser.i18n.getMessage("@@bidi_dir")
     );
 
-    let store = RTK.configureStore({
-      reducer: conversationApp,
-    });
-    gStore = store;
-
     // Now we have `browser` and `store` set-up, load the custom elements.
     // These are not using a loop with a constant, because WebPack
     // struggles to find them. At some stage, it would be good to move these
@@ -103,15 +94,16 @@ document.addEventListener(
     // we are still transitioning.
     let { ConversationHeader } =
       await import("../content/components/conversation/conversationHeader.mjs");
-    ConversationHeader.dispatch = store.dispatch;
+    ConversationHeader.dispatch = storeUtils.store.dispatch;
     let { ConversationFooter } =
       await import("../content/components/conversation/conversationFooter.mjs");
-    ConversationFooter.dispatch = store.dispatch;
+    ConversationFooter.dispatch = storeUtils.store.dispatch;
     let { ContactDetail } =
       await import("../content/components/contactDetail.mjs");
-    ContactDetail.dispatch = store.dispatch;
+    ContactDetail.dispatch = storeUtils.store.dispatch;
+    await import("../content/components/message/messageActionButton.mjs");
 
-    store.subscribe(handleStoreUpdate);
+    storeUtils.store.subscribe(handleStoreUpdate);
 
     // Once we can potentially load in a WebExtension scope, then we should
     // be able to remove this.
@@ -120,14 +112,13 @@ document.addEventListener(
     root.render(
       React.createElement(
         ReactRedux.Provider,
-        // @ts-ignore
-        { store },
+        { store: storeUtils.store },
         React.createElement(MessageList)
       )
     );
 
     // Kick everything off.
-    store.dispatch(controllerActions.waitForStartup());
+    storeUtils.store.dispatch(controllerActions.waitForStartup());
 
     browser.conversations.onCorePrefChanged.addListener(
       handlePrefUpdate,

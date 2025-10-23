@@ -18,6 +18,7 @@ import {
   messageActions,
 } from "../content/reducer/reducerMessages.mjs";
 import { composeActions } from "../content/reducer/reducerCompose.mjs";
+import { messageUtils } from "../content/reducer/messageUtils.mjs";
 
 const quickReplyApp = Redux.combineReducers({
   quickReply: quickReplySlice.reducer,
@@ -42,6 +43,8 @@ async function createAndSetMessage(data) {
 
 describe("QuickReply Reducer and Actions tests", () => {
   beforeEach((t) => {
+    messageUtils.store = store;
+
     fakeMessageHeaderData = new Map();
     t.mock
       .method(browser.messages, "get")
