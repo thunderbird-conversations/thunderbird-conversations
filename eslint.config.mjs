@@ -30,6 +30,7 @@ export default [
     ...importPlugin.flatConfigs.recommended,
     languageOptions: {
       parserOptions: {
+        // @ts-ignore
         ...importPlugin.flatConfigs.recommended.languageOptions.parserOptions,
         sourceType: "module",
       },
