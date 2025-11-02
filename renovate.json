@@ -5,13 +5,17 @@
       "matchDepTypes": ["devDependencies"],
       "matchUpdateTypes": ["patch", "minor"],
       "groupName": "devDependencies (non-major)",
-      "groupSlug": "dev-dependencies"
+      "groupSlug": "dev-dependencies",
+      "minimumReleaseAge": "3 days",
+      "internalChecksFilter": "strict"
     },
     {
       "matchDepTypes": ["dependencies"],
       "matchUpdateTypes": ["patch", "minor"],
       "groupName": "dependencies (non-major)",
-      "groupSlug": "dependencies"
+      "groupSlug": "dependencies",
+      "minimumReleaseAge": "3 days",
+      "internalChecksFilter": "strict"
     }
   ]
 }
