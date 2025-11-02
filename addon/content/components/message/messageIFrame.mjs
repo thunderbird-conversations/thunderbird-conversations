@@ -610,7 +610,14 @@ export class MessageIFrame extends React.Component {
     if (event.target != this.iframe.contentDocument) {
       return;
     }
+
     const iframeDoc = this.iframe.contentDocument;
+    if (this.props.darkReaderEnabled) {
+      iframeDoc.documentElement?.classList.add("darkReaderEnabled");
+    } else {
+      iframeDoc.documentElement?.classList.remove("darkReaderEnabled");
+    }
+
     let styleRules = this.tweakFonts(iframeDoc);
     if (
       !(this.props.realFrom && this.props.realFrom.includes("bugzilla-daemon"))
@@ -628,7 +635,9 @@ export class MessageIFrame extends React.Component {
     let head = iframeDoc.body.previousElementSibling;
     head.appendChild(style);
 
-    this.adjustHeight();
+    // Probably can remove this - commented out to avoid forcing flush during restyle.
+    // Gets called from onLoad.
+    // this.adjustHeight();
   }
 
   _onMsgHasRemoteContent() {
@@ -657,17 +666,6 @@ export class MessageIFrame extends React.Component {
   }
 
   render() {
-    if (this.iframe?.contentDocument) {
-      if (this.props.darkReaderEnabled) {
-        this.iframe.contentDocument.documentElement?.classList.add(
-          "darkReaderEnabled"
-        );
-      } else {
-        this.iframe.contentDocument.documentElement?.classList.remove(
-          "darkReaderEnabled"
-        );
-      }
-    }
     // TODO: See comment in componentDidMount
     // <iframe className={`iframe${this.index}`} type="content" ref={f => this.iframe = f}/>
     return React.createElement("div", {
