@@ -463,10 +463,12 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             getAttachmentInfo(msgHdr, attachment).save(attachMessenger);
           } else {
             let tabObject = context.extension.tabManager.get(tabId);
-            let contentWin = tabObject.nativeTab.chromeBrowser.contentWindow;
+            let contentWin = (
+              tabObject.nativeTab.chromeBrowser ?? tabObject.nativeTab.browser
+            ).contentWindow;
 
             getAttachmentInfo(msgHdr, attachment).save(
-              contentWin.multiMessageBrowser.browsingContext
+              contentWin.browsingContext
             );
           }
         },
