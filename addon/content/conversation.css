@@ -184,8 +184,9 @@ linkified-subject {
 }
 
 .message {
-  margin: 0 10px 1px;
-  border: 1px solid var(--border-color);
+  margin: 0 10px 4px;
+  border: 1px solid color-mix(in srgb, light-dark(#ffffff, #18181b) 90%, white);
+  border-radius: 6px;
   list-style-type: none;
 }
 
