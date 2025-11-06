@@ -27,7 +27,7 @@
     "@types/react": "19.2.2",
     "@types/react-dom": "19.2.2",
     "@types/thunderbird-webext-browser": "127.0.0",
-    "eslint": "9.39.0",
+    "eslint": "9.39.1",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-html": "8.1.3",
     "eslint-plugin-import": "2.32.0",
