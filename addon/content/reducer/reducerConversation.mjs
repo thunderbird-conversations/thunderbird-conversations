@@ -90,7 +90,7 @@ export const conversationActions = {
       );
 
       if (!msgIds.length) {
-        console.error("Could not find any messages to load");
+        console.error("showConversation was not passed any messages to load");
         await dispatch(
           summarySlice.actions.setMessagesNotFound({ notFound: true })
         );
@@ -163,6 +163,7 @@ export const conversationActions = {
 
         if (currentState.summary.prefs.loggingEnabled) {
           console.log(
+            "Conversations:",
             "Displaying",
             msgs.map((m) => ({
               id: m.id,
