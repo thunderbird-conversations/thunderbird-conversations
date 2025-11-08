@@ -80,13 +80,6 @@ class _Quoting {
     return marker != null;
   }
 
-  /* Hotmails use a <hr> to mark the start of the quoted part. */
-  convertHotmailQuotingToBlockquote1(aDoc) {
-    /* We make the assumption that no one uses a <hr> in their emails except for
-     * separating a quoted message from the rest */
-    // this._trySel(aDoc, "hr#stopSpelling", true);
-  }
-
   convertMiscQuotingToBlockquote(aDoc) {
     this._trySel(aDoc, ".yahoo_quoted");
   }
@@ -201,7 +194,6 @@ class _Quoting {
 
     try {
       // These operations mutate the Dom
-      this.convertHotmailQuotingToBlockquote1(doc);
       this.convertForwardedToBlockquote(doc);
       this.convertMiscQuotingToBlockquote(doc);
       this.fusionBlockquotes(doc);
