@@ -181,6 +181,7 @@ declare namespace browser {
       winId?: number;
       tabId?: number;
       msgId: number;
+      partNames: string[];
     }
     export function downloadAllAttachments(
       downloadAllAttachmentsProperties

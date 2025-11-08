@@ -93,9 +93,18 @@ function findAttachment(msgHdr, partName) {
       if (!aMimeMsg) {
         return;
       }
-
-      // attachmentUrl = unescape(attachmentUrl);
       resolve(aMimeMsg.allUserAttachments.find((x) => x.partName == partName));
+    });
+  });
+}
+
+function findAllAttachments(msgHdr, partNames) {
+  return new Promise((resolve) => {
+    lazy.MsgHdrToMimeMessage(msgHdr, null, async (aMsgHdr, aMimeMsg) => {
+      if (!aMimeMsg) {
+        return;
+      }
+      resolve(aMimeMsg.allUserAttachments);
     });
   });
 }
@@ -384,73 +393,25 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           // Force a commit of the underlying msgDatabase.
           msgHdr.folder.msgDatabase = null;
         },
-        async downloadAllAttachments({ winId, tabId, msgId }) {
+        async downloadAllAttachments({ winId, tabId, msgId, partNames }) {
           let msgHdr = context.extension.messageManager.get(msgId);
-          let { win } = getWinBrowserFromIds(context, winId, tabId);
-          let attachments = await new Promise((resolve) => {
-            lazy.MsgHdrToMimeMessage(
-              msgHdr,
-              null,
-              async (aMsgHdr, aMimeMsg) => {
-                if (!aMimeMsg) {
-                  return;
-                }
-                resolve(aMimeMsg.allUserAttachments);
-              }
-            );
-          });
-          let msgUri = msgHdrGetUri(msgHdr);
-          let attachMessenger = Cc["@mozilla.org/messenger;1"].createInstance(
-            Ci.nsIMessenger
-          );
-          attachMessenger.setWindow(
-            win,
-            Cc["@mozilla.org/messenger/msgwindow;1"].createInstance(
-              Ci.nsIMsgWindow
-            )
-          );
 
-          // Taken from HandleMultipleAttachments
-          // https://searchfox.org/comm-central/rev/9548311ac3161a8801fa61785c7185eb278b5bbb/mail/base/content/msgHdrView.js#2154
-
-          let contentTypeArray = [];
-          let urlArray = [];
-          let displayNameArray = [];
-          let messageUriArray = [];
-
-          for (let [i, attachment] of attachments.entries()) {
-            // Exclude attachment which are 1) deleted, or 2) detached with missing
-            // external files, unless copying urls.
-            if (
-              attachment.contentType == "text/x-moz-deleted" ||
-              attachment.url?.startsWith("file://")
-            ) {
-              continue;
-            }
-
-            contentTypeArray[i] = attachment.contentType;
-            urlArray[i] = attachment.url;
-            displayNameArray[i] = encodeURI(attachment.name);
-            messageUriArray[i] = msgUri;
-          }
-
-          attachMessenger.saveAllAttachments(
-            contentTypeArray,
-            urlArray,
-            displayNameArray,
-            messageUriArray
-          );
-        },
-        async downloadAttachment({ winId, tabId, msgId, partName }) {
-          let msgHdr = context.extension.messageManager.get(msgId);
-          let attachment = await findAttachment(msgHdr, partName);
-
-          // For Thunderbird 128 support.
-          if (Services.vc.compare(Services.appinfo.version, "137.0a1") < 1) {
+          // Thunderbird 140 & 141 support
+          if (Services.vc.compare(Services.appinfo.version, "142.0a1") < 1) {
             let { win } = getWinBrowserFromIds(context, winId, tabId);
-
-            // Unfortunately, we still need a messenger with a msgWindow for
-            // this to work.
+            let attachments = await new Promise((resolve) => {
+              lazy.MsgHdrToMimeMessage(
+                msgHdr,
+                null,
+                async (aMsgHdr, aMimeMsg) => {
+                  if (!aMimeMsg) {
+                    return;
+                  }
+                  resolve(aMimeMsg.allUserAttachments);
+                }
+              );
+            });
+            let msgUri = msgHdrGetUri(msgHdr);
             let attachMessenger = Cc["@mozilla.org/messenger;1"].createInstance(
               Ci.nsIMessenger
             );
@@ -460,17 +421,80 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
                 Ci.nsIMsgWindow
               )
             );
-            getAttachmentInfo(msgHdr, attachment).save(attachMessenger);
+
+            // Taken from HandleMultipleAttachments
+            // https://searchfox.org/comm-central/rev/9548311ac3161a8801fa61785c7185eb278b5bbb/mail/base/content/msgHdrView.js#2154
+
+            let contentTypeArray = [];
+            let urlArray = [];
+            let displayNameArray = [];
+            let messageUriArray = [];
+
+            for (let [i, attachment] of attachments.entries()) {
+              // Exclude attachment which are 1) deleted, or 2) detached with missing
+              // external files, unless copying urls.
+              if (
+                attachment.contentType == "text/x-moz-deleted" ||
+                attachment.url?.startsWith("file://")
+              ) {
+                continue;
+              }
+
+              contentTypeArray[i] = attachment.contentType;
+              urlArray[i] = attachment.url;
+              displayNameArray[i] = encodeURI(attachment.name);
+              messageUriArray[i] = msgUri;
+            }
+
+            attachMessenger.saveAllAttachments(
+              contentTypeArray,
+              urlArray,
+              displayNameArray,
+              messageUriArray
+            );
           } else {
             let tabObject = context.extension.tabManager.get(tabId);
             let contentWin = (
               tabObject.nativeTab.chromeBrowser ?? tabObject.nativeTab.browser
             ).contentWindow;
 
-            getAttachmentInfo(msgHdr, attachment).save(
+            let allAttachments = await findAllAttachments(msgHdr, partNames);
+            let finalAttachmentInfo = [];
+            for (let attachment of allAttachments) {
+              // Exclude attachment which are 1) deleted, or 2) detached with missing
+              // external files, unless copying urls.
+              if (
+                attachment.contentType == "text/x-moz-deleted" ||
+                attachment.url?.startsWith("file://") ||
+                !partNames.includes(attachment.partName)
+              ) {
+                continue;
+              }
+
+              finalAttachmentInfo.push(getAttachmentInfo(msgHdr, attachment));
+            }
+            if (!findAllAttachments) {
+              console.warn("No attachments found to save after filtering");
+              return;
+            }
+            lazy.AttachmentInfo.saveAttachments(
+              finalAttachmentInfo,
               contentWin.browsingContext
             );
           }
+        },
+        async downloadAttachment({ winId, tabId, msgId, partName }) {
+          let msgHdr = context.extension.messageManager.get(msgId);
+          let attachment = await findAttachment(msgHdr, partName);
+
+          let tabObject = context.extension.tabManager.get(tabId);
+          let contentWin = (
+            tabObject.nativeTab.chromeBrowser ?? tabObject.nativeTab.browser
+          ).contentWindow;
+
+          getAttachmentInfo(msgHdr, attachment).save(
+            contentWin.browsingContext
+          );
         },
         async openAttachment({ winId, tabId, msgId, partName }) {
           let msgHdr = context.extension.messageManager.get(msgId);

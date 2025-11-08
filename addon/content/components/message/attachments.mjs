@@ -347,7 +347,12 @@ export function Attachments({ dispatch, attachments, attachmentsPlural, id }) {
   }
 
   function downloadAll() {
-    dispatch(attachmentActions.downloadAll({ id }));
+    dispatch(
+      attachmentActions.downloadAll({
+        id,
+        partNames: attachments.map((a) => a.partName),
+      })
+    );
   }
 
   const showGalleryLink = attachments.some((a) =>

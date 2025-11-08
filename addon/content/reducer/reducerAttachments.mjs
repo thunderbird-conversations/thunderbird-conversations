@@ -16,11 +16,12 @@ export const attachmentActions = {
       });
     };
   },
-  downloadAll({ id }) {
+  downloadAll({ id, partNames }) {
     return async (dispatch, getState) => {
       let state = getState();
       let options = {
         msgId: id,
+        partNames,
       };
       if (state.summary.isStandalone) {
         options.winId = state.summary.windowId;

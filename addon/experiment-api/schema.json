@@ -293,6 +293,13 @@
               "msgId": {
                 "type": "integer",
                 "description": "The message id to detach the attachment for."
+              },
+              "partNames": {
+                "type": "array",
+                "description": "The message parts to download",
+                "items": {
+                  "type": "string"
+                }
               }
             }
           }
