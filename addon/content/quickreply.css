@@ -1,7 +1,7 @@
 /* Quick reply */
 
 :root {
-  --border-color: color-mix(in srgb, light-dark(#ffffff, #18181b) 90%, white);
+  --border-color: light-dark(#d4d4d8, #3f3f46);
 }
 
 .quickReply a {
