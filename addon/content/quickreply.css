@@ -1,7 +1,7 @@
 /* Quick reply */
 
 :root {
-  --border-color: #e3e3e3;
+  --border-color: light-dark(#d4d4d8, #3f3f46);
 }
 
 .quickReply a {

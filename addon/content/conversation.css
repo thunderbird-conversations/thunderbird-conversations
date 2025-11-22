@@ -13,7 +13,7 @@
   );
   --notification-bar-foreground-color: light-dark(black, white);
   color-scheme: light dark;
-  --border-color: #e3e3e3;
+  --border-color: light-dark(#d4d4d8, #3f3f46);
 }
 
 * {
@@ -184,8 +184,9 @@ linkified-subject {
 }
 
 .message {
-  margin: 0 10px 1px;
+  margin: 0 10px 3px;
   border: 1px solid var(--border-color);
+  border-radius: 6px;
   list-style-type: none;
 }
 
