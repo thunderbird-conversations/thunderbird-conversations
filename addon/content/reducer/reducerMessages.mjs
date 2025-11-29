@@ -118,7 +118,7 @@ export const messageActions = {
   },
   openClassic({ id }) {
     return async () => {
-      browser.conversations.openInClassic(id).catch(console.error);
+      browser.messageDisplay.open({ messageId: id });
     };
   },
   openSource({ id }) {

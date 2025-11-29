@@ -201,19 +201,6 @@
         ]
       },
       {
-        "name": "openInClassic",
-        "type": "function",
-        "description": "Opens a message in the classic view.",
-        "async": true,
-        "parameters": [
-          {
-            "name": "id",
-            "type": "integer",
-            "description": "The message id to view in classic mode. Bug 1696764."
-          }
-        ]
-      },
-      {
         "name": "showRemoteContent",
         "type": "function",
         "description": "Enables showing remote content for a particular message.",

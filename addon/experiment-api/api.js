@@ -347,15 +347,6 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             { URL: url }
           );
         },
-        async openInClassic(id) {
-          const win = Services.wm.getMostRecentWindow("mail:3pane");
-          const msgHdr = context.extension.messageManager.get(id);
-          const tabmail = win.document.getElementById("tabmail");
-          tabmail.openTab("mailMessageTab", {
-            messageURI: msgHdr.folder.getUriForMsg(msgHdr),
-            background: false,
-          });
-        },
         async showRemoteContent(id) {
           const msgHdr = context.extension.messageManager.get(id);
           msgHdr.setUint32Property("remoteContentPolicy", kAllowRemoteContent);
