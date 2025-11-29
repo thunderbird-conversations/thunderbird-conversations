@@ -197,7 +197,6 @@ declare namespace browser {
     export function downloadAttachment(
       downloadAttachmentProperties
     ): Promise<void>;
-    export function openAttachment(genericAttachmentProperties): Promise<void>;
     export function detachAttachment(
       genericAttachmentProperties
     ): Promise<void>;

@@ -338,38 +338,6 @@
         ]
       },
       {
-        "name": "openAttachment",
-        "type": "function",
-        "description": "Temporary. Triggers opening a single attachment for a message. Bug 1696777",
-        "async": true,
-        "parameters": [
-          {
-            "name": "openAttachmentProperties",
-            "type": "object",
-            "properties": {
-              "winId": {
-                "type": "integer",
-                "optional": true,
-                "description": "The window from which the attachment is being opened."
-              },
-              "tabId": {
-                "type": "integer",
-                "optional": true,
-                "description": "The tab from which the attachment is being opened."
-              },
-              "msgId": {
-                "type": "integer",
-                "description": "The message id to open the attachment for."
-              },
-              "partName": {
-                "type": "string",
-                "description": "The attachment Url to open the attachment for."
-              }
-            }
-          }
-        ]
-      },
-      {
         "name": "detachAttachment",
         "type": "function",
         "description": "Temporary. Triggers detaching a single attachment for a message. Bug 1522828",

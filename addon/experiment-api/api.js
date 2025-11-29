@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* global ExtensionCommon, ExtensionUtils, XPCOMUtils, Services */
+/* global ExtensionCommon, XPCOMUtils, Services */
 
 var lazy = {};
 
@@ -35,8 +35,6 @@ XPCOMUtils.defineLazyGlobalGetters(this, ["TextDecoder"]);
 ChromeUtils.defineLazyGetter(this, "messenger", () =>
   Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger)
 );
-
-var { ExtensionError } = ExtensionUtils;
 
 /**
  * Get a msgHdr from a message URI (msgHdr.URI).
@@ -496,34 +494,6 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             contentWin.browsingContext
           );
         },
-        async openAttachment({ winId, tabId, msgId, partName }) {
-          let msgHdr = context.extension.messageManager.get(msgId);
-          if (!msgHdr) {
-            throw new ExtensionError(`Message not found: ${msgId}.`);
-          }
-          let attachment = await getAttachment(msgHdr, partName);
-          if (!attachment) {
-            throw new ExtensionError(
-              `Part ${partName} not found in message ${msgId}.`
-            );
-          }
-          let attachmentInfo = new lazy.AttachmentInfo({
-            contentType: attachment.contentType,
-            url: attachment.url,
-            name: attachment.name,
-            uri: msgHdr.folder.getUriForMsg(msgHdr),
-            isExternalAttachment: attachment.isExternal,
-            message: msgHdr,
-          });
-          let { msgBrowser } = getWinBrowserFromIds(context, winId, tabId);
-          try {
-            await attachmentInfo.open(msgBrowser.browsingContext);
-          } catch (ex) {
-            throw new ExtensionError(
-              `Part ${partName} could not be opened: ${ex}.`
-            );
-          }
-        },
         async detachAttachment({ winId, tabId, msgId, partName }) {
           let { win } = getWinBrowserFromIds(context, winId, tabId);
           let msgHdr = context.extension.messageManager.get(msgId);
@@ -871,159 +841,3 @@ function htmlToPlainText(aHtml) {
  * Functions below taken from Thunderbird.
  * https://searchfox.org/comm-central/rev/50e5ac35216ab14c0e9f8ae941815702c97ec1f3/mail/components/extensions/parent/ext-messages.js
  */
-
-/**
- * @typedef {object} nsIMsgHdr
- */
-/**
- * @typedef {object} MimeMessagePart
- */
-
-/**
- * Returns the attachment identified by the provided partName.
- *
- * @param {nsIMsgHdr} msgHdr
- * @param {string} partName
- * @returns {Promise<MimeMessagePart>}
- */
-async function getAttachment(msgHdr, partName) {
-  // It's not ideal to have to call MsgHdrToMimeMessage here again, but we need
-  // the name of the attached file, plus this also gives us the URI without having
-  // to jump through a lot of hoops.
-  let attachment = await getMimeMessage(msgHdr, partName);
-  if (!attachment) {
-    return null;
-  }
-
-  return attachment;
-}
-
-/**
- * Returns MIME parts found in the message identified by the given nsIMsgHdr.
- *
- * @param {nsIMsgHdr} msgHdr
- * @param {string} partName - Return only a specific mime part.
- * @returns {Promise<MimeMessagePart>}
- */
-async function getMimeMessage(msgHdr, partName = "") {
-  // If this message is a sub-message (an attachment of another message), get the
-  // mime parts of the parent message and return the part of the sub-message.
-  let subMsgPartName = getSubMessagePartName(msgHdr);
-  if (subMsgPartName) {
-    let parentMsgHdr = getParentMsgHdr(msgHdr);
-    if (!parentMsgHdr) {
-      return null;
-    }
-
-    let mimeMsg = await getMimeMessage(parentMsgHdr, partName);
-    if (!mimeMsg) {
-      return null;
-    }
-
-    // If <partName> was specified, the returned mime message is just that part,
-    // no further processing needed. But prevent x-ray vision into the parent.
-    if (partName) {
-      if (partName.split(".").length > subMsgPartName.split(".").length) {
-        return mimeMsg;
-      }
-      return null;
-    }
-
-    // Limit mimeMsg and attachments to the requested <subMessagePart>.
-    let findSubPart = (parts, subPartName) => {
-      let match = parts.find((a) => subPartName.startsWith(a.partName));
-      if (!match) {
-        throw new ExtensionError(
-          `Unexpected Error: Part ${subPartName} not found.`
-        );
-      }
-      return match.partName == subPartName
-        ? match
-        : findSubPart(match.parts, subPartName);
-    };
-    let subMimeMsg = findSubPart(mimeMsg.parts, subMsgPartName);
-
-    if (mimeMsg.attachments) {
-      subMimeMsg.attachments = mimeMsg.attachments.filter(
-        (a) =>
-          a.partName != subMsgPartName && a.partName.startsWith(subMsgPartName)
-      );
-    }
-    return subMimeMsg;
-  }
-
-  let mimeMsg = await new Promise((resolve) => {
-    lazy.MsgHdrToMimeMessage(
-      msgHdr,
-      null,
-      (_msgHdr, newMimeMsg) => {
-        newMimeMsg.attachments = newMimeMsg.allInlineAttachments;
-        resolve(newMimeMsg);
-      },
-      true,
-      { examineEncryptedParts: true }
-    );
-  });
-
-  return partName
-    ? mimeMsg.attachments.find((a) => a.partName == partName)
-    : mimeMsg;
-}
-
-/**
- * Returns the <part> parameter of the dummyMsgUrl of the provided nsIMsgHdr.
- *
- * @param {nsIMsgHdr} msgHdr
- * @returns {string}
- */
-function getSubMessagePartName(msgHdr) {
-  if (msgHdr.folder || !msgHdr.getStringProperty("dummyMsgUrl")) {
-    return "";
-  }
-
-  return new URL(msgHdr.getStringProperty("dummyMsgUrl")).searchParams.get(
-    "part"
-  );
-}
-
-/**
- * Returns the nsIMsgHdr of the outer message, if the provided nsIMsgHdr belongs
- * to a message which is actually an attachment of another message. Returns null
- * otherwise.
- *
- * @param {nsIMsgHdr} msgHdr
- * @returns {nsIMsgHdr}
- */
-function getParentMsgHdr(msgHdr) {
-  if (msgHdr.folder || !msgHdr.getStringProperty("dummyMsgUrl")) {
-    return null;
-  }
-
-  let url = new URL(msgHdr.getStringProperty("dummyMsgUrl"));
-
-  if (url.protocol == "news:") {
-    let newsUrl = `news-message://${url.hostname}/${url.searchParams.get(
-      "group"
-    )}#${url.searchParams.get("key")}`;
-    return messenger.msgHdrFromURI(newsUrl);
-  }
-
-  // TODO: Maybe support this
-  // if (url.protocol == "mailbox:") {
-  //   // This could be a sub-message of a message opened from file.
-  //   let fileUrl = `file://${url.pathname}`;
-  //   let parentMsgHdr = messageTracker._dummyMessageHeaders.get(fileUrl);
-  //   if (parentMsgHdr) {
-  //     return parentMsgHdr;
-  //   }
-  // }
-  // Everything else should be a mailbox:// or an imap:// url.
-  let params = Array.from(url.searchParams, (p) => p[0]).filter(
-    (p) => !["number"].includes(p)
-  );
-  for (let param of params) {
-    url.searchParams.delete(param);
-  }
-  return Services.io.newURI(url.href).QueryInterface(Ci.nsIMsgMessageUrl)
-    .messageHeader;
-}

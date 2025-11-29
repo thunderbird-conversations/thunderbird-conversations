@@ -20,6 +20,7 @@ const SUPPORTED_APIS_NO_EVENTS = [
   // clearing the starred flag when marking a message as read.
   "messages",
   "messengerUtilities",
+  "tabs",
   "windows",
   // This is a temporary workaround so that we can "message" the background script.
   "_background",
@@ -37,7 +38,6 @@ const SUPPORTED_BASE_APIS = [
   "messageDisplay",
   "runtime",
   "storage",
-  "tabs",
 ];
 
 /**
