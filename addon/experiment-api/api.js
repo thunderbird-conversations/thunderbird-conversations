@@ -361,16 +361,12 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             Services.perms.ALLOW_ACTION
           );
         },
-        async beginEdit(id, type) {
+        async beginEdit(id) {
           let msgHdr = context.extension.messageManager.get(id);
-          let compType =
-            type == "editAsNew"
-              ? Ci.nsIMsgCompType.Template
-              : Ci.nsIMsgCompType.Draft;
           Services.wm
             .getMostRecentWindow("mail:3pane")
             .ComposeMessage(
-              compType,
+              Ci.nsIMsgCompType.Draft,
               Ci.nsIMsgCompFormat.Default,
               msgHdr.folder,
               [msgHdr.folder.getUriForMsg(msgHdr)]

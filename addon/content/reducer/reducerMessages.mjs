@@ -67,7 +67,7 @@ export const messageActions = {
   },
   editDraft({ id, shiftKey }) {
     return async (dispatch, getState) => {
-      browser.conversations.beginEdit(id, "editDraft").catch(console.error);
+      browser.conversations.beginEdit(id).catch(console.error);
     };
   },
   editAsNew({ id, shiftKey }) {

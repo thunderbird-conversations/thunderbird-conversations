@@ -173,7 +173,7 @@ declare namespace browser {
     export function openInSourceView(id: number): Promise<void>;
     export function showRemoteContent(id: number): Promise<void>;
     export function alwaysShowRemoteContent(email: string): Promise<void>;
-    export function beginEdit(id: number, type: string): Promise<void>;
+    export function beginEdit(id: number): Promise<void>;
     export function ignorePhishing(id: number): Promise<void>;
 
     interface downloadAllAttachmentsProperties {
