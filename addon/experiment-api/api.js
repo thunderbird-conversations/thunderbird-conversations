@@ -307,8 +307,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           });
         },
         async makePlural(pluralForm, message, value) {
-          let [makePluralFn] = lazy.PluralForm.makeGetter(pluralForm);
-          return makePluralFn(value, message).replace("#1", value);
+          return lazy.PluralForm.get(pluralForm, message).replace("#1", value);
         },
         async markSelectedAsJunk(tabId, isJunk) {
           let tabObject = context.extension.tabManager.get(tabId);
