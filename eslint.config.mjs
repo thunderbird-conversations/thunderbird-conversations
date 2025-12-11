@@ -1,5 +1,6 @@
 import globals from "globals";
-import json from "eslint-plugin-json";
+import json from "@eslint/json";
+import jsdoc from "eslint-plugin-jsdoc";
 import react from "eslint-plugin-react";
 import importPlugin from "eslint-plugin-import";
 import mozilla from "eslint-plugin-mozilla";
@@ -91,9 +92,8 @@ export default [
   },
   {
     files: ["**/*.json"],
-    plugins: { json },
-    processor: json.processors[".json"],
-    rules: json.configs.recommended.rules,
+    language: "json/json",
+    ...json.configs.recommended,
   },
   {
     ignores: [
@@ -132,6 +132,7 @@ export default [
   },
   {
     files: ["**/*.{js,mjs}"],
+    plugins: { jsdoc },
     rules: {
       "jsdoc/check-tag-names": "error",
       "jsdoc/check-types": "error",
