@@ -32,7 +32,7 @@ jobs:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
       - uses: actions/setup-node@v6
         with:
-          node-version: 24.11.x
+          node-version: 24.12.x
       - name: Install dependencies
         run: npm ci --force
       - name: Run node tests
