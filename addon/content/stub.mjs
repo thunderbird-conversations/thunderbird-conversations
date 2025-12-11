@@ -101,13 +101,11 @@ document.addEventListener(
     // We also have to pass the dispatch function down manually for now, as
     // we don't yet have a good solution for how to handle the dispatcher whilst
     // we are still transitioning.
-    let { ConversationHeader } = await import(
-      "./components/conversation/conversationHeader.mjs"
-    );
+    let { ConversationHeader } =
+      await import("./components/conversation/conversationHeader.mjs");
     ConversationHeader.dispatch = store.dispatch;
-    let { ConversationFooter } = await import(
-      "./components/conversation/conversationFooter.mjs"
-    );
+    let { ConversationFooter } =
+      await import("./components/conversation/conversationFooter.mjs");
     ConversationFooter.dispatch = store.dispatch;
     let { ContactDetail } = await import("./components/contactDetail.mjs");
     ContactDetail.dispatch = store.dispatch;
