@@ -456,16 +456,6 @@ export const messagesSlice = RTK.createSlice({
         msgData: [...state.msgData, ...payload.msgs],
       };
     },
-    /**
-     * Insert messages into the existing list in sorted order (by rawDate).
-     * Used for progressive loading: show the target message first, then
-     * insert the remaining messages without disrupting the scroll position.
-     */
-    insertMessages(state, { payload: { msgs } }) {
-      const merged = [...state.msgData, ...msgs];
-      merged.sort((a, b) => a.rawDate - b.rawDate);
-      return { ...state, msgData: merged };
-    },
     updateMessages(state, { payload }) {
       let msgData = state.msgData.map((msg) => {
         let updateMsg = payload.msgs.find((m) => m.id == msg.id);

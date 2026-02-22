@@ -187,33 +187,18 @@ export const conversationActions = {
           initialSet
         );
 
-        // Render all messages immediately (without contact details) so the
-        // browser can scroll to the correct position right away. Contact data
-        // is filled in afterwards via updateMessages — no scroll jump occurs
-        // because the layout doesn't change (only contact text updates).
+        // The messages inside `msgData` don't come with filled in `to`/`from`/etc.
+        // fields. We need to fill them in ourselves.
+        await mergeContactDetails(enrichedMsgs);
+
         summary.loading = false;
         summary.subject = enrichedMsgs[enrichedMsgs.length - 1]?.subject;
 
         await dispatch(summarySlice.actions.replaceSummaryDetails(summary));
-        // Dispatch shallow copies so that mergeContactDetails can mutate the
-        // originals without touching the Redux state directly.
+
         await dispatch(
-          messageActions.replaceConversation({
-            messages: enrichedMsgs.map((m) => ({ ...m })),
-          })
+          messageActions.replaceConversation({ messages: enrichedMsgs })
         );
-
-        if (currentState.summary.prefs.loggingEnabled) {
-          console.debug(
-            "Conversations:",
-            "Initial render (ms):",
-            Date.now() - loadingStartedTime
-          );
-        }
-
-        // Fetch contacts and push them into the store.
-        await mergeContactDetails(enrichedMsgs);
-        await dispatch(messageActions.updateMessages({ msgs: enrichedMsgs }));
 
         if (currentState.summary.prefs.loggingEnabled) {
           console.debug(
