@@ -6,19 +6,19 @@ export const kCurrentLegacyMigration = 3;
 
 export const kPrefDefaults = {
   hide_quote_length: 5,
-  expand_who: 4, // kExpandAuto
+  expand_who: 3, // kExpandAll
   no_friendly_date: false,
   uninstall_infos: "{}",
   logging_enabled: false,
   tweak_bodies: true,
   tweak_chrome: true,
   operate_on_conversations: false,
-  extra_attachments: false,
-  hide_quick_reply: false,
+  extra_attachments: true,
+  hide_quick_reply: true,
   compose_in_tab: true,
   unwanted_recipients: "{}",
-  hide_sigs: false,
-  disableBetweenColumn: false,
+  hide_sigs: true,
+  disableBetweenColumn: true,
   migratedLegacy: kCurrentLegacyMigration,
 };
 
