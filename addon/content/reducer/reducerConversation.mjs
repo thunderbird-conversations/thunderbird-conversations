@@ -187,41 +187,33 @@ export const conversationActions = {
           initialSet
         );
 
-        // Split: show the scroll-target message immediately, load rest after.
-        // This lets the user jump to the right message without waiting for all
-        // contact details to be fetched.
-        let targetIdx = enrichedMsgs.findIndex((m) => m.scrollTo);
-        if (targetIdx < 0) {
-          targetIdx = enrichedMsgs.length - 1;
-        }
-        let targetMsg = enrichedMsgs[targetIdx];
-        let otherMsgs = enrichedMsgs.filter((_, i) => i !== targetIdx);
-
-        // Phase 1: Contacts for the target message only → render immediately.
-        await mergeContactDetails([targetMsg]);
-
+        // Render all messages immediately (without contact details) so the
+        // browser can scroll to the correct position right away. Contact data
+        // is filled in afterwards via updateMessages — no scroll jump occurs
+        // because the layout doesn't change (only contact text updates).
         summary.loading = false;
         summary.subject = enrichedMsgs[enrichedMsgs.length - 1]?.subject;
 
         await dispatch(summarySlice.actions.replaceSummaryDetails(summary));
+        // Dispatch shallow copies so that mergeContactDetails can mutate the
+        // originals without touching the Redux state directly.
         await dispatch(
-          messageActions.replaceConversation({ messages: [targetMsg] })
+          messageActions.replaceConversation({
+            messages: enrichedMsgs.map((m) => ({ ...m })),
+          })
         );
 
         if (currentState.summary.prefs.loggingEnabled) {
           console.debug(
             "Conversations:",
-            "Target message rendered (ms):",
+            "Initial render (ms):",
             Date.now() - loadingStartedTime
           );
         }
 
-        // Phase 2: Remaining messages — insert sorted by date.
-        // Browser overflow-anchor keeps the viewport stable.
-        if (otherMsgs.length) {
-          await mergeContactDetails(otherMsgs);
-          await dispatch(messageActions.insertMessages({ msgs: otherMsgs }));
-        }
+        // Fetch contacts and push them into the store.
+        await mergeContactDetails(enrichedMsgs);
+        await dispatch(messageActions.updateMessages({ msgs: enrichedMsgs }));
 
         if (currentState.summary.prefs.loggingEnabled) {
           console.debug(
