@@ -45,7 +45,7 @@
     "prop-types": "15.8.1",
     "serve": "14.2.6",
     "typescript": "5.9.3",
-    "web-ext": "9.4.0",
+    "web-ext": "10.0.0",
     "webpack": "5.105.4",
     "webpack-cli": "6.0.1"
   },
