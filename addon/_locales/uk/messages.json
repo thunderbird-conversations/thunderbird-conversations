@@ -461,13 +461,64 @@
     "message": "Видалити вкладення",
     "description": "Context menu item to delete an attachment."
   },
-  "pluralForm": {
-    "message": "7",
-    "description": "Please make sure you read and understood https://developer.mozilla.org/en/Localization_and_Plurals. pluralForm corresponds to the 'pluralRule' variable that's described in the page, it's just a mistake if the name doesn't match the MDC page."
+  "attachments.numAttachments_zero": {
+    "message": "Один вкладений файл",
+    "description": "The description used for how many attachments there are (pluralization category: one)",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
   },
-  "attachments.numAttachments": {
-    "message": "Один вкладений файл;$num$ вкладені файли;$num$ вкладених файлів",
-    "description": "The description used for how many attachments there are. This should take the form of a plural form, see also 'pluralForm'.",
+
+  "attachments.numAttachments_one": {
+    "message": "$num$ вкладені файли",
+    "description": "The description used for how many attachments there are (pluralization category: one)",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+
+  "attachments.numAttachments_two": {
+    "message": "$num$ вкладених файлів",
+    "description": "The description used for how many attachments there are (pluralization category: one)",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+
+  "attachments.numAttachments_few": {
+    "message": "$num$ вкладених файлів",
+    "description": "The description used for how many attachments there are (pluralization category: one)",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+
+  "attachments.numAttachments_many": {
+    "message": "$num$ вкладених файлів",
+    "description": "The description used for how many attachments there are (pluralization category: one)",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+
+  "attachments.numAttachments_other": {
+    "message": "$num$ вкладених файлів",
+    "description": "The description used for how many attachments there are (pluralization category: other)",
     "placeholders": {
       "num": {
         "content": "$1",

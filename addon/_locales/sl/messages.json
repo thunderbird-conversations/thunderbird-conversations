@@ -470,13 +470,64 @@
     "message": "Izbriši priponko",
     "description": "Context menu item to delete an attachment."
   },
-  "pluralForm": {
-    "message": "10",
-    "description": "Please make sure you read and understood https://developer.mozilla.org/en/Localization_and_Plurals. pluralForm corresponds to the 'pluralRule' variable that's described in the page, it's just a mistake if the name doesn't match the MDC page."
+  "attachments.numAttachments_zero": {
+    "message": "$num$ priponk",
+    "description": "The description used for how many attachments there are (pluralization category: one)",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
   },
-  "attachments.numAttachments": {
-    "message": "$num$ priponka;$num$ priponki;$num$ priponke;$num$ priponk",
-    "description": "The description used for how many attachments there are. This should take the form of a plural form, see also 'pluralForm'.",
+
+  "attachments.numAttachments_one": {
+    "message": "$num$ priponka",
+    "description": "The description used for how many attachments there are (pluralization category: one)",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+
+  "attachments.numAttachments_two": {
+    "message": "$num$ priponki",
+    "description": "The description used for how many attachments there are (pluralization category: one)",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+
+  "attachments.numAttachments_few": {
+    "message": "$num$ priponki",
+    "description": "The description used for how many attachments there are (pluralization category: one)",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+
+  "attachments.numAttachments_many": {
+    "message": "$num$ priponke",
+    "description": "The description used for how many attachments there are (pluralization category: one)",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+
+  "attachments.numAttachments_other": {
+    "message": "$num$ priponk",
+    "description": "The description used for how many attachments there are (pluralization category: other)",
     "placeholders": {
       "num": {
         "content": "$1",

@@ -160,11 +160,6 @@ declare namespace browser {
       id: number,
       extraAttachments: boolean
     ): Promise<any>;
-    export function makePlural(
-      pluralForm: string,
-      message: string,
-      value: number
-    ): Promise<string>;
     export function markSelectedAsJunk(
       tabId: number,
       isJunk: boolean

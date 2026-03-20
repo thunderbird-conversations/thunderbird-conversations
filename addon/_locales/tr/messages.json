@@ -462,13 +462,64 @@
     "message": "Ek sil",
     "description": "Bir eki silmek için sağ tıklama menüsü öğesi."
   },
-  "pluralForm": {
-    "message": "1",
-    "description": "https://developer.mozilla.org/en/Localization_and_Plurals sayfasını okuduğunuzdan ve anladığınızdan emin olun. pluralForm, sayfada açıklanan 'pluralRule' değişkenine karşılık gelir, adın eşleşmemesi sadece bir hata olur."
+  "attachments.numAttachments_zero": {
+    "message": "$num$ ek",
+    "description": "The description used for how many attachments there are (pluralization category: one)",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
   },
-  "attachments.numAttachments": {
-    "message": "bir ek;$num$ ek",
-    "description": "Kaç ek olduğu açıklaması. Çoğul formda olmalıdır, ayrıca 'pluralForm'a bakın.",
+
+  "attachments.numAttachments_one": {
+    "message": "bir ek",
+    "description": "The description used for how many attachments there are (pluralization category: one)",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+
+  "attachments.numAttachments_two": {
+    "message": "$num$ ek",
+    "description": "The description used for how many attachments there are (pluralization category: one)",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+
+  "attachments.numAttachments_few": {
+    "message": "$num$ ek",
+    "description": "The description used for how many attachments there are (pluralization category: one)",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+
+  "attachments.numAttachments_many": {
+    "message": "$num$ ek",
+    "description": "The description used for how many attachments there are (pluralization category: one)",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+
+  "attachments.numAttachments_other": {
+    "message": "$num$ ek",
+    "description": "The description used for how many attachments there are (pluralization category: other)",
     "placeholders": {
       "num": {
         "content": "$1",

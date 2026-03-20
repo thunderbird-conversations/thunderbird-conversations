@@ -55,9 +55,8 @@ export const messageActions = {
         messagesSlice.actions.updateAttachmentData({
           id,
           attachments,
-          attachmentsPlural: await browser.conversations.makePlural(
-            browser.i18n.getMessage("pluralForm"),
-            browser.i18n.getMessage("attachments.numAttachments"),
+          attachmentsPlural: messageUtils.getPlural(
+            "attachments.numAttachments",
             numAttachments
           ),
           needsLateAttachments: false,

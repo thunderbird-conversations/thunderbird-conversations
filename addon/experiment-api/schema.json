@@ -140,29 +140,6 @@
         ]
       },
       {
-        "name": "makePlural",
-        "type": "function",
-        "description": "Extracts a plural from a l10n message string.",
-        "async": true,
-        "parameters": [
-          {
-            "name": "pluralForm",
-            "type": "string",
-            "description": "The plural form to use."
-          },
-          {
-            "name": "message",
-            "type": "string",
-            "description": "The l10n message string."
-          },
-          {
-            "name": "value",
-            "type": "integer",
-            "description": "The value to insert into the string."
-          }
-        ]
-      },
-      {
         "name": "markSelectedAsJunk",
         "type": "function",
         "description": "Marks the selected messages as junk. May be replaced once bug 1642225 is fixed.",

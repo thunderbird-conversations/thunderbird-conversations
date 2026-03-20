@@ -10,7 +10,6 @@ ChromeUtils.defineESModuleGetters(lazy, {
   AttachmentInfo: "resource:///modules/AttachmentInfo.sys.mjs",
   GlodaAttrProviders:
     "chrome://conversations/content/modules/GlodaAttrProviders.sys.mjs",
-  PluralForm: "resource://gre/modules/PluralForm.sys.mjs",
   MailServices: "resource:///modules/MailServices.sys.mjs",
   makeFriendlyDateAgo: "resource:///modules/TemplateUtils.sys.mjs",
   MsgHdrToMimeMessage: "resource:///modules/gloda/MimeMessage.sys.mjs",
@@ -305,9 +304,6 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
               );
             });
           });
-        },
-        async makePlural(pluralForm, message, value) {
-          return lazy.PluralForm.get(pluralForm, message).replace("#1", value);
         },
         async markSelectedAsJunk(tabId, isJunk) {
           let tabObject = context.extension.tabManager.get(tabId);

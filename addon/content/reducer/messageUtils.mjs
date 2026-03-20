@@ -3,6 +3,9 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 export let messageUtils = new (class {
+  /** @type {Intl.PluralRules} */
+  #pluralRules;
+
   constructor() {
     this.timeFormatter = new Intl.DateTimeFormat(undefined, {
       timeStyle: "short",
@@ -32,7 +35,7 @@ export let messageUtils = new (class {
         break;
       }
     }
-    console.log(identityId);
+
     if (!identityId) {
       let account = await browser.accounts.get(msg.folderAccountId);
       if (!account?.identities.length) {
@@ -47,5 +50,15 @@ export let messageUtils = new (class {
     }
 
     return identityId;
+  }
+
+  getPlural(stringPrefix, quantity) {
+    if (!this.#pluralRules) {
+      this.#pluralRules = new Intl.PluralRules(browser.i18n.getUILanguage());
+    }
+    return browser.i18n.getMessage(
+      `${stringPrefix}_${this.#pluralRules.select(quantity)}`,
+      [quantity]
+    );
   }
 })();

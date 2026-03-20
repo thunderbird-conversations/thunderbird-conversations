@@ -390,14 +390,70 @@
     "message": "Supprimer la pièce jointe",
     "description": "Context menu item to delete an attachment."
   },
-  "pluralForm": {
-    "message": "2",
-    "description": "Please make sure you read and understood https://developer.mozilla.org/en/Localization_and_Plurals. pluralForm corresponds to the 'pluralRule' variable that's described in the page, it's just a mistake if the name doesn't match the MDC page."
+  "attachments.numAttachments_zero": {
+    "message": "une pièce jointe",
+    "description": "The description used for how many attachments there are (pluralization category: one)",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
   },
-  "attachments.numAttachments": {
-    "message": "une pièce jointe;$num$ pièces jointes",
-    "description": "The description used for how many attachments there are. This should take the form of a plural form, see also 'pluralForm'.",
-    "placeholders": { "num": { "content": "$1", "example": "2" } }
+
+  "attachments.numAttachments_one": {
+    "message": "une pièce jointe",
+    "description": "The description used for how many attachments there are (pluralization category: one)",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+
+  "attachments.numAttachments_two": {
+    "message": "$num$ pièces jointes",
+    "description": "The description used for how many attachments there are (pluralization category: one)",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+
+  "attachments.numAttachments_few": {
+    "message": "$num$ pièces jointes",
+    "description": "The description used for how many attachments there are (pluralization category: one)",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+
+  "attachments.numAttachments_many": {
+    "message": "$num$ pièces jointes",
+    "description": "The description used for how many attachments there are (pluralization category: one)",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+
+  "attachments.numAttachments_other": {
+    "message": "$num$ pièces jointes",
+    "description": "The description used for how many attachments there are (pluralization category: other)",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
   },
   "message.meFromMeToSomeone": {
     "message": "moi",
