@@ -16,6 +16,13 @@
       "groupSlug": "dependencies",
       "minimumReleaseAge": "3 days",
       "internalChecksFilter": "strict"
+    },
+    {
+      "matchPackageNames": ["global-jsdom", "jsdom"],
+      "groupName": "dependencies (non-major)",
+      "groupSlug": "jsdom",
+      "minimumReleaseAge": "3 days",
+      "internalChecksFilter": "strict"
     }
   ]
 }
