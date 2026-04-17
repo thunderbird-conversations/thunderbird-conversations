@@ -30,6 +30,7 @@ export const initialSummary = {
     expandWho: 4,
     extraAttachments: false,
     hideQuickReply: false,
+    reverseConversationOrder: false,
     hideQuoteLength: 5,
     hideSigs: false,
     loggingEnabled: false,

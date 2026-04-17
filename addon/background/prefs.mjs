@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-export const kCurrentLegacyMigration = 3;
+export const kCurrentLegacyMigration = 4;
 
 export const kPrefDefaults = {
   hide_quote_length: 5,
@@ -15,6 +15,7 @@ export const kPrefDefaults = {
   operate_on_conversations: false,
   extra_attachments: false,
   hide_quick_reply: false,
+  reverse_conversation_order: false,
   compose_in_tab: true,
   unwanted_recipients: "{}",
   hide_sigs: false,
@@ -91,6 +92,10 @@ export class Prefs {
 
     if (currentMigration < 3) {
       prefs.hide_quick_reply = false;
+    }
+
+    if (currentMigration < 4) {
+      prefs.reverse_conversation_order = false;
     }
 
     prefs.migratedLegacy = kCurrentLegacyMigration;
