@@ -114,6 +114,16 @@
     "description": "Options - description for hiding the quick reply display."
   },
 
+  "options.reverse_conversation_order_title": {
+    "message": "Newest messages first",
+    "description": "Options - title for reversing the message display order."
+  },
+
+  "options.reverse_conversation_order_desc": {
+    "message": "Display the newest messages at the top of a conversation.",
+    "description": "Options - description for reversing the message display order."
+  },
+
   "options.disable_between_column_title": {
     "message": "Disable Between Column",
     "description": "Options - title for disabling the between column."

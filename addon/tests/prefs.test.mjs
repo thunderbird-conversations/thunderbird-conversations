@@ -33,6 +33,7 @@ describe("Prefs tests", () => {
         compose_in_tab: false,
       };
       delete newPrefs.hide_quick_reply;
+      delete newPrefs.reverse_conversation_order;
       newPrefs.migratedLegacy = 2;
       await browser.storage.local.set({ preferences: newPrefs });
 
@@ -41,6 +42,7 @@ describe("Prefs tests", () => {
       let stored = (await browser.storage.local.get("preferences")).preferences;
       assert.strictEqual(stored.migratedLegacy, kCurrentLegacyMigration);
       assert.strictEqual(stored.hide_quick_reply, false);
+      assert.strictEqual(stored.reverse_conversation_order, false);
       assert.strictEqual(stored.no_friendly_date, true);
       assert.strictEqual(stored.compose_in_tab, false);
     });
