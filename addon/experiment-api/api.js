@@ -662,8 +662,11 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
         },
         async fireLoadCompleted({ winId, tabId }) {
           let { msgBrowser } = getWinBrowserFromIds(context, winId, tabId);
-          msgBrowser.ownerGlobal.dispatchEvent(
-            new msgBrowser.ownerGlobal.CustomEvent("MsgsLoaded", {
+          // Thunderbird compatibility with pre-152, where ownerGlobal was changed to
+          // documentGlobal.
+          let docGlobal = msgBrowser.documentGlobal ?? msgBrowser.ownerGlobal;
+          docGlobal.dispatchEvent(
+            new docGlobal.CustomEvent("MsgsLoaded", {
               bubbles: true,
             })
           );

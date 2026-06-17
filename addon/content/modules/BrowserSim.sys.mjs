@@ -195,9 +195,11 @@ class _BrowserSim {
     let tabmail = win.document.getElementById("tabmail");
 
     // Assume first we're in a three-pane tab.
-    let threePaneBrowser =
-      docWin.browsingContext?.embedderElement?.ownerDocument?.ownerGlobal
-        ?.browsingContext?.embedderElement;
+    let ownerDocument = docWin.browsingContext?.embedderElement?.ownerDocument;
+    // Thunderbird compatibility with pre-152, where ownerGlobal was changed to
+    // documentGlobal.
+    let docGlobal = ownerDocument?.documentGlobal ?? ownerDocument?.ownerGlobal;
+    let threePaneBrowser = docGlobal?.browsingContext?.embedderElement;
     let tab = tabmail.tabInfo.find((t) => t.chromeBrowser == threePaneBrowser);
 
     if (tab?.mode.name != "mail3PaneTab") {
