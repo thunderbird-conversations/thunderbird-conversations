@@ -124,9 +124,11 @@ function GenericMultiButtonNotification({
       React.createElement(
         "button",
         {
+          // @ts-ignore
           className: button.classNames,
           title: button.tooltiptext,
           key: i,
+          // @ts-ignore
           onClick: onClick.bind(this, button.actionParams),
         },
         button.textContent

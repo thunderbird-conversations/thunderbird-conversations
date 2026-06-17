@@ -280,7 +280,10 @@ declare namespace browser {
       cancel?: boolean;
     }
     export const onThreadPaneActivate: WebExtEventWithParam<
-      (tabId: number, msgHdrs: messages.MessageHeader) => cancellableResult,
+      (
+        tabId: number,
+        msgHdrs: [messages.MessageHeader]
+      ) => Promise<cancellableResult>,
       number
     >;
     export const onMonkeyPatch: WebExtEventWithParam<() => void, number>;

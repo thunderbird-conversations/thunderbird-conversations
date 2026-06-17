@@ -126,7 +126,7 @@ class _Quoting {
     try {
       walk(aDoc.body);
     } catch (ex) {
-      if (!ex.found) {
+      if (ex instanceof ExitWithFoundError && !ex.found) {
         throw ex;
       }
     }

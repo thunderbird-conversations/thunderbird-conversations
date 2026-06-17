@@ -22,9 +22,14 @@
 
   "compilerOptions": {
     "checkJs": true,
-    "noEmit": true,
     "module": "nodenext",
     "moduleResolution": "nodenext",
+    "noEmit": true,
+    "noImplicitAny": false,
+    "noImplicitThis": false,
+    "strictBindCallApply": false,
+    "strictFunctionTypes": false,
+    "strictNullChecks": false,
     "target": "es2024",
     "types": ["node", "react-redux", "thunderbird-webext-browser"]
   }

@@ -66,7 +66,8 @@ export class Window {
      *   The optional tooltip of the pill.
      */
     browser.runtime.onConnectExternal.addListener(async (port) => {
-      port.onMessage.addListener((/** @type {AddPillMessage} */ msg) => {
+      port.onMessage.addListener((aMsg) => {
+        let msg = /** @type {AddPillMessage} */ (aMsg);
         if (msg.type != "addPill") {
           return;
         }
@@ -127,6 +128,13 @@ export class Window {
       this.connectedPorts.delete(disconnectPort);
     });
   }
+
+  /**
+   *
+   * @param {number} tabId
+   * @param {[browser.messages.MessageHeader]} msgHdrs
+   * @returns {Promise<browser.convMsgWindow.cancellableResult>}
+   */
 
   async doubleClickHandler(tabId, msgHdrs) {
     for (const hdr of msgHdrs) {
