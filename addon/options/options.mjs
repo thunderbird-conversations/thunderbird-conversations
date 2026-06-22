@@ -440,3 +440,4 @@ export class ConversationOptions extends HTMLElement {
     port.postMessage({});
   }
 }
+customElements.define("conversation-options", ConversationOptions);
