@@ -102,6 +102,14 @@ const PREFS_INFO = [
   },
   {
     props: {
+      title: "options.reverse_conversation_order_title",
+      desc: "options.reverse_conversation_order_desc",
+      name: "reverse_conversation_order",
+    },
+    component: "binary-option",
+  },
+  {
+    props: {
       title: "options.disable_between_column_title",
       desc: "options.disable_between_column_desc",
       name: "disableBetweenColumn",

@@ -6,6 +6,17 @@ import React from "react";
 import * as ReactRedux from "react-redux";
 import { Message } from "./message.mjs";
 
+function getDisplayMessages(msgData, reverseConversationOrder) {
+  if (!msgData) {
+    return [];
+  }
+  return reverseConversationOrder ? [...msgData].reverse() : msgData;
+}
+
+function getQuickReplyTargetId(msgData) {
+  return msgData?.[msgData.length - 1]?.id;
+}
+
 /**
  * Handles display of the list of messages.
  *
@@ -19,6 +30,11 @@ function _MessageList({ dispatch, messages, summary }) {
   // can be called on them in response to a `advanceMessage()`
   // call. The actual ref is stored in `React.useRef().current`
   const { current: childRefs } = React.useRef([]);
+  const displayMessages = getDisplayMessages(
+    messages.msgData,
+    summary.prefs.reverseConversationOrder
+  );
+  const quickReplyTargetId = getQuickReplyTargetId(messages.msgData);
 
   function setRef(index, ref) {
     childRefs[index] = ref;
@@ -35,8 +51,7 @@ function _MessageList({ dispatch, messages, summary }) {
   return React.createElement(
     "ul",
     { id: "messageList" },
-    !!messages.msgData &&
-      messages.msgData.map((message, index) =>
+    displayMessages.map((message, index) =>
         React.createElement(Message, {
           key: index,
           autoMarkAsRead: summary.autoMarkAsRead,
@@ -50,7 +65,7 @@ function _MessageList({ dispatch, messages, summary }) {
           iframesLoading: summary.iframesLoading,
           index,
           isInTab: summary.isInTab,
-          isLastMessage: index == messages.msgData.length - 1,
+          isLastMessage: message.id == quickReplyTargetId,
           isStandalone: summary.isStandalone,
           message,
           tenPxFactor: summary.tenPxFactor,
