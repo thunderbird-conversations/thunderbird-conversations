@@ -5,7 +5,7 @@
 /* eslint-env node */
 
 // Imported for side-effects
-// eslint-disable-next-line import/no-unassigned-import, import/no-unresolved
+// eslint-disable-next-line import-x/no-unassigned-import
 import "global-jsdom/register";
 // eslint-disable-next-line no-shadow
 import { browser } from "../content/esmodules/thunderbirdCompat.mjs";

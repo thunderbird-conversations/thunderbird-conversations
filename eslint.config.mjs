@@ -2,7 +2,7 @@ import globals from "globals";
 import json from "@eslint/json";
 import jsdoc from "eslint-plugin-jsdoc";
 import react from "eslint-plugin-react";
-import importPlugin from "eslint-plugin-import";
+import { importX } from "eslint-plugin-import-x";
 import mozilla from "eslint-plugin-mozilla";
 import eslintConfigPrettier from "eslint-config-prettier";
 
@@ -28,28 +28,21 @@ export default [
   },
   {
     files: ["**/*.mjs", "**/*.js"],
-    ...importPlugin.flatConfigs.recommended,
-    languageOptions: {
-      parserOptions: {
-        // @ts-ignore
-        ...importPlugin.flatConfigs.recommended.languageOptions.parserOptions,
-        sourceType: "module",
-      },
-    },
+    ...importX.flatConfigs.recommended,
     rules: {
-      ...importPlugin.flatConfigs.recommended.rules,
-      "import/newline-after-import": "error",
-      "import/no-duplicates": "error",
-      "import/no-absolute-path": "error",
-      "import/no-named-default": "error",
-      "import/no-named-as-default": "error",
-      "import/no-named-as-default-member": "error",
-      "import/no-self-import": "error",
-      "import/no-unassigned-import": "error",
-      "import/no-useless-path-segments": "error",
+      ...importX.flatConfigs.recommended.rules,
+      "import-x/newline-after-import": "error",
+      "import-x/no-duplicates": "error",
+      "import-x/no-absolute-path": "error",
+      "import-x/no-named-default": "error",
+      "import-x/no-named-as-default": "error",
+      "import-x/no-named-as-default-member": "error",
+      "import-x/no-self-import": "error",
+      "import-x/no-unassigned-import": "error",
+      "import-x/no-useless-path-segments": "error",
     },
     settings: {
-      "import/extensions": [".mjs"],
+      "import-x/extensions": [".mjs"],
     },
   },
   {

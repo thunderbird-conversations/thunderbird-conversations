@@ -3,7 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 /* global BrowserSim */
-// eslint-disable-next-line import/no-unassigned-import
+// eslint-disable-next-line import-x/no-unassigned-import
 import "./components/svgIcon.mjs";
 import React from "react";
 import ReactDOMClient from "react-dom/client";

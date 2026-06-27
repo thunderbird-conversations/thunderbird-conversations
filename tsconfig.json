@@ -26,6 +26,6 @@
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "target": "es2024",
-    "types": ["react-redux", "thunderbird-webext-browser"]
+    "types": ["node", "react-redux", "thunderbird-webext-browser"]
   }
 }
