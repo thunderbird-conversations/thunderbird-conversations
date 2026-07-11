@@ -619,9 +619,9 @@ export class MessageIFrame extends React.Component {
     }
 
     let styleRules = this.tweakFonts(iframeDoc);
-    if (
-      !(this.props.realFrom && this.props.realFrom.includes("bugzilla-daemon"))
-    ) {
+    if (!(
+      this.props.realFrom && this.props.realFrom.includes("bugzilla-daemon")
+    )) {
       await this.detectQuotes(this.iframe);
     }
     this.detectSigs(this.iframe);
