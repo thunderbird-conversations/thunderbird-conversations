@@ -35,8 +35,8 @@ mkdir -p "../$DIST"
 find $EXTENDED1 . $EXTENDED2 -regex $REGEXTENSIONS -maxdepth 1 -exec cp {} ../$DIST/ \;
 # Other items we need that aren't handled by webpack, or things that we
 # need outside of webpage as well.
-DIRECTORIES=(assistant background content/icons content/modules \
-experiment-api options gallery content/esmodules)
+DIRECTORIES=(assistant background content/icons \
+experiment-api/apis experiment-api/modules options gallery content/esmodules)
 for a in "${DIRECTORIES[@]}"; do
   mkdir -p ../$DIST/${a}/
   find $EXTENDED1 $a $EXTENDED2 -regex $REGEXTENSIONS -exec cp {} ../$DIST/$a/ \;
@@ -48,8 +48,9 @@ done
 # This directory just needs the css file.
 mkdir -p ../$DIST/content/components/compose
 find $EXTENDED1 . $EXTENDED2 -name "*.css" -exec cp {} ../$DIST/{} \;
-cp content/stubGlobals.js ../${DIST}/content/
-cp content/stubWrapper.* ../${DIST}/content/
+pwd
+cp experiment-api/stubGlobals.js ../${DIST}/experiment-api/
+cp experiment-api/stubWrapper.* ../${DIST}/experiment-api/
 
 popd
 

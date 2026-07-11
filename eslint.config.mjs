@@ -46,17 +46,17 @@ export default [
     },
   },
   {
-    files: ["addon/experiment-api/*.js"],
+    files: ["addon/experiment-api/apis/*.js"],
     languageOptions: {
       sourceType: "script",
     },
   },
   {
     files: [
-      "addon/content/modules/*.*js",
-      "addon/content/stubGlobals.js",
-      "addon/content/stubWrapper.mjs",
-      "addon/experiment-api/*.js",
+      "addon/experiment-api/modules/*.*js",
+      "addon/experiment-api/stubGlobals.js",
+      "addon/experiment-api/stubWrapper.mjs",
+      "addon/experiment-api/apis/*.js",
     ],
     languageOptions: {
       globals: {
@@ -90,9 +90,9 @@ export default [
   },
   {
     ignores: [
-      "addon/content/modules/**",
-      "addon/content/stubGlobals.js",
-      "addon/experiment-api/**",
+      "addon/experiment-api/modules/**",
+      "addon/experiment-api/stubs/stubGlobals.js",
+      "addon/experiment-api/apis/**",
     ],
     files: ["addon/**/*.*js*"],
     languageOptions: {
@@ -104,8 +104,8 @@ export default [
   {
     ignores: [
       "addon/*.js",
-      "addon/experiment-api/*.js",
-      "addon/content/modules/**/*.js",
+      "addon/experiment-api/apis/*.js",
+      "addon/experiment-api/modules/**/*.js",
     ],
     files: ["addon/**/*.*js*"],
     languageOptions: {

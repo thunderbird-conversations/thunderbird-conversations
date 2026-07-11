@@ -157,7 +157,7 @@ export class Window {
       case 0: // fall-through
       case 1: {
         browser.convMsgWindow.openNewWindow(
-          "chrome://conversations/content/stubWrapper.xhtml",
+          "chrome://conversations/content/experiment-api/stubWrapper.xhtml",
           this.getQueryString(urls) + "&standalone=1"
         );
         break;
@@ -170,7 +170,7 @@ export class Window {
         //   url: `/content/standalone.html${this.getQueryString(urls)}`,
         // });
         await browser.conversations.createTab({
-          url: `chrome://conversations/content/stub.html${this.getQueryString(
+          url: `chrome://conversations/content/experiment-api/stub.html${this.getQueryString(
             urls
           )}`,
           type: "contentTab",

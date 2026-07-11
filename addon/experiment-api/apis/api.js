@@ -9,7 +9,7 @@ var lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
   AttachmentInfo: "resource:///modules/AttachmentInfo.sys.mjs",
   GlodaAttrProviders:
-    "chrome://conversations/content/modules/GlodaAttrProviders.sys.mjs",
+    "chrome://conversations/content/experiment-api/modules/GlodaAttrProviders.sys.mjs",
   MailServices: "resource:///modules/MailServices.sys.mjs",
   makeFriendlyDateAgo: "resource:///modules/TemplateUtils.sys.mjs",
   MsgHdrToMimeMessage: "resource:///modules/gloda/MimeMessage.sys.mjs",
@@ -20,7 +20,7 @@ ChromeUtils.defineLazyGetter(lazy, "BrowserSim", () => {
   let subLazy = {};
   ChromeUtils.defineESModuleGetters(subLazy, {
     BrowserSim:
-      "chrome://conversations/content/modules/BrowserSim.sys.mjs?rand=" +
+      "chrome://conversations/content/experiment-api/modules/BrowserSim.sys.mjs?rand=" +
       Services.prefs.getCharPref(
         "extensions.thunderbirdconversations.browserSim"
       ),
@@ -150,7 +150,10 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
       this.extension.rootURI
     );
     this.chromeHandle = aomStartup.registerChrome(manifestURI, [
-      ["content", "conversations", "content/"],
+      ["content", "conversations", "experiment-api/stubs"],
+    ]);
+    this.chromeHandle = aomStartup.registerChrome(manifestURI, [
+      ["content", "conversations", "content"],
     ]);
     Services.prefs.setCharPref(
       "extensions.thunderbirdconversations.browserSim",

@@ -6,7 +6,7 @@ module.exports = {
   devtool: development ? "source-map" : false,
   entry: {
     compose: "./addon/compose/composeRender.mjs",
-    stub: "./addon/content/stub.mjs",
+    stub: "./addon/experiment-api/stub.mjs",
     "dev-frame": "./addon/dev-frame/dev-frame-render.mjs",
   },
   mode: "none",
@@ -31,9 +31,9 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       hash: false,
-      template: "./addon/content/stub.html",
+      template: "./addon/experiment-api/stub.html",
       chunks: ["stub"],
-      filename: "stub.html",
+      filename: "../experiment-api/stub.html",
     }),
     new HtmlWebpackPlugin({
       hash: false,

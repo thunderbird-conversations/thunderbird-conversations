@@ -79,7 +79,7 @@ class SvgIcon extends HTMLElement {
   }
 
   #getIconPath(fullPath, hash) {
-    return "icons/" + (fullPath || `material-icons.svg#${hash}`);
+    return "../content/icons/" + (fullPath || `material-icons.svg#${hash}`);
   }
 }
 customElements.define("svg-icon", SvgIcon);

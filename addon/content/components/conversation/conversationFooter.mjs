@@ -16,7 +16,7 @@ export class ConversationFooter extends HTMLElement {
       let doc = parser.parseFromString(
         `
         <template>
-          <link rel="stylesheet" href="conversation.css" />
+          <link rel="stylesheet" href="../content/conversation.css" />
           <div class="bottom-links">
             <a class="link forward"></a> - <a class="link print"></a>
           </div>

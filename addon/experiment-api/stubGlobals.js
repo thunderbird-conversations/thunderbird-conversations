@@ -5,7 +5,7 @@
 /* exported BrowserSim */
 ChromeUtils.defineESModuleGetters(this, {
   BrowserSim:
-    "chrome://conversations/content/modules/BrowserSim.sys.mjs?rand=" +
+    "chrome://conversations/content/experiment-api/modules/BrowserSim.sys.mjs?rand=" +
     Services.prefs.getCharPref(
       "extensions.thunderbirdconversations.browserSim"
     ),

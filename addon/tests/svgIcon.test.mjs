@@ -48,7 +48,7 @@ describe("SvgIcon test", () => {
       testComponent.shadowRoot
         .querySelector("use")
         .getAttributeNS("http://www.w3.org/1999/xlink", "href"),
-      `icons/${PATH}`
+      `../content/icons/${PATH}`
     );
   });
 
@@ -63,7 +63,7 @@ describe("SvgIcon test", () => {
       testComponent.shadowRoot
         .querySelector("use")
         .getAttributeNS("http://www.w3.org/1999/xlink", "href"),
-      "icons/material-icons.svg#" + HASH
+      "../content/icons/material-icons.svg#" + HASH
     );
   });
 });

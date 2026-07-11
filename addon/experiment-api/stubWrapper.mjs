@@ -26,7 +26,7 @@ window.addEventListener(
 
     browser.loadURI(
       Services.io.newURI(
-        `chrome://conversations/content/stub.html${window.arguments[0].params}`
+        `chrome://conversations/content/experiment-api/stub.html${window.arguments[0].params}`
       ),
       {
         triggeringPrincipal:

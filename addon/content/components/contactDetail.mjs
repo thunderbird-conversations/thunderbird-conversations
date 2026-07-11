@@ -27,7 +27,7 @@ export class ContactDetail extends HTMLElement {
       let doc = parser.parseFromString(
         `
         <template>
-          <link rel="stylesheet" href="conversation.css?v=1" />
+          <link rel="stylesheet" href="../content/conversation.css?v=1" />
           <div class="tooltip">
             <div class="arrow"></div>
             <div class="arrow inside"></div>

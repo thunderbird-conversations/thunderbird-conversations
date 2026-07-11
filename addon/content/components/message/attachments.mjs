@@ -237,7 +237,7 @@ function Attachment({
         setImgClass("resize-me");
       })();
     } else {
-      setThumb("icons/" + iconForMimeType(contentType));
+      setThumb("../content/icons/" + iconForMimeType(contentType));
       setImgClass("mime-icon");
     }
   }, [id, contentType, partName]);

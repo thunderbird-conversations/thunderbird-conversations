@@ -247,7 +247,7 @@ function determineIfSelectionIsThreaded(contentWin) {
 }
 
 function summarizeThreadHandler(contentWin, tabId, context) {
-  const STUB_URI = "chrome://conversations/content/stub.html";
+  const STUB_URI = "chrome://conversations/content/experiment-api/stub.html";
 
   let threadPane = contentWin.threadPane;
   let previouslySelectedUris = [];

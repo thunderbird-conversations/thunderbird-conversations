@@ -39,60 +39,60 @@
   ],
   "experiment_apis": {
     "conversations": {
-      "schema": "experiment-api/schema.json",
+      "schema": "experiment-api/apis/schema.json",
       "parent": {
         "scopes": ["addon_parent"],
         "paths": [["conversations"]],
-        "script": "experiment-api/api.js",
+        "script": "experiment-api/apis/api.js",
         "events": ["startup"]
       }
     },
     "convCalendar": {
-      "schema": "experiment-api/calendarSchema.json",
+      "schema": "experiment-api/apis/calendarSchema.json",
       "parent": {
         "scopes": ["addon_parent"],
         "paths": [["convCalendar"]],
-        "script": "experiment-api/calendarApi.js"
+        "script": "experiment-api/apis/calendarApi.js"
       }
     },
     "convCompose": {
-      "schema": "experiment-api/composeSchema.json",
+      "schema": "experiment-api/apis/composeSchema.json",
       "parent": {
         "scopes": ["addon_parent"],
         "paths": [["convCompose"]],
-        "script": "experiment-api/composeApi.js"
+        "script": "experiment-api/apis/composeApi.js"
       }
     },
     "convContacts": {
-      "schema": "experiment-api/contactsSchema.json",
+      "schema": "experiment-api/apis/contactsSchema.json",
       "parent": {
         "scopes": ["addon_parent"],
         "paths": [["convContacts"]],
-        "script": "experiment-api/contactsApi.js"
+        "script": "experiment-api/apis/contactsApi.js"
       }
     },
     "convGloda": {
-      "schema": "experiment-api/glodaSchema.json",
+      "schema": "experiment-api/apis/glodaSchema.json",
       "parent": {
         "scopes": ["addon_parent"],
         "paths": [["convGloda"]],
-        "script": "experiment-api/glodaApi.js"
+        "script": "experiment-api/apis/glodaApi.js"
       }
     },
     "convMsgWindow": {
-      "schema": "experiment-api/msgWindowSchema.json",
+      "schema": "experiment-api/apis/msgWindowSchema.json",
       "parent": {
         "scopes": ["addon_parent"],
         "paths": [["convMsgWindow"]],
-        "script": "experiment-api/msgWindowApi.js"
+        "script": "experiment-api/apis/msgWindowApi.js"
       }
     },
     "convOpenPgp": {
-      "schema": "experiment-api/openPgpSchema.json",
+      "schema": "experiment-api/apis/openPgpSchema.json",
       "parent": {
         "scopes": ["addon_parent"],
         "paths": [["convOpenPgp"]],
-        "script": "experiment-api/openPgpApi.js"
+        "script": "experiment-api/apis/openPgpApi.js"
       }
     }
   },

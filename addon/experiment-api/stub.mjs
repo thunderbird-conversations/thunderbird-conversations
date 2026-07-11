@@ -4,15 +4,15 @@
 
 /* global BrowserSim */
 // eslint-disable-next-line import-x/no-unassigned-import
-import "./components/svgIcon.mjs";
+import "../content/components/svgIcon.mjs";
 import React from "react";
 import ReactDOMClient from "react-dom/client";
 import * as RTK from "@reduxjs/toolkit";
 import * as ReactRedux from "react-redux";
-import { conversationApp } from "./reducer/reducer.mjs";
-import { MessageList } from "./components/message/messageList.mjs";
-import { controllerActions } from "./reducer/controllerActions.mjs";
-import { summarySlice } from "./reducer/reducerSummary.mjs";
+import { conversationApp } from "../content/reducer/reducer.mjs";
+import { MessageList } from "../content/components/message/messageList.mjs";
+import { controllerActions } from "../content/reducer/controllerActions.mjs";
+import { summarySlice } from "../content/reducer/reducerSummary.mjs";
 
 /**
  * @import {ConversationHeader} from "./components/conversation/conversationHeader.mjs"
@@ -102,12 +102,13 @@ document.addEventListener(
     // we don't yet have a good solution for how to handle the dispatcher whilst
     // we are still transitioning.
     let { ConversationHeader } =
-      await import("./components/conversation/conversationHeader.mjs");
+      await import("../content/components/conversation/conversationHeader.mjs");
     ConversationHeader.dispatch = store.dispatch;
     let { ConversationFooter } =
-      await import("./components/conversation/conversationFooter.mjs");
+      await import("../content/components/conversation/conversationFooter.mjs");
     ConversationFooter.dispatch = store.dispatch;
-    let { ContactDetail } = await import("./components/contactDetail.mjs");
+    let { ContactDetail } =
+      await import("../content/components/contactDetail.mjs");
     ContactDetail.dispatch = store.dispatch;
 
     store.subscribe(handleStoreUpdate);
