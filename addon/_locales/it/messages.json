@@ -1,6 +1,6 @@
 {
   "extensionName": {
-    "message": "Thunderbird Conversations",
+    "message": "Conversations For Thunderbird",
     "description": "Name of the extension."
   },
   "extensionDescription": {
@@ -100,7 +100,7 @@
     "description": "Options - description for debugging setting."
   },
   "assistant.title": {
-    "message": "Configurazione guidata di Thunderbird Conversations",
+    "message": "Configurazione guidata di Conversations For Thunderbird",
     "description": "The document title of the assistant page."
   },
   "assistant.working": {
@@ -124,7 +124,7 @@
     "description": "Option text for ensuring the message pane is visible."
   },
   "assistant.settings2": {
-    "message": "È possibile attivare/disattivare le opzioni qui sopra successivamente selezionando &apos;Avvia la configurazione guidata&apos; nella finestra delle impostazioni di Thunderbird Conversations → Avanzate → Configurazione guidata",
+    "message": "È possibile attivare/disattivare le opzioni qui sopra successivamente selezionando &apos;Avvia la configurazione guidata&apos; nella finestra delle impostazioni di Conversations For Thunderbird → Avanzate → Configurazione guidata",
     "description": "Paragraph informing users of the ability to change settings later."
   },
   "gallery.messageMovedOrDeleted": {
@@ -528,7 +528,7 @@
     "description": "Information text for when sending email failed."
   },
   "conversation.forwardFillInText": {
-    "message": "Ecco un messaggio condiviso tramite Thunderbird Conversations che potrebbe essere interessante",
+    "message": "Ecco un messaggio condiviso tramite Conversations For Thunderbird che potrebbe essere interessante",
     "description": "Text displayed when a conversation is forwarded."
   },
   "compose.messageSendingCanceled": {

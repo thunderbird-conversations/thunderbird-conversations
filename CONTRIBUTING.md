@@ -1,4 +1,4 @@
-# Contributing to the Thunderbird Conversations project
+# Contributing to the Conversations For Thunderbird project
 
 We love pull requests from everyone.
 

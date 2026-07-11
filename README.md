@@ -1,4 +1,4 @@
-# Thunderbird Conversations
+# Conversations For Thunderbird
 
 This extension improves the threaded summary for emails in Thunderbird. It
 vastly improves the UI by including some ideas from GMail. More specifically:

@@ -55,7 +55,7 @@ export function Main() {
   return React.createElement(
     React.Fragment,
     null,
-    React.createElement("h2", null, "Thunderbird Conversations Dev Frame"),
+    React.createElement("h2", null, "Conversations For Thunderbird Dev Frame"),
     React.createElement(
       "div",
       { className: "dev-frame-description" },

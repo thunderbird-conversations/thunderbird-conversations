@@ -1,6 +1,6 @@
 {
   "extensionName": {
-    "message": "Thunderbird Conversations",
+    "message": "Conversations For Thunderbird",
     "description": "Name of the extension."
   },
   "extensionDescription": {
@@ -124,7 +124,7 @@
     "description": "Option text for ensuring the message pane is visible."
   },
   "assistant.settings2": {
-    "message": "Caso queira ativar outras opções mais tarde, você pode abrir este assistente de instalação através das opções do Thunderbird Conversations, na aba \"Avançado\".",
+    "message": "Caso queira ativar outras opções mais tarde, você pode abrir este assistente de instalação através das opções do Conversations For Thunderbird, na aba \"Avançado\".",
     "description": "Paragraph informing users of the ability to change settings later."
   },
   "gallery.messageMovedOrDeleted": {
