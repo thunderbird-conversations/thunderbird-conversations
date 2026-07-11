@@ -109,32 +109,56 @@ function Attachment({
     );
   }
 
-  // TODO: Fix drag n drop of attachments.
-  // onDragStart(event) {
-  //   let info;
-  //   if (/(^file:|&filename=)/.test(this.props.url)) {
-  //     info = this.props.url;
-  //   } else {
-  //     info =
-  //       this.props.url +
-  //       "&type=" +
-  //       this.props.contentType +
-  //       "&filename=" +
-  //       encodeURIComponent(this.props.name);
-  //   }
-  //   event.dataTransfer.setData(
-  //     "text/x-moz-url",
-  //     `${info}\n${this.props.name}\n${this.props.size}`
-  //   );
-  //   event.dataTransfer.setData("text/x-moz-url-data", this.props.url);
-  //   event.dataTransfer.setData("text/x-moz-url-desc", this.props.name);
-  //   event.dataTransfer.setData(
-  //     "application/x-moz-file-promise-url",
-  //     this.props.url
-  //   );
-  //   event.dataTransfer.setData("application/x-moz-file-promise", null);
-  //   event.stopPropagation();
-  // }
+  let [fileData, setFileData] = React.useState(null);
+  let [thumb, setThumb] = React.useState(null);
+  let [imgClass, setImgClass] = React.useState(null);
+
+  React.useEffect(() => {
+    if (isDeleted) {
+      return;
+    }
+    let url = null;
+    (async () => {
+      try {
+        let file = await browser.messages.getAttachmentFile(id, partName);
+        url = URL.createObjectURL(file);
+        setFileData({ file, url });
+        if (isImage) {
+          setThumb(url);
+          setImgClass("resize-me");
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    })();
+    return () => {
+      if (url) {
+        URL.revokeObjectURL(url);
+      }
+    };
+  }, [id, partName, isImage, isDeleted]);
+
+  React.useEffect(() => {
+    if (!isImage) {
+      setThumb("../content/icons/" + iconForMimeType(contentType));
+      setImgClass("mime-icon");
+    }
+  }, [contentType, isImage]);
+
+  function onDragStart(event) {
+    if (!fileData) {
+      return;
+    }
+    const { file, url } = fileData;
+    event.dataTransfer.setData("DownloadURL", `${contentType}:${name}:${url}`);
+    try {
+      event.dataTransfer.items.add(file);
+    } catch (e) {
+      console.error(e);
+    }
+    event.dataTransfer.setData("text/x-moz-url", `${url}\n${name}`);
+    event.dataTransfer.setData("text/plain", name);
+  }
 
   function downloadAttachment() {
     dispatch(
@@ -224,29 +248,13 @@ function Attachment({
     ? browser.i18n.getMessage("attachments.viewAttachment.tooltip")
     : browser.i18n.getMessage("attachments.open.tooltip");
 
-  let [thumb, setThumb] = React.useState(null);
-  let [imgClass, setImgClass] = React.useState(null);
-  React.useEffect(() => {
-    if (isImage) {
-      // TODO: Can we load images separately and make them available later,
-      // so that we're not relying on having the url here. This would
-      // mean we can use browser.messages.listAttachments.
-      (async () => {
-        let file = await browser.messages.getAttachmentFile(id, partName);
-        setThumb(URL.createObjectURL(file));
-        setImgClass("resize-me");
-      })();
-    } else {
-      setThumb("../content/icons/" + iconForMimeType(contentType));
-      setImgClass("mime-icon");
-    }
-  }, [id, contentType, partName]);
-
-  // TODO: Drag n drop
-  // onDragStart={this.onDragStart}
   return React.createElement(
     "li",
-    { className: "attachment" },
+    {
+      className: "attachment",
+      draggable: !isDeleted && !!fileData ? "true" : "false",
+      onDragStart: !isDeleted && fileData ? onDragStart : null,
+    },
     isDeleted &&
       React.createElement(
         "div",
