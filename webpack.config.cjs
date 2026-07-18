@@ -5,7 +5,6 @@ const development = process.env.NODE_ENV === "development";
 module.exports = {
   devtool: development ? "source-map" : false,
   entry: {
-    compose: "./addon/compose/composeRender.mjs",
     stub: "./addon/experiment-api/stub.mjs",
     "dev-frame": "./addon/dev-frame/dev-frame-render.mjs",
   },
@@ -23,12 +22,6 @@ module.exports = {
     filename: "[name].bundle.js",
   },
   plugins: [
-    new HtmlWebpackPlugin({
-      hash: false,
-      template: "./addon/compose/compose.html",
-      chunks: ["compose"],
-      filename: "../compose/compose.html",
-    }),
     new HtmlWebpackPlugin({
       hash: false,
       template: "./addon/experiment-api/stub.html",

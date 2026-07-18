@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
+import "./setup.mjs";
 import assert from "node:assert/strict";
 import { describe, it, beforeEach } from "node:test";
 import * as RTK from "@reduxjs/toolkit";
@@ -17,7 +18,6 @@ import {
   messagesSlice,
   messageActions,
 } from "../content/reducer/reducerMessages.mjs";
-import { composeActions } from "../content/reducer/reducerCompose.mjs";
 import { messageUtils } from "../content/reducer/messageUtils.mjs";
 
 const quickReplyApp = Redux.combineReducers({
@@ -49,12 +49,6 @@ describe("QuickReply Reducer and Actions tests", () => {
     t.mock
       .method(browser.messages, "get")
       .mock.mockImplementation(async (id) => fakeMessageHeaderData.get(id));
-
-    composeActions.initCompose = t.mock.fn(() => {
-      return {
-        type: "initCompose",
-      };
-    });
   });
 
   describe("expand", () => {
@@ -66,10 +60,7 @@ describe("QuickReply Reducer and Actions tests", () => {
           quickReplyActions.expand({ id: 1, type: "reply" })
         );
 
-        assert.equal(composeActions.initCompose.mock.calls.length, 1);
-        assertContains(composeActions.initCompose.mock.calls[0].arguments[0], {
-          to: "me@example.com",
-        });
+        assert.equal(store.getState().quickReply.to, "me@example.com");
       });
 
       it("Should use the receipent address if the author address is an identity", async () => {
@@ -82,10 +73,7 @@ describe("QuickReply Reducer and Actions tests", () => {
           quickReplyActions.expand({ id: 1, type: "reply" })
         );
 
-        assert.equal(composeActions.initCompose.mock.calls.length, 1);
-        assertContains(composeActions.initCompose.mock.calls[0].arguments[0], {
-          to: "other@example.com",
-        });
+        assert.equal(store.getState().quickReply.to, "other@example.com");
       });
 
       it("Should use the reply-to address if the header is set", async (t) => {
@@ -107,10 +95,7 @@ describe("QuickReply Reducer and Actions tests", () => {
           quickReplyActions.expand({ id: 1, type: "reply" })
         );
 
-        assert.equal(composeActions.initCompose.mock.calls.length, 1);
-        assertContains(composeActions.initCompose.mock.calls[0].arguments[0], {
-          to: "reply-to@example.com",
-        });
+        assert.equal(store.getState().quickReply.to, "reply-to@example.com");
       });
     });
 
@@ -127,11 +112,10 @@ describe("QuickReply Reducer and Actions tests", () => {
           quickReplyActions.expand({ id: 1, type: "replyAll" })
         );
 
-        assert.equal(composeActions.initCompose.mock.calls.length, 1);
-        assertContains(composeActions.initCompose.mock.calls[0].arguments[0], {
-          // TODO: bcc should be in the bcc field (probably ditto with cc).
-          to: "me@example.com, to@example.com, cc1@example.com, cc2@example.com, bcc@example.com",
-        });
+        assert.equal(
+          store.getState().quickReply.to,
+          "me@example.com, to@example.com, cc1@example.com, cc2@example.com, bcc@example.com"
+        );
       });
 
       it("Should exclude the identity email address", async () => {
@@ -144,11 +128,10 @@ describe("QuickReply Reducer and Actions tests", () => {
           quickReplyActions.expand({ id: 1, type: "replyAll" })
         );
 
-        assert.equal(composeActions.initCompose.mock.calls.length, 1);
-        assertContains(composeActions.initCompose.mock.calls[0].arguments[0], {
-          // TODO: bcc should be in the bcc field (probably ditto with cc).
-          to: "me@example.com, to@example.com",
-        });
+        assert.equal(
+          store.getState().quickReply.to,
+          "me@example.com, to@example.com"
+        );
       });
 
       it("Should include the reply-to address", async (t) => {
@@ -170,10 +153,10 @@ describe("QuickReply Reducer and Actions tests", () => {
           quickReplyActions.expand({ id: 1, type: "replyAll" })
         );
 
-        assert.equal(composeActions.initCompose.mock.calls.length, 1);
-        assertContains(composeActions.initCompose.mock.calls[0].arguments[0], {
-          to: "reply-to@example.com, me@example.com, other@example.com",
-        });
+        assert.equal(
+          store.getState().quickReply.to,
+          "reply-to@example.com, me@example.com, other@example.com"
+        );
       });
     });
 
@@ -214,21 +197,20 @@ describe("QuickReply Reducer and Actions tests", () => {
           quickReplyActions.expand({ id: 1, type: "replyList" })
         );
 
-        assert.equal(composeActions.initCompose.mock.calls.length, 1);
-        assertContains(composeActions.initCompose.mock.calls[0].arguments[0], {
+        assertContains(store.getState().quickReply, {
           to: "list@example.com",
         });
       });
     });
   });
 
-  describe("discard", () => {
+  describe("close", () => {
     it("Should clear the expanded state.", async () => {
       await store.dispatch(
         quickReplySlice.actions.setExpandedState({ expanded: true })
       );
 
-      await store.dispatch(quickReplyActions.discard());
+      await store.dispatch(quickReplyActions.close());
 
       assertContains(store.getState().quickReply, {
         expanded: false,

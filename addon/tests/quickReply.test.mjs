@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
+import "./setup.mjs";
 import assert from "node:assert/strict";
 import { describe, it, beforeEach } from "node:test";
 // eslint-disable-next-line no-shadow
@@ -163,8 +164,6 @@ describe("Quick Reply tests", () => {
         screen.queryByRole("button", { name: "reply to list" }),
         null
       );
-
-      assert.notEqual(screen.queryByRole("textbox", { name: "to:" }), null);
     });
   });
 });

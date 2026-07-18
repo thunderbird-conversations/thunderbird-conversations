@@ -43,7 +43,6 @@ export class MessageFooter extends HTMLElement {
     this.attachShadow({ mode: "open" });
     this.shadowRoot.appendChild(MessageFooter.fragment);
     let msgId = this.getAttribute("msgid");
-    console.log("constructor", msgId);
     if (msgId) {
       this.updateMsgId(msgId);
     }
@@ -58,7 +57,6 @@ export class MessageFooter extends HTMLElement {
    * @param {string} newValue
    */
   attributeChangedCallback(name, oldValue, newValue) {
-    console.log(name, oldValue, newValue);
     if (name == "msgid") {
       this.updateMsgId(newValue);
       return;

@@ -192,6 +192,7 @@ export class Message extends React.PureComponent {
 
   onKeyDown(event = {}) {
     if (
+      event.target.nodeName == "COMPOSE-WIDGET" ||
       event.target.nodeName == "TEXTAREA" ||
       event.target.nodeName == "INPUT"
     ) {

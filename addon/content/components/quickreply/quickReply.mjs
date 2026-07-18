@@ -4,13 +4,23 @@
 
 import React from "react";
 import * as ReactRedux from "react-redux";
-import { ComposeWidget } from "../compose/composeWidget.mjs";
 import { quickReplyActions } from "../../reducer/reducerQuickReply.mjs";
 import PropTypes from "prop-types";
 
 export function QuickReply({ id, multipleRecipients, recipientsIncludeLists }) {
   const dispatch = ReactRedux.useDispatch();
   const quickReplyState = ReactRedux.useSelector((state) => state.quickReply);
+
+  React.useEffect(() => {
+    function collapse() {
+      dispatch(quickReplyActions.close());
+    }
+
+    document.addEventListener("quick-reply-finished", collapse);
+    return () => {
+      document.removeEventListener("quick-reply-finished", collapse);
+    };
+  });
 
   function expand(event) {
     if (event.currentTarget.classList.contains("replyList")) {
@@ -21,10 +31,6 @@ export function QuickReply({ id, multipleRecipients, recipientsIncludeLists }) {
     }
     return dispatch(quickReplyActions.expand({ id, type: "reply" }));
   }
-  function discard() {
-    return dispatch(quickReplyActions.discard());
-  }
-
   if (quickReplyState.expanded) {
     return React.createElement(
       "div",
@@ -32,7 +38,17 @@ export function QuickReply({ id, multipleRecipients, recipientsIncludeLists }) {
       React.createElement(
         "div",
         null,
-        React.createElement(ComposeWidget, { dispatch, discard })
+        React.createElement("compose-widget", {
+          from: quickReplyState.from,
+          identityId: quickReplyState.identityId,
+          to: quickReplyState.to,
+          subject: quickReplyState.subject,
+          body: quickReplyState.body,
+          inReplyTo: quickReplyState.inReplyTo,
+          hideSubject: !quickReplyState.showSubject,
+          replyOnTop: quickReplyState.replyOnTop,
+          inline: true,
+        })
       )
     );
   }

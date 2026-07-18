@@ -2,10 +2,6 @@ import * as RTK from "@reduxjs/toolkit";
 import * as Redux from "redux";
 import { attachmentActions } from "../content/reducer/reducerAttachments.mjs";
 import {
-  composeSlice,
-  composeActions,
-} from "../content/reducer/reducerCompose.mjs";
-import {
   initialMessages,
   messageActions,
 } from "../content/reducer/reducerMessages.mjs";
@@ -78,7 +74,6 @@ messageActions.waitForStartup = () => async () => {};
 
 // We'd like to log all the `thunks` we execute, so wrap all method access in
 // logger functions.
-makeAttrsLogging(composeActions, createThunkLogger("composeActions"));
 makeAttrsLogging(messageActions, createThunkLogger("messageActions"));
 makeAttrsLogging(summaryActions, createThunkLogger("summaryActions"));
 makeAttrsLogging(attachmentActions, createThunkLogger("attachmentActions"));
@@ -183,7 +178,6 @@ export const devframeSlice = RTK.createSlice({
 });
 
 export const devFrameApp = Redux.combineReducers({
-  compose: composeSlice.reducer,
   summary: fakeSummarySlice.reducer,
   messages: fakeMessagesSlice.reducer,
   threads: devframeSlice.reducer,

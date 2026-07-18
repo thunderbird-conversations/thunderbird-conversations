@@ -2,81 +2,139 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import React from "react";
-
 /**
  * A renderer for a text box.
- *
- * @param {object} options
- * @param {boolean} options.disabled
- * @param {string} options.title
- * @param {string} options.value
- * @param {string} options.name
- * @param {(name: string, value: string) => void} options.onChange
- * @param {*} ref
  */
-function TextBoxRenderer(
-  { disabled = false, title, value = "", name, onChange },
-  ref
-) {
-  return React.createElement(
-    React.Fragment,
-    null,
-    React.createElement(
-      "div",
-      { className: "headerField" },
-      React.createElement(
-        "label",
-        { htmlFor: name },
-        browser.i18n.getMessage(title)
-      ),
-      React.createElement(
-        "div",
-        { className: "headerEntry" },
-        React.createElement("input", {
-          id: name,
-          type: "text",
-          ref,
-          value,
-          onChange: (e) => {
-            onChange(name, e.target.value);
-          },
-          disabled,
-        })
-      )
-    )
-  );
-}
+export class TextBoxRenderer extends HTMLElement {
+  static observedAttributes = ["disabled", "initialvalue", "title"];
 
-export const TextBox = React.forwardRef(TextBoxRenderer);
-TextBox.displayName = "TextBox";
+  static get fragment() {
+    if (!this._template) {
+      let parser = new DOMParser();
+      let doc = parser.parseFromString(
+        `
+        <template>
+          <link rel="stylesheet" href="../content/components/compose/composeFields.css?v=1" />
+          <div class="headerField">
+            <label></label>
+            <div class="headerEntry">
+              <input type="text" />
+            </div>
+          </div>
+        </template>
+        `,
+        "text/html"
+      );
+      this._template = document.importNode(doc.querySelector("template"), true);
+    }
+    return this._template.content.cloneNode(true);
+  }
+
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    this.attachShadow({ mode: "open" });
+    this.shadowRoot.appendChild(TextBoxRenderer.fragment);
+    this.setup();
+  }
+
+  connectedMoveCallback() {}
+
+  /**
+   * Handles an attribute change.
+   *
+   * @param {string} name
+   * @param {string} oldValue
+   * @param {string} newValue
+   */
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (!this.shadowRoot) {
+      return;
+    }
+    this.setup();
+  }
+
+  setup() {
+    let title = this.getAttribute("title");
+    if (title) {
+      this.shadowRoot.querySelector("label").textContent =
+        browser.i18n.getMessage(title);
+    }
+    let disabled = this.getAttribute("disabled");
+    if (disabled) {
+      /** @type {HTMLInputElement} */ (
+        this.shadowRoot.querySelector("input")
+      ).disabled = !!disabled;
+    }
+
+    this.shadowRoot.querySelector("input").value =
+      this.getAttribute("initialvalue") ?? "";
+  }
+
+  get value() {
+    return this.shadowRoot.querySelector("input").value;
+  }
+}
+customElements.define("text-box", TextBoxRenderer);
 
 /**
  * Renderer for a text area.
- *
- * @param {object} options
- * @param {string} [options.value]
- * @param {string} options.name
- * @param {(name: string, value: string) => void} options.onChange
- * @param {*} ref
  */
-function TextAreaRenderer({ value = "", name, onChange = () => {} }, ref) {
-  return React.createElement(
-    React.Fragment,
-    null,
-    React.createElement(
-      "div",
-      { className: `${name}Wrapper` },
-      React.createElement("textarea", {
-        id: name,
-        className: name,
-        ref,
-        value,
-        onChange: (e) => onChange(name, e.target.value),
-      })
-    )
-  );
-}
+export class TextAreaRenderer extends HTMLElement {
+  static observedAttributes = ["initialvalue"];
 
-export const TextArea = React.forwardRef(TextAreaRenderer);
-TextArea.displayName = "TextArea";
+  static get fragment() {
+    if (!this._template) {
+      let parser = new DOMParser();
+      let doc = parser.parseFromString(
+        `
+        <template>
+          <link rel="stylesheet" href="../content/components/compose/composeFields.css?v=1" />
+          <div class="textAreaWrapper">
+            <textarea></textarea>
+          </div>
+        </template>
+        `,
+        "text/html"
+      );
+      this._template = document.importNode(doc.querySelector("template"), true);
+    }
+    return this._template.content.cloneNode(true);
+  }
+
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    this.attachShadow({ mode: "open" });
+    this.shadowRoot.appendChild(TextAreaRenderer.fragment);
+
+    this.shadowRoot.querySelector("textarea").value =
+      this.getAttribute("initialvalue") ?? "";
+  }
+
+  connectedMoveCallback() {}
+
+  /**
+   * Handles an attribute change.
+   *
+   * @param {string} name
+   * @param {string} oldValue
+   * @param {string} newValue
+   */
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (!this.shadowRoot) {
+      return;
+    }
+    this.shadowRoot.querySelector("textarea").value =
+      this.getAttribute("initialvalue") ?? "";
+  }
+
+  get value() {
+    return this.shadowRoot.querySelector("textarea").value;
+  }
+}
+customElements.define("text-area", TextAreaRenderer);

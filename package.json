@@ -65,7 +65,7 @@
     "test:lint": "eslint .",
     "test:format": "prettier --experimental-cli --check .",
     "test:typescript": "tsc",
-    "test:node": "NODE_OPTIONS='--import \"./addon/tests/setup.mjs\"' node --test",
+    "test:node": "node --test",
     "webextlint": "web-ext lint",
     "preversion": "npm ci && npm test",
     "version": "scripts/update-max-version.sh && scripts/update-version.sh",

@@ -14,8 +14,20 @@
       media="screen"
     />
     <link rel="stylesheet" href="compose.css" type="text/css" media="screen" />
+    <script
+      type="module"
+      src="../content/components/compose/composeWidget.mjs"
+    ></script>
+    <script
+      type="module"
+      src="../content/components/compose/composeFields.mjs"
+    ></script>
+    <script type="module" src="../content/components/svgIcon.mjs"></script>
+    <script type="module" src="./compose.mjs"></script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <compose-widget></compose-widget>
+    </div>
   </body>
 </html>

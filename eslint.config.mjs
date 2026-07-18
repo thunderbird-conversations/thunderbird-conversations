@@ -38,7 +38,7 @@ export default [
       "import-x/no-named-as-default": "error",
       "import-x/no-named-as-default-member": "error",
       "import-x/no-self-import": "error",
-      "import-x/no-unassigned-import": "error",
+      "import-x/no-unassigned-import": ["error", { allow: ["**/setup.mjs"] }],
       "import-x/no-useless-path-segments": "error",
     },
     settings: {

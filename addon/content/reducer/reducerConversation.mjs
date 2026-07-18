@@ -8,7 +8,6 @@
  */
 
 import * as RTK from "@reduxjs/toolkit";
-import { composeSlice } from "./reducerCompose.mjs";
 import { controllerActions } from "./controllerActions.mjs";
 import { mergeContactDetails, getContactPhotos } from "./contacts.mjs";
 import { messageActions } from "./reducerMessages.mjs";
@@ -84,7 +83,7 @@ export const conversationActions = {
 
       currentId = getState().conversation.currentId + 1;
       await dispatch(conversationActions.setConversationId({ currentId }));
-      await dispatch(composeSlice.actions.resetStore());
+      await dispatch(quickReplySlice.actions.resetStore());
       await dispatch(
         quickReplySlice.actions.setExpandedState({ expanded: false })
       );

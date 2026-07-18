@@ -2,49 +2,72 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
+import "./setup.mjs";
 import assert from "node:assert/strict";
-import { describe, it, beforeEach } from "node:test";
-import {
-  render,
-  fireEvent,
-  act,
-  waitFor,
-  // eslint-disable-next-line no-shadow
-  screen,
-} from "@testing-library/react";
-import React from "react";
-
-// Import the components we want to test
-import { Main, store } from "../compose/compose.mjs";
-import { composeActions } from "../content/reducer/reducerCompose.mjs";
+import { describe, it, before, beforeEach, afterEach } from "node:test";
+import { JSDOM } from "jsdom";
 
 describe("Compose full page tests", () => {
   let mockedSend;
 
-  beforeEach(async (t) => {
-    mockedSend = t.mock.method(browser.convCompose, "send");
-    render(React.createElement(Main));
+  let dom;
 
-    await act(async () => {
-      await store.dispatch(composeActions.initCompose({ showSubject: true }));
+  // Note: Re-use for all tests, as the import won't work.
+  before(async () => {
+    // Setup the dom and assign values to globalThis, before importing the
+    // components under test, to ensure everything is loaded in the correct
+    // scopes.
+    dom = new JSDOM(`<!DOCTYPE html><p>Hello world</p>`, {
+      // runScripts: "dangerously",
+      pretendToBeVisual: true,
     });
+
+    // We should be loading the script as a module, as per
+    // https://github.com/jsdom/jsdom/wiki/Don't-stuff-jsdom-globals-onto-the-Node-global
+    // However, as there's no ES module support yet, it won't work.
+    // https://github.com/jsdom/jsdom/issues/2475
+    globalThis.window = dom.window;
+    globalThis.document = dom.window.document;
+    globalThis.customElements = window.customElements;
+    globalThis.HTMLElement = window.HTMLElement;
+    globalThis.Event = window.Event;
+
+    // Import for side effects
+    await import("../content/components/compose/composeWidget.mjs");
   });
 
-  it("A message can be sent", async () => {
-    const inputs = screen.getAllByRole("textbox");
+  beforeEach((t) => {
+    mockedSend = t.mock.method(browser.convCompose, "send", () => {});
+    t.mock.method(window, "close", () => {});
+    let composeWidget = dom.window.document.createElement("compose-widget");
+    composeWidget.setAttribute("from", "foo@example.com");
+    composeWidget.setAttribute("identityId", "id3");
+    dom.window.document.body.appendChild(composeWidget);
+  });
 
-    for (let inputBox of inputs) {
-      const name = inputBox.id;
+  afterEach(() => {
+    let composeWidget = dom.window.document.querySelector("compose-widget");
+    dom.window.document.body.removeChild(composeWidget);
+  });
+
+  it("A message can be sent", async (t) => {
+    let composeWidget = dom.window.document.querySelector("compose-widget");
+
+    for (let inputBox of composeWidget.shadowRoot.querySelectorAll(
+      "text-box"
+    )) {
+      const name = inputBox.className;
       if (name != "from") {
-        fireEvent.change(inputBox, {
-          target: { value: name },
-        });
+        inputBox.value = name;
       }
     }
+    let textArea = composeWidget.shadowRoot.querySelector(".body");
+    textArea.value = "body";
 
-    fireEvent.click(screen.getByRole("button", { name: /send/i }));
+    let sendBtn = composeWidget.shadowRoot.querySelector("button.send");
+    sendBtn.click();
 
-    await waitFor(() => {
+    await t.waitFor(() => {
       if (!mockedSend.mock.calls.length) {
         throw new Error("Not got one yet");
       }
@@ -59,33 +82,21 @@ describe("Compose full page tests", () => {
     });
   });
 
-  it("Modifying a field sets the modified flag", async () => {
-    await act(async () => {
-      await store.dispatch(composeActions.resetStore());
-    });
+  it("Modifying a field prevents closing the window", async () => {
+    let composeWidget = dom.window.document.querySelector("compose-widget");
+    let inputBox = composeWidget.shadowRoot.querySelector(".to");
 
-    const inputBox = screen.getByRole("textbox", { name: /to/i });
-    fireEvent.change(inputBox, {
-      target: { value: "a" },
-    });
+    inputBox.value = "a";
 
-    await waitFor(() => {
-      if (!store.getState().compose.modified) {
-        throw new Error("Not ready yet");
-      }
-    });
+    let prevented = false;
+    let event = {
+      preventDefault: () => {
+        prevented = true;
+      },
+    };
 
-    // Should have correctly set up the initial values.
-    assert.deepEqual(store.getState().compose, {
-      from: undefined,
-      body: undefined,
-      modified: true,
-      replyOnTop: null,
-      subject: undefined,
-      to: "a",
-      sending: false,
-      sendingMsg: "",
-      showSubject: false,
-    });
+    composeWidget.checkBeforeUnload(event);
+
+    assert.ok(prevented, "Should have prevented unload");
   });
 });

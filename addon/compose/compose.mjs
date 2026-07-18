@@ -2,36 +2,22 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import React from "react";
-import * as ReactRedux from "react-redux";
-import * as RTK from "@reduxjs/toolkit";
-import { composeApp } from "./reducer.mjs";
-import { ComposeWidget } from "../content/components/compose/composeWidget.mjs";
+const platformInfo = await browser.runtime.getPlatformInfo();
+// TODO: Maybe should handle the tweak chrome option here.
+window.document.body.parentElement.setAttribute("os", platformInfo.os);
 
-export const store = RTK.configureStore({ reducer: composeApp });
+let params = new URLSearchParams(document.location.search);
 
-/**
- * @typedef {ReturnType<store["getState"]>} RootState
- * @typedef {store["dispatch"]} AppDispatch
- */
-
-/** @type {ReturnType<typeof ReactRedux.useSelector.withTypes<RootState>>} */
-const useAppSelector = ReactRedux.useSelector;
-
-function ComposeWrapper() {
-  const OS = useAppSelector((state) => state.summary.OS);
-
-  // TODO: Maybe should handle the tweak chrome option here.
-  window.document.body.parentElement.setAttribute("os", OS);
-
-  return React.createElement(ComposeWidget);
+let identityId = params.get("identityId");
+let identityDetail;
+if (identityId) {
+  identityDetail = await browser.identities.get(identityId);
+} else {
+  let defaultAccount = await browser.accounts.getDefault();
+  identityDetail = await browser.identities.getDefault(defaultAccount.id);
 }
 
-// The entry point for the compose page
-export function Main() {
-  return React.createElement(
-    ReactRedux.Provider,
-    { store, children: undefined },
-    React.createElement(ComposeWrapper, null)
-  );
-}
+let composeWidget = document.querySelector("compose-widget");
+
+composeWidget.setAttribute("from", identityDetail.email);
+composeWidget.setAttribute("identityId", identityDetail.id);

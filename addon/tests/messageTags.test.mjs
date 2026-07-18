@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
+import "./setup.mjs";
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 // eslint-disable-next-line no-shadow
@@ -119,7 +120,6 @@ describe("MessageTags test", () => {
     assert.equal(tags.length, SAMPLE_TAGS.length);
 
     // Make sure the name actually shows up in the tag
-    console.log(SAMPLE_TAGS[0].name);
     assert.match(tags[0].textContent, new RegExp(SAMPLE_TAGS[0].name));
   });
 

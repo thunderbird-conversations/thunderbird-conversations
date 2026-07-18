@@ -7,73 +7,13 @@
   margin-bottom: 5px;
 }
 
-.compose label {
-  border-radius: 3px 0 0 3px;
-  background-color: -moz-Dialog;
-  color: -moz-DialogText;
-  border-color: var(--border-color);
-  border-style: solid;
-  border-width: 1px 0 1px 1px;
-  padding-inline-end: 5px;
-  text-align: end;
-  width: 7.5rem;
-}
-
-.compose .headerField {
-  display: flex;
-  line-height: 2.4rem;
-  margin-top: 5px;
-  margin-bottom: 5px;
-}
-
-.compose .headerEntry {
-  flex: 1;
-  overflow: hidden;
-  width: 100%;
-  border: 1px solid var(--border-color);
-  cursor: text;
-  background-color: -moz-field;
-  color: -moz-fieldtext;
-}
-
-.headerEntry > input {
-  padding-inline-start: 5px;
-  height: 100%;
-  width: 100%;
-  border: none;
-}
-
-textarea:focus,
-input:focus {
-  outline: none;
-  border-color: lightblue;
-}
-
-.compose > .bodyWrapper {
-  display: flex;
-}
-
-.compose > .bodyWrapper > .body {
-  flex: 1;
-  border: 1px solid var(--border-color);
-  height: 162px;
-  padding: 5px 5px 5px 20px;
-  resize: vertical;
-  background-color: Canvas;
-  color: CanvasText;
-  display: block;
-  position: relative;
-  outline: none;
-  overflow: auto;
-}
-
-.compose > .buttons {
+.buttons {
   padding-top: 10px;
   display: flex;
   justify-content: space-between;
 }
 
-.compose > .buttons > button {
+.buttons > button {
   padding: 0.3em 1em;
   background-color: -moz-dialog;
   color: #666;
@@ -82,15 +22,15 @@ input:focus {
 }
 
 @media (prefers-color-scheme: dark) {
-  .compose > .buttons > button {
+  .buttons > button {
     color: -moz-fieldtext;
   }
 }
 
-.compose > .buttons > button:hover {
+.buttons > button:hover {
   filter: brightness(85%);
 }
 
-.compose > .buttons > button > .icon {
+.buttons > button > .icon {
   margin-inline-end: 0.3em;
 }

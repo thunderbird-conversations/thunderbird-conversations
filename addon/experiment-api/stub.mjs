@@ -103,6 +103,8 @@ document.addEventListener(
     ContactDetail.dispatch = storeUtils.store.dispatch;
     await import("../content/components/message/messageActionButton.mjs");
     await import("../content/components/message/messageFooter.mjs");
+    await import("../content/components/compose/composeFields.mjs");
+    await import("../content/components/compose/composeWidget.mjs");
 
     storeUtils.store.subscribe(handleStoreUpdate);
 

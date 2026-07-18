@@ -8,10 +8,10 @@ import { describe, it, before } from "node:test";
 import { JSDOM } from "jsdom";
 
 /**
- * @import {SvgIcon} from "../content/components/svgIcon.mjs"
+ * @import {TextBoxRenderer,TextAreaRenderer} from "../content/components/compose/composeFields.mjs"
  */
 
-describe("SvgIcon test", () => {
+describe("Compose components have correct return values", () => {
   let dom;
 
   // Note: Re-use for all tests, as the import won't work.
@@ -30,41 +30,37 @@ describe("SvgIcon test", () => {
     // https://github.com/jsdom/jsdom/issues/2475
     globalThis.window = dom.window;
     globalThis.document = dom.window.document;
-    globalThis.customElements = window.customElements;
-    globalThis.HTMLElement = window.HTMLElement;
-    globalThis.Event = window.Event;
+    globalThis.customElements = dom.window.customElements;
+    globalThis.HTMLElement = dom.window.HTMLElement;
+    globalThis.Event = dom.window.Event;
 
     // Import for side effects
-    await import("../content/components/svgIcon.mjs");
+    await import("../content/components/compose/composeFields.mjs");
   });
 
-  it("renders given a full path", async () => {
-    const PATH = "full/path/to/icon";
-    let testComponent = /** @type {SvgIcon} */ (
-      dom.window.document.createElement("svg-icon")
+  it("TextBox always returns a string type", async () => {
+    dom.window.document.body.appendChild(
+      dom.window.document.createElement("text-box")
     );
-    testComponent.setAttribute("fullpath", PATH);
+    let testComponent = /** @type {TextBoxRenderer} */ (
+      dom.window.document.querySelector("text-box")
+    );
 
-    assert.equal(
-      testComponent.shadowRoot
-        .querySelector("use")
-        .getAttributeNS("http://www.w3.org/1999/xlink", "href"),
-      `../content/icons/${PATH}`
-    );
+    testComponent.shadowRoot.querySelector("input").value = "first text";
+
+    assert.equal(testComponent.value, "first text");
   });
 
-  it("renders given a hash", async () => {
-    const HASH = "abc";
-    let testComponent = /** @type {SvgIcon} */ (
-      dom.window.document.createElement("svg-icon")
+  it("TextArea always returns a string type", () => {
+    dom.window.document.body.appendChild(
+      dom.window.document.createElement("text-area")
     );
-    testComponent.setAttribute("hash", HASH);
+    let testComponent = /** @type {TextBoxRenderer} */ (
+      dom.window.document.querySelector("text-area")
+    );
 
-    assert.equal(
-      testComponent.shadowRoot
-        .querySelector("use")
-        .getAttributeNS("http://www.w3.org/1999/xlink", "href"),
-      "../content/icons/material-icons.svg#" + HASH
-    );
+    testComponent.shadowRoot.querySelector("textarea").value = "first text";
+
+    assert.equal(testComponent.value, "first text");
   });
 });

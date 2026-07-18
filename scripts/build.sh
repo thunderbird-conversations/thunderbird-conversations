@@ -35,7 +35,7 @@ mkdir -p "../$DIST"
 find $EXTENDED1 . $EXTENDED2 -regex $REGEXTENSIONS -maxdepth 1 -exec cp {} ../$DIST/ \;
 # Other items we need that aren't handled by webpack, or things that we
 # need outside of webpage as well.
-DIRECTORIES=(assistant background content/icons \
+DIRECTORIES=(assistant background compose content/components/compose content/icons \
 experiment-api/apis experiment-api/modules options gallery content/esmodules)
 for a in "${DIRECTORIES[@]}"; do
   mkdir -p ../$DIST/${a}/
@@ -45,9 +45,8 @@ for dir in _locales/*; do
   mkdir -p ../$DIST/${dir}/
   find $EXTENDED1 $dir $EXTENDED2 -regex $REGEXTENSIONS -exec cp {} ../$DIST/$dir/ \;
 done
-# This directory just needs the css file.
-mkdir -p ../$DIST/content/components/compose
-find $EXTENDED1 . $EXTENDED2 -name "*.css" -exec cp {} ../$DIST/{} \;
+mkdir -p ../$DIST/content/components/
+find $EXTENDED1 content/components/ $EXTENDED2 -name "*.mjs" -exec cp {} ../$DIST/{} \;
 mkdir -p ../$DIST/content/components/message
 find $EXTENDED1 . $EXTENDED2 -name "*.css" -exec cp {} ../$DIST/{} \;
 cp experiment-api/stubGlobals.js ../${DIST}/experiment-api/

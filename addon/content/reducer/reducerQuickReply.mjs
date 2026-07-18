@@ -3,11 +3,12 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import * as RTK from "@reduxjs/toolkit";
-import { composeActions } from "./reducerCompose.mjs";
 import { messageUtils } from "./messageUtils.mjs";
 
 export const initialQuickReply = {
   expanded: false,
+  showSubject: false,
+  replyOnTop: null,
 };
 
 export const quickReplySlice = RTK.createSlice({
@@ -19,6 +20,12 @@ export const quickReplySlice = RTK.createSlice({
         ...state,
         expanded: payload.expanded,
       };
+    },
+    setFromDetails(state, { payload }) {
+      return { ...state, ...payload };
+    },
+    resetStore() {
+      return initialQuickReply;
     },
   },
 });
@@ -101,13 +108,23 @@ export const quickReplyActions = {
       if (!subject.toLowerCase().includes("re:")) {
         subject = "Re: " + subject;
       }
+      let identityDetail;
+      if (identityId) {
+        identityDetail = await browser.identities.get(identityId);
+      } else {
+        let defaultAccount = await browser.accounts.getDefault();
+        identityDetail = await browser.identities.getDefault(defaultAccount.id);
+      }
+
       // Initialise the compose section first, to avoid flicker, and ensure
       // the compose widget has the correct information to set focus correctly
       // on first render.
       await dispatch(
-        composeActions.initCompose({
-          identityId,
+        quickReplySlice.actions.setFromDetails({
+          from: identityDetail.email,
+          identityId: identityDetail.id,
           inReplyTo: id,
+          email: identityDetail.email,
           to,
           subject,
           body,
@@ -120,21 +137,14 @@ export const quickReplyActions = {
       );
     };
   },
-  discard() {
+
+  close() {
     return async function (dispatch) {
       await dispatch(
         quickReplySlice.actions.setExpandedState({ expanded: false })
       );
     };
   },
-};
-
-composeActions.close = () => {
-  return async function (dispatch) {
-    await dispatch(
-      quickReplySlice.actions.setExpandedState({ expanded: false })
-    );
-  };
 };
 
 Object.assign(quickReplyActions, quickReplySlice.actions);

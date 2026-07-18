@@ -2,148 +2,237 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import { composeActions } from "../../reducer/reducerCompose.mjs";
-import React from "react";
-import * as ReactRedux from "react-redux";
-import { TextArea, TextBox } from "./composeFields.mjs";
-import PropTypes from "prop-types";
+/**
+ * @import {TextBoxRenderer, TextAreaRenderer} from "./composeFields.mjs"
+ */
 
-export function ComposeWidget({ discard }) {
-  const dispatch = ReactRedux.useDispatch();
-  const composeState = ReactRedux.useSelector(
-    /** @param {object} state */
-    (state) => state.compose
-  );
-  const bodyInput = React.createRef();
-  const subjectInput = React.createRef();
+/**
+ * Handles layout and control of the compose widget.
+ */
+class ComposeWidget extends HTMLElement {
+  static observedAttributes = ["from"];
 
-  React.useEffect(() => {
-    if (composeState.subject || !composeState.showSubject) {
-      bodyInput.current.focus();
-    } else {
-      subjectInput.current.focus();
+  static get fragment() {
+    if (!this._template) {
+      let parser = new DOMParser();
+      let doc = parser.parseFromString(
+        `
+        <template>
+          <link rel="stylesheet" href="../content/components/compose/composeWidget.css?v=1" />
+          <div class="from">
+            <span></span>
+          </div>
+          <text-box class="to"></text-box>
+          <text-box class="subject"></text-box>
+          <text-area class="body"></text-area>
+          <div class="sendStatus"></div>
+          <div class="buttons">
+            <button class="discard">
+              <svg-icon aria-hidden="true" hash="delete_forever"></svg-icon>
+            </button>
+            <button class="send">
+              <svg-icon aria-hidden="true" hash="send"></svg-icon>
+            </button>
+        </template>
+        `,
+        "text/html"
+      );
+      this._template = document.importNode(doc.querySelector("template"), true);
     }
-  }, []);
+    return this._template.content.cloneNode(true);
+  }
 
-  React.useEffect(() => {
-    if (composeState.replyOnTop === null) {
-      return;
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    this.attachShadow({ mode: "open" });
+    this.shadowRoot.appendChild(ComposeWidget.fragment);
+    this.shadowRoot
+      .querySelector(".from")
+      .insertBefore(
+        document.createTextNode(
+          browser.i18n.getMessage("message.fromHeader") + " "
+        ),
+        this.shadowRoot.querySelector(".from > span")
+      );
+
+    let sendBtn = this.shadowRoot.querySelector(".send");
+
+    sendBtn.appendChild(
+      document.createTextNode(browser.i18n.getMessage("compose.send"))
+    );
+    sendBtn.addEventListener("click", () => {
+      this.#sendMsg().catch(console.error);
+    });
+    let sendStatus = /** @type {HTMLDivElement} */ (
+      this.shadowRoot.querySelector(".sendStatus")
+    );
+    sendStatus.style.display = "none";
+
+    let discardBtn = this.shadowRoot.querySelector(".discard");
+    discardBtn.appendChild(
+      document.createTextNode(browser.i18n.getMessage("compose.discard"))
+    );
+
+    discardBtn.addEventListener("click", async (event) => {
+      if (this.hasAttribute("inline")) {
+        document.dispatchEvent(new CustomEvent("quick-reply-finished"));
+        return;
+      }
+      // We have to tell the API to close the tab, as `window.close` for some
+      // reason triggers the unload handler twice.
+      let currentTab = await browser.tabs.getCurrent();
+      setTimeout(() => browser.tabs.remove(currentTab.id), 0);
+    });
+
+    let from = this.getAttribute("from");
+    if (from) {
+      this.shadowRoot.querySelector(".from > span").textContent = from;
     }
 
-    switch (composeState.replyOnTop) {
-      case 0: {
-        let textLength = composeState.body.length;
-        bodyInput.current.setSelectionRange(textLength, textLength);
-        break;
-      }
-      case 1: {
-        bodyInput.current.setSelectionRange(0, 0);
-        break;
-      }
-      case 2: {
-        let textLength = composeState.body.length;
-        bodyInput.current.setSelectionRange(0, textLength);
-        break;
+    this.checkBeforeUnload = this.checkBeforeUnload.bind(this);
+
+    window.addEventListener("beforeunload", this.checkBeforeUnload);
+
+    // Only set these in the connected, as we don't want to check
+    // text box values as we go.
+    let toBox = /** @type {TextBoxRenderer} */ (
+      this.shadowRoot.querySelector(".to")
+    );
+    toBox.title = "message.toHeader";
+    toBox.setAttribute("initialvalue", this.getAttribute("to") ?? "");
+
+    let subjectBox = /** @type {TextBoxRenderer} */ (
+      this.shadowRoot.querySelector(".subject")
+    );
+    subjectBox.title = "compose.fieldSubject";
+    subjectBox.setAttribute("initialvalue", this.getAttribute("subject") ?? "");
+    subjectBox.style.display = this.hasAttribute("hideSubject")
+      ? "none"
+      : "revert";
+
+    let body = /** @type {TextAreaRenderer} */ (
+      this.shadowRoot.querySelector(".body")
+    );
+    body.setAttribute("initialvalue", this.getAttribute("body") ?? "");
+
+    if (this.hasAttribute("replyOnTop")) {
+      let textarea = body.shadowRoot.querySelector("textarea");
+      switch (Number(this.getAttribute("replyOnTop"))) {
+        case 0: {
+          let textLength = body.value.length;
+          textarea.setSelectionRange(textLength, textLength);
+          break;
+        }
+        case 1: {
+          textarea.setSelectionRange(0, 0);
+          break;
+        }
+        case 2: {
+          let textLength = body.value.length;
+          textarea.setSelectionRange(0, textLength);
+          break;
+        }
       }
     }
-  }, [composeState.replyOnTop]);
+    setTimeout(() => {
+      if (!body.shadowRoot) {
+        return;
+      }
+      if (body.value) {
+        body.shadowRoot.querySelector("textarea").focus();
+      } else {
+        toBox.shadowRoot.querySelector("input").focus();
+      }
+    }, 10);
+  }
 
-  function onSend() {
-    dispatch(composeActions.sendMessage());
+  connectedMoveCallback() {}
+
+  disconnectedCallback() {
+    window.removeEventListener("beforeunload", this.checkBeforeUnload);
   }
 
   /**
+   * Handles an attribute change.
+   *
    * @param {string} name
-   * @param {string} value
+   * @param {string} oldValue
+   * @param {string} newValue
    */
-  function setValue(name, value) {
-    dispatch(composeActions.setValue(name, value));
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (!this.shadowRoot) {
+      return;
+    }
+
+    if (name == "from") {
+      this.shadowRoot.querySelector(".from > span").textContent = newValue;
+    }
   }
 
-  // Warn about unloading
-  function checkBeforeUnload(event) {
-    if (composeState.modified) {
+  #getValues() {
+    let inReplyTo = this.getAttribute("inReplyTo");
+    return {
+      from: this.getAttribute("identityId"),
+      to: /** @type {TextBoxRenderer} */ (this.shadowRoot.querySelector(".to"))
+        .value,
+      subject: /** @type {TextBoxRenderer} */ (
+        this.shadowRoot.querySelector(".subject")
+      ).value,
+      body:
+        /** @type {TextAreaRenderer} */ (this.shadowRoot.querySelector(".body"))
+          .value ?? "",
+      originalMsgId: inReplyTo ? Number(inReplyTo) : undefined,
+    };
+  }
+
+  /**
+   * Checks if the form has been modified, and prevents unloading if necessary.
+   *
+   * @param {Event} event
+   */
+  checkBeforeUnload(event) {
+    let values = this.#getValues();
+    if (
+      values.to != (this.getAttribute("to") ?? "") ||
+      (!this.hasAttribute("hideSubject") &&
+        values.subject != (this.getAttribute("subject") ?? "")) ||
+      values.body != (this.getAttribute("body") ?? "")
+    ) {
       event.preventDefault();
     }
   }
 
-  React.useEffect(() => {
-    window.addEventListener("beforeunload", checkBeforeUnload);
-    return () => {
-      window.removeEventListener("beforeunload", checkBeforeUnload);
-    };
-  });
+  async #sendMsg() {
+    let sendStatus = /** @type {HTMLDivElement} */ (
+      this.shadowRoot.querySelector(".sendStatus")
+    );
+    sendStatus.textContent = browser.i18n.getMessage("compose.sendingMessage");
+    sendStatus.style.display = "revert";
+    let success = true;
+    try {
+      await browser.convCompose.send(this.#getValues());
+    } catch (ex) {
+      console.error(ex);
+      success = false;
+    }
+    if (success) {
+      sendStatus.style.display = "none";
+    } else {
+      sendStatus.textContent = browser.i18n.getMessage(
+        "compose.couldntSendTheMessage"
+      );
+    }
 
-  return React.createElement(
-    "div",
-    { className: "compose" },
-    React.createElement(
-      "div",
-      { className: "from" },
-      browser.i18n.getMessage("message.fromHeader"),
-      " ",
-      React.createElement("span", null, composeState.from)
-    ),
-    React.createElement(TextBox, {
-      name: "to",
-      title: "message.toHeader",
-      value: composeState.to,
-      sending: composeState.sending,
-      onChange: setValue,
-    }),
-    composeState.showSubject &&
-      React.createElement(TextBox, {
-        name: "subject",
-        ref: subjectInput,
-        title: "compose.fieldSubject",
-        value: composeState.subject,
-        sending: composeState.sending,
-        onChange: setValue,
-      }),
-    React.createElement(TextArea, {
-      name: "body",
-      ref: bodyInput,
-      value: composeState.body,
-      sending: composeState.sending,
-      onChange: setValue,
-    }),
-    React.createElement(
-      "div",
-      {
-        id: "sendStatus",
-      },
-      composeState.sendingMsg
-    ),
-    React.createElement(
-      "div",
-      { className: "buttons" },
-      React.createElement(
-        "button",
-        {
-          id: "discard",
-          onClick: discard,
-          disabled: !discard,
-        },
-        React.createElement("svg-icon", {
-          "aria-hidden": true,
-          hash: "delete_forever",
-        }),
-        browser.i18n.getMessage("compose.discard")
-      ),
-      React.createElement(
-        "button",
-        {
-          id: "send",
-          onClick: onSend,
-          disabled:
-            composeState.sending || !composeState.to || !composeState.subject,
-        },
-        React.createElement("svg-icon", { "aria-hidden": true, hash: "send" }),
-        browser.i18n.getMessage("compose.send")
-      )
-    )
-  );
+    if (success) {
+      if (this.hasAttribute("inline")) {
+        document.dispatchEvent(new CustomEvent("quick-reply-finished"));
+      } else {
+        window.close();
+      }
+    }
+  }
 }
-ComposeWidget.propTypes = {
-  discard: PropTypes.func,
-};
+customElements.define("compose-widget", ComposeWidget);
