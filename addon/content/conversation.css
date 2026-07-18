@@ -709,30 +709,6 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
   font-weight: bold;
 }
 
-.filesize .messageFooter {
-  padding: 2px 10px;
-}
-
-.footerActions {
-  float: inline-end;
-}
-
-.messageFooter.hide .footerActions {
-  display: none;
-}
-
-.messageFooter.hide {
-  padding: 0;
-}
-
-.messageFooter:after {
-  content: " ";
-  display: block;
-  height: 0;
-  clear: both;
-  visibility: hidden;
-}
-
 .star {
   display: inline;
   margin-inline-end: 3px;

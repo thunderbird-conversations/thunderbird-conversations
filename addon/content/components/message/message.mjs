@@ -7,7 +7,6 @@ import PropTypes from "prop-types";
 import { Attachments } from "./attachments.mjs";
 import { messageActions } from "../../reducer/reducerMessages.mjs";
 import { MessageDetails } from "./messageDetails.mjs";
-import { MessageFooter } from "./messageFooter.mjs";
 import { MessageHeader } from "./messageHeader.mjs";
 import { MessageIFrame } from "./messageIFrame.mjs";
 import { MessageNotification } from "./messageNotification.mjs";
@@ -440,11 +439,11 @@ export class Message extends React.PureComponent {
           })
       ),
       this.props.message.expanded &&
-        React.createElement(MessageFooter, {
-          id: this.props.message.id,
-          multipleRecipients: this.props.message.multipleRecipients,
-          recipientsIncludeLists: this.props.message.recipientsIncludeLists,
-          isDraft: this.props.message.isDraft,
+        React.createElement("message-footer", {
+          msgid: this.props.message.id,
+          "multiple-recipients": this.props.message.multipleRecipients,
+          "recipients-include-lists": this.props.message.recipientsIncludeLists,
+          "is-draft": this.props.message.isDraft,
         }),
       this.props.isLastMessage &&
         this.props.message.expanded &&
