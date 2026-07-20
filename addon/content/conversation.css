@@ -146,6 +146,14 @@ a img {
   text-overflow: ellipsis;
 }
 
+:host([wrap]) .subject {
+  height: auto;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  text-overflow: clip;
+}
+
 linkified-subject {
   flex: 1;
   overflow: hidden;
