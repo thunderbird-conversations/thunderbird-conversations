@@ -52,42 +52,6 @@ export const messageActions = {
       );
     };
   },
-  setTags({ id, tags }) {
-    return async () => {
-      browser.messages
-        .update(id, {
-          tags: tags.map((t) => t.key),
-        })
-        .catch(console.error);
-    };
-  },
-  toggleTagByIndex({ id, index, tags }) {
-    return async () => {
-      browser.messages
-        .listTags()
-        .then((allTags) => {
-          // browser.messages.update works via arrays of tag keys only,
-          // so strip away all non-key information
-          tags = tags.map((t) => t.key);
-          const toggledTag = allTags[index].key;
-
-          // Toggling a tag that is out of range does nothing.
-          if (!toggledTag) {
-            return null;
-          }
-          if (tags.includes(toggledTag)) {
-            tags = tags.filter((t) => t !== toggledTag);
-          } else {
-            tags.push(toggledTag);
-          }
-
-          return browser.messages.update(id, {
-            tags,
-          });
-        })
-        .catch(console.error);
-    };
-  },
   setStarred({ id, starred }) {
     return async () => {
       browser.messages
@@ -247,20 +211,6 @@ export const messageActions = {
         "Received notificationClick for unknown type",
         notificationType
       );
-    };
-  },
-  tagClick({ id, event, details }) {
-    return async (dispatch, getState) => {
-      if (details.type == "enigmail") {
-        await browser.convOpenPgp.handleTagClick(getState().summary.tabId, id);
-        return;
-      }
-      console.error("Unsupported click type", details.type);
-    };
-  },
-  switchToFolderAndMsg({ id }) {
-    return async (dispatch, getState) => {
-      browser.mailTabs.setSelectedMessages(getState().summary.tabId, [id]);
     };
   },
   sendUnsent() {

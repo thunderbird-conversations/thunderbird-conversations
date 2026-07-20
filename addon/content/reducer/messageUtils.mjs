@@ -167,4 +167,33 @@ export let messageUtils = new (class {
     let params = await messageUtils.getParamsForCompose(msgId, shiftKey);
     browser.compose.beginNew(msgId, params);
   }
+
+  /**
+   * Handles a tag click notification.
+   *
+   * @param {number} msgId
+   * @param {object} details
+   * @param {string} details.type
+   */
+  async handleTagClick(msgId, details) {
+    if (details.type == "enigmail") {
+      await browser.convOpenPgp.handleTagClick(
+        this.store.getState().summary.tabId,
+        msgId
+      );
+      return;
+    }
+    console.error("Unsupported click type", details.type);
+  }
+
+  /**
+   * Handles switching to a specific folder and message.
+   *
+   * @param {number} msgId
+   */
+  switchToFolderAndMsg(msgId) {
+    browser.mailTabs.setSelectedMessages(this.store.getState().summary.tabId, [
+      msgId,
+    ]);
+  }
 })();

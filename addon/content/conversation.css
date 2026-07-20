@@ -709,6 +709,30 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
   font-weight: bold;
 }
 
+.filesize .messageFooter {
+  padding: 2px 10px;
+}
+
+.footerActions {
+  float: inline-end;
+}
+
+.messageFooter.hide .footerActions {
+  display: none;
+}
+
+.messageFooter.hide {
+  padding: 0;
+}
+
+.messageFooter:after {
+  content: " ";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+
 .star {
   display: inline;
   margin-inline-end: 3px;
@@ -765,12 +789,12 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
   position: relative;
 }
 
-.special-tag span {
+.special-tag span.special-tooltip {
   display: none;
 }
 
-.special-tag:hover span {
-  display: inline;
+.special-tag:hover span.special-tooltip:not([empty]) {
+  display: block;
   position: absolute;
   top: 24px;
   padding: 5px;

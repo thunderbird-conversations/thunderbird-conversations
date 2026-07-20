@@ -647,6 +647,7 @@ if (!browser.contacts) {
 
 if (!browser.convOpenPgp) {
   browser.convOpenPgp = {
+    handleTagClick() {},
     beforeStreamingMessage() {},
     handleMessageStreamed() {},
   };

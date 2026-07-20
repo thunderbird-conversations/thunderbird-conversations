@@ -4,23 +4,54 @@
 
 import "./setup.mjs";
 import assert from "node:assert/strict";
-import { describe, it } from "node:test";
-// eslint-disable-next-line no-shadow
-import { render, fireEvent, within, screen } from "@testing-library/react";
-import React from "react";
+import { describe, it, before, afterEach } from "node:test";
+import { JSDOM } from "jsdom";
+import { messageUtils } from "../content/reducer/messageUtils.mjs";
 
-// Import the components we want to test
-import {
-  MessageTags,
-  SpecialMessageTags,
-} from "../content/components/message/messageTags.mjs";
+/**
+ * @import {MessageTag, MessageTags, SpecialMessageTags} from "../content/components/message/messageTags.mjs"
+ */
+
+let dom;
+
+// Note: Re-use for all tests, as the import won't work.
+before(async () => {
+  // Setup the dom and assign values to globalThis, before importing the
+  // components under test, to ensure everything is loaded in the correct
+  // scopes.
+  dom = new JSDOM(`<!DOCTYPE html><p>Hello world</p>`, {
+    runScripts: "dangerously",
+    pretendToBeVisual: true,
+  });
+
+  // We should be loading the script as a module, as per
+  // https://github.com/jsdom/jsdom/wiki/Don't-stuff-jsdom-globals-onto-the-Node-global
+  // However, as there's no ES module support yet, it won't work.
+  // https://github.com/jsdom/jsdom/issues/2475
+  globalThis.window = dom.window;
+  globalThis.document = dom.window.document;
+  globalThis.customElements = dom.window.customElements;
+  globalThis.CustomElementRegistry = dom.window.CustomElementRegistry;
+  globalThis.HTMLUListElement = dom.window.HTMLUListElement;
+  globalThis.HTMLLIElement = dom.window.HTMLLIElement;
+  globalThis.HTMLElement = dom.window.HTMLElement;
+  globalThis.Event = dom.window.Event;
+
+  // Import for side effects
+  await import("../content/components/message/messageTags.mjs");
+});
 
 describe("SpecialMessageTags test", () => {
+  afterEach(() => {
+    let testComponent = /** @type {MessageTags} */ (
+      dom.window.document.querySelector("ul")
+    );
+    testComponent.remove();
+  });
+
   it("special-tag classes are applied", async (t) => {
-    const callback = t.mock.fn();
     const tagData = [
       {
-        canClick: false,
         classNames: "success",
         icon: "material-icons.svg#edit",
         name: "DKIM signed",
@@ -30,25 +61,49 @@ describe("SpecialMessageTags test", () => {
       },
     ];
 
-    render(
-      React.createElement(SpecialMessageTags, {
-        onTagClick: callback,
-        folderName: "n/a",
-        specialTags: tagData,
-      })
-    );
+    let element = dom.window.document.createElement("ul", {
+      is: "special-message-tags",
+    });
+    element.setAttribute("specialtags", JSON.stringify(tagData));
+    dom.window.document.body.appendChild(element);
 
-    assert.equal(
-      screen.getByText("DKIM signed").className,
-      "success special-tag can-click"
+    let testComponent = /** @type {SpecialMessageTags} */ (
+      dom.window.document.querySelectorAll("li")
     );
+    assert.equal(testComponent[0].className, "success special-tag");
+  });
+
+  it("should have can-click class when details are supplied", async (t) => {
+    const tagData = [
+      {
+        classNames: "failed",
+        icon: "material-icons.svg#edit",
+        name: "DKIM signed",
+        tooltip: {
+          strings: ["Valid (Signed by example.com)"],
+        },
+        details: {
+          type: "foo",
+          detail: "message",
+        },
+      },
+    ];
+
+    let element = dom.window.document.createElement("ul", {
+      is: "special-message-tags",
+    });
+    element.setAttribute("specialtags", JSON.stringify(tagData));
+    dom.window.document.body.appendChild(element);
+
+    let testComponent = /** @type {SpecialMessageTags} */ (
+      dom.window.document.querySelectorAll("li")
+    );
+    assert.equal(testComponent[0].className, "failed special-tag can-click");
   });
 
   it("Clicking of special-tags", async (t) => {
-    const callback = t.mock.fn();
     const tagData = [
       {
-        details: null,
         classNames: "success",
         icon: "material-icons.svg#edit",
         name: "Can't click",
@@ -57,7 +112,10 @@ describe("SpecialMessageTags test", () => {
         },
       },
       {
-        details: true,
+        details: {
+          type: "enigmail",
+          detail: "message",
+        },
         classNames: "success",
         icon: "material-icons.svg#edit",
         name: "Can click",
@@ -66,24 +124,33 @@ describe("SpecialMessageTags test", () => {
         },
       },
     ];
+    messageUtils.store = {
+      getState() {
+        return { summary: { tabId: 1 } };
+      },
+    };
 
-    render(
-      React.createElement(SpecialMessageTags, {
-        onTagClick: callback,
-        folderName: "n/a",
-        specialTags: tagData,
-      })
-    );
+    let element = dom.window.document.createElement("ul", {
+      is: "special-message-tags",
+    });
+    element.setAttribute("specialtags", JSON.stringify(tagData));
+    dom.window.document.body.appendChild(element);
 
-    // The first tag cannot be clicked
-    fireEvent.click(screen.getByText("Can't click"));
-    assert.equal(callback.mock.calls.length, 0);
+    let enigmailMock = t.mock.method(browser.convOpenPgp, "handleTagClick");
 
-    callback.mock.resetCalls();
+    let tags = dom.window.document.querySelectorAll("li");
+
+    tags[0].click();
+    assert.equal(enigmailMock.mock.calls.length, 0);
 
     // The second tag can be clicked
-    fireEvent.click(screen.getByText("Can click"));
-    assert.equal(callback.mock.calls.length, 1);
+    tags[1].click();
+    await t.waitFor(() => {
+      if (!enigmailMock.mock.callCount) {
+        throw new Error("Not got one yet");
+      }
+    });
+    assert.equal(enigmailMock.mock.calls.length, 1);
   });
 });
 
@@ -106,17 +173,25 @@ describe("MessageTags test", () => {
     },
   ];
 
-  it("Basic tags", async (t) => {
-    const callback = t.mock.fn();
-    render(
-      React.createElement(MessageTags, {
-        onTagsChange: callback,
-        tags: SAMPLE_TAGS,
-        expanded: true,
-      })
+  afterEach(() => {
+    let testComponent = /** @type {MessageTags} */ (
+      dom.window.document.querySelector("ul")
     );
+    testComponent.remove();
+  });
 
-    let tags = screen.getAllByRole("listitem");
+  it("Basic tags", async (t) => {
+    let element = dom.window.document.createElement("ul", {
+      is: "message-tags",
+    });
+    element.setAttribute("tags", JSON.stringify(SAMPLE_TAGS));
+    element.setAttribute("expanded", "false");
+    dom.window.document.body.appendChild(element);
+
+    let testComponent = /** @type {MessageTags} */ (
+      dom.window.document.querySelector("ul")
+    );
+    let tags = testComponent.querySelectorAll("li");
     assert.equal(tags.length, SAMPLE_TAGS.length);
 
     // Make sure the name actually shows up in the tag
@@ -124,42 +199,62 @@ describe("MessageTags test", () => {
   });
 
   it("Expanded tags", async (t) => {
-    const callback = t.mock.fn();
-    render(
-      React.createElement(MessageTags, {
-        onTagsChange: callback,
-        tags: SAMPLE_TAGS,
-        expanded: true,
-      })
-    );
+    let element = dom.window.document.createElement("ul", {
+      is: "message-tags",
+    });
+    element.setAttribute("tags", JSON.stringify(SAMPLE_TAGS));
+    element.setAttribute("expanded", "true");
+    dom.window.document.body.appendChild(element);
 
-    let tags = screen.getAllByRole("listitem");
+    let testComponent = /** @type {MessageTags} */ (
+      dom.window.document.querySelector("ul")
+    );
+    let tags = testComponent.querySelectorAll("li");
     assert.equal(tags.length, SAMPLE_TAGS.length);
 
-    fireEvent.click(within(tags[0]).getByRole("button"));
-    assert.equal(callback.mock.calls.length, 1);
+    let button = tags[0].querySelector("span[role='button']");
+    assert.ok(button, "Should have a button");
+
+    let updateMock = t.mock.method(browser.messages, "update", () => {});
+    button.click();
+
+    await t.waitFor(() => {
+      if (!updateMock.mock.callCount) {
+        throw new Error("Not got one yet");
+      }
+    });
+    // fireEvent.click(within(tags[0]).getByRole("button"));
+    // assert.equal(callback.mock.calls.length, 1);
 
     // The callback should be called with a list of tags with the clicked
     // tag removed.
-    const payload = callback.mock.calls[0].arguments[0];
+    const payload = updateMock.mock.calls[0].arguments[1].tags;
     assert.equal(payload.length, SAMPLE_TAGS.length - 1);
-    assert.deepEqual(payload, SAMPLE_TAGS.slice(1));
+    assert.deepEqual(
+      payload,
+      SAMPLE_TAGS.slice(1).map((tag) => tag.key)
+    );
   });
 
   it("Unexpanded tags", async (t) => {
-    const callback = t.mock.fn();
-    render(
-      React.createElement(MessageTags, {
-        onTagsChange: callback,
-        tags: SAMPLE_TAGS,
-        expanded: false,
-      })
-    );
+    let element = dom.window.document.createElement("ul", {
+      is: "message-tags",
+    });
+    element.setAttribute("tags", JSON.stringify(SAMPLE_TAGS));
+    dom.window.document.body.appendChild(element);
 
-    let tags = screen.getAllByRole("listitem");
+    let testComponent = /** @type {MessageTags} */ (
+      dom.window.document.querySelector("ul")
+    );
+    let tags = testComponent.querySelectorAll("li");
     assert.equal(tags.length, SAMPLE_TAGS.length);
 
+    let button = /** @type {MessageTag} */ (
+      tags[0].querySelector("span[role='button']")
+    );
+    assert.ok(button, "Should have a button");
+
     // There should be no "x" button in an unexpanded tag
-    assert.equal(within(tags[0]).queryByRole("button"), null);
+    assert.equal(button.style.display, "none");
   });
 });

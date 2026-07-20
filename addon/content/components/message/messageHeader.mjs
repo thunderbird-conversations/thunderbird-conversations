@@ -6,7 +6,6 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { messageActions } from "../../reducer/reducerMessages.mjs";
 import { MessageHeaderOptions } from "./messageHeaderOptions.mjs";
-import { MessageTags, SpecialMessageTags } from "./messageTags.mjs";
 
 /**
  * Normalize a contact into a string (used for i18n formatting).
@@ -389,30 +388,15 @@ export function MessageHeader({
         React.createElement(
           "span",
           { className: "snippet" },
-          React.createElement(MessageTags, {
-            onTagsChange: (newTags) => {
-              dispatch(
-                messageActions.setTags({
-                  id,
-                  tags: newTags,
-                })
-              );
-            },
-            expanded: false,
-            tags,
+          React.createElement("ul", {
+            is: "message-tags",
+            tags: JSON.stringify(tags),
+            msgId: id,
           }),
-          React.createElement(SpecialMessageTags, {
-            onTagClick: (event, tag) => {
-              dispatch(
-                messageActions.tagClick({
-                  event,
-                  id,
-                  details: tag.details,
-                })
-              );
-            },
-            folderName: shortFolderName,
-            inView,
+          React.createElement("ul", {
+            is: "special-message-tags",
+            msgid: id,
+            foldername: inView ? "" : shortFolderName,
           }),
           snippet
         )

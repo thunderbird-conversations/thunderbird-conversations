@@ -10,7 +10,7 @@ import { MessageDetails } from "./messageDetails.mjs";
 import { MessageHeader } from "./messageHeader.mjs";
 import { MessageIFrame } from "./messageIFrame.mjs";
 import { MessageNotification } from "./messageNotification.mjs";
-import { MessageTags, SpecialMessageTags } from "./messageTags.mjs";
+import { toggleTagByIndex, setTags } from "../../reducer/messageTagUtils.mjs";
 import { QuickReply } from "../quickreply/quickReply.mjs";
 import { messageUtils } from "../../reducer/messageUtils.mjs";
 
@@ -240,24 +240,17 @@ export class Message extends React.PureComponent {
       case "7":
       case "8":
       case "9":
-        this.props.dispatch(
-          messageActions.toggleTagByIndex({
-            id: this.props.message.id,
-            tags: this.props.message.tags,
-            // Tag indexes start at 0
-            index: +shortcut - 1,
-          })
-        );
+        toggleTagByIndex({
+          msgId: this.props.message.id,
+          tags: this.props.message.tags,
+          // Tag indexes start at 0
+          index: +shortcut - 1,
+        }).catch(console.error);
         stopEvent();
         break;
       case "0":
         // Remove all tags
-        this.props.dispatch(
-          messageActions.setTags({
-            id: this.props.message.id,
-            tags: [],
-          })
-        );
+        setTags(this.props.message.id, []).catch(console.error);
         stopEvent();
         break;
       case "f":
@@ -365,39 +358,21 @@ export class Message extends React.PureComponent {
         "div",
         { className: "messageBody" },
         this.props.message.expanded &&
-          React.createElement(SpecialMessageTags, {
-            onFolderClick: () => {
-              this.props.dispatch(
-                messageActions.switchToFolderAndMsg({
-                  id: this.props.message.id,
-                })
-              );
-            },
-            onTagClick: (event, tag) => {
-              this.props.dispatch(
-                messageActions.tagClick({
-                  event,
-                  id: this.props.message.id,
-                  details: tag.details,
-                })
-              );
-            },
-            folderName: this.props.message.folderName,
-            inView: this.props.message.inView,
-            specialTags: this.props.message.specialTags,
+          React.createElement("ul", {
+            is: "special-message-tags",
+            msgid: this.props.message.id,
+            foldertagclickable: "true",
+            foldername: this.props.message.inView
+              ? ""
+              : this.props.message.folderName,
+            specialtags: JSON.stringify(this.props.message.specialTags),
           }),
         this.props.message.expanded &&
-          React.createElement(MessageTags, {
-            onTagsChange: (tags) => {
-              this.props.dispatch(
-                messageActions.setTags({
-                  id: this.props.message.id,
-                  tags,
-                })
-              );
-            },
-            expanded: true,
-            tags: this.props.message.tags,
+          React.createElement("ul", {
+            is: "message-tags",
+            expanded: "true",
+            msgId: this.props.message.id,
+            tags: JSON.stringify(this.props.message.tags),
           }),
         this.props.message.expanded &&
           this.props.message.printBody &&
