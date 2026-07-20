@@ -289,6 +289,9 @@ export const summarySlice = RTK.createSlice({
         windowId,
       };
     },
+    setVerticalLayout(state, { payload }) {
+      return { ...state, isVerticalLayout: payload.isVerticalLayout };
+    },
     setDarkReaderEnabled(state, { payload }) {
       return { ...state, darkReaderEnabled: payload.darkReaderEnabled };
     },
