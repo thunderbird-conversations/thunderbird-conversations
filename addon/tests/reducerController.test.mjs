@@ -10,6 +10,7 @@ import * as RTK from "@reduxjs/toolkit";
 import * as Redux from "redux";
 
 import { conversationActions } from "../content/reducer/reducerConversation.mjs";
+import { controllerActions } from "../content/reducer/controllerActions.mjs";
 import {
   messageActions,
   messagesSlice,
@@ -34,6 +35,31 @@ describe("Controller Actions tests", () => {
     t.mock
       .method(browser.messages, "get")
       .mock.mockImplementation(async (id) => fakeMessageHeaderData.get(id));
+  });
+
+  describe("updateConversationLayout", () => {
+    it("refreshes the cached layout after the message pane resizes", async (t) => {
+      const mailTabsGet = t.mock.method(browser.mailTabs, "get");
+      await store.dispatch(
+        summaryActions.setConversationState({
+          isInTab: false,
+          isStandalone: false,
+          isVerticalLayout: false,
+          tabId: 7,
+          windowId: 8,
+        })
+      );
+
+      mailTabsGet.mock.mockImplementation(async () => ({
+        layout: "vertical",
+      }));
+      await store.dispatch(controllerActions.updateConversationLayout());
+      assert.equal(store.getState().summary.isVerticalLayout, true);
+
+      mailTabsGet.mock.mockImplementation(async () => ({ layout: "classic" }));
+      await store.dispatch(controllerActions.updateConversationLayout());
+      assert.equal(store.getState().summary.isVerticalLayout, false);
+    });
   });
 
   describe("displayConversationMsgs", () => {
