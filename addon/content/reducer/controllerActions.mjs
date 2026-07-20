@@ -75,10 +75,17 @@ export const controllerActions = {
         tabId = isStandalone ? null : BrowserSim.getTabId(topWin, window);
       }
 
+      let isVerticalLayout = false;
+      if (!isInTab && tabId != null) {
+        isVerticalLayout =
+          (await browser.mailTabs.get(tabId)).layout === "vertical";
+      }
+
       await dispatch(
         summaryActions.setConversationState({
           isInTab,
           isStandalone,
+          isVerticalLayout,
           tabId,
           windowId,
         })
