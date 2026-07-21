@@ -475,6 +475,8 @@ async function setupUserPreferences(dispatch, getState) {
         expandWho: newPrefs.preferences?.expand_who ?? 4,
         extraAttachments: newPrefs.preferences?.extra_attachments ?? false,
         hideQuickReply: newPrefs.preferences?.hide_quick_reply ?? false,
+        reverseConversationOrder:
+          newPrefs.preferences?.reverse_conversation_order ?? false,
         hideQuoteLength: newPrefs.preferences?.hide_quote_length ?? 5,
         hideSigs: newPrefs.preferences?.hide_sigs ?? false,
         loggingEnabled: newPrefs.preferences?.logging_enabled ?? false,
