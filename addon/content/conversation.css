@@ -210,12 +210,6 @@ linkified-subject {
   flex-direction: row;
 }
 
-.dropDown > .icon-link,
-.details-hidden > .icon-link {
-  background: none;
-  border: 0;
-}
-
 .author {
   font-weight: bold;
   margin-inline-end: 0.3rem;
@@ -250,20 +244,6 @@ linkified-subject {
 html[dir="rtl"] .tooltip {
   left: 0;
   right: 16px;
-}
-
-.options > .details-hidden,
-.options > .invert-colors {
-  color: -moz-CellHighlight;
-}
-
-.options .icon-link {
-  font-size: 120%;
-  line-height: 1;
-}
-
-.options > .date {
-  padding-inline-end: 0.5ch;
 }
 
 .dropDown,
@@ -623,14 +603,6 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
   font-size: 1.1rem;
   padding: 0 10px;
   color: var(--email-address-dull-color);
-}
-
-.attachmentIcon {
-  color: var(--dull-foreground-color);
-}
-
-.attachmentIcon svg-icon::part(svg) {
-  transform: rotate(-50deg);
 }
 
 .attachments {

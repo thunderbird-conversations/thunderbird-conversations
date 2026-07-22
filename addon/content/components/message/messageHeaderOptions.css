@@ -1,0 +1,69 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.options > .details-hidden,
+.options > .invert-colors {
+  color: -moz-CellHighlight;
+}
+
+.options .icon-link {
+  font-size: 120%;
+  line-height: 1;
+}
+
+.options > .date > span {
+  padding-inline-end: 0.5ch;
+}
+
+.attachmentIcon {
+  color: var(--dull-foreground-color);
+}
+
+.attachmentIcon svg-icon::part(svg) {
+  transform: rotate(-50deg);
+}
+
+.dropDown > .icon-link,
+.details-hidden > .icon-link {
+  background: none;
+  border: 0;
+}
+
+.icon-link {
+  display: inline-block;
+  color: var(--dull-foreground-color);
+}
+
+.icon-link:focus,
+.icon-link:hover {
+  color: -moz-CellHighlight;
+}
+
+.tooltip {
+  min-width: 15.2em;
+  left: auto;
+  right: 0.6em;
+  line-height: 1.8;
+}
+
+html[dir="rtl"] .tooltip {
+  left: 0.6em;
+  right: auto;
+}
+
+.arrow {
+  left: auto;
+  right: 0.5em;
+}
+
+html[dir="rtl"] .arrow {
+  right: auto;
+  left: 0.5em;
+}

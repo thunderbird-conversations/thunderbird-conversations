@@ -5,7 +5,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { messageActions } from "../../reducer/reducerMessages.mjs";
-import { MessageHeaderOptions } from "./messageHeaderOptions.mjs";
 
 /**
  * Normalize a contact into a string (used for i18n formatting).
@@ -401,17 +400,19 @@ export function MessageHeader({
           snippet
         )
     ),
-    React.createElement(MessageHeaderOptions, {
-      dispatch,
-      date,
-      detailsShowing,
-      expanded,
-      fullDate,
-      id,
-      attachments,
-      multipleRecipients,
-      recipientsIncludeLists,
-      isDraft,
-    })
+    React.createElement(
+      "message-header-options",
+      {
+        dispatch,
+        detailsshowing: detailsShowing,
+        expanded,
+        msgid: id,
+        attachments,
+        multipleRecipients,
+        recipientsIncludeLists,
+        isdraft: isDraft,
+      },
+      React.createElement("span", { title: fullDate, slot: "date" }, date)
+    )
   );
 }

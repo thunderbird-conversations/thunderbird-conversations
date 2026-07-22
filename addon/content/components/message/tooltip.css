@@ -1,0 +1,77 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.tooltip {
+  position: absolute;
+  min-width: 30.2rem;
+  max-width: 45rem;
+  background-color: -moz-Field;
+  color: -moz-FieldText;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.25);
+  z-index: 1000;
+  line-height: 1.8;
+}
+
+html[dir="rtl"] .tooltip {
+  left: 0;
+  right: 16px;
+}
+
+.arrow {
+  border-color: transparent transparent var(--border-color) transparent;
+  border-style: solid;
+  border-width: 7px;
+  height: 0;
+  left: 10px;
+  top: -15px;
+  position: absolute;
+  width: 0;
+}
+
+html[dir="rtl"] .arrow {
+  right: 10px;
+  left: 0;
+}
+
+.arrow.inside {
+  border-color: transparent transparent -moz-Field transparent;
+  top: -13px;
+}
+
+ul {
+  margin-top: 0;
+  list-style-type: none;
+  font-size: 1.1rem;
+}
+
+li {
+  white-space: nowrap;
+}
+
+li:hover,
+li:nth-child(2n):hover,
+li:focus,
+li:nth-child(2n):focus {
+  background-color: -moz-CellHighlight;
+  color: -moz-CellHighlightText;
+}
+
+li:nth-child(2n) {
+  background-color: -moz-OddTreeRow;
+}
+
+.dropdown-sep {
+  border-bottom: 1px solid var(--border-color);
+}
+
+li:hover .arrow.inside {
+  border-color: transparent transparent -moz-CellHighlight transparent;
+}

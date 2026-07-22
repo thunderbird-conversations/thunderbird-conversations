@@ -102,6 +102,7 @@ document.addEventListener(
       await import("../content/components/contactDetail.mjs");
     ContactDetail.dispatch = storeUtils.store.dispatch;
     await import("../content/components/message/messageActionButton.mjs");
+    await import("../content/components/message/messageHeaderOptions.mjs");
     await import("../content/components/message/messageTags.mjs");
     await import("../content/components/message/messageFooter.mjs");
     await import("../content/components/compose/composeFields.mjs");
