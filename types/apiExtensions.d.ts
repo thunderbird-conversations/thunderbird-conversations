@@ -17,6 +17,27 @@ interface WebExtEventWith2Param<
   hasListener(cb: TCallback): boolean;
 }
 
+interface WebExtEventWith3Param<
+  TCallback extends (...args: any[]) => any,
+  TParam,
+  TParam2,
+  TParam3,
+> {
+  addListener(
+    cb: TCallback,
+    param: TParam,
+    param2: TParam2,
+    param3: TParam3
+  ): void;
+  removeListener(
+    cb: TCallback,
+    param: TParam,
+    param2: TParam2,
+    param3: TParam3
+  ): void;
+  hasListener(cb: TCallback): boolean;
+}
+
 declare namespace browser {
   // TODO: Add to core types.
   export namespace messengerUtilities {
@@ -271,6 +292,13 @@ declare namespace browser {
     export function openNewWindow(url: string, params?: string): Promise<void>;
     export function print(window: number, iframeId: string): Promise<void>;
 
+    export const onMsgHasRemoteContent: WebExtEventWith3Param<
+      () => void,
+      number,
+      number,
+      string
+    >;
+
     export const onSelectedMessagesChanged: WebExtEventWithParam<
       (msgs: messages.MessageHeader[]) => void,
       number
@@ -288,4 +316,8 @@ declare namespace browser {
     >;
     export const onMonkeyPatch: WebExtEventWithParam<() => void, number>;
   }
+}
+
+interface Window {
+  browsingContext: any;
 }

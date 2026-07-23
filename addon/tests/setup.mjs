@@ -16,6 +16,7 @@ import { afterEach } from "node:test";
 import { cleanup } from "@testing-library/react";
 
 // Mock `fetch`, which is used to get localization info when running in the browser
+// @ts-ignore
 globalThis.fetch = function (fetchUrl) {
   const ROOT_PATH = path.join(
     path.dirname(url.fileURLToPath(import.meta.url)),

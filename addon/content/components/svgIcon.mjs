@@ -6,7 +6,7 @@
  * A basic SVG icon rendered using the `xlinkHref` ability
  * of SVGs. You can specify the full path, or just the hash.
  */
-class SvgIcon extends HTMLElement {
+export class SvgIcon extends HTMLElement {
   static observedAttributes = ["fullpath", "hash", "aria-hidden"];
 
   static get fragment() {

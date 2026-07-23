@@ -146,7 +146,6 @@ export const messageActions = {
   clickIframe({ event }) {
     return () => {
       // Hand this off to Thunderbird's content clicking algorithm as that's simplest.
-      // @ts-expect-error
       if (!window.browsingContext.topChromeWindow.contentAreaClick(event)) {
         event.preventDefault();
         event.stopPropagation();

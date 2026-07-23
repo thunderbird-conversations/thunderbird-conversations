@@ -13,7 +13,7 @@ import { controllerActions } from "../content/reducer/controllerActions.mjs";
 import { summarySlice } from "../content/reducer/reducerSummary.mjs";
 import { storeUtils } from "../content/reducer/storeUtils.mjs";
 /**
- * @import {ConversationHeader} from "./components/conversation/conversationHeader.mjs"
+ * @import {ConversationHeader} from "../content/components/conversation/conversationHeader.mjs"
  */
 
 function handlePrefUpdate(value) {
@@ -117,6 +117,7 @@ document.addEventListener(
     root.render(
       React.createElement(
         ReactRedux.Provider,
+        // @ts-ignore
         { store: storeUtils.store },
         React.createElement(MessageList)
       )

@@ -313,7 +313,6 @@ export class Message extends React.PureComponent {
         dispatch: this.props.dispatch,
         bcc: this.props.message.bcc,
         cc: this.props.message.cc,
-        overrideDarkMode: this.props.message.overrideDarkMode ?? false,
         date: this.props.message.date,
         detailsShowing: this.props.message.detailsShowing,
         expanded: this.props.message.expanded,

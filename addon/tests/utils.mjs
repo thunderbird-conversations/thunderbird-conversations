@@ -14,7 +14,7 @@ export function createFakeData(
     bccList = [],
     ccList = [],
     date = new Date(),
-    detailsShowing,
+    detailsShowing = false,
     flagged = false,
     folderType = "inbox",
     folderName = "Inbox",

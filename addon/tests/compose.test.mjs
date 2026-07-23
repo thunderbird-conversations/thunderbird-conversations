@@ -36,14 +36,16 @@ describe("Compose full page tests", () => {
     await import("../content/components/compose/composeWidget.mjs");
   });
 
-  beforeEach((t) => {
-    mockedSend = t.mock.method(browser.convCompose, "send", () => {});
-    t.mock.method(window, "close", () => {});
-    let composeWidget = dom.window.document.createElement("compose-widget");
-    composeWidget.setAttribute("from", "foo@example.com");
-    composeWidget.setAttribute("identityId", "id3");
-    dom.window.document.body.appendChild(composeWidget);
-  });
+  beforeEach(
+    /** @param {it.TestContext} t */ (t) => {
+      mockedSend = t.mock.method(browser.convCompose, "send", () => {});
+      t.mock.method(window, "close", () => {});
+      let composeWidget = dom.window.document.createElement("compose-widget");
+      composeWidget.setAttribute("from", "foo@example.com");
+      composeWidget.setAttribute("identityId", "id3");
+      dom.window.document.body.appendChild(composeWidget);
+    }
+  );
 
   afterEach(() => {
     let composeWidget = dom.window.document.querySelector("compose-widget");

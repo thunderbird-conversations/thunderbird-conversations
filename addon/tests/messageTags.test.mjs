@@ -125,6 +125,7 @@ describe("SpecialMessageTags test", () => {
       },
     ];
     messageUtils.store = {
+      // @ts-ignore
       getState() {
         return { summary: { tabId: 1 } };
       },
@@ -212,7 +213,9 @@ describe("MessageTags test", () => {
     let tags = testComponent.querySelectorAll("li");
     assert.equal(tags.length, SAMPLE_TAGS.length);
 
-    let button = tags[0].querySelector("span[role='button']");
+    let button = /** @type {HTMLButtonElement} */ (
+      tags[0].querySelector("span[role='button']")
+    );
     assert.ok(button, "Should have a button");
 
     let updateMock = t.mock.method(browser.messages, "update", () => {});

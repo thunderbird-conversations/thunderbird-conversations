@@ -194,7 +194,7 @@ export const summaryActions = {
       );
     };
   },
-  msgStreamMsg({ dueToExpansion, id, iframe, dueToReload = false }) {
+  msgStreamMsg({ dueToExpansion = false, id, iframe, dueToReload = false }) {
     return async (dispatch, getState) => {
       if (!dueToExpansion) {
         dispatch(summarySlice.actions.incIframesLoading());

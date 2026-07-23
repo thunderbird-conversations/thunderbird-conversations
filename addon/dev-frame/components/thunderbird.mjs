@@ -3,6 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import React from "react";
+// @ts-ignore
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import { devFrameActions } from "../reducer.mjs";
@@ -163,14 +164,17 @@ function Thread({ thread, position = 0 }) {
 
   function onClick(index) {
     dispatch(
+      // @ts-ignore
       devFrameActions.setActiveThread({
         thread: position,
         message: index,
       })
     );
   }
+  // @ts-ignore
   return React.createElement(
     React.Fragment,
+    // @ts-ignore
     "",
     thread.map((message, i) =>
       React.createElement(MessageRow, {
@@ -195,11 +199,14 @@ Thread.propTypes = {
  * @returns {React.Fragment}
  */
 export function ThreadView() {
+  // @ts-ignore
   const threads = useSelector((state) => state.threads.threadData);
+  // @ts-ignore
   return React.createElement(
     React.Fragment,
     null,
     threads.map((thread, i) =>
+      // @ts-ignore
       React.createElement(Thread, { key: i, thread, position: i })
     )
   );

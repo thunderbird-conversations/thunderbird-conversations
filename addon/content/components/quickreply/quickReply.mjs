@@ -6,10 +6,15 @@ import React from "react";
 import * as ReactRedux from "react-redux";
 import { quickReplyActions } from "../../reducer/reducerQuickReply.mjs";
 import PropTypes from "prop-types";
+import { messageUtils } from "../../reducer/messageUtils.mjs";
 
 export function QuickReply({ id, multipleRecipients, recipientsIncludeLists }) {
-  const dispatch = ReactRedux.useDispatch();
-  const quickReplyState = ReactRedux.useSelector((state) => state.quickReply);
+  const dispatch = messageUtils.store.dispatch;
+  const quickReplyState = ReactRedux.useSelector(
+    /** @param {ReturnType<typeof messageUtils.store.getState>} state */ (
+      state
+    ) => state.quickReply
+  );
 
   React.useEffect(() => {
     function collapse() {

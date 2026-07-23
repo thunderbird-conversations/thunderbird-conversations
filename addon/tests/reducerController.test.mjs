@@ -29,23 +29,27 @@ const store = RTK.configureStore({ reducer: summaryApp });
 describe("Controller Actions tests", () => {
   let fakeMessageHeaderData;
 
-  beforeEach((t) => {
-    fakeMessageHeaderData = new Map();
-    t.mock
-      .method(browser.messages, "get")
-      .mock.mockImplementation(async (id) => fakeMessageHeaderData.get(id));
-  });
+  beforeEach(
+    /** @param {it.TestContext} t */ (t) => {
+      fakeMessageHeaderData = new Map();
+      t.mock
+        .method(browser.messages, "get")
+        .mock.mockImplementation(async (id) => fakeMessageHeaderData.get(id));
+    }
+  );
 
   describe("displayConversationMsgs", () => {
     let oldReplaceConversation;
 
-    beforeEach((t) => {
-      // TODO: Figure out how to mock this properly.
-      oldReplaceConversation = messageActions.replaceConversation;
-      messageActions.replaceConversation = t.mock.fn(() => {
-        return { type: "mock" };
-      });
-    });
+    beforeEach(
+      /** @param {it.TestContext} t */ (t) => {
+        // TODO: Figure out how to mock this properly.
+        oldReplaceConversation = messageActions.replaceConversation;
+        messageActions.replaceConversation = t.mock.fn(() => {
+          return { type: "mock" };
+        });
+      }
+    );
 
     afterEach(() => {
       messageActions.replaceConversation = oldReplaceConversation;

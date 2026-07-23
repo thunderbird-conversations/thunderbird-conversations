@@ -21,6 +21,7 @@
 
 const lazy = {};
 
+// @ts-ignore
 ChromeUtils.defineESModuleGetters(lazy, {
   Gloda: "resource:///modules/gloda/GlodaPublic.sys.mjs",
   GlodaConstants: "resource:///modules/gloda/GlodaConstants.sys.mjs",
@@ -47,7 +48,9 @@ let AlternativeSender = {
   process: function* _AlternativeSender_process(
     aGlodaMessage,
     aRawReps,
+    // @ts-ignore
     aIsNew,
+    // @ts-ignore
     aCallbackHandle
   ) {
     try {
@@ -56,6 +59,7 @@ let AlternativeSender = {
         aGlodaMessage.alternativeSender = alternativeSender;
       }
     } catch (e) {
+      // @ts-ignore
       dump(e + "\n" + e.stack + "\n");
     }
 
@@ -97,7 +101,9 @@ let ContentType = {
   process: function* _ContentType_process(
     aGlodaMessage,
     aRawReps,
+    // @ts-ignore
     aIsNew,
+    // @ts-ignore
     aCallbackHandle
   ) {
     try {
@@ -105,6 +111,7 @@ let ContentType = {
         aGlodaMessage.contentType = aRawReps.mime.headers["content-type"];
       }
     } catch (e) {
+      // @ts-ignore
       dump(e + "\n" + e.stack + "\n");
     }
 

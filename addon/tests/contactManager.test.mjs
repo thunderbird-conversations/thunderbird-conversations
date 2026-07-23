@@ -38,14 +38,16 @@ describe("Test ContactManager", () => {
   let onUpdatedSpy;
   let onDeletedSpy;
 
-  beforeEach((t) => {
-    spy = t.mock.method(browser.contacts, "quickSearch");
-    onCreatedSpy = t.mock.method(browser.contacts.onCreated, "addListener");
-    onUpdatedSpy = t.mock.method(browser.contacts.onUpdated, "addListener");
-    onDeletedSpy = t.mock.method(browser.contacts.onDeleted, "addListener");
+  beforeEach(
+    /** @param {it.TestContext} t */ (t) => {
+      spy = t.mock.method(browser.contacts, "quickSearch");
+      onCreatedSpy = t.mock.method(browser.contacts.onCreated, "addListener");
+      onUpdatedSpy = t.mock.method(browser.contacts.onUpdated, "addListener");
+      onDeletedSpy = t.mock.method(browser.contacts.onDeleted, "addListener");
 
-    contactManager = new ContactManager();
-  });
+      contactManager = new ContactManager();
+    }
+  );
 
   it("should return an empty contact if none found", async () => {
     let contact = await contactManager.get("invalid@example.com");

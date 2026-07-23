@@ -44,7 +44,8 @@ describe("Option components have correct return values", () => {
     );
     dom.window.document.body.appendChild(testComponent);
 
-    testComponent.savePref = t.mock.fn(() => Promise.resolve());
+    let saveMock = t.mock.fn((name, value) => Promise.resolve());
+    testComponent.savePref = saveMock;
     testComponent.setProps(
       {
         name: "option_name",
@@ -61,28 +62,19 @@ describe("Option components have correct return values", () => {
     input.dispatchEvent(new dom.window.Event("change"));
 
     assert.equal(
-      testComponent.savePref.mock.calls.length,
+      saveMock.mock.calls.length,
       1,
       "Should have called savePref once"
     );
-    assert.equal(
-      testComponent.savePref.mock.calls[0].arguments[0],
-      "option_name"
-    );
-    assert.equal(testComponent.savePref.mock.calls[0].arguments[1], 45);
-    assert.equal(
-      typeof testComponent.savePref.mock.calls[0].arguments[1],
-      "number"
-    );
+    assert.equal(saveMock.mock.calls[0].arguments[0], "option_name");
+    assert.equal(saveMock.mock.calls[0].arguments[1], 45);
+    assert.equal(typeof saveMock.mock.calls[0].arguments[1], "number");
 
     // Put in a non-number and expect it to still return a number
     input.value = "abc";
     input.dispatchEvent(new dom.window.Event("change"));
 
-    assert.equal(
-      typeof testComponent.savePref.mock.calls[1].arguments[1],
-      "number"
-    );
+    assert.equal(typeof saveMock.mock.calls[1].arguments[1], "number");
   });
 
   it("BinaryOption always returns a boolean type", async (t) => {
@@ -91,7 +83,9 @@ describe("Option components have correct return values", () => {
     );
     dom.window.document.body.appendChild(testComponent);
 
-    testComponent.savePref = t.mock.fn(() => Promise.resolve());
+    let saveMock = (testComponent.savePref = t.mock.fn((name, value) =>
+      Promise.resolve()
+    ));
     testComponent.setProps(
       {
         name: "option_name",
@@ -107,19 +101,13 @@ describe("Option components have correct return values", () => {
     input.click();
 
     assert.equal(
-      testComponent.savePref.mock.calls.length,
+      saveMock.mock.calls.length,
       1,
       "Should have called savePref once"
     );
-    assert.equal(
-      testComponent.savePref.mock.calls[0].arguments[0],
-      "option_name"
-    );
-    assert.equal(testComponent.savePref.mock.calls[0].arguments[1], false);
-    assert.equal(
-      typeof testComponent.savePref.mock.calls[0].arguments[1],
-      "boolean"
-    );
+    assert.equal(saveMock.mock.calls[0].arguments[0], "option_name");
+    assert.equal(saveMock.mock.calls[0].arguments[1], false);
+    assert.equal(typeof saveMock.mock.calls[0].arguments[1], "boolean");
   });
 
   it("ChoiceOption always returns the value supplied", (t) => {
@@ -128,7 +116,9 @@ describe("Option components have correct return values", () => {
     );
     dom.window.document.body.appendChild(testComponent);
 
-    testComponent.savePref = t.mock.fn(() => Promise.resolve());
+    let saveMock = (testComponent.savePref = t.mock.fn((name, value) =>
+      Promise.resolve()
+    ));
     testComponent.setProps(
       {
         name: "option_name",
@@ -143,8 +133,8 @@ describe("Option components have correct return values", () => {
       10
     );
 
-    let inputs = testComponent.shadowRoot.querySelectorAll(
-      "input[name='option_name']"
+    let inputs = /** @type {NodeListOf<HTMLInputElement>} */ (
+      testComponent.shadowRoot.querySelectorAll("input[name='option_name']")
     );
 
     for (let input of inputs) {
@@ -158,24 +148,18 @@ describe("Option components have correct return values", () => {
     inputs[0].click();
 
     assert.equal(
-      testComponent.savePref.mock.calls.length,
+      saveMock.mock.calls.length,
       1,
       "Should have called savePref once"
     );
-    assert.equal(
-      testComponent.savePref.mock.calls[0].arguments[0],
-      "option_name"
-    );
-    assert.equal(testComponent.savePref.mock.calls[0].arguments[1], 5);
-    assert.equal(
-      typeof testComponent.savePref.mock.calls[0].arguments[1],
-      "number"
-    );
+    assert.equal(saveMock.mock.calls[0].arguments[0], "option_name");
+    assert.equal(saveMock.mock.calls[0].arguments[1], 5);
+    assert.equal(typeof saveMock.mock.calls[0].arguments[1], "number");
 
     inputs[1].click();
-    assert.equal(testComponent.savePref.mock.calls[1].arguments[1], 10);
+    assert.equal(saveMock.mock.calls[1].arguments[1], 10);
 
     inputs[2].click();
-    assert.equal(testComponent.savePref.mock.calls[2].arguments[1], 15);
+    assert.equal(saveMock.mock.calls[2].arguments[1], 15);
   });
 });

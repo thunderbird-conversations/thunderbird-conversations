@@ -11,6 +11,7 @@ import React from "react";
 import * as RTK from "@reduxjs/toolkit";
 import * as ReactRedux from "react-redux";
 import { conversationApp } from "../content/reducer/reducer.mjs";
+import { messageUtils } from "../content/reducer/messageUtils.mjs";
 
 // Import the components we want to test
 import { QuickReply } from "../content/components/quickreply/quickReply.mjs";
@@ -18,23 +19,31 @@ import { quickReplyActions } from "../content/reducer/reducerQuickReply.mjs";
 
 describe("Quick Reply tests", () => {
   let store;
+  let quickReplyActionsMock;
 
-  beforeEach(async (t) => {
-    store = RTK.configureStore({
-      reducer: conversationApp,
-    });
-    quickReplyActions.expand = t.mock.fn(() => {
-      return {
-        type: "expand",
-      };
-    });
-  });
+  beforeEach(
+    /** @param {it.TestContext} t */ async (t) => {
+      store = RTK.configureStore({
+        reducer: conversationApp,
+      });
+      // @ts-ignore
+      messageUtils.store = store;
+
+      // @ts-ignore
+      quickReplyActionsMock = quickReplyActions.expand = t.mock.fn(() => {
+        return {
+          type: "expand",
+        };
+      });
+    }
+  );
 
   describe("Expansion Actions", () => {
     it("It should handle only the reply button", async () => {
       render(
         React.createElement(
           ReactRedux.Provider,
+          // @ts-ignore
           { store },
           React.createElement(QuickReply, {
             id: 0,
@@ -53,8 +62,8 @@ describe("Quick Reply tests", () => {
 
       fireEvent.click(replyButton);
 
-      assert.equal(quickReplyActions.expand.mock.calls.length, 1);
-      assert.deepEqual(quickReplyActions.expand.mock.calls[0].arguments[0], {
+      assert.equal(quickReplyActionsMock.mock.calls.length, 1);
+      assert.deepEqual(quickReplyActionsMock.mock.calls[0].arguments[0], {
         id: 0,
         type: "reply",
       });
@@ -64,6 +73,7 @@ describe("Quick Reply tests", () => {
       render(
         React.createElement(
           ReactRedux.Provider,
+          // @ts-ignore
           { store },
           React.createElement(QuickReply, {
             id: 0,
@@ -85,16 +95,16 @@ describe("Quick Reply tests", () => {
 
       fireEvent.click(screen.getByRole("button", { name: "reply" }));
 
-      assert.equal(quickReplyActions.expand.mock.calls.length, 1);
-      assert.deepEqual(quickReplyActions.expand.mock.calls[0].arguments[0], {
+      assert.equal(quickReplyActionsMock.mock.calls.length, 1);
+      assert.deepEqual(quickReplyActionsMock.mock.calls[0].arguments[0], {
         id: 0,
         type: "reply",
       });
 
       fireEvent.click(screen.getByRole("button", { name: "reply all" }));
 
-      assert.equal(quickReplyActions.expand.mock.calls.length, 2);
-      assert.deepEqual(quickReplyActions.expand.mock.calls[1].arguments[0], {
+      assert.equal(quickReplyActionsMock.mock.calls.length, 2);
+      assert.deepEqual(quickReplyActionsMock.mock.calls[1].arguments[0], {
         id: 0,
         type: "replyAll",
       });
@@ -104,6 +114,7 @@ describe("Quick Reply tests", () => {
       render(
         React.createElement(
           ReactRedux.Provider,
+          // @ts-ignore
           { store },
           React.createElement(QuickReply, {
             id: 0,
@@ -122,16 +133,16 @@ describe("Quick Reply tests", () => {
 
       fireEvent.click(screen.getByRole("button", { name: "reply" }));
 
-      assert.equal(quickReplyActions.expand.mock.calls.length, 1);
-      assert.deepEqual(quickReplyActions.expand.mock.calls[0].arguments[0], {
+      assert.equal(quickReplyActionsMock.mock.calls.length, 1);
+      assert.deepEqual(quickReplyActionsMock.mock.calls[0].arguments[0], {
         id: 0,
         type: "reply",
       });
 
       fireEvent.click(screen.getByRole("button", { name: "reply to list" }));
 
-      assert.equal(quickReplyActions.expand.mock.calls.length, 2);
-      assert.deepEqual(quickReplyActions.expand.mock.calls[1].arguments[0], {
+      assert.equal(quickReplyActionsMock.mock.calls.length, 2);
+      assert.deepEqual(quickReplyActionsMock.mock.calls[1].arguments[0], {
         id: 0,
         type: "replyList",
       });
@@ -143,6 +154,7 @@ describe("Quick Reply tests", () => {
       render(
         React.createElement(
           ReactRedux.Provider,
+          // @ts-ignore
           { store },
           React.createElement(QuickReply, {
             id: 0,

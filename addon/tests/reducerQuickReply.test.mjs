@@ -42,14 +42,17 @@ async function createAndSetMessage(data) {
 }
 
 describe("QuickReply Reducer and Actions tests", () => {
-  beforeEach((t) => {
-    messageUtils.store = store;
+  beforeEach(
+    /** @param {it.TestContext} t */ (t) => {
+      // @ts-ignore
+      messageUtils.store = store;
 
-    fakeMessageHeaderData = new Map();
-    t.mock
-      .method(browser.messages, "get")
-      .mock.mockImplementation(async (id) => fakeMessageHeaderData.get(id));
-  });
+      fakeMessageHeaderData = new Map();
+      t.mock
+        .method(browser.messages, "get")
+        .mock.mockImplementation(async (id) => fakeMessageHeaderData.get(id));
+    }
+  );
 
   describe("expand", () => {
     describe("Reply", () => {

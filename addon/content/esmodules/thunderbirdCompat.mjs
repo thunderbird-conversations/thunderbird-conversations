@@ -261,7 +261,17 @@ if (!browser.convCompose) {
 }
 
 if (!browser.convMsgWindow) {
-  browser.convMsgWindow = {};
+  browser.convMsgWindow = {
+    onMsgHasRemoteContent: {
+      listener: null,
+      addListener(l) {
+        this.listener = l;
+      },
+      removeListener() {
+        this.listener = null;
+      },
+    },
+  };
 }
 
 if (!browser.compose) {
@@ -667,4 +677,5 @@ if (!browser.messengerUtilities) {
   };
 }
 
+// @ts-ignore
 export { browser };

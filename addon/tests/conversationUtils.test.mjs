@@ -11,9 +11,11 @@ import { conversationUtils } from "../content/reducer/conversationUtils.mjs";
 describe("conversationUtils", () => {
   let composeSpy;
 
-  beforeEach((t) => {
-    composeSpy = t.mock.method(browser.compose, "beginNew");
-  });
+  beforeEach(
+    /** @param {it.TestContext} t */ (t) => {
+      composeSpy = t.mock.method(browser.compose, "beginNew");
+    }
+  );
 
   describe("forward", () => {
     it("Fills out the message with details from the header", async () => {

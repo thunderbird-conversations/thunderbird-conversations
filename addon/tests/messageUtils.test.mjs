@@ -11,6 +11,7 @@ describe("getBestIdentityForReply", () => {
   let msg;
   beforeEach(() => {
     messageUtils.store = {
+      // @ts-ignore
       getState() {
         return {
           messages: {

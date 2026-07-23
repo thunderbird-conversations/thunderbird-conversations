@@ -17,24 +17,28 @@ describe("messageEnricher", () => {
   let mailTabsGetSpy;
   let messageEnricher;
 
-  beforeEach((t) => {
-    messageEnricher = new MessageEnricher();
-    fakeMessageHeaderData = new Map();
-    t.mock
-      .method(browser.messages, "get")
-      .mock.mockImplementation(async (id) => fakeMessageHeaderData.get(id));
-    mailTabsGetSpy = t.mock.method(browser.mailTabs, "get");
-    let originalConsoleError = console.error;
-    // We expect some errors due to how the tests are run with single messages
-    // only.
-    t.mock.method(console, "error").mock.mockImplementation((...args) => {
-      if (
-        !args[0].includes("kScrollSelected && didn't find the selected message")
-      ) {
-        originalConsoleError(...args);
-      }
-    });
-  });
+  beforeEach(
+    /** @param {it.TestContext} t */ (t) => {
+      messageEnricher = new MessageEnricher();
+      fakeMessageHeaderData = new Map();
+      t.mock
+        .method(browser.messages, "get")
+        .mock.mockImplementation(async (id) => fakeMessageHeaderData.get(id));
+      mailTabsGetSpy = t.mock.method(browser.mailTabs, "get");
+      let originalConsoleError = console.error;
+      // We expect some errors due to how the tests are run with single messages
+      // only.
+      t.mock.method(console, "error").mock.mockImplementation((...args) => {
+        if (
+          !args[0].includes(
+            "kScrollSelected && didn't find the selected message"
+          )
+        ) {
+          originalConsoleError(...args);
+        }
+      });
+    }
+  );
 
   describe("Header Details", () => {
     it("Fills out the message with details from the header", async () => {

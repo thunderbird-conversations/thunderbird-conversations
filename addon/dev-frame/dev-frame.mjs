@@ -40,6 +40,7 @@ function LocaleSelector() {
       name: "locale",
       value: locale,
       onChange: (event) => {
+        // @ts-ignore
         const newLocale = event.target.value;
         // Propagate the locale change back to the mocked `browser.i18n` instance.
         initializeI18n(() => {}, newLocale);
@@ -79,13 +80,16 @@ export function Main() {
     ),
     React.createElement(
       ReactRedux.Provider,
+      // @ts-ignore
       { store },
+      // @ts-ignore
       React.createElement(ThreePanelThunderbird, {
         left: React.createElement(
           "h4",
           { className: "faux-inbox" },
           "Inbox (200)"
         ),
+        // @ts-ignore
         topRight: React.createElement(ThreadView),
         // bottomRight: React.createElement(
         //   "div",

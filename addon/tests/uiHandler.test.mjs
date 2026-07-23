@@ -54,10 +54,12 @@ describe("openQuickCompose", () => {
   let mockedTabCreate;
   let mockedWindowCreate;
 
-  beforeEach((t) => {
-    mockedTabCreate = t.mock.method(browser.tabs, "create");
-    mockedWindowCreate = t.mock.method(browser.windows, "create");
-  });
+  beforeEach(
+    /** @param {it.TestContext} t */ (t) => {
+      mockedTabCreate = t.mock.method(browser.tabs, "create");
+      mockedWindowCreate = t.mock.method(browser.windows, "create");
+    }
+  );
 
   beforeEach(() => {
     uiHandler = new UIHandler();

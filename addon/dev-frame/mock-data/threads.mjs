@@ -150,6 +150,7 @@ for (const info of THREAD_INFO) {
   const thread = [];
   // We always assume we're going to have at least one message in the thread.
   const rootMessage = { ...availableMessages.pop() };
+  // @ts-ignore
   rootMessage.from = availableEmails.pop();
   populateRequiredFields(rootMessage);
   populateEmailFields(rootMessage, {
@@ -158,6 +159,7 @@ for (const info of THREAD_INFO) {
     bcc: info.bcc[0],
   });
   populateAttachmentFields(rootMessage, info.attachments[0]);
+  // @ts-ignore
   rootMessage.initialPosition = 0;
   thread.push(rootMessage);
 
@@ -167,6 +169,7 @@ for (const info of THREAD_INFO) {
   for (let i = 1; i < info.length; i++) {
     const newMessage = { ...availableMessages.pop() };
     // Pick `from` to be from the recipients in the original email.
+    // @ts-ignore
     newMessage.from = cyclicPic(recipients, i);
     populateRequiredFields(newMessage, i == info.length - 1);
     // Make the subject a never-ending chain of `Re: ...`
@@ -177,6 +180,7 @@ for (const info of THREAD_INFO) {
       bcc: info.bcc[i],
     });
     populateAttachmentFields(newMessage, info.attachments[i]);
+    // @ts-ignore
     newMessage.initialPosition = i;
     thread.push(newMessage);
   }

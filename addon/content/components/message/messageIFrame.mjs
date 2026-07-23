@@ -47,12 +47,13 @@ function createToggleForNode(
     onToggle = () => {},
   }
 ) {
-  const toggle = domParser.parseFromString(TOGGLE_TEMPLATE, "text/html").body
-    .childNodes[0];
+  const toggle = /** @type {HTMLButtonElement} */ (
+    domParser.parseFromString(TOGGLE_TEMPLATE, "text/html").body.childNodes[0]
+  );
   toggle.setAttribute("show-text", showText);
   toggle.setAttribute("hide-text", hideText);
   toggle.style.color = linkColor;
-  toggle.style.fontSize = smallSize;
+  toggle.style.fontSize = smallSize.toString();
   toggle.classList.add(...linkClass.split(/\s/));
 
   function show() {
@@ -135,7 +136,6 @@ async function sleep(ms) {
  *
  * @param {Function} func
  * @param {Function} validator
- * @returns {*}
  */
 async function runUntilValid(func, validator) {
   let ret = func();
@@ -289,6 +289,8 @@ export class MessageIFrame extends React.Component {
       this.props.dispatch(
         summaryActions.msgStreamLoadFinished({
           dueToExpansion: this.dueToExpansion,
+          id: this.props.id,
+          iframe: this.iframe,
         })
       );
       this.loading = false;
