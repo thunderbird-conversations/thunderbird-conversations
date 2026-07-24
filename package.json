@@ -46,7 +46,7 @@
     "prettier": "3.9.6",
     "prop-types": "15.8.1",
     "serve": "14.2.6",
-    "typescript": "6.0.3",
+    "typescript": "7.0.2",
     "web-ext": "10.5.0",
     "webpack": "5.108.4",
     "webpack-cli": "7.2.1"
