@@ -15,6 +15,7 @@ export const initialSummary = {
   iframesLoading: 0,
   isInTab: false,
   isStandalone: false,
+  isVerticalLayout: false,
   // TODO: What is loading used for?
   loading: true,
   messageNotFound: false,
@@ -277,8 +278,19 @@ export const summarySlice = RTK.createSlice({
       };
     },
     setConversationState(state, { payload }) {
-      const { isInTab, isStandalone, tabId, windowId } = payload;
-      return { ...state, isInTab, isStandalone, tabId, windowId };
+      const { isInTab, isStandalone, isVerticalLayout, tabId, windowId } =
+        payload;
+      return {
+        ...state,
+        isInTab,
+        isStandalone,
+        isVerticalLayout,
+        tabId,
+        windowId,
+      };
+    },
+    setVerticalLayout(state, { payload }) {
+      return { ...state, isVerticalLayout: payload.isVerticalLayout };
     },
     setDarkReaderEnabled(state, { payload }) {
       return { ...state, darkReaderEnabled: payload.darkReaderEnabled };
