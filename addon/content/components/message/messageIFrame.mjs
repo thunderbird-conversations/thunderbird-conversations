@@ -420,13 +420,17 @@ export class MessageIFrame extends React.Component {
         () => {},
         () => !this._waitingForDom
       );
-      doAdjustment();
+      window.requestAnimationFrame(() => {
+        doAdjustment();
+      });
     } catch (e) {
       console.warn(
         "Possible race condition; timed out while trying to adjust iframe height",
         e
       );
-      doAdjustment();
+      window.requestAnimationFrame(() => {
+        doAdjustment();
+      });
     }
   }
 
@@ -637,9 +641,7 @@ export class MessageIFrame extends React.Component {
     let head = iframeDoc.body.previousElementSibling;
     head.appendChild(style);
 
-    // Probably can remove this - commented out to avoid forcing flush during restyle.
-    // Gets called from onLoad.
-    // this.adjustHeight();
+    this.adjustHeight();
   }
 
   _onMsgHasRemoteContent() {
