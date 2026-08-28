@@ -2,7 +2,7 @@
 
 ADDON="."
 
-THUNDERBIRD_VERSION=`curl -L -s --fail-with-body https://hg.mozilla.org/comm-central/raw-file/tip/mail/config/version_display.txt`
+THUNDERBIRD_VERSION=`curl -L -s --fail-with-body https://raw.githubusercontent.com/mozilla/releases-comm-central/HEAD/mail/config/version_display.txt`
 if [[ $? -ne 0 ]]; then
 	echo CURL FAILED
   exit 1
