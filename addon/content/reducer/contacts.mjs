@@ -38,7 +38,6 @@ async function enrichWithDisplayData({
   const displayEmail = name != email ? email : "";
   const skipEmail = contact.contactId !== undefined && showCondensed;
   let data = {
-    avatar: contact.photoURI,
     colorStyle: { backgroundColor: contact.color },
     contactId: contact.contactId,
     displayEmail: skipEmail ? "" : displayEmail,
@@ -185,10 +184,88 @@ function hasMultipleRecipients(message) {
   return count > 1;
 }
 
+/**
+ * Stores Contacts
+ */
+class ContactMapContainer {
+  /**
+   * Gets the image for the contact id, loading it if necessary.
+   *
+   * @param {string} contactId
+   */
+  async get(contactId) {
+    // If we've looked before, don't look again
+    if (this.#loaded.has(contactId)) {
+      return this.#loaded.get(contactId);
+    }
+
+    let pendingLoad = this.#loading.get(contactId);
+    if (pendingLoad) {
+      return pendingLoad;
+    }
+
+    let pendingQueue = this.#queue.get(contactId);
+    if (pendingQueue) {
+      return pendingQueue.promise;
+    }
+
+    // Don't overload the loading
+    if (this.#loading.size >= 1) {
+      this.#queue.set(contactId, Promise.withResolvers());
+      return this.#queue.get(contactId).promise;
+    }
+
+    let promise = browser.contacts.getPhoto(contactId).then((file) => {
+      let url = file ? URL.createObjectURL(file) : null;
+      this.#loaded.set(contactId, url);
+      this.#loading.delete(contactId);
+
+      if (this.#queue.size) {
+        let [queuedContactId, queuedPromise] = this.#queue
+          .entries()
+          .next().value;
+        this.#queue.delete(queuedContactId);
+        queuedPromise.resolve(this.get(queuedContactId));
+      }
+      return url;
+    }, console.error);
+
+    this.#loading.set(contactId, promise);
+
+    return promise;
+  }
+
+  /** @type {Map<string, string>} */
+  #loaded = new Map();
+
+  /** @type {Map<string, Promise<string>>} */
+  #loading = new Map();
+
+  // eslint-disable-next-line jsdoc/no-undefined-types
+  /** @type {Map<string, PromiseWithResolvers<string>>} */
+  #queue = new Map();
+}
+
+let contactMap = new ContactMapContainer();
+
+/**
+ * @param {number} msgId
+ * @param {string} contactId
+ * @param {object} dispatch
+ */
+export function getContactPhoto(msgId, contactId, dispatch) {
+  contactMap.get(contactId).then((url) => {
+    dispatch(
+      messageActions.addContactPhoto({
+        id: msgId,
+        contactId,
+        url,
+      })
+    );
+  }, console.error);
+}
+
 export async function getContactPhotos(enrichedMsgs, dispatch) {
-  // TODO: Maybe optimise for a page load, should we save contacts to a different
-  // part of the reducer, so that we can load them as needed?
-  let loadedPhotos = new Map();
   for (let msg of enrichedMsgs) {
     let from = msg.from;
     if (
@@ -200,24 +277,14 @@ export async function getContactPhotos(enrichedMsgs, dispatch) {
       continue;
     }
 
-    let url = loadedPhotos.get(from.contactId);
-    if (!url) {
-      let file = await browser.contacts.getPhoto(msg.from.contactId);
-      if (file) {
-        url = URL.createObjectURL(file);
-        loadedPhotos.set(msg.from.contactId, URL.createObjectURL(file));
-      }
-    }
-    if (!url) {
-      continue;
-    }
-
-    dispatch(
-      messageActions.addContactPhoto({
-        id: msg.id,
-        contactId: msg.from.contactId,
-        url,
-      })
-    );
+    contactMap.get(from.contactId).then((url) => {
+      dispatch(
+        messageActions.addContactPhoto({
+          id: msg.id,
+          contactId: msg.from.contactId,
+          url,
+        })
+      );
+    }, console.error);
   }
 }

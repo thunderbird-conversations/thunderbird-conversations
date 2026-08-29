@@ -12,9 +12,10 @@ import { DetailedContactLabel } from "./messageHeader.mjs";
  * @param {string} options.label
  * @param {object[]} options.contacts
  * @param {string} [options.className]
+ * @param {object} options.dispatch
  * @param {number} options.msgId
  */
-function ContactList({ label, contacts, className = "", msgId }) {
+function ContactList({ label, contacts, className = "", dispatch, msgId }) {
   if (contacts.length === 0) {
     return null;
   }
@@ -31,6 +32,7 @@ function ContactList({ label, contacts, className = "", msgId }) {
           className: "",
           contact,
           msgId,
+          dispatch,
         }),
         React.createElement("br")
       )
@@ -42,6 +44,7 @@ function ContactList({ label, contacts, className = "", msgId }) {
  * Handles display of the extended details for a message - the header lines.
  *
  * @param {object} options
+ * @param {object} options.dispatch
  * @param {object[]} options.bcc
  * @param {object[]} options.cc
  * @param {{key: string, value: string}[]} options.extraLines
@@ -49,7 +52,15 @@ function ContactList({ label, contacts, className = "", msgId }) {
  * @param {number} options.id
  * @param {object[]} options.to
  */
-export function MessageDetails({ bcc, cc, extraLines, from, id, to }) {
+export function MessageDetails({
+  dispatch,
+  bcc,
+  cc,
+  extraLines,
+  from,
+  id,
+  to,
+}) {
   return React.createElement(
     "div",
     null,
@@ -66,6 +77,7 @@ export function MessageDetails({ bcc, cc, extraLines, from, id, to }) {
         React.createElement(DetailedContactLabel, {
           className: "",
           contact: from,
+          dispatch,
           msgId: id,
         })
       ),
@@ -73,18 +85,21 @@ export function MessageDetails({ bcc, cc, extraLines, from, id, to }) {
       className: "detailsLine toLine",
       label: browser.i18n.getMessage("message.toHeader"),
       contacts: to,
+      dispatch,
       msgId: id,
     }),
     React.createElement(ContactList, {
       className: "detailsLine ccLine",
       label: browser.i18n.getMessage("message.ccHeader"),
       contacts: cc,
+      dispatch,
       msgId: id,
     }),
     React.createElement(ContactList, {
       className: "detailsLine bccLine",
       label: browser.i18n.getMessage("compose.fieldBcc"),
       contacts: bcc,
+      dispatch,
       msgId: id,
     }),
     !!extraLines?.length &&

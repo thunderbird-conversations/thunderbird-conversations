@@ -5,6 +5,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { messageActions } from "../../reducer/reducerMessages.mjs";
+import { getContactPhoto } from "../../reducer/contacts.mjs";
 
 /**
  * Normalize a contact into a string (used for i18n formatting).
@@ -28,10 +29,13 @@ function contactToString(contact) {
  *
  * @param {object} props
  * @param {object} [props.children]
+ * @param {string} props.contactId
+ * @param {object} props.dispatch
+ * @param {number} props.msgId
  * @param {object} props.popup
  * @param {object} [props.style]
  */
-function HoverFade({ children, popup, style }) {
+function HoverFade({ children, dispatch, contactId, msgId, popup, style }) {
   const [isHovering, setIsHovering] = React.useState(false);
   const [shouldShowPopup, setShouldShowPopup] = React.useState(false);
   const spanRef = React.useRef(null);
@@ -41,6 +45,7 @@ function HoverFade({ children, popup, style }) {
   React.useEffect(() => {
     let timeoutId = null;
     if (isHovering) {
+      getContactPhoto(msgId, contactId, dispatch);
       // If we hover over the label, we delay showing the popup.
       timeoutId = window.setTimeout(() => {
         if (isHovering) {
@@ -124,9 +129,10 @@ function Email({ email }) {
  * @param {object} props
  * @param {string} props.className
  * @param {object} props.contact
+ * @param {object} props.dispatch
  * @param {number} props.msgId
  */
-export function DetailedContactLabel({ contact, className, msgId }) {
+export function DetailedContactLabel({ contact, className, dispatch, msgId }) {
   // This component conditionally renders.
   // In a detail view, there is a star at the start of the contact
   // info and a line break at the end.
@@ -143,6 +149,9 @@ export function DetailedContactLabel({ contact, className, msgId }) {
   return React.createElement(
     HoverFade,
     {
+      dispatch,
+      msgId,
+      contactId: contact.contactId,
       popup: React.createElement("contact-detail", {
         name: contact.name,
         email: contact.displayEmail,
@@ -173,10 +182,11 @@ export function DetailedContactLabel({ contact, className, msgId }) {
  *
  * @param {object} props
  * @param {string} props.className
+ * @param {object} props.dispatch
  * @param {object} props.contact
  * @param {number} props.msgId
  */
-export function ContactLabel({ contact, className, msgId }) {
+export function ContactLabel({ contact, className, dispatch, msgId }) {
   // This component conditionally renders.
   let emailLabel =
     contact.displayEmail &&
@@ -190,6 +200,9 @@ export function ContactLabel({ contact, className, msgId }) {
   return React.createElement(
     HoverFade,
     {
+      msgId,
+      contactId: contact.contactId,
+      dispatch,
       popup: React.createElement("contact-detail", {
         name: contact.name,
         email: contact.displayEmail,
@@ -333,6 +346,7 @@ export function MessageHeader({
           return React.createElement(ContactLabel, {
             className: "to",
             contact,
+            dispatch,
             key: item.value,
             msgId: id,
           });
@@ -379,6 +393,7 @@ export function MessageHeader({
           React.createElement(ContactLabel, {
             className: "author",
             contact: from,
+            dispatch,
             msgId: id,
           })
         ),

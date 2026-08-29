@@ -315,7 +315,6 @@ export class MessageHeaderOptions extends HTMLElement {
       }
       case "expanded": {
         let expanded = this.hasAttribute("expanded");
-        console.log("expanded", expanded);
         /** @type {HTMLSpanElement} */ (
           this.shadowRoot.querySelector(".mainActionButton")
         ).style.display = expanded ? "revert" : "none";

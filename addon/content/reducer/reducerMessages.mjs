@@ -370,6 +370,18 @@ export const messagesSlice = RTK.createSlice({
         if (newMsg.from.contactId == payload.contactId) {
           newMsg.from = { ...msg.from, avatar: payload.url };
         }
+        for (let item of ["to", "cc", "bcc", "alternativeSender"]) {
+          if (newMsg[item].length) {
+            newMsg[item] = [];
+            for (let contact of msg[item]) {
+              if (contact.contactId == payload.contactId) {
+                newMsg[item].push({ ...contact, avatar: payload.url });
+              } else {
+                newMsg[item].push(contact);
+              }
+            }
+          }
+        }
         return newMsg;
       });
     },

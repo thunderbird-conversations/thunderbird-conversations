@@ -333,6 +333,7 @@ export class Message extends React.PureComponent {
       this.props.message.expanded &&
         this.props.message.detailsShowing &&
         React.createElement(MessageDetails, {
+          dispatch: this.props.dispatch,
           bcc: this.props.message.bcc,
           cc: this.props.message.cc,
           extraLines: this.props.message.extraLines,
