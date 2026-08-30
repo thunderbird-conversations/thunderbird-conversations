@@ -1,0 +1,29 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
+
+contact-detail {
+  visibility: hidden;
+  opacity: 0;
+
+  transition:
+    opacity 0.4s 0s,
+    visibility 0.4s 0s;
+}
+
+.contactWrapper:hover > contact-detail {
+  visibility: visible;
+  opacity: 1;
+
+  transition:
+    opacity 0.8s 0.4s,
+    visibility 0.8s 0.4s;
+}
+
+/**
+ * Cancel the transition if the user starts to move over the contact
+ * detail. This avoids the timers being restarted & strange visible effects.
+ */
+contact-detail:hover {
+  transition: none !important;
+}
