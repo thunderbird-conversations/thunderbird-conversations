@@ -3,7 +3,6 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import React from "react";
-import ReactDOM from "react-dom";
 import { messageActions } from "../../reducer/reducerMessages.mjs";
 import { getContactPhoto } from "../../reducer/contacts.mjs";
 
@@ -22,100 +21,6 @@ function contactToString(contact) {
 }
 
 /**
- * Opens `popup` when the child element(s) are hovered over,
- * or they are focused. The children are surrounded by a <span>.
- * Any additional props are passed to the surrounding <span>.
- * An element with `id=popup-container` is assumed to exist somewhere
- * near the root of the DOM. The children elements are rendered,
- * absolutely positions, inside the popup-container.
- *
- * @param {object} props
- * @param {object} [props.children]
- * @param {string} props.contactId
- * @param {object} props.dispatch
- * @param {number} props.msgId
- * @param {object} props.popup
- * @param {object} [props.style]
- */
-function HoverFade({ children, dispatch, contactId, msgId, popup, style }) {
-  const [isHovering, setIsHovering] = React.useState(false);
-  const [shouldShowPopup, setShouldShowPopup] = React.useState(false);
-  const spanRef = React.useRef(null);
-  const popupParentNode =
-    document.querySelector("#popup-container") || spanRef.current;
-
-  React.useEffect(() => {
-    let timeoutId = null;
-    if (isHovering) {
-      getContactPhoto(msgId, contactId, dispatch);
-      // If we hover over the label, we delay showing the popup.
-      timeoutId = window.setTimeout(() => {
-        if (isHovering) {
-          setShouldShowPopup(true);
-        } else {
-          setShouldShowPopup(false);
-        }
-      }, 400);
-    } else {
-      // If we're not hovering, we don't delay hiding the popup.
-      setShouldShowPopup(false);
-    }
-    return () => {
-      if (timeoutId != null) {
-        window.clearTimeout(timeoutId);
-      }
-    };
-  }, [isHovering, setShouldShowPopup]);
-
-  // Calculate where to render the popup
-  const pos = spanRef.current?.getBoundingClientRect() || {
-    left: 0,
-    top: 0,
-    bottom: 0,
-  };
-  const parentPos = popupParentNode?.getBoundingClientRect() || {
-    left: 0,
-    top: 0,
-    bottom: 0,
-  };
-
-  return React.createElement(
-    React.Fragment,
-    null,
-    React.createElement(
-      "span",
-      {
-        ref: spanRef,
-        className: "fade-parent",
-        style,
-        onMouseEnter: () => {
-          setIsHovering(true);
-        },
-        onMouseLeave: () => {
-          setIsHovering(false);
-        },
-      },
-      children
-    ),
-    popupParentNode &&
-      ReactDOM.createPortal(
-        React.createElement(
-          "div",
-          {
-            className: `fade-popup ${shouldShowPopup ? "hover" : ""}`,
-            style: {
-              left: pos.left - parentPos.left,
-              top: pos.bottom - parentPos.top,
-            },
-          },
-          popup
-        ),
-        popupParentNode
-      )
-  );
-}
-
-/**
  * Display an email address wrapped in <...> braces.
  *
  * @param {object} props
@@ -128,8 +33,10 @@ function Email({ email }) {
 /**
  * A detailed contact label.
  */
-export class DetailedContactLabel extends HTMLElement {
-  static observedAttributes = ["msgid", "contactdetails"];
+export class ContactLabel extends HTMLElement {
+  static observedAttributes = ["msgid", "contactdetails", "elementtype"];
+
+  static dispatch;
 
   static get fragment() {
     if (!this._template) {
@@ -140,13 +47,7 @@ export class DetailedContactLabel extends HTMLElement {
           <link rel="stylesheet" href="../content/components/message/messageHeader.css?v=1" />
           <span class="contactWrapper">
             <contact-detail></contact-detail>
-            <span class="contactName">
-              &nbsp;
-              <span class="smallEmail">
-              </span>
-            </span>
-          </span>
-          </template>
+            <span class="contactName">&nbsp;<span class="smallEmail"></span></span></span></template>
         `,
         "text/html"
       );
@@ -158,7 +59,7 @@ export class DetailedContactLabel extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    this.shadowRoot.appendChild(DetailedContactLabel.fragment);
+    this.shadowRoot.appendChild(ContactLabel.fragment);
     let msgId = this.getAttribute("msgid");
     if (msgId) {
       this.updateMsgId(msgId);
@@ -167,7 +68,39 @@ export class DetailedContactLabel extends HTMLElement {
     if (contactDetails) {
       this.updateContactDetails(contactDetails);
     }
+
+    this.onHover = this.onHover.bind(this);
   }
+
+  connectedCallback() {
+    this.shadowRoot
+      .querySelector(".contactWrapper")
+      .addEventListener("transitionstart", this.onHover);
+  }
+
+  disconnectedCallback() {
+    this.shadowRoot
+      .querySelector(".contactWrapper")
+      .removeEventListener("transitionstart", this.onHover);
+    this.#hoverRequested = false;
+  }
+
+  onHover() {
+    console.log("hover");
+    if (this.#hoverRequested) {
+      return;
+    }
+    this.#hoverRequested = true;
+
+    let contactDetails = JSON.parse(this.getAttribute("contactdetails"));
+    getContactPhoto(
+      parseInt(this.getAttribute("msgId")),
+      contactDetails.contactId,
+      ContactLabel.dispatch
+    );
+  }
+
+  #hoverRequested = false;
 
   /**
    * Handles an attribute change.
@@ -179,6 +112,10 @@ export class DetailedContactLabel extends HTMLElement {
   attributeChangedCallback(name, oldValue, newValue) {
     if (name == "msgid") {
       this.updateMsgId(newValue);
+      return;
+    }
+    if (name == "elementtype") {
+      this.updateContactDetails(this.getAttribute("contactdetails"));
       return;
     }
     this.updateContactDetails(newValue);
@@ -206,15 +143,24 @@ export class DetailedContactLabel extends HTMLElement {
     }
     let details = JSON.parse(contactDetails);
     let smallEmail = this.shadowRoot.querySelector(".smallEmail");
-    if (details.email) {
-      smallEmail.textContent = Email({ email: details.email });
+    let isDetailed = this.getAttribute("elementtype") == "detailed";
+
+    let emailToDisplay = isDetailed ? details.email : details.displayEmail;
+    if (emailToDisplay) {
+      smallEmail.textContent =
+        " " +
+        Email({
+          email: emailToDisplay,
+        });
     } else {
       smallEmail.textContent = "";
     }
 
     let contactName = this.shadowRoot.querySelector(".contactName");
     let textNode = document.createTextNode(
-      details.contactId ? `${STAR} ${details.name.trim()}` : details.name.trim()
+      details.contactId && isDetailed
+        ? `${STAR} ${details.name.trim()}`
+        : details.name.trim()
     );
     contactName.replaceChild(textNode, contactName.firstChild);
 
@@ -230,56 +176,7 @@ export class DetailedContactLabel extends HTMLElement {
     }
   }
 }
-customElements.define("detailed-contact-label", DetailedContactLabel);
-
-/**
- * Displays a contact label.
- *
- * @param {object} props
- * @param {string} props.className
- * @param {object} props.dispatch
- * @param {object} props.contact
- * @param {number} props.msgId
- */
-export function ContactLabel({ contact, className, dispatch, msgId }) {
-  // This component conditionally renders.
-  let emailLabel =
-    contact.displayEmail &&
-    React.createElement(
-      "span",
-      { className: "smallEmail" },
-      " ",
-      React.createElement(Email, { email: contact.displayEmail })
-    );
-
-  return React.createElement(
-    HoverFade,
-    {
-      msgId,
-      contactId: contact.contactId,
-      dispatch,
-      popup: React.createElement("contact-detail", {
-        name: contact.name,
-        email: contact.displayEmail,
-        msgId,
-        realEmail: contact.email,
-        avatar: contact.avatar,
-        contactId: contact.contactId,
-        contactIsReadOnly: contact.readOnly,
-      }),
-    },
-    React.createElement(
-      "span",
-      { className },
-      React.createElement(
-        "span",
-        { className: "contactName" },
-        contact.name.trim(),
-        emailLabel
-      )
-    )
-  );
-}
+customElements.define("contact-label", ContactLabel);
 
 /**
  * Renders and Avatar icon.
@@ -398,12 +295,12 @@ export function MessageHeader({
             );
           }
           const contact = allToMap.get(item.value);
-          return React.createElement(ContactLabel, {
+          return React.createElement("contact-label", {
             className: "to",
-            contact,
+            contactdetails: JSON.stringify(contact),
             dispatch,
             key: item.value,
-            msgId: id,
+            msgid: id,
           });
         }),
       " "
@@ -445,11 +342,11 @@ export function MessageHeader({
             initials: from.initials,
           }),
           " ",
-          React.createElement(ContactLabel, {
+          React.createElement("contact-label", {
             className: "author",
-            contact: from,
+            contactdetails: JSON.stringify(from),
             dispatch,
-            msgId: id,
+            msgid: id,
           })
         ),
       extraContacts,

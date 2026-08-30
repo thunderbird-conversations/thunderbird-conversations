@@ -9,6 +9,11 @@ contact-detail {
   transition:
     opacity 0.4s 0s,
     visibility 0.4s 0s;
+
+  position-anchor: --contact-anchor;
+  position: fixed;
+  top: calc(anchor(bottom) + 7px);
+  left: calc(anchor(left) - 1em);
 }
 
 .contactWrapper:hover > contact-detail {
@@ -26,4 +31,15 @@ contact-detail {
  */
 contact-detail:hover {
   transition: none !important;
+}
+
+.smallEmail {
+  font-size: 85%;
+  color: var(--email-address-dull-color);
+  font-weight: normal;
+}
+
+.contactName {
+  anchor-name: --contact-anchor;
+  cursor: pointer;
 }

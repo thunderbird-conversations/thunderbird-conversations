@@ -27,10 +27,11 @@ function ContactList({ label, contacts, className = "", dispatch, msgId }) {
       React.createElement(
         React.Fragment,
         { key: i },
-        React.createElement("detailed-contact-label", {
+        React.createElement("contact-label", {
           contactdetails: JSON.stringify(contact),
           msgid: msgId,
           dispatch,
+          elementtype: "detailed",
         }),
         React.createElement("br")
       )
@@ -72,11 +73,11 @@ export function MessageDetails({
           browser.i18n.getMessage("message.fromHeader")
         ),
         " ",
-        React.createElement("detailed-contact-label", {
-          className: "",
+        React.createElement("contact-label", {
           contactdetails: JSON.stringify(from),
           dispatch,
           msgid: id,
+          elementtype: "detailed",
         })
       ),
     React.createElement(ContactList, {

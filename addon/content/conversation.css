@@ -364,10 +364,6 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
   border-color: transparent transparent -moz-CellHighlight transparent;
 }
 
-.contactName {
-  cursor: pointer;
-}
-
 .contactInitials,
 .contactAvatar {
   display: inline-block;
@@ -378,12 +374,6 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
   color: #fff;
   background-size: cover;
   background-position: center;
-}
-
-.smallEmail {
-  font-size: 85%;
-  color: var(--email-address-dull-color);
-  font-weight: normal;
 }
 
 .authorInfoContainer {
