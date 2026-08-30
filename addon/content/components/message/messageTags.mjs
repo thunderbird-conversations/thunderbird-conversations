@@ -394,7 +394,7 @@ export class SpecialMessageTags extends HTMLUListElement {
             ]);
           } else {
             let folderItem = document.createElement("li");
-            folderItem.className = "in-folder";
+            folderItem.classList.add("in-folder", "tag");
             folderItem.title = browser.i18n.getMessage(
               "tags.jumpToFolder.tooltip"
             );

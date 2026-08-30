@@ -107,6 +107,7 @@ document.addEventListener(
     await import("../content/components/message/messageFooter.mjs");
     await import("../content/components/compose/composeFields.mjs");
     await import("../content/components/compose/composeWidget.mjs");
+    await import("../content/components/message/messageHeader.mjs");
 
     storeUtils.store.subscribe(handleStoreUpdate);
 

@@ -3,7 +3,6 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import React from "react";
-import { DetailedContactLabel } from "./messageHeader.mjs";
 
 /**
  * Handles the contact list on the message information.
@@ -28,10 +27,9 @@ function ContactList({ label, contacts, className = "", dispatch, msgId }) {
       React.createElement(
         React.Fragment,
         { key: i },
-        React.createElement(DetailedContactLabel, {
-          className: "",
-          contact,
-          msgId,
+        React.createElement("detailed-contact-label", {
+          contactdetails: JSON.stringify(contact),
+          msgid: msgId,
           dispatch,
         }),
         React.createElement("br")
@@ -74,11 +72,11 @@ export function MessageDetails({
           browser.i18n.getMessage("message.fromHeader")
         ),
         " ",
-        React.createElement(DetailedContactLabel, {
+        React.createElement("detailed-contact-label", {
           className: "",
-          contact: from,
+          contactdetails: JSON.stringify(from),
           dispatch,
-          msgId: id,
+          msgid: id,
         })
       ),
     React.createElement(ContactList, {

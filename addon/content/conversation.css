@@ -523,10 +523,6 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
   border: 1px solid black;
 }
 
-.tags.special-tags {
-  position: relative;
-}
-
 .special-tags .tooltip {
   top: 1.8em;
   line-height: 1.4rem;
@@ -759,6 +755,11 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
 
 .special-tag {
   position: relative;
+}
+
+.special-tag,
+.tag {
+  z-index: -1;
 }
 
 .special-tag span.special-tooltip {
