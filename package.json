@@ -24,7 +24,7 @@
   "devDependencies": {
     "@eslint/json": "2.0.1",
     "@microsoft/eslint-plugin-sdl": "1.1.0",
-    "@testing-library/react": "16.3.2",
+    "@testing-library/react": "16.3.3",
     "@types/node": "^26.0.1",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.5",
@@ -48,8 +48,8 @@
     "serve": "14.2.6",
     "typescript": "6.0.3",
     "web-ext": "10.6.0",
-    "webpack": "5.109.2",
-    "webpack-cli": "7.2.2"
+    "webpack": "5.110.1",
+    "webpack-cli": "7.2.3"
   },
   "overrides": {
     "compression": "1.8.1",
