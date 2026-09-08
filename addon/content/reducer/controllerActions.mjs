@@ -75,10 +75,17 @@ export const controllerActions = {
         tabId = isStandalone ? null : BrowserSim.getTabId(topWin, window);
       }
 
+      let isVerticalLayout = false;
+      if (!isInTab && tabId != null) {
+        isVerticalLayout =
+          (await browser.mailTabs.get(tabId)).layout === "vertical";
+      }
+
       await dispatch(
         summaryActions.setConversationState({
           isInTab,
           isStandalone,
+          isVerticalLayout,
           tabId,
           windowId,
         })
@@ -150,6 +157,22 @@ export const controllerActions = {
           })
         );
       }
+    };
+  },
+
+  updateConversationLayout() {
+    return async (dispatch, getState) => {
+      const { isInTab, isStandalone, tabId } = getState().summary;
+      if (isInTab || isStandalone || tabId == null) {
+        return;
+      }
+
+      const { layout } = await browser.mailTabs.get(tabId);
+      dispatch(
+        summarySlice.actions.setVerticalLayout({
+          isVerticalLayout: layout === "vertical",
+        })
+      );
     };
   },
 
@@ -426,6 +449,10 @@ function setupListeners(dispatch, getState) {
   let port = browser.runtime.connect({ name: "externalMessages" });
   let externalMessagesListener = onExternalMessages.bind(this, dispatch);
   port.onMessage.addListener(externalMessagesListener);
+  const layoutChangedListener = () => {
+    dispatch(controllerActions.updateConversationLayout()).catch(console.error);
+  };
+  window.addEventListener("resize", layoutChangedListener);
 
   window.addEventListener(
     "unload",
@@ -452,6 +479,7 @@ function setupListeners(dispatch, getState) {
       browser.convOpenPgp.onSMIMEReload.removeListener(smimeReloadListener);
       port.onMessage.removeListener(externalMessagesListener);
       port.disconnect();
+      window.removeEventListener("resize", layoutChangedListener);
     },
     { once: true }
   );
