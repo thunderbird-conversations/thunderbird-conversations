@@ -47,7 +47,6 @@
     "prop-types": "15.8.1",
     "serve": "14.2.6",
     "typescript": "6.0.3",
-    "web-ext": "10.6.0",
     "webpack": "5.110.3",
     "webpack-cli": "7.2.3"
   },
@@ -58,7 +57,6 @@
   "scripts": {
     "dev": "rm -rf ./dist-dev-html && (scripts/build-dev-html.sh --watch &) && sleep 4 && scripts/dev-html-serve.sh",
     "build": "./scripts/build.sh",
-    "start": "web-ext run",
     "prod": "./scripts/build.sh --prod",
     "format": "prettier --experimental-cli --write .",
     "test": "npm run test:lint && npm run test:typescript && npm run test:format && npm run test:node",
@@ -66,7 +64,6 @@
     "test:format": "prettier --experimental-cli --check .",
     "test:typescript": "tsc",
     "test:node": "node --test",
-    "webextlint": "web-ext lint",
     "preversion": "npm ci && npm test",
     "version": "scripts/update-max-version.sh && scripts/update-version.sh",
     "postversion": "npm run prod",

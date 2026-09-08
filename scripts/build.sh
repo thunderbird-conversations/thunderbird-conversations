@@ -61,4 +61,3 @@ rm -f conversations.xpi
 pushd $DIST
 zip -r ../conversations.xpi * -x "tests/*" -x "dev-frame/*" -x "content/dev-frame.bundle.js"
 popd
-# npx web-ext build --overwrite-dest
