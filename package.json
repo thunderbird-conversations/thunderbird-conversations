@@ -51,7 +51,7 @@
     "webpack-cli": "7.2.3"
   },
   "overrides": {
-    "compression": "1.8.1",
+    "compression": "1.8.2",
     "@eslint/plugin-kit": "0.7.3"
   },
   "scripts": {
