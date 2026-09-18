@@ -50,7 +50,9 @@ function _MessageList({ dispatch, messages, summary }) {
           iframesLoading: summary.iframesLoading,
           index,
           isInTab: summary.isInTab,
-          isLastMessage: index == messages.msgData.length - 1,
+          isLastMessage: summary.prefs.newestFirst
+            ? index == 0
+            : index == messages.msgData.length - 1,
           isStandalone: summary.isStandalone,
           message,
           tenPxFactor: summary.tenPxFactor,
