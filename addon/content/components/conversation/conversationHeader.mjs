@@ -409,6 +409,12 @@ export class ConversationHeader extends HTMLElement {
     if (this.#linkifiedSubject.getAttribute("subject") != summary.subject) {
       this.#linkifiedSubject.setAttribute("subject", summary.subject);
     }
+    this.#linkifiedSubject.toggleAttribute(
+      "wrap",
+      summary.isVerticalLayout === true ||
+        summary.isInTab === true ||
+        summary.isStandalone === true
+    );
     if (
       this.#convActionButtons.getAttribute("darkreaderenabled") !=
       summary.darkReaderEnabled.toString()
