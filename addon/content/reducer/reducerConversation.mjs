@@ -17,6 +17,18 @@ import { summarySlice } from "./reducerSummary.mjs";
 
 const sortMessages = (m1, m2) => m1.date - m2.date;
 
+/**
+ * Returns the message-sort comparator to use, taking into account the
+ * `newestFirst` preference (default is oldest-first, matching historic
+ * behavior).
+ *
+ * @param {boolean} newestFirst
+ * @returns {(m1: object, m2: object) => number}
+ */
+function getSortMessages(newestFirst) {
+  return newestFirst ? (m1, m2) => m2.date - m1.date : sortMessages;
+}
+
 export const initialConversation = {
   currentId: 0,
 };
@@ -148,6 +160,7 @@ export const conversationActions = {
       let currentState = getState();
       await handleShowDetails(msgs, currentState, dispatch, async () => {
         let phase2StartTime = Date.now();
+        let newestFirst = currentState.summary.prefs.newestFirst;
         let messages = msgs
           .map((msg, i) => {
             return {
@@ -156,7 +169,7 @@ export const conversationActions = {
               detailsShowing: false,
             };
           })
-          .sort(sortMessages);
+          .sort(getSortMessages(newestFirst));
 
         let summary = { initialSet };
 
@@ -183,7 +196,8 @@ export const conversationActions = {
         messageEnricher().determineExpansion(
           enrichedMsgs,
           currentState.summary.prefs.expandWho,
-          initialSet
+          initialSet,
+          newestFirst
         );
 
         // The messages inside `msgData` don't come with filled in `to`/`from`/etc.
@@ -191,7 +205,11 @@ export const conversationActions = {
         await mergeContactDetails(enrichedMsgs);
 
         summary.loading = false;
-        summary.subject = enrichedMsgs[enrichedMsgs.length - 1]?.subject;
+        // The "most recent" message is at the end of the array unless the
+        // newestFirst preference reverses the sort order.
+        summary.subject = (
+          newestFirst ? enrichedMsgs[0] : enrichedMsgs[enrichedMsgs.length - 1]
+        )?.subject;
 
         await dispatch(summarySlice.actions.replaceSummaryDetails(summary));
 
@@ -256,7 +274,7 @@ export const conversationActions = {
             detailsShowing: false,
           };
         })
-        .sort(sortMessages);
+        .sort(getSortMessages(currentState.summary.prefs.newestFirst));
 
       // The messages need some more filling out and tweaking.
       let enrichedMsgs = await messageEnricher().enrich(
@@ -279,6 +297,7 @@ export const conversationActions = {
       await dispatch(
         messageActions.addMessages({
           msgs: enrichedMsgs,
+          prepend: currentState.summary.prefs.newestFirst,
         })
       );
     };

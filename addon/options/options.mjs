@@ -102,6 +102,14 @@ const PREFS_INFO = [
   },
   {
     props: {
+      title: "options.newest_first_title",
+      desc: "options.newest_first_desc",
+      name: "newest_first",
+    },
+    component: "binary-option",
+  },
+  {
+    props: {
       title: "options.disable_between_column_title",
       desc: "options.disable_between_column_desc",
       name: "disableBetweenColumn",

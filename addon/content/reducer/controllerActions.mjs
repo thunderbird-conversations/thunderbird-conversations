@@ -478,6 +478,7 @@ async function setupUserPreferences(dispatch, getState) {
         hideQuoteLength: newPrefs.preferences?.hide_quote_length ?? 5,
         hideSigs: newPrefs.preferences?.hide_sigs ?? false,
         loggingEnabled: newPrefs.preferences?.logging_enabled ?? false,
+        newestFirst: newPrefs.preferences?.newest_first ?? false,
         noFriendlyDate: newPrefs.preferences?.no_friendly_date ?? false,
         operateOnConversations:
           newPrefs.preferences?.operate_on_conversations ?? false,

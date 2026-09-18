@@ -33,6 +33,7 @@ export const initialSummary = {
     hideQuoteLength: 5,
     hideSigs: false,
     loggingEnabled: false,
+    newestFirst: false,
     noFriendlyDate: false,
     operateOnConversations: false,
     tweakBodies: true,

@@ -114,6 +114,16 @@
     "description": "Options - description for hiding the quick reply display."
   },
 
+  "options.newest_first_title": {
+    "message": "Show Newest Message First",
+    "description": "Options - title for showing the newest message first."
+  },
+
+  "options.newest_first_desc": {
+    "message": "Display messages within a conversation with the newest one at the top instead of the bottom.",
+    "description": "Options - description for showing the newest message first."
+  },
+
   "options.disable_between_column_title": {
     "message": "Disable Between Column",
     "description": "Options - title for disabling the between column."

@@ -15,6 +15,7 @@ export const kPrefDefaults = {
   operate_on_conversations: false,
   extra_attachments: false,
   hide_quick_reply: false,
+  newest_first: false,
   compose_in_tab: true,
   unwanted_recipients: "{}",
   hide_sigs: false,

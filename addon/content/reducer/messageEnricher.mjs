@@ -120,11 +120,14 @@ export class MessageEnricher {
    *   The value of the expandWho preference.
    * @param {number[]} selectedMessages
    *   The messages that are currently selected.
+   * @param {boolean} [newestFirst]
+   *   Whether the newestFirst preference is enabled, in which case the
+   *   newest message is at index 0 instead of the last index.
    */
-  determineExpansion(msgs, expandWho, selectedMessages) {
+  determineExpansion(msgs, expandWho, selectedMessages, newestFirst = false) {
     this._filterOutDuplicatesAndInvalids(msgs);
 
-    this._expandAndScroll(msgs, selectedMessages, expandWho);
+    this._expandAndScroll(msgs, selectedMessages, expandWho, newestFirst);
   }
 
   /**
@@ -213,11 +216,19 @@ export class MessageEnricher {
    *   The currently selected messages in the UI.
    * @param {number} expandWho
    *   The value of the expandWho preference.
+   * @param {boolean} [newestFirst]
+   *   Whether the newest message is at index 0 rather than the last index.
    */
-  _expandAndScroll(msgData, selectedMessages, expandWho) {
-    let focusThis = this._whereToScroll(msgData, selectedMessages);
+  _expandAndScroll(msgData, selectedMessages, expandWho, newestFirst = false) {
+    let focusThis = this._whereToScroll(msgData, selectedMessages, newestFirst);
     msgData[focusThis].scrollTo = true;
-    this._markMsgsToExpand(msgData, selectedMessages, focusThis, expandWho);
+    this._markMsgsToExpand(
+      msgData,
+      selectedMessages,
+      focusThis,
+      expandWho,
+      newestFirst
+    );
   }
 
   /**
@@ -227,16 +238,19 @@ export class MessageEnricher {
    *   The message details.
    * @param {object[]} selectedMessages
    *   The currently selected messages in the UI.
+   * @param {boolean} [newestFirst]
+   *   Whether the newest message is at index 0 rather than the last index.
    */
-  _whereToScroll(msgData, selectedMessages) {
+  _whereToScroll(msgData, selectedMessages, newestFirst = false) {
     let needsScroll = -1;
+    let defaultScrollIndex = newestFirst ? 0 : msgData.length - 1;
 
     // Conversations stub UI is only displayed when a thread is selected,
     // or a single message. If different messages across threads are selected,
     // then Thunderbird's multi-select UI is displayed. Hence, if there's more
     // than one selected message, we know that we are in a threaded selection.
     if (selectedMessages.length > 1) {
-      needsScroll = msgData.length - 1;
+      needsScroll = defaultScrollIndex;
       for (let i = 0; i < msgData.length; ++i) {
         if (!msgData[i].read) {
           needsScroll = i;
@@ -255,7 +269,7 @@ export class MessageEnricher {
       //  just in case...
       if (needsScroll < 0) {
         console.error("kScrollSelected && didn't find the selected message");
-        needsScroll = msgData.length - 1;
+        needsScroll = defaultScrollIndex;
       }
     }
     return needsScroll;
@@ -285,8 +299,17 @@ export class MessageEnricher {
    *   The message in the array to focus.
    * @param {number} expandWho
    *   The value of the expandWho preference.
+   * @param {boolean} [newestFirst]
+   *   Whether the newest message is at index 0 rather than the last index.
    */
-  _markMsgsToExpand(msgData, selectedMessages, focusIndex, expandWho) {
+  _markMsgsToExpand(
+    msgData,
+    selectedMessages,
+    focusIndex,
+    expandWho,
+    newestFirst = false
+  ) {
+    let newestIndex = newestFirst ? 0 : msgData.length - 1;
     switch (expandWho) {
       default:
         console.error(
@@ -296,11 +319,12 @@ export class MessageEnricher {
       // Falls through so we can default to the same as the pref and keep going.
       case kExpandAuto: {
         if (selectedMessages.length > 1) {
-          // In this mode, we scroll to the first unread message (or the last
-          //  message if all messages are read), and we expand all unread messages
-          //  + the last one (which will probably be unread as well).
+          // In this mode, we scroll to the first unread message (or the
+          //  newest message if all messages are read), and we expand all
+          //  unread messages + the newest one (which will probably be
+          //  unread as well).
           for (let i = 0; i < msgData.length; i++) {
-            msgData[i].expanded = !msgData[i].read || i == msgData.length - 1;
+            msgData[i].expanded = !msgData[i].read || i == newestIndex;
           }
         } else {
           // In this mode, we scroll to the selected message, and we only expand

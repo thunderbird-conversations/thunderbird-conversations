@@ -328,7 +328,9 @@ export const messagesSlice = RTK.createSlice({
     addMessages(state, { payload }) {
       return {
         ...state,
-        msgData: [...state.msgData, ...payload.msgs],
+        msgData: payload.prepend
+          ? [...payload.msgs, ...state.msgData]
+          : [...state.msgData, ...payload.msgs],
       };
     },
     updateMessages(state, { payload }) {
