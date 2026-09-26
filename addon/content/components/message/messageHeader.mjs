@@ -86,7 +86,6 @@ export class ContactLabel extends HTMLElement {
   }
 
   onHover() {
-    console.log("hover");
     if (this.#hoverRequested) {
       return;
     }

@@ -18,6 +18,315 @@ function modifyOnlyMsg(state, id, modifier) {
   };
 }
 
+/**
+ * Gather all descendent text under given node.
+ *
+ * @param {Node} root - The root node to gather text from.
+ * @returns {string} The text data under the node.
+ */
+function gatherTextUnder(root) {
+  var text = "";
+  var node = root.firstChild;
+  var depth = 1;
+  while (node && depth > 0) {
+    // See if this node is text.
+    if (node.nodeType == Node.TEXT_NODE) {
+      // Add this text to our collection.
+      // @ts-ignore
+      text += " " + node.data;
+    } else if (node instanceof HTMLImageElement) {
+      // If it has an alt= attribute, add that.
+      var altText = node.getAttribute("alt");
+      if (altText && altText != "") {
+        text += " " + altText;
+      }
+    }
+    // Find next node to test.
+    if (node.firstChild) {
+      // If it has children, go to first child.
+      node = node.firstChild;
+      depth++;
+    } else if (node.nextSibling) {
+      // No children, try next sibling.
+      node = node.nextSibling;
+    } else {
+      // Last resort is a sibling of an ancestor.
+      while (node && depth > 0) {
+        // @ts-ignore
+        node = node.parentNode;
+        depth--;
+        if (node.nextSibling) {
+          node = node.nextSibling;
+          break;
+        }
+      }
+    }
+  }
+  // Strip leading and trailing whitespace.
+  text = text.trim();
+  // Compress remaining whitespace.
+  text = text.replace(/\s+/g, " ");
+  return text;
+}
+
+/**
+ * Extracts linkNode and href for a click event.
+ *
+ * @param {UIEvent} event
+ *        The click event.
+ * @returns {Array<any>} [href, linkNode, linkPrincipal].
+ *
+ * Note that linkNode will be null if the click wasn't on an anchor
+ *       element. This includes SVG links, because callers expect |node|
+ *       to behave like an <a> element, which SVG links (XLink) don't.
+ */
+function hrefAndLinkNodeForClickEvent(event) {
+  // We should get a window; off the event, and bail if not:
+  // let content = event.view; //|| event.composedTarget?.documentGlobal;
+  // if (!content?.HTMLAnchorElement) {
+  //   return null;
+  // }
+  // Be consistent with what ContextMenuChild.sys.mjs does.
+  function hrefAndLinkNodeForHTMLLink(aElement) {
+    if (
+      (aElement instanceof HTMLAnchorElement && aElement.href) ||
+      (aElement instanceof HTMLAreaElement && aElement.href) ||
+      aElement instanceof HTMLLinkElement
+    ) {
+      let href = URL.parse(aElement.href)?.href ?? null;
+      if (href) {
+        // TODO: Figure out the HTML version of this.
+        // @ts-ignore
+        return [href, aElement, aElement.ownerDocument.nodePrincipal];
+      }
+    }
+    return null;
+  }
+  // function hrefAndLinkNodeForNonHTMLink(aElement) {
+  //   if (
+  //     aElement.localName == "a" ||
+  //     (content.MathMLElement.isInstance(aElement) &&
+  //       !lazy.mathMLNonAnchorLinksDisabled)
+  //   ) {
+  //     let href =
+  //       aElement.getAttribute("href") ??
+  //       aElement.getAttributeNS("http://www.w3.org/1999/xlink", "href");
+  //     // Note that empty string hrefs are valid, and distinct from missing
+  //     // attributes (null). Passing null to `URL.parse` will be stringified
+  //     // to "null" and when a base URI is present this may form a valid yet
+  //     // unintentional URL. So we explicitly check that we got a string.
+  //     href =
+  //       (typeof href == "string" &&
+  //         URL.parse(href, aElement.ownerDocument.baseURI)?.href) ??
+  //       null;
+  //     if (href) {
+  //       // Don't return the aElement we got href from since callers expect
+  //       // <a>-like elements.
+  //       return [href, null, aElement.ownerDocument.nodePrincipal];
+  //     }
+  //   }
+  //   return null;
+  // }
+  let node = event.target instanceof Node ? event.target : null;
+  while (node) {
+    if (node instanceof Node && node.nodeType == node.ELEMENT_NODE) {
+      let linkData = hrefAndLinkNodeForHTMLLink(node); //|| hrefAndLinkNodeForNonHTMLink(node);
+      if (linkData) {
+        return linkData;
+      }
+    }
+    node = node.parentNode;
+  }
+  return [null, null, null];
+}
+
+/**
+ * Extract the href from the link click event.
+ * We look for HTMLAnchorElement, HTMLAreaElement, HTMLLinkElement,
+ * HTMLInputElement.form.action, and nested anchor tags.
+ * If the clicked element was a HTMLInputElement or HTMLButtonElement
+ * we return the form action.
+ *
+ * @param {UIEvent} aEvent
+ * @returns {string[]} a tuple [href, linkText] the url and the text for the link
+ *   being clicked.
+ */
+function hRefForClickEvent(aEvent) {
+  const target =
+    aEvent.type == "command"
+      ? // TODO: Check about commandDispatcher - do we still need this?
+        // @ts-ignore
+        document.commandDispatcher.focusedElement
+      : aEvent.target;
+
+  if (
+    target instanceof HTMLImageElement &&
+    target.hasAttribute("overflowing")
+  ) {
+    // Click on zoomed image.
+    return [null, null];
+  }
+
+  if (
+    (target instanceof HTMLInputElement ||
+      target instanceof HTMLButtonElement) &&
+    /^https?/.test(target.form?.action)
+  ) {
+    return [target.form.action, null];
+  }
+
+  const [href, linkNode] = hrefAndLinkNodeForClickEvent(aEvent) ?? [];
+  const labelNode = linkNode || target || null;
+  const linkText = labelNode && gatherTextUnder(labelNode);
+  return [href, linkText];
+}
+
+/**
+ * Returns the href without the hash part.
+ *
+ * @param {string} href
+ */
+
+function hrefIgnoringHash(href) {
+  let url;
+  try {
+    url = new URL(href);
+  } catch {
+    return "";
+  }
+
+  url.hash = "";
+  return url.href;
+}
+
+/**
+ * Check whether the click target's or its ancestor's href
+ * points to an anchor on the page.
+ *
+ * @param {HTMLElement} aTargetNode - The element node..
+ * @returns {boolean} true if link pointing to anchor.
+ */
+function isLinkToAnchorOnPage(aTargetNode) {
+  const url = aTargetNode.ownerDocument.URL;
+  if (!url.startsWith("http")) {
+    return false;
+  }
+
+  let linkNode = aTargetNode;
+  while (linkNode && !(linkNode instanceof HTMLAnchorElement)) {
+    // TODO.
+    // @ts-ignore
+    linkNode = linkNode.parentNode;
+  }
+
+  // It's not a link with an anchor.
+  // @ts-ignore
+  if (!linkNode || !linkNode.href || !linkNode.hash) {
+    return false;
+  }
+
+  // The link's href must match the document URL.
+  // TODO.
+  // @ts-ignore
+  if (hrefIgnoringHash(linkNode.href) != hrefIgnoringHash(url)) {
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Called whenever the user clicks in the content area,
+ * should always return true for click to go through.
+ *
+ * @param {UIEvent} aEvent
+ * @param {Function} getState
+ * @returns {boolean}
+ */
+function contentAreaClick(aEvent, getState) {
+  const target = aEvent.target;
+  // TODO.
+  // @ts-ignore
+  if (target.localName == "browser") {
+    // This is a remote browser. Nothing useful can happen in this process.
+    return true;
+  }
+
+  // If we've loaded a web page url, and the element's or its ancestor's href
+  // points to an anchor on the page, let the click go through.
+  // Otherwise fall through and open externally.
+  // TODO
+  // @ts-ignore
+  if (isLinkToAnchorOnPage(target)) {
+    return true;
+  }
+
+  const [href, linkText] = hRefForClickEvent(aEvent);
+
+  // if (!href && !aEvent.button) {
+  //   // Is this an image that we might want to scale?
+
+  //   if (target instanceof HTMLImageElement && target.src) {
+  //     // Make sure it loaded successfully. No action if not or a broken link.
+  //     var req = target.getRequest(Ci.nsIImageLoadingContent.CURRENT_REQUEST);
+  //     if (!req || req.imageStatus & Ci.imgIRequest.STATUS_ERROR) {
+  //       return false;
+  //     }
+
+  //     // Is it an image?
+  //     if (target.localName == "img" && target.hasAttribute("overflowing")) {
+  //       target.toggleAttribute("shrinktofit");
+  //       return false;
+  //     }
+  //   }
+  //   return true;
+  // }
+
+  if (!href || (aEvent instanceof MouseEvent && aEvent.button == 2)) {
+    return true;
+  }
+
+  // We want all about, http and https links in the message pane to be loaded
+  // externally in a browser, therefore we need to detect that here and redirect
+  // as necessary.
+  const uri = new URL(href);
+  if (
+    // Cc["@mozilla.org/uriloader/external-protocol-service;1"]
+    //   .getService(Ci.nsIExternalProtocolService)
+    //   .isExposedProtocol(uri.scheme) &&
+    uri.protocol != "http:" &&
+    uri.protocol != "https:"
+  ) {
+    return true;
+  }
+
+  // Now we're here, we know this should be loaded in an external browser, so
+  // prevent the default action so we don't try and load it here.
+  aEvent.preventDefault();
+
+  let state = getState();
+  browser.conversations
+    .warnOnSuspiciousLinkClick({
+      winId: state.summary.windowId,
+      tabId: state.summary.tabId,
+      href,
+      linkText,
+    })
+    .then((urlPhishCheckResult) => {
+      if (urlPhishCheckResult == 1) {
+        return; // Block request
+      }
+
+      if (urlPhishCheckResult == 0) {
+        // Use linkText instead.
+        browser.windows.openDefaultBrowser(linkText);
+      } else {
+        browser.windows.openDefaultBrowser(href);
+      }
+    });
+  return true;
+}
+
 export const messageActions = {
   getLateAttachments({ id }) {
     return async (dispatch, getState) => {
@@ -144,9 +453,14 @@ export const messageActions = {
     };
   },
   clickIframe({ event }) {
-    return () => {
-      // Hand this off to Thunderbird's content clicking algorithm as that's simplest.
-      if (!window.browsingContext.topChromeWindow.contentAreaClick(event)) {
+    return (dispatch, getState) => {
+      if ("contentAreaClick" in window.browsingContext.topChromeWindow) {
+        // Hand this off to Thunderbird's content clicking algorithm as that's simplest.
+        if (!window.browsingContext.topChromeWindow.contentAreaClick(event)) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+      } else if (!contentAreaClick(event, getState)) {
         event.preventDefault();
         event.stopPropagation();
       }

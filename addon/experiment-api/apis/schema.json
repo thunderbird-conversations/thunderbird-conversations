@@ -550,6 +550,44 @@
             "description": "The message to pass."
           }
         ]
+      },
+      {
+        "name": "warnOnSuspiciousLinkClick",
+        "type": "function",
+        "description": "Temporary. Allows checking links for phishing",
+        "async": true,
+        "parameters": [
+          {
+            "name": "warnOnSuspiciousLinkClickProperties",
+            "type": "object",
+            "properties": {
+              "winId": {
+                "type": "integer",
+                "optional": true,
+                "description": "The window the message is displayed within."
+              },
+              "tabId": {
+                "type": "integer",
+                "optional": true,
+                "description": "The tab the message is displayed within."
+              },
+              "href": {
+                "type": "string",
+                "optional": true,
+                "description": "The URL to check."
+              },
+              "linkText": {
+                "type": "string",
+                "optional": true,
+                "description": "The link check to text."
+              }
+            }
+          }
+        ],
+        "returns": {
+          "type": "integer",
+          "description": "The phishing detection result."
+        }
       }
     ],
     "events": [

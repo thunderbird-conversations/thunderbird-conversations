@@ -662,6 +662,10 @@ export class MessageIFrame extends React.Component {
     if (event.target.ownerDocument.URL != this.iframe.contentDocument.URL) {
       return;
     }
+    // For the standalone window, let the click handles handle the event.
+    if (this.props.isStandalone) {
+      return;
+    }
     this.props.dispatch(
       messageActions.clickIframe({
         event,

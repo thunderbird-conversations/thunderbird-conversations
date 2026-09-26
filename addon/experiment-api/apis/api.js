@@ -14,6 +14,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   makeFriendlyDateAgo: "resource:///modules/TemplateUtils.sys.mjs",
   MsgHdrToMimeMessage: "resource:///modules/gloda/MimeMessage.sys.mjs",
   NetUtil: "resource://gre/modules/NetUtil.sys.mjs",
+  PhishingDetector: "resource:///modules/PhishingDetector.sys.mjs",
 });
 
 ChromeUtils.defineLazyGetter(lazy, "BrowserSim", () => {
@@ -708,6 +709,15 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
         },
         async postMessageViaBrowserSim(msg) {
           lazy.BrowserSim.sendMessage(msg);
+        },
+        async warnOnSuspiciousLinkClick({ winId, tabId, href, linkText }) {
+          let { win } = getWinBrowserFromIds(context, winId, tabId);
+
+          return lazy.PhishingDetector.warnOnSuspiciousLinkClick(
+            win,
+            href,
+            linkText
+          );
         },
         onCallAPI: new ExtensionCommon.EventManager({
           context,
