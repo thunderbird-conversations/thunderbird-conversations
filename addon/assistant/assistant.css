@@ -5,7 +5,7 @@
 body {
   background-color: var(--application-background-color);
   color: var(--application-foreground-color);
-  font-family: "DejaVu Sans", "Lucida Grande", "Tahoma", sans;
+  font-family: "DejaVu Sans", "Lucida Grande", Tahoma, sans;
   margin: 20px;
 }
 
