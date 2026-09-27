@@ -15,9 +15,9 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "@reduxjs/toolkit": "2.13.0",
     "html-webpack-plugin": "5.6.8",
     "prop-types": "15.8.1",
-    "@reduxjs/toolkit": "2.13.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-redux": "9.3.0",
@@ -45,6 +45,8 @@
     "jsdom": "30.1.3",
     "prettier": "3.9.10",
     "serve": "14.2.6",
+    "stylelint": "^18.1.0",
+    "stylelint-config-standard": "^41.1.0",
     "typescript": "6.0.3"
   },
   "overrides": {
@@ -55,11 +57,12 @@
     "build": "./scripts/build.sh",
     "prod": "./scripts/build.sh --prod",
     "format": "prettier --experimental-cli --write .",
-    "test": "npm run test:lint && npm run test:typescript && npm run test:format && npm run test:node",
+    "test": "npm run test:lint && npm run test:typescript && npm run test:format && npm run test:css && npm run test:node",
     "test:lint": "eslint .",
     "test:format": "prettier --experimental-cli --check .",
     "test:typescript": "tsc",
     "test:node": "node --test",
+    "test:css": "stylelint \"**/*.css\"",
     "preversion": "npm ci && npm test",
     "version": "scripts/update-version.sh",
     "postversion": "npm run prod",
