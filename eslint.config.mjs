@@ -1,7 +1,7 @@
 import globals from "globals";
 import json from "@eslint/json";
 import jsdoc from "eslint-plugin-jsdoc";
-import react from "eslint-plugin-react";
+import react from "@eslint-react/eslint-plugin";
 import { importX } from "eslint-plugin-import-x";
 import mozilla from "eslint-plugin-mozilla";
 import eslintConfigPrettier from "eslint-config-prettier/flat";
@@ -66,7 +66,7 @@ export default defineConfig([
   },
   {
     files: ["**/*.mjs"],
-    ...react.configs.flat.recommended,
+    ...react.configs.recommended,
     languageOptions: {
       globals: {
         ...globals.browser,
