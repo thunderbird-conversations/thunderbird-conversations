@@ -23,13 +23,14 @@
   },
   "devDependencies": {
     "@eslint-react/eslint-plugin": "5.20.8",
+    "@eslint/js": "10.0.1",
     "@eslint/json": "2.1.0",
     "@testing-library/react": "16.3.3",
     "@types/node": "^26.0.1",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@types/thunderbird-webext-browser": "127.0.0",
-    "eslint": "9.39.5",
+    "eslint": "10.11.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-import-x": "4.17.1",
     "eslint-plugin-jsdoc": "65.0.2",
@@ -46,8 +47,7 @@
     "webpack-cli": "7.2.3"
   },
   "overrides": {
-    "compression": "1.8.2",
-    "@eslint/plugin-kit": "0.7.3"
+    "compression": "1.8.2"
   },
   "scripts": {
     "dev": "rm -rf ./dist-dev-html && (scripts/build-dev-html.sh --watch &) && sleep 4 && scripts/dev-html-serve.sh",
