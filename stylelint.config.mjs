@@ -12,7 +12,6 @@ export default {
     "declaration-empty-line-before": null,
     "declaration-property-value-keyword-no-deprecated": null,
     "declaration-property-value-no-unknown": null,
-    "font-family-no-missing-generic-family-keyword": null,
     "function-url-quotes": null,
     "length-zero-no-unit": null,
     "no-descending-specificity": null,
