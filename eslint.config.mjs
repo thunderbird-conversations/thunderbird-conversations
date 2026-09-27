@@ -4,7 +4,7 @@ import jsdoc from "eslint-plugin-jsdoc";
 import react from "eslint-plugin-react";
 import { importX } from "eslint-plugin-import-x";
 import mozilla from "eslint-plugin-mozilla";
-import eslintConfigPrettier from "eslint-config-prettier";
+import eslintConfigPrettier from "eslint-config-prettier/flat";
 import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig([
