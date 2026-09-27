@@ -5,11 +5,10 @@ import react from "eslint-plugin-react";
 import { importX } from "eslint-plugin-import-x";
 import mozilla from "eslint-plugin-mozilla";
 import eslintConfigPrettier from "eslint-config-prettier";
+import { defineConfig, globalIgnores } from "eslint/config";
 
-export default [
-  {
-    ignores: ["dist**", "package-lock.json", "**/*.html", "**/*.xhtml"],
-  },
+export default defineConfig([
+  globalIgnores(["dist**", "package-lock.json", "**/*.html", "**/*.xhtml"]),
   ...mozilla.configs["flat/recommended"],
   {
     files: ["**/*.mjs"],
@@ -178,4 +177,4 @@ export default [
       curly: "error",
     },
   },
-];
+]);
