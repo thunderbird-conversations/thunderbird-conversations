@@ -161,7 +161,7 @@ describe("Controller Actions tests", () => {
     });
 
     it("Appends message data", async () => {
-      let msgs = store.getState().messages.msgData;
+      let msgs;
       let fakeMsg = createFakeData(
         {
           id: 2,
