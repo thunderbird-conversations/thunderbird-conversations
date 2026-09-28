@@ -1,5 +1,5 @@
 {
-  "include": ["types/apiExtensions.d.ts", "**/*.mjs"],
+  "include": ["types/*.d.ts", "**/*.mjs"],
   "exclude": ["dist", "dist-dev-html"],
   "compilerOptions": {
     "checkJs": true,

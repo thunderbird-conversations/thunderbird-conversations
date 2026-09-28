@@ -34,8 +34,9 @@ function gatherTextUnder(root) {
       // Add this text to our collection.
       // @ts-ignore
       text += " " + node.data;
-    } else if (node instanceof HTMLImageElement) {
+    } else if (HTMLImageElement.isInstance(node)) {
       // If it has an alt= attribute, add that.
+      // @ts-ignore
       var altText = node.getAttribute("alt");
       if (altText && altText != "") {
         text += " " + altText;
@@ -89,9 +90,9 @@ function hrefAndLinkNodeForClickEvent(event) {
   // Be consistent with what ContextMenuChild.sys.mjs does.
   function hrefAndLinkNodeForHTMLLink(aElement) {
     if (
-      (aElement instanceof HTMLAnchorElement && aElement.href) ||
-      (aElement instanceof HTMLAreaElement && aElement.href) ||
-      aElement instanceof HTMLLinkElement
+      (HTMLAnchorElement.isInstance(aElement) && aElement.href) ||
+      (HTMLAreaElement.isInstance(aElement) && aElement.href) ||
+      HTMLLinkElement.isInstance(aElement)
     ) {
       let href = URL.parse(aElement.href)?.href ?? null;
       if (href) {
@@ -127,16 +128,20 @@ function hrefAndLinkNodeForClickEvent(event) {
   //   }
   //   return null;
   // }
-  let node = event.target instanceof Node ? event.target : null;
-  while (node) {
-    if (node instanceof Node && node.nodeType == node.ELEMENT_NODE) {
+  let node = event.target;
+  do {
+    // TODO
+    // @ts-ignore
+    if (node.nodeType == node.ELEMENT_NODE) {
       let linkData = hrefAndLinkNodeForHTMLLink(node); //|| hrefAndLinkNodeForNonHTMLink(node);
       if (linkData) {
         return linkData;
       }
     }
+    // TODO
+    // @ts-ignore
     node = node.parentNode;
-  }
+  } while (node);
   return [null, null, null];
 }
 
@@ -160,7 +165,7 @@ function hRefForClickEvent(aEvent) {
       : aEvent.target;
 
   if (
-    target instanceof HTMLImageElement &&
+    HTMLImageElement.isInstance(target) &&
     target.hasAttribute("overflowing")
   ) {
     // Click on zoomed image.
@@ -168,8 +173,8 @@ function hRefForClickEvent(aEvent) {
   }
 
   if (
-    (target instanceof HTMLInputElement ||
-      target instanceof HTMLButtonElement) &&
+    (HTMLInputElement.isInstance(target) ||
+      HTMLButtonElement.isInstance(target)) &&
     /^https?/.test(target.form?.action)
   ) {
     return [target.form.action, null];
@@ -213,7 +218,7 @@ function isLinkToAnchorOnPage(aTargetNode) {
   }
 
   let linkNode = aTargetNode;
-  while (linkNode && !(linkNode instanceof HTMLAnchorElement)) {
+  while (linkNode && !HTMLAnchorElement.isInstance(linkNode)) {
     // TODO.
     // @ts-ignore
     linkNode = linkNode.parentNode;
@@ -282,7 +287,8 @@ function contentAreaClick(aEvent, getState) {
   //   return true;
   // }
 
-  if (!href || (aEvent instanceof MouseEvent && aEvent.button == 2)) {
+  // @ts-ignore
+  if (!href || (MouseEvent.isInstance(aEvent) && aEvent.button == 2)) {
     return true;
   }
 
@@ -392,11 +398,13 @@ export const messageActions = {
       browser.messages.update(id, { read: true }).catch(console.error);
     };
   },
+  // @ts-ignore
   selected({ id }) {
     // TODO: Do we still need this.
     return async () => {};
   },
   toggleConversationRead({ read }) {
+    // @ts-ignore
     return async (dispatch, getState) => {
       const state = getState().messages;
       for (let msg of state.msgData) {
@@ -405,6 +413,7 @@ export const messageActions = {
     };
   },
   archiveConversation() {
+    // @ts-ignore
     return async (dispatch, getState) => {
       const state = getState();
       let msgs;
@@ -420,6 +429,7 @@ export const messageActions = {
     };
   },
   deleteConversation() {
+    // @ts-ignore
     return async (dispatch, getState) => {
       const state = getState();
       let msgs;
@@ -453,6 +463,7 @@ export const messageActions = {
     };
   },
   clickIframe({ event }) {
+    // @ts-ignore
     return (dispatch, getState) => {
       if ("contentAreaClick" in window.browsingContext.topChromeWindow) {
         // Hand this off to Thunderbird's content clicking algorithm as that's simplest.
@@ -489,6 +500,7 @@ export const messageActions = {
     };
   },
   detachTab() {
+    // @ts-ignore
     return async (dispatch, getState) => {
       const state = getState();
       // TODO: Fix re-enabling composition when expanded into new tab.
@@ -509,6 +521,7 @@ export const messageActions = {
     };
   },
   notificationClick({ id, notificationType, extraData }) {
+    // @ts-ignore
     return async (dispatch, getState) => {
       if (notificationType == "calendar") {
         let state = getState();
