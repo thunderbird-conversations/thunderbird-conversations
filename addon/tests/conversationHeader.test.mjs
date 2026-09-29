@@ -9,6 +9,7 @@ import { ConversationHeader } from "../content/components/conversation/conversat
 
 describe("ConversationHeader", () => {
   before(() => {
+    // @ts-ignore incomplete MediaQueryList mock for unit tests
     window.matchMedia = () => ({
       matches: false,
       addEventListener() {},
@@ -30,7 +31,7 @@ describe("ConversationHeader", () => {
         isStandalone: false,
         isVerticalLayout: false,
         loading: false,
-        subject: "A subject long enough to need more than one line",
+        subject: "A subject",
         ...view,
       },
       []

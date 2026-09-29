@@ -411,9 +411,7 @@ export class ConversationHeader extends HTMLElement {
     }
     this.#linkifiedSubject.toggleAttribute(
       "wrap",
-      summary.isVerticalLayout === true ||
-        summary.isInTab === true ||
-        summary.isStandalone === true
+      summary.isVerticalLayout || summary.isInTab || summary.isStandalone
     );
     if (
       this.#convActionButtons.getAttribute("darkreaderenabled") !=
