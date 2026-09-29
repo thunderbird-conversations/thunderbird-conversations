@@ -78,7 +78,7 @@ export const controllerActions = {
       let isVerticalLayout = false;
       if (!isInTab && tabId != null) {
         isVerticalLayout =
-          (await browser.mailTabs.get(tabId)).layout === "vertical";
+          (await browser.mailTabs.get(tabId)).layout == "vertical";
       }
 
       await dispatch(
@@ -170,7 +170,7 @@ export const controllerActions = {
       const { layout } = await browser.mailTabs.get(tabId);
       dispatch(
         summarySlice.actions.setVerticalLayout({
-          isVerticalLayout: layout === "vertical",
+          isVerticalLayout: layout == "vertical",
         })
       );
     };

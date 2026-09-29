@@ -148,10 +148,10 @@ a img {
 
 :host([wrap]) .subject {
   height: auto;
-  overflow: visible;
-  overflow-wrap: anywhere;
+  -webkit-line-clamp: 5;
+  /* line-clamp is not yet supported in Thunderbird (bug 1540681) */
+  line-clamp: 5;
   white-space: normal;
-  text-overflow: clip;
 }
 
 linkified-subject {
