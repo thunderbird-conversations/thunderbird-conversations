@@ -1,15 +1,14 @@
 import globals from "globals";
 import json from "@eslint/json";
 import jsdoc from "eslint-plugin-jsdoc";
-import react from "eslint-plugin-react";
+import react from "@eslint-react/eslint-plugin";
 import { importX } from "eslint-plugin-import-x";
 import mozilla from "eslint-plugin-mozilla";
-import eslintConfigPrettier from "eslint-config-prettier";
+import eslintConfigPrettier from "eslint-config-prettier/flat";
+import { defineConfig, globalIgnores } from "eslint/config";
 
-export default [
-  {
-    ignores: ["dist**", "package-lock.json", "**/*.html", "**/*.xhtml"],
-  },
+export default defineConfig([
+  globalIgnores(["dist**", "package-lock.json", "**/*.html", "**/*.xhtml"]),
   ...mozilla.configs["flat/recommended"],
   {
     files: ["**/*.mjs"],
@@ -67,7 +66,7 @@ export default [
   },
   {
     files: ["**/*.mjs"],
-    ...react.configs.flat.recommended,
+    ...react.configs.recommended,
     languageOptions: {
       globals: {
         ...globals.browser,
@@ -85,8 +84,10 @@ export default [
   },
   {
     files: ["**/*.json"],
+    ignores: ["package-lock.json"],
+    plugins: { json },
     language: "json/json",
-    ...json.configs.recommended,
+    extends: ["json/recommended"],
   },
   {
     ignores: [
@@ -178,4 +179,4 @@ export default [
       curly: "error",
     },
   },
-];
+]);
