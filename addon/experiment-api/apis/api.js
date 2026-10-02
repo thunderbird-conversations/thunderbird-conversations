@@ -606,7 +606,14 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             ].createInstance(Ci.nsIMsgQuote);
             try {
               // For Thunderbird 156 & earlier compatibility.
-              quoter.quoteMessage(msgUri, false, listener, false, false, msgHdr);
+              quoter.quoteMessage(
+                msgUri,
+                false,
+                listener,
+                false,
+                false,
+                msgHdr
+              );
             } catch {
               quoter.quoteMessage(msgUri, false, listener, false, msgHdr);
             }
