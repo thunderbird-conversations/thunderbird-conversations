@@ -3,7 +3,7 @@
 We love pull requests from everyone.
 
 - Fork the repository.
-- Follow the instructions in the [Development doc](Development.md) to clone, just use the newly clone repository URL for your clone.
+- Follow the instructions in the [Development doc](docs/Development.md) to clone, just use the newly clone repository URL for your clone.
 - Build & install as per the instructions.
 - Make sure the tests pass:
 
