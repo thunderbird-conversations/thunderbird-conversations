@@ -599,11 +599,17 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
              */
             //   void quoteMessage(in string msgURI, in boolean quoteHeaders,
             //                     in nsIMsgQuotingOutputStreamListener streamListener,
-            //                     in string charset, in boolean headersOnly);
+            //                     in boolean autodetectCharset,
+            //                     in nsIMsgDBHdr aOrigHdr);
             let quoter = Cc[
               "@mozilla.org/messengercompose/quoting;1"
             ].createInstance(Ci.nsIMsgQuote);
-            quoter.quoteMessage(msgUri, false, listener, "", false, msgHdr);
+            try {
+              // For Thunderbird 156 & earlier compatibility.
+              quoter.quoteMessage(msgUri, false, listener, false, false, msgHdr);
+            } catch {
+              quoter.quoteMessage(msgUri, false, listener, false, msgHdr);
+            }
           });
         },
         async bodyAsText({ winId, tabId, msgId }) {
