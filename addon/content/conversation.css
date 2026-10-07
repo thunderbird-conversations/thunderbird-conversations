@@ -146,6 +146,14 @@ a img {
   text-overflow: ellipsis;
 }
 
+:host([wrap]) .subject {
+  height: auto;
+  -webkit-line-clamp: 5;
+  /* line-clamp is not yet supported in Thunderbird (bug 1540681) */
+  line-clamp: 5;
+  white-space: normal;
+}
+
 linkified-subject {
   flex: 1;
   overflow: hidden;
