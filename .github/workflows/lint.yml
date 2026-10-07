@@ -6,6 +6,7 @@ on:
       - main
       - "[0-9]*"
     paths:
+      - "**.css"
       - "**.cjs"
       - "**.mjs"
       - "**.json"
@@ -18,6 +19,7 @@ on:
       - main
       - "[0-9]*"
     paths:
+      - "**.css"
       - "**.cjs"
       - "**.mjs"
       - "**.json"
@@ -43,3 +45,5 @@ jobs:
         run: npm run test:format
       - name: TypeScript
         run: npm run test:typescript
+      - name: Stylelint
+        run: npm run test:css
