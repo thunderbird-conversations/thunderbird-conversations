@@ -8,7 +8,6 @@
 
 ChromeUtils.defineESModuleGetters(this, {
   cal: "resource:///modules/calendar/calUtils.sys.mjs",
-  call10n: "resource:///modules/calendar/utils/calL10NUtils.sys.mjs",
   MailServices: "resource:///modules/MailServices.sys.mjs",
 });
 
@@ -22,6 +21,31 @@ ChromeUtils.defineESModuleGetters(this, {
 /**
  * @typedef calIItipItem
  */
+
+ChromeUtils.defineLazyGetter(this, "itipL10n", () => {
+  // Localization isn't exposed in the experiment API sandbox, so borrow the
+  // constructor from the calendar modules' global.
+  let { Localization } = Cu.getGlobalForObject(cal);
+  return new Localization(["calendar/calendar-itip.ftl"], true);
+});
+
+/**
+ * Get a localized string for the invitation bar or invitation dialogs.
+ *
+ * Thunderbird 155 moved these strings from lightning.properties to
+ * calendar-itip.ftl and removed cal.l10n.getLtnString.
+ *
+ * @param {string} fluentId The string ID in calendar-itip.ftl.
+ * @param {string} propertyName The string name in lightning.properties, used
+ *   on older Thunderbird versions.
+ * @returns {string}
+ */
+function getItipString(fluentId, propertyName) {
+  if (cal.l10n.getLtnString) {
+    return cal.l10n.getLtnString(propertyName);
+  }
+  return itipL10n.formatValueSync(fluentId);
+}
 
 /**
  * Get a msgHdr from a message URI (msgHdr.URI).
@@ -229,7 +253,8 @@ function executeAction(
               parsedProposal.result == "NOTLATESTUPDATE",
             onReschedule: () => {
               aUpdateFunction({
-                label: cal.l10n.getLtnString(
+                label: getItipString(
+                  "imip-bar-counter-previous-version-text",
                   "imipBarCounterPreviousVersionText"
                 ),
               });
@@ -238,7 +263,10 @@ function executeAction(
           };
         } else {
           aUpdateFunction({
-            label: cal.l10n.getLtnString("imipBarCounterErrorText"),
+            label: getItipString(
+              "imip-bar-counter-error-text",
+              "imipBarCounterErrorText"
+            ),
             resetButtons: true,
           });
           if (proposingAttendee) {
@@ -278,8 +306,14 @@ function executeAction(
     let items = aItipItem.getItemList();
     if (items && items.length) {
       let delTime = delmgr.getDeletedDate(items[0].id);
-      let dialogText = cal.l10n.getLtnString("confirmProcessInvitation");
-      let dialogTitle = cal.l10n.getLtnString("confirmProcessInvitationTitle");
+      let dialogText = getItipString(
+        "confirm-process-invitation",
+        "confirmProcessInvitation"
+      );
+      let dialogTitle = getItipString(
+        "confirm-process-invitation-title",
+        "confirmProcessInvitationTitle"
+      );
       if (
         delTime &&
         !Services.prompt.confirm(aWindow, dialogTitle, dialogText)
@@ -421,10 +455,13 @@ let msgHeaderSink = {
         // anymore, we also clear the buttons if any to avoid e.g. accept/decline buttons
         if (isOutgoing) {
           if (foundItems && foundItems[0]) {
-            data.label = call10n.getLtnString("imipBarSentText");
+            data.label = getItipString("imip-bar-sent-text", "imipBarSentText");
           } else {
             data = {
-              label: call10n.getLtnString("imipBarSentButRemovedText"),
+              label: getItipString(
+                "imip-bar-sent-but-removed-text",
+                "imipBarSentButRemovedText"
+              ),
               buttons: [],
               hideMenuItems: [],
               hideItems: [],
