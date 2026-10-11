@@ -132,6 +132,7 @@ export class MessageHeaderOptions extends HTMLElement {
     "msgid",
     "detailsshowing",
     "expanded",
+    "attachmentslength",
     "multiplerecipients",
     "recipientsincludelists",
     "isdraft",
@@ -266,6 +267,11 @@ export class MessageHeaderOptions extends HTMLElement {
         this.shadowRoot
           .querySelector(".mainActionButton > action-button")
           .setAttribute("msgid", newValue);
+        break;
+      }
+      case "attachmentslength": {
+        let attachIcon = this.shadowRoot.querySelector(".attachmentIcon");
+        attachIcon.toggleAttribute("hidden", !parseInt(newValue));
         break;
       }
       case "detailsshowing": {

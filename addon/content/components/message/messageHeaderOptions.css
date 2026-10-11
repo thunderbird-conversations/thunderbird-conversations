@@ -25,6 +25,9 @@
 .attachmentIcon {
   color: var(--dull-foreground-color);
 }
+.attachmentIcon[hidden] {
+  display: none;
+}
 
 .attachmentIcon svg-icon::part(svg) {
   transform: rotate(-50deg);

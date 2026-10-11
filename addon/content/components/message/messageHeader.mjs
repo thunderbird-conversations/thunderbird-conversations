@@ -373,7 +373,7 @@ export function MessageHeader({
         detailsshowing: detailsShowing,
         expanded,
         msgid: id,
-        attachments,
+        attachmentslength: attachments.length,
         multipleRecipients,
         recipientsIncludeLists,
         isdraft: isDraft,
