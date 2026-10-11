@@ -8,6 +8,8 @@ ChromeUtils.defineESModuleGetters(this, {
   MailE10SUtils: "resource:///modules/MailE10SUtils.sys.mjs",
 });
 
+const nsMsgViewIndex_None = 0xffffffff;
+
 /**
  * @typedef nsIMsgDBHdr
  * @see https://searchfox.org/comm-central/rev/9d9fac50cddfd9606a51c4ec3059728c33d58028/mailnews/base/public/nsIMsgHdr.idl#14
@@ -223,7 +225,7 @@ function isSelectionExpanded(contentWin) {
         viewThread.getChildHdrAt(0),
         false
       );
-      if (rootIndex >= 0) {
+      if (rootIndex != nsMsgViewIndex_None) {
         return (
           contentWin.gDBView.isContainer(rootIndex) &&
           !contentWin.gViewWrapper.isCollapsedThreadAtIndex(rootIndex)
