@@ -121,7 +121,7 @@ function executeAction(
                 aItem.getAttendees(),
                 aItipItem.sender
               );
-              let status = true;
+              let status;
               if (attendees.length == 1 && aFoundItems?.length) {
                 // we must return a message with the same sequence number as the
                 // counterproposal - to make it easy, we simply use the received
