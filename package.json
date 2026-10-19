@@ -15,7 +15,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@reduxjs/toolkit": "2.12.0",
+    "@reduxjs/toolkit": "2.13.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-redux": "9.3.0",
