@@ -241,7 +241,6 @@ class ContactMapContainer {
   /** @type {Map<string, Promise<string>>} */
   #loading = new Map();
 
-  // eslint-disable-next-line jsdoc/no-undefined-types
   /** @type {Map<string, PromiseWithResolvers<string>>} */
   #queue = new Map();
 }
