@@ -27,6 +27,10 @@
       "groupSlug": "jsdom",
       "minimumReleaseAge": "3 days",
       "internalChecksFilter": "strict"
+    },
+    {
+      "matchPackageNames": ["react", "react-dom"],
+      "enabled": false
     }
   ]
 }
