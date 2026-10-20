@@ -471,14 +471,18 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           let msgHdr = context.extension.messageManager.get(msgId);
           let attachment = await findAttachment(msgHdr, partName);
 
-          let tabObject = context.extension.tabManager.get(tabId);
-          let contentWin = (
-            tabObject.nativeTab.chromeBrowser ?? tabObject.nativeTab.browser
-          ).contentWindow;
+          let tabObject = tabId && context.extension.tabManager.get(tabId);
+          let browsingContext;
+          if (tabObject) {
+            browsingContext = (
+              tabObject.nativeTab.chromeBrowser ?? tabObject.nativeTab.browser
+            ).contentWindow.browsingContext;
+          } else {
+            browsingContext = getWinBrowserFromIds(context, winId).msgBrowser
+              .browsingContext;
+          }
 
-          getAttachmentInfo(msgHdr, attachment).save(
-            contentWin.browsingContext
-          );
+          getAttachmentInfo(msgHdr, attachment).save(browsingContext);
         },
         async detachAttachment({ winId, tabId, msgId, partName }) {
           let { win } = getWinBrowserFromIds(context, winId, tabId);
