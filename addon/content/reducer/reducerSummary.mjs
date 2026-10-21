@@ -27,6 +27,7 @@ export const initialSummary = {
   defaultDetailsShowing: false,
   darkReaderEnabled: true,
   initialSet: [],
+  thunderbirdVersion: null,
   prefs: {
     expandWho: 4,
     extraAttachments: false,
@@ -304,6 +305,7 @@ export const summarySlice = RTK.createSlice({
         darkReaderEnabled,
         defaultFontSize,
         defaultDetailsShowing,
+        thunderbirdVersion,
       } = payload;
       let tenPxFactor = 0.625;
       if (OS == "mac") {
@@ -322,6 +324,7 @@ export const summarySlice = RTK.createSlice({
         defaultDetailsShowing,
         OS,
         tenPxFactor,
+        thunderbirdVersion,
       };
     },
     setUserPreferences(state, { payload }) {

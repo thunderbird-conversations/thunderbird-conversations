@@ -116,6 +116,14 @@ export const controllerActions = {
       const darkReaderEnabled = await browser.conversations.getCorePref(
         "mail.dark-reader.enabled"
       );
+      let browserInfo = await browser.runtime.getBrowserInfo();
+      let stringVersion = browserInfo.version.match(/([0-9]*)/)?.[0];
+      let version;
+      try {
+        version = parseInt(stringVersion);
+      } catch {
+        version = 155;
+      }
 
       await dispatch(
         summaryActions.setSystemOptions({
@@ -126,6 +134,7 @@ export const controllerActions = {
           defaultDetailsShowing,
           defaultFontSize,
           OS: platformInfo.os,
+          thunderbirdVersion: version,
         })
       );
 

@@ -54,6 +54,7 @@ function _MessageList({ dispatch, messages, summary }) {
           isStandalone: summary.isStandalone,
           message,
           tenPxFactor: summary.tenPxFactor,
+          thunderbirdVersion: summary.thunderbirdVersion,
           prefs: summary.prefs,
           advanceMessage: (step = 1) => {
             advanceMessage(index, step);

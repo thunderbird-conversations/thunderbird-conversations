@@ -403,6 +403,7 @@ export class Message extends React.PureComponent {
             realFrom: this.props.message.realFrom,
             tabId: this.props.tabId,
             winId: this.props.winId,
+            thunderbirdVersion: this.props.thunderbirdVersion,
           })
         ),
         this.props.message.expanded &&
@@ -454,4 +455,5 @@ Message.propTypes = {
   advanceMessage: PropTypes.func.isRequired,
   tabId: PropTypes.number,
   winId: PropTypes.number,
+  thunderbirdVersion: PropTypes.number,
 };

@@ -332,14 +332,10 @@ export class MessageIFrame extends React.Component {
       );
       this.#addedRemoteContentListener = true;
       if (window.browsingContext) {
-        // We don't apply the click listener when in a tab as Thunderbird's
-        // click handling already manages that.
-        if (!this.props.isInTab || this.props.isStandalone) {
-          window.browsingContext.embedderElement.addEventListener(
-            "click",
-            this.onClickIframe
-          );
-        }
+        window.browsingContext.embedderElement.addEventListener(
+          "click",
+          this.onClickIframe
+        );
 
         window.browsingContext.embedderElement.addEventListener(
           "DOMContentLoaded",
@@ -662,8 +658,13 @@ export class MessageIFrame extends React.Component {
     if (event.target.ownerDocument.URL != this.iframe.contentDocument.URL) {
       return;
     }
-    // For the standalone window, let the click handles handle the event.
-    if (this.props.isStandalone) {
+    // For the standalone window, we use the mail-message handler, which handles the link
+    // correctly. This doesn't work in other areas.
+    // Note we have to check this here, rather than avoiding adding the listener, as the
+    // property might not be initialised when the iframe first starts to load.
+    // @backward-compat { version 155 } Pre-155 doesn't have the message manager group
+    // available, so we allow the standalone window for that.
+    if (this.props.thunderbirdVersion >= 155 && this.props.isStandalone) {
       return;
     }
     this.props.dispatch(
@@ -701,4 +702,5 @@ MessageIFrame.propTypes = {
   realFrom: PropTypes.string.isRequired,
   tabId: PropTypes.number,
   winId: PropTypes.number,
+  thunderbirdVersion: PropTypes.number.isRequired,
 };
