@@ -151,14 +151,12 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
             // TODO: How to wait for tab loaded?
             // Probably need to wait for the nativeTab to finish loading?
             // Or maybe a browser underneath it?
-            waitForWindow(tabObject.nativeTab.chromeBrowser.contentWindow).then(
-              () => {
-                contentWin.document
-                  .getElementById("multiMessageBrowser")
-                  ?.setAttribute("context", "browserContext");
-                summarizeThreadHandler(contentWin, tabId, context);
-              }
-            );
+            waitForWindow(contentWin).then(() => {
+              contentWin.document
+                .getElementById("multiMessageBrowser")
+                ?.setAttribute("context", "browserContext");
+              summarizeThreadHandler(contentWin, tabId, context);
+            });
             return function () {
               let threadPane = contentWin.threadPane;
               threadPane._onSelect = threadPane._oldOnSelect;
@@ -200,7 +198,10 @@ function getWindowFromId(windowManager, context, id) {
 // resolved.
 function waitForWindow(win) {
   return new Promise((resolve) => {
-    if (win.document.readyState == "complete") {
+    if (
+      win.document.readyState == "complete" &&
+      win.document.URL != "about:blank"
+    ) {
       resolve();
     } else {
       win.addEventListener(
