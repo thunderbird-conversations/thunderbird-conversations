@@ -441,12 +441,13 @@ export const messageActions = {
         );
         msgs = msgs.map((m) => m.id);
       }
-      try {
-        await browser.messages.delete(msgs);
-      } catch (ex) {
-        console.error(ex);
-      }
+      // Don't block the UI on the deletion: on IMAP the promise only settles
+      // once the move to Trash completes on the server, which keeps the
+      // message on screen for seconds. Only the in-tab path needs the result,
+      // to close the tab afterwards. `archiveConversation` above does the same.
+      const deletion = browser.messages.delete(msgs).catch(console.error);
       if (state.summary.isInTab) {
+        await deletion;
         // The additional nulls appear to be necessary due to our browser proxying.
         let currentTab = await browser.tabs.query({
           active: true,
