@@ -100,6 +100,22 @@ class Gallery extends HTMLElement {
 
     let attachments = await browser.messages.listAttachments(id);
 
+    let prefs = await browser.storage.local.get("preferences");
+    if (prefs.preferences?.logging_enabled) {
+      console.debug("Loading message id", id, "uri", uri);
+      console.debug("Attachments", attachments.length);
+      for (let [i, attachment] of attachments.entries()) {
+        console.debug(
+          i,
+          attachment.partName,
+          attachment.name,
+          attachment.contentType,
+          attachment.contentDisposition,
+          attachment.size
+        );
+      }
+    }
+
     await this.output(
       attachments.filter((p) => p.contentType.startsWith("image/")),
       id,
