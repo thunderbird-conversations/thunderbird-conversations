@@ -85,24 +85,26 @@ class Gallery extends HTMLElement {
    * @param {string} scrollToPartName
    */
   async load(uri, scrollToPartName) {
-    const id = await browser.conversations.getMessageIdForUri(uri);
-    if (!id) {
-      // TODO: Render this in react.
-      document.getElementById("gallery").textContent = browser.i18n.getMessage(
-        "gallery.messageMovedOrDeleted"
+    let id = await browser.conversations.getMessageIdForUri(uri);
+    if (id) {
+      document.body.appendChild(
+        document.createTextNode(
+          browser.i18n.getMessage("gallery.messageMovedOrDeleted")
+        )
       );
+      document.title = browser.i18n.getMessage("gallery.title", [""]);
       return;
     }
-    const header = await browser.messages.get(id);
+    let header = await browser.messages.get(id);
     document.title = browser.i18n.getMessage("gallery.title", [header.subject]);
 
     let attachments = await browser.messages.listAttachments(id);
 
-    attachments = attachments.filter(
-      (p) => p.contentType.indexOf("image/") == 0
+    await this.output(
+      attachments.filter((p) => p.contentType.startsWith("image/")),
+      id,
+      scrollToPartName
     );
-
-    await this.output(attachments, id, scrollToPartName);
   }
 
   /**
