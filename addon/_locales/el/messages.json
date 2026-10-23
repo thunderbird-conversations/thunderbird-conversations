@@ -738,5 +738,29 @@
   "calendar.imipGoToCalendarButton.tooltip": {
     "message": "Μετάβαση στην καρτέλα ημερολογίου",
     "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imapBarSentText.label": {
+    "message": "Αυτό το μήνυμα περιέχει απεσταλμένη εκδήλωση.",
+    "description": "A notification that the message contains a calendar event that has already been sent."
+  },
+  "calendar.imipBarSentButRemovedText.label": {
+    "message": "Αυτό το μήνυμα περιέχει απεσταλμένη εκδήλωση που δεν είναι πια στο ημερολόγιό σας.",
+    "description": "A notification that the message contains a calendar event that has already been sent."
+  },
+  "calendar.imipConfirmProcessInvitation.label": {
+    "message": "Έχετε διαγράψει πρόσφατα αυτό το στοιχείο, θέλετε σίγουρα να επεξεργαστείτε αυτήν την πρόσκληση;",
+    "description": "Process invitation confirmation prompt message."
+  },
+  "calendar.imipConfirmProcessInvitationTitle.label": {
+    "message": "Επεξεργασία πρόσκλησης;",
+    "description": "Process invitation confirmation prompt title."
+  },
+  "calendar.imipBarCounterErrorText.label": {
+    "message": "Το μήνυμα περιέχει μια αντιπρόταση σε πρόσκληση που δεν είναι δυνατή η τροποποίησή της.",
+    "description": "A notification that the counterproposal cannot be processed."
+  },
+  "calendar.imipBarCounterPreviousVersionText.label": {
+    "message": "Το μήνυμα περιέχει μια αντιπρόταση σε προηγούμενη έκδοση της πρόσκλησης.",
+    "description": "A notifcation that the message contains a counterproposal of a previous version."
   }
 }

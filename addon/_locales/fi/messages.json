@@ -738,5 +738,29 @@
   "calendar.imipGoToCalendarButton.tooltip": {
     "message": "Siirry Kalenteri-välilehteen",
     "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imapBarSentText.label": {
+    "message": "Tämä viesti sisältää lähetetyn tapahtuman.",
+    "description": "A notification that the message contains a calendar event that has already been sent."
+  },
+  "calendar.imipBarSentButRemovedText.label": {
+    "message": "TTämä viesti sisältää lähetetyn tapahtuman, joka ei ole enää kalenterissasi.",
+    "description": "A notification that the message contains a calendar event that has already been sent."
+  },
+  "calendar.imipConfirmProcessInvitation.label": {
+    "message": "Olet äskettäin poistanut tämän kohteen. Haluatko varmasti käsitellä tämän kutsun?",
+    "description": "Process invitation confirmation prompt message."
+  },
+  "calendar.imipConfirmProcessInvitationTitle.label": {
+    "message": "Käsitelläänkö kutsu?",
+    "description": "Process invitation confirmation prompt title."
+  },
+  "calendar.imipBarCounterErrorText.label": {
+    "message": "Tämä viesti sisältää vastaehdotuksen kutsulle, jota ei voi käsitellä.",
+    "description": "A notification that the counterproposal cannot be processed."
+  },
+  "calendar.imipBarCounterPreviousVersionText.label": {
+    "message": "Tämä viesti sisältää vastaehdotuksen kutsun edelliselle versiolle.",
+    "description": "A notifcation that the message contains a counterproposal of a previous version."
   }
 }

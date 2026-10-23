@@ -28,6 +28,26 @@
             "name": "action",
             "type": "string",
             "description": "The action to take."
+          },
+          {
+            "name": "imipConfirmProcessInvitation",
+            "type": "number",
+            "description": "The message to confirm process invitiation."
+          },
+          {
+            "name": "imipConfirmProcessInvitationTitle",
+            "type": "string",
+            "description": "The title to confirm process invitiation."
+          },
+          {
+            "name": "imipBarCounterErrorText",
+            "type": "number",
+            "description": "The message to confirm process invitiation."
+          },
+          {
+            "name": "imipBarCounterPreviousVersionText",
+            "type": "string",
+            "description": "The title to confirm process invitiation."
           }
         ]
       },

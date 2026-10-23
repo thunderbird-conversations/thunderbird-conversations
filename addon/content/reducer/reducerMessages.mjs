@@ -529,7 +529,17 @@ export const messageActions = {
           state.summary.windowId,
           state.summary.tabId,
           id,
-          extraData.execute
+          extraData.execute,
+          browser.i18n.getMessage(
+            "calendar.imipConfirmProcessInvitation.label"
+          ),
+          browser.i18n.getMessage(
+            "calendar.imipConfirmProcessInvitationTitle.label"
+          ),
+          browser.i18n.getMessage("calendar.imipBarCounterErrorText.label"),
+          browser.i18n.getMessage(
+            "calendar.imipBarCounterPreviousVersionText.label"
+          )
         );
         return;
       }

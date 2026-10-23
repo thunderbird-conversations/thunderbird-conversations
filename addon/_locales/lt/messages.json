@@ -738,5 +738,29 @@
   "calendar.imipGoToCalendarButton.tooltip": {
     "message": "Atverti kalendoriaus kortelę",
     "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imapBarSentText.label": {
+    "message": "Su šiuo laišku išsiųstas pranešimas apie įvykį.",
+    "description": "A notification that the message contains a calendar event that has already been sent."
+  },
+  "calendar.imipBarSentButRemovedText.label": {
+    "message": "Su šiuo laišku išsiųstas pranešimas apie įvykį, kurio nebėra jūsų kalendoriuje.",
+    "description": "A notification that the message contains a calendar event that has already been sent."
+  },
+  "calendar.imipConfirmProcessInvitation.label": {
+    "message": "Neseniai šį elementą jūs pašalinote. Ar tikrai norite apdoroti šį pakvietimą?",
+    "description": "Process invitation confirmation prompt message."
+  },
+  "calendar.imipConfirmProcessInvitationTitle.label": {
+    "message": "Apdoroti pakvietimą?",
+    "description": "Process invitation confirmation prompt title."
+  },
+  "calendar.imipBarCounterErrorText.label": {
+    "message": "Su šiuo laišku atsiųstas atsakymas į kvietimą su alternatyviu pasiūlymu, kurio nepavyksta apdoroti.",
+    "description": "A notification that the counterproposal cannot be processed."
+  },
+  "calendar.imipBarCounterPreviousVersionText.label": {
+    "message": "Su šiuo laišku atsiųstas atsakymas į ankstesnę kvietimo versiją su alternatyviu pasiūlymu.",
+    "description": "A notifcation that the message contains a counterproposal of a previous version."
   }
 }

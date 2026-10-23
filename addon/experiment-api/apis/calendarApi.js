@@ -8,7 +8,6 @@
 
 ChromeUtils.defineESModuleGetters(this, {
   cal: "resource:///modules/calendar/calUtils.sys.mjs",
-  call10n: "resource:///modules/calendar/utils/calL10NUtils.sys.mjs",
   MailServices: "resource:///modules/MailServices.sys.mjs",
 });
 
@@ -51,6 +50,10 @@ function calMsgUriToMsgHdr(aUri) {
  * @param {calIItipItem} aItipItem - Scheduling item
  * @param {calIItipItem[]} aFoundItems - The items found when looking for the calendar item
  * @param {Function} aUpdateFunction - A function to call which will update the UI.
+ * @param {string} imipConfirmProcessInvitation - The text to show to confirm processing an invitation.
+ * @param {string} imipConfirmProcessInvitationTitle - The title to show to confirm processing an invitation.
+ * @param {string} imipBarCounterErrorText - A notification message that the counterproposal cannot be processed.
+ * @param {string} imipBarCounterPreviousVersionText - A notifcation that the message contains a counterproposal of a previous version.
  * @returns {boolean} true, if the action succeeded
  */
 function executeAction(
@@ -60,7 +63,11 @@ function executeAction(
   aActionFunc,
   aItipItem,
   aFoundItems,
-  aUpdateFunction
+  aUpdateFunction,
+  imipConfirmProcessInvitation,
+  imipConfirmProcessInvitationTitle,
+  imipBarCounterErrorText,
+  imipBarCounterPreviousVersionText
 ) {
   // control to avoid processing _execAction on later user changes on the item
   let isFirstProcessing = true;
@@ -229,16 +236,14 @@ function executeAction(
               parsedProposal.result == "NOTLATESTUPDATE",
             onReschedule: () => {
               aUpdateFunction({
-                label: cal.l10n.getLtnString(
-                  "imipBarCounterPreviousVersionText"
-                ),
+                label: imipBarCounterPreviousVersionText,
               });
               // TODO: should we hide the buttons in this case, too?
             },
           };
         } else {
           aUpdateFunction({
-            label: cal.l10n.getLtnString("imipBarCounterErrorText"),
+            label: imipBarCounterErrorText,
             resetButtons: true,
           });
           if (proposingAttendee) {
@@ -278,11 +283,13 @@ function executeAction(
     let items = aItipItem.getItemList();
     if (items && items.length) {
       let delTime = delmgr.getDeletedDate(items[0].id);
-      let dialogText = cal.l10n.getLtnString("confirmProcessInvitation");
-      let dialogTitle = cal.l10n.getLtnString("confirmProcessInvitationTitle");
       if (
         delTime &&
-        !Services.prompt.confirm(aWindow, dialogTitle, dialogText)
+        !Services.prompt.confirm(
+          aWindow,
+          imipConfirmProcessInvitationTitle,
+          imipConfirmProcessInvitation
+        )
       ) {
         return false;
       }
@@ -421,10 +428,10 @@ let msgHeaderSink = {
         // anymore, we also clear the buttons if any to avoid e.g. accept/decline buttons
         if (isOutgoing) {
           if (foundItems && foundItems[0]) {
-            data.label = call10n.getLtnString("imipBarSentText");
+            data.label = "calendar.imapBarSentText.label";
           } else {
             data = {
-              label: call10n.getLtnString("imipBarSentButRemovedText"),
+              label: "calendar.imipBarSentButRemovedText.label",
               buttons: [],
               hideMenuItems: [],
               hideItems: [],
@@ -505,7 +512,16 @@ var convCalendar = class extends ExtensionCommon.ExtensionAPI {
   getAPI(context) {
     return {
       convCalendar: {
-        onMessageNotification(winId, tabId, msgId, action) {
+        onMessageNotification(
+          winId,
+          tabId,
+          msgId,
+          action,
+          imipConfirmProcessInvitation,
+          imipConfirmProcessInvitationTitle,
+          imipBarCounterErrorText,
+          imipBarCounterPreviousVersionText
+        ) {
           if (action[0] == "GOTO") {
             goToCalendar();
             return;
@@ -532,7 +548,11 @@ var convCalendar = class extends ExtensionCommon.ExtensionAPI {
               // TODO: We should probably update the label here, but it doesn't
               // seem too vital.
               console.log(updates);
-            }
+            },
+            imipConfirmProcessInvitation,
+            imipConfirmProcessInvitationTitle,
+            imipBarCounterErrorText,
+            imipBarCounterPreviousVersionText
           );
         },
         messageUnloaded(winId, tabId, msgId) {

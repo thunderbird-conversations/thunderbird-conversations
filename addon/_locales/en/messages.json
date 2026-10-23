@@ -1077,5 +1077,31 @@
   "calendar.imipGoToCalendarButton.tooltip": {
     "message": "Go to the calendar tab",
     "description": "Calendar invite update button tooltip."
+  },
+
+  "calendar.imapBarSentText.label": {
+    "message": "This message contains a sent event.",
+    "description": "A notification that the message contains a calendar event that has already been sent."
+  },
+
+  "calendar.imipBarSentButRemovedText.label": {
+    "message": "This message contains a sent out event that is not in your calendar anymore.",
+    "description": "A notification that the message contains a calendar event that has already been sent."
+  },
+  "calendar.imipConfirmProcessInvitation.label": {
+    "message": "You have recently deleted this item, are you sure you want to process this invitation?",
+    "description": "Process invitation confirmation prompt message."
+  },
+  "calendar.imipConfirmProcessInvitationTitle.label": {
+    "message": "Process Invitation?",
+    "description": "Process invitation confirmation prompt title."
+  },
+  "calendar.imipBarCounterErrorText.label": {
+    "message": "This message contains a counterproposal to an invitation that cannot be processed.",
+    "description": "A notification that the counterproposal cannot be processed."
+  },
+  "calendar.imipBarCounterPreviousVersionText.label": {
+    "message": "This message contains a counterproposal to a previous version of an invitation.",
+    "description": "A notifcation that the message contains a counterproposal of a previous version."
   }
 }

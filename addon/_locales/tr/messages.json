@@ -876,5 +876,29 @@
   "calendar.imipGoToCalendarButton.tooltip": {
     "message": "Takvim sekmesine git",
     "description": "Takvim güncelleme düğmesi ipucu."
+  },
+  "calendar.imapBarSentText.label": {
+    "message": "Bu ileti gönderilmiş bir etkinlik içeriyor.",
+    "description": "A notification that the message contains a calendar event that has already been sent."
+  },
+  "calendar.imipBarSentButRemovedText.label": {
+    "message": "Bu ileti, artık takviminizde olmayan bir gönderilmiş etkinlik içeriyor.",
+    "description": "A notification that the message contains a calendar event that has already been sent."
+  },
+  "calendar.imipConfirmProcessInvitation.label": {
+    "message": "Bu öğeyi kısa süre önce sildiniz. Bu davetiyeyi işlemek istediğinizden emin misiniz?",
+    "description": "Process invitation confirmation prompt message."
+  },
+  "calendar.imipConfirmProcessInvitationTitle.label": {
+    "message": "Davetiye işlensin mi?",
+    "description": "Process invitation confirmation prompt title."
+  },
+  "calendar.imipBarCounterErrorText.label": {
+    "message": "Bu ileti işlenemeyen bir davete karşı teklif içeriyor.",
+    "description": "A notification that the counterproposal cannot be processed."
+  },
+  "calendar.imipBarCounterPreviousVersionText.label": {
+    "message": "Bu ileti bir davetin eski sürümüne karşı teklif içeriyor.",
+    "description": "A notifcation that the message contains a counterproposal of a previous version."
   }
 }

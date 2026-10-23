@@ -738,5 +738,29 @@
   "calendar.imipGoToCalendarButton.tooltip": {
     "message": "Joan egutegi fitxara",
     "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imapBarSentText.label": {
+    "message": "Mezu honek bidalitako gertaera bat dauka.",
+    "description": "A notification that the message contains a calendar event that has already been sent."
+  },
+  "calendar.imipBarSentButRemovedText.label": {
+    "message": "Mezu honek bidalitako gertaera bat dauka zure egutegian jada ez dagoena gehiago.",
+    "description": "A notification that the message contains a calendar event that has already been sent."
+  },
+  "calendar.imipConfirmProcessInvitation.label": {
+    "message": "Duela gutxi ezabatu duzu elementu hau, ziur zaude gonbidapena prozesatu nahi duzula?",
+    "description": "Process invitation confirmation prompt message."
+  },
+  "calendar.imipConfirmProcessInvitationTitle.label": {
+    "message": "Prozesatu gonbidapena?",
+    "description": "Process invitation confirmation prompt title."
+  },
+  "calendar.imipBarCounterErrorText.label": {
+    "message": "Mezu honek prozesatu ezin den gonbidapen baten kontraproposamena du.",
+    "description": "A notification that the counterproposal cannot be processed."
+  },
+  "calendar.imipBarCounterPreviousVersionText.label": {
+    "message": "Mezu honek aurreko bertsio bateko gonbidapenaren kontraproposamena du.",
+    "description": "A notifcation that the message contains a counterproposal of a previous version."
   }
 }

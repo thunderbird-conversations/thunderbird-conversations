@@ -875,5 +875,29 @@
   "calendar.imipGoToCalendarButton.tooltip": {
     "message": "Перейти на вкладку календаря",
     "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imapBarSentText.label": {
+    "message": "Це повідомлення містить надіслану подію.",
+    "description": "A notification that the message contains a calendar event that has already been sent."
+  },
+  "calendar.imipBarSentButRemovedText.label": {
+    "message": "Це повідомлення містить надіслану подію, якої більше немає у вашому календарі.",
+    "description": "A notification that the message contains a calendar event that has already been sent."
+  },
+  "calendar.imipConfirmProcessInvitation.label": {
+    "message": "Ви недавно видалили цей пункт, ви впевнені, що ви хочете обробляти це запрошення?",
+    "description": "Process invitation confirmation prompt message."
+  },
+  "calendar.imipConfirmProcessInvitationTitle.label": {
+    "message": "Процес Запрощення?",
+    "description": "Process invitation confirmation prompt title."
+  },
+  "calendar.imipBarCounterErrorText.label": {
+    "message": "Це повідомлення містить зустрічну пропозицію на запрошення, яку неможливо опрацювати.",
+    "description": "A notification that the counterproposal cannot be processed."
+  },
+  "calendar.imipBarCounterPreviousVersionText.label": {
+    "message": "Це повідомлення містить зустрічну пропозицію на попередню версію запрошення.",
+    "description": "A notifcation that the message contains a counterproposal of a previous version."
   }
 }

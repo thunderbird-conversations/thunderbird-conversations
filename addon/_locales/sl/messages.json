@@ -884,5 +884,29 @@
   "calendar.imipGoToCalendarButton.tooltip": {
     "message": "Pojdi na zavihek koledarja",
     "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imapBarSentText.label": {
+    "message": "To sporočilo vsebuje dogodek.",
+    "description": "A notification that the message contains a calendar event that has already been sent."
+  },
+  "calendar.imipBarSentButRemovedText.label": {
+    "message": "To sporočilo vsebuje dogodek, ki ni več v vašem koledarju.",
+    "description": "A notification that the message contains a calendar event that has already been sent."
+  },
+  "calendar.imipConfirmProcessInvitation.label": {
+    "message": "Pred kratkim ste izbrisali ta predmet, ali res želite obdelati povabilo?",
+    "description": "Process invitation confirmation prompt message."
+  },
+  "calendar.imipConfirmProcessInvitationTitle.label": {
+    "message": "Obdelaj povabilo?",
+    "description": "Process invitation confirmation prompt title."
+  },
+  "calendar.imipBarCounterErrorText.label": {
+    "message": "To sporočilo vsebuje nadomestni predlog k povabilu, ki ga ni mogoče obdelati.",
+    "description": "A notification that the counterproposal cannot be processed."
+  },
+  "calendar.imipBarCounterPreviousVersionText.label": {
+    "message": "To sporočilo vsebuje nadomestni predlog k prejšnji različici povabila.",
+    "description": "A notifcation that the message contains a counterproposal of a previous version."
   }
 }

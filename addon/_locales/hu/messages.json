@@ -877,5 +877,29 @@
   "calendar.imipGoToCalendarButton.tooltip": {
     "message": "Menj a naptár fülre",
     "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imapBarSentText.label": {
+    "message": "Ez az üzenet egy elküldött eseményt tartalmaz.",
+    "description": "A notification that the message contains a calendar event that has already been sent."
+  },
+  "calendar.imipBarSentButRemovedText.label": {
+    "message": "Ez az üzenet egy kiküldött eseményt tartalmaz, ami már nincs a naptárában.",
+    "description": "A notification that the message contains a calendar event that has already been sent."
+  },
+  "calendar.imipConfirmProcessInvitation.label": {
+    "message": "Nemrég törölte ezt az elemet, valóban feldolgozza ezt a meghívást?",
+    "description": "Process invitation confirmation prompt message."
+  },
+  "calendar.imipConfirmProcessInvitationTitle.label": {
+    "message": "Feldolgozza a meghívást?",
+    "description": "Process invitation confirmation prompt title."
+  },
+  "calendar.imipBarCounterErrorText.label": {
+    "message": "Ez az üzenet ellenjavaslatot tartalmaz egy olyan meghívóhoz, amely nem dolgozható fel.",
+    "description": "A notification that the counterproposal cannot be processed."
+  },
+  "calendar.imipBarCounterPreviousVersionText.label": {
+    "message": "Ez az üzenet ellenjavaslatot tartalmaz egy meghívó korábbi változatához.",
+    "description": "A notifcation that the message contains a counterproposal of a previous version."
   }
 }

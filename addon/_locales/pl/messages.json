@@ -738,5 +738,29 @@
   "calendar.imipGoToCalendarButton.tooltip": {
     "message": "Przejdź do karty kalendarza",
     "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imapBarSentText.label": {
+    "message": "Ta wiadomość zawiera wysłane wydarzenie.",
+    "description": "A notification that the message contains a calendar event that has already been sent."
+  },
+  "calendar.imipBarSentButRemovedText.label": {
+    "message": "Ta wiadomość zawiera wysłane zaproszenie, które nie jest już w kalendarzu.",
+    "description": "A notification that the message contains a calendar event that has already been sent."
+  },
+  "calendar.imipConfirmProcessInvitation.label": {
+    "message": "Ostatnio usunięto to zaproszenie, kontynuować mimo tego?",
+    "description": "Process invitation confirmation prompt message."
+  },
+  "calendar.imipConfirmProcessInvitationTitle.label": {
+    "message": "Przetwarzanie zaproszenia",
+    "description": "Process invitation confirmation prompt title."
+  },
+  "calendar.imipBarCounterErrorText.label": {
+    "message": "Ta wiadomość zawiera kontrpropozycję do zaproszenia, którego nie można przetworzyć.",
+    "description": "A notification that the counterproposal cannot be processed."
+  },
+  "calendar.imipBarCounterPreviousVersionText.label": {
+    "message": "Ta wiadomość zawiera kontrpropozycję do poprzedniej wersji zaproszenia.",
+    "description": "A notifcation that the message contains a counterproposal of a previous version."
   }
 }

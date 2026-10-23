@@ -730,5 +730,29 @@
   "calendar.imipUpdateButton.tooltip": {
     "message": "Приемане",
     "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imapBarSentText.label": {
+    "message": "Това съобщение съдържа информация за събитие.",
+    "description": "A notification that the message contains a calendar event that has already been sent."
+  },
+  "calendar.imipBarSentButRemovedText.label": {
+    "message": "Това съобщение съдържа изпратено събитие, което вече не е във вашия календар.",
+    "description": "A notification that the message contains a calendar event that has already been sent."
+  },
+  "calendar.imipConfirmProcessInvitation.label": {
+    "message": "Това събитие беше наскоро изтрито, сигурен ли сте, че искате да обработите поканата?",
+    "description": "Process invitation confirmation prompt message."
+  },
+  "calendar.imipConfirmProcessInvitationTitle.label": {
+    "message": "Обработване на поканата?",
+    "description": "Process invitation confirmation prompt title."
+  },
+  "calendar.imipBarCounterErrorText.label": {
+    "message": "Съобщението съдържа контрапредложение към покана, която не може да бъде обработена.",
+    "description": "A notification that the counterproposal cannot be processed."
+  },
+  "calendar.imipBarCounterPreviousVersionText.label": {
+    "message": "Съобщението съдържа контрапредложение към предишното издание на поканата.",
+    "description": "A notifcation that the message contains a counterproposal of a previous version."
   }
 }

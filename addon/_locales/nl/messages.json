@@ -738,5 +738,29 @@
   "calendar.imipGoToCalendarButton.tooltip": {
     "message": "Naar het agendatabblad",
     "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imapBarSentText.label": {
+    "message": "Dit bericht bevat een verzonden gebeurtenis.",
+    "description": "A notification that the message contains a calendar event that has already been sent."
+  },
+  "calendar.imipBarSentButRemovedText.label": {
+    "message": "Dit bericht bevat een verzonden gebeurtenis die zich niet meer in uw agenda bevindt.",
+    "description": "A notification that the message contains a calendar event that has already been sent."
+  },
+  "calendar.imipConfirmProcessInvitation.label": {
+    "message": "U hebt dit item onlangs verwijderd. Weet u zeker dat u deze uitnodiging wilt verwerken?",
+    "description": "Process invitation confirmation prompt message."
+  },
+  "calendar.imipConfirmProcessInvitationTitle.label": {
+    "message": "Uitnodiging verwerken?",
+    "description": "Process invitation confirmation prompt title."
+  },
+  "calendar.imipBarCounterErrorText.label": {
+    "message": "Dit bericht bevat een tegenvoorstel op een uitnodiging die niet kan worden verwerkt.",
+    "description": "A notification that the counterproposal cannot be processed."
+  },
+  "calendar.imipBarCounterPreviousVersionText.label": {
+    "message": "Dit bericht bevat een tegenvoorstel op een eerdere versie van een uitnodiging.",
+    "description": "A notifcation that the message contains a counterproposal of a previous version."
   }
 }

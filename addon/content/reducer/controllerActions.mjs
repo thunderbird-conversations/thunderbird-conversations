@@ -412,6 +412,12 @@ function setupListeners(dispatch, getState) {
   function invitesListener({ msgId, notification }) {
     let notificationDetails = { ...notification, buttons: [] };
 
+    if (notificationDetails.label?.startsWith("calendar.")) {
+      notificationDetails.label = browser.i18n.getMessage(
+        notificationDetails.label
+      );
+    }
+
     for (let button of notification.buttons) {
       notificationDetails.buttons.push({
         ...button,

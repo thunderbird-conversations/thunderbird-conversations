@@ -738,5 +738,29 @@
   "calendar.imipGoToCalendarButton.tooltip": {
     "message": "Gå till kalenderfliken",
     "description": "Calendar invite update button tooltip."
+  },
+  "calendar.imapBarSentText.label": {
+    "message": "Detta meddelande innehåller en skickad händelse.",
+    "description": "A notification that the message contains a calendar event that has already been sent."
+  },
+  "calendar.imipBarSentButRemovedText.label": {
+    "message": "Det här meddelandet innehåller en utskickad händelse som inte finns i kalendern längre.",
+    "description": "A notification that the message contains a calendar event that has already been sent."
+  },
+  "calendar.imipConfirmProcessInvitation.label": {
+    "message": "Du har nyligen tagit bort denna post, är du säker på att du vill bearbeta denna inbjudan?",
+    "description": "Process invitation confirmation prompt message."
+  },
+  "calendar.imipConfirmProcessInvitationTitle.label": {
+    "message": "Bearbeta Inbjudan?",
+    "description": "Process invitation confirmation prompt title."
+  },
+  "calendar.imipBarCounterErrorText.label": {
+    "message": "Detta meddelande innehåller ett motförslag till en inbjudan som inte kan behandlas.",
+    "description": "A notification that the counterproposal cannot be processed."
+  },
+  "calendar.imipBarCounterPreviousVersionText.label": {
+    "message": "Detta meddelande innehåller ett motförslag till en tidigare version av en inbjudan.",
+    "description": "A notifcation that the message contains a counterproposal of a previous version."
   }
 }
