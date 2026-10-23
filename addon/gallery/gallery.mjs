@@ -86,7 +86,7 @@ class Gallery extends HTMLElement {
    */
   async load(uri, scrollToPartName) {
     let id = await browser.conversations.getMessageIdForUri(uri);
-    if (id) {
+    if (!id) {
       document.body.appendChild(
         document.createTextNode(
           browser.i18n.getMessage("gallery.messageMovedOrDeleted")
