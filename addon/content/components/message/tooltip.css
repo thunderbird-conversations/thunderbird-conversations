@@ -71,7 +71,3 @@ li:nth-child(2n) {
 .dropdown-sep {
   border-bottom: 1px solid var(--border-color);
 }
-
-li:hover .arrow.inside {
-  border-color: transparent transparent -moz-CellHighlight transparent;
-}

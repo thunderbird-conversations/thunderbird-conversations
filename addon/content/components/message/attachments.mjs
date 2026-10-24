@@ -35,48 +35,98 @@ const FALLBACK_ICON_MAPPING = new Map([
 
 /**
  * The more menu for attachments
- *
- * @param {object} options
- * @param {number} options.msgId
- * @param {string} options.fileName
- * @param {string} options.partName
  */
-function AttachmentMoreMenu({ msgId, fileName, partName }) {
-  return React.createElement(
-    "div",
-    { className: "tooltip tooltip-menu menu" },
-    React.createElement("div", { className: "arrow" }),
-    React.createElement("div", { className: "arrow inside" }),
-    React.createElement(
-      "ul",
-      null,
-      React.createElement(
-        "li",
-        { className: "action-detach" },
-        React.createElement("action-button", {
-          showString: "true",
-          type: "detachAttachment",
-          additionalclass: "dropDown",
-          msgId,
-          fileName,
-          partName,
-        })
-      ),
-      React.createElement(
-        "li",
-        { className: "action-delete" },
-        React.createElement("action-button", {
-          showString: "true",
-          type: "deleteAttachment",
-          additionalclass: "dropDown",
-          msgId,
-          fileName,
-          partName,
-        })
-      )
-    )
-  );
+class AttachmentMoreMenu extends HTMLElement {
+  static observedAttributes = ["msgid", "filename", "partname"];
+
+  static dispatch;
+
+  static get fragment() {
+    if (!this._template) {
+      let parser = new DOMParser();
+      let doc = parser.parseFromString(
+        `
+        <template>
+          <link rel="stylesheet" href="../content/components/message/tooltip.css?v=1" />
+          <link rel="stylesheet" href="../content/components/message/attachments.css?v=1" />
+          <div>
+            <div class="arrow"></div>
+            <div class="arrow inside"></div>
+            <ul>
+              <li class="action-detach">
+                <action-button
+                  showstring="true"
+                  type="detachAttachment"
+                  additionalclass="dropDown">
+                </action-button>
+              </li>
+              <li class="action-delete">
+                <action-button
+                  showstring="true"
+                  type="deleteAttachment"
+                  additionalclass="dropDown">
+                </action-button>
+              </li>
+            </ul>
+          </div>
+        </template>
+        `,
+        "text/html"
+      );
+      this._template = document.importNode(doc.querySelector("template"), true);
+    }
+    return this._template.content.cloneNode(true);
+  }
+
+  connectedCallback() {
+    this.#connected = true;
+    this.attachShadow({ mode: "open" });
+    this.shadowRoot.appendChild(AttachmentMoreMenu.fragment);
+
+    for (let attr of AttachmentMoreMenu.observedAttributes) {
+      this.attributeChangedCallback(attr, null, this.getAttribute(attr));
+    }
+  }
+
+  /**
+   * Handles an attribute change.
+   *
+   * @param {string} name
+   * @param {string} oldValue
+   * @param {string} newValue
+   */
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (!this.#connected) {
+      return;
+    }
+    let detachButton = this.shadowRoot.querySelector(
+      ".action-detach > action-button"
+    );
+    let deleteButton = this.shadowRoot.querySelector(
+      ".action-delete > action-button"
+    );
+    switch (name) {
+      case "msgid": {
+        detachButton.setAttribute("msgid", newValue);
+        deleteButton.setAttribute("msgid", newValue);
+        break;
+      }
+      case "filename": {
+        detachButton.setAttribute("filename", newValue);
+        deleteButton.setAttribute("filename", newValue);
+        break;
+      }
+      case "partname": {
+        detachButton.setAttribute("partname", newValue);
+        deleteButton.setAttribute("partname", newValue);
+        break;
+      }
+    }
+  }
+
+  #connected = false;
 }
+customElements.define("attachment-more-menu", AttachmentMoreMenu);
 
 /**
  * Handles display of an individual attachment.
@@ -304,10 +354,11 @@ function Attachment({
               React.createElement("svg-icon", { hash: "more_vert" })
             ),
             displayMenu &&
-              React.createElement(AttachmentMoreMenu, {
-                msgId: id,
-                fileName: name,
-                partName,
+              React.createElement("attachment-more-menu", {
+                className: "tooltip",
+                msgid: id,
+                filename: name,
+                partname: partName,
               })
           )
         )
