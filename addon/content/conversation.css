@@ -88,27 +88,6 @@ a img {
   cursor: pointer;
 }
 
-.icon {
-  display: inline-block;
-  fill: currentColor;
-  height: 1.5em;
-  vertical-align: -0.4em;
-  pointer-events: none;
-}
-.icon.active {
-  fill: #3079e0;
-}
-
-.icon-link {
-  display: inline-block;
-  color: var(--dull-foreground-color);
-}
-
-.icon-link:focus,
-.icon-link:hover {
-  color: -moz-CellHighlight;
-}
-
 .link:hover,
 .link:focus {
   text-decoration: underline;
@@ -254,13 +233,11 @@ html[dir="rtl"] .tooltip {
   right: 16px;
 }
 
-.dropDown,
-.attachmentsDropDown {
+.dropDown {
   position: relative;
 }
 
-.dropDown > .tooltip-menu button,
-.attachmentsDropDown > .tooltip-menu button {
+.dropDown > .tooltip-menu button {
   width: 100%;
   height: 100%;
   text-align: start;
@@ -274,51 +251,30 @@ html[dir="rtl"] .tooltip {
   line-height: 1.8;
 }
 
-.attachmentsDropDown > .tooltip {
-  min-width: 15.2em;
-  font-size: 1.2rem;
-  left: 0;
-  right: auto;
-  top: 2.5rem;
-  line-height: 1.8;
-}
-
 html[dir="rtl"] .dropDown .tooltip {
   left: -0.2em;
   right: auto;
 }
 
-html[dir="rtl"] .attachmentsDropDown .tooltip {
-  left: auto;
-  right: 0;
-}
-
-.dropDown ul,
-.attachmentsDropDown ul {
+.dropDown ul {
   margin-top: 0;
   list-style-type: none;
   font-size: 1.1rem;
 }
 
-.dropDown li,
-.attachmentsDropDown li {
+.dropDown li {
   white-space: nowrap;
 }
 
 .dropDown li:hover,
-.attachmentsDropDown li:hover,
 .dropDown li:nth-child(2n):hover,
-.attachmentsDropDown li:nth-child(2n):hover,
 .dropDown li:focus,
-.attachmentsDropDown li:focus,
-.dropDown li:nth-child(2n):focus,
-.attachmentsDropDown li:nth-child(2n):focus {
+.dropDown li:nth-child(2n):focus {
   background-color: -moz-CellHighlight;
   color: -moz-CellHighlightText;
 }
 
-.dropDown li:nth-child(2n),
-.attachmentsDropDown li:nth-child(2n) {
+.dropDown li:nth-child(2n) {
   background-color: -moz-OddTreeRow;
 }
 
@@ -352,23 +308,12 @@ html[dir="rtl"] .dropDown .arrow {
   left: 0.5em;
 }
 
-.attachmentsDropDown .arrow {
-  left: 0.5em;
-  right: auto;
-}
-
-html[dir="rtl"] .attachmentsDropDown .arrow {
-  right: 0.5em;
-  left: auto;
-}
-
 .arrow.inside {
   border-color: transparent transparent -moz-Field transparent;
   top: -13px;
 }
 
-.dropDown li:hover .arrow.inside,
-.attachmentsDropDown li:hover .arrow.inside {
+.dropDown li:hover .arrow.inside {
   border-color: transparent transparent -moz-CellHighlight transparent;
 }
 
@@ -597,86 +542,6 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
   font-size: 1.1rem;
   padding: 0 10px;
   color: var(--email-address-dull-color);
-}
-
-.attachments {
-  padding: 10px 0 0 0;
-  margin: 0 0 18px 0;
-}
-
-.attachHeader {
-  display: inline;
-  padding-top: 10px;
-  border-top: 1px solid var(--border-color);
-}
-
-.attachment {
-  margin: 10px 0 0 0;
-  width: 100%;
-  list-style-type: none;
-  display: flex;
-  flex-direction: row;
-}
-
-.attachmentThumb {
-  width: 130px;
-  padding: 4px;
-  border: 1px solid var(--border-color);
-  background-color: #fff;
-  background-image: linear-gradient(to bottom, #fff 0%, #f2f2f2 100%);
-  margin: 0 20px 0 0;
-  display: flex;
-  align-content: center;
-  justify-content: center;
-  line-height: 0; /* Needed, otherwise there's an extra padding at the bottom... */
-  cursor: pointer;
-}
-
-.attachmentThumb.deleted {
-  cursor: auto;
-}
-
-.attachmentThumb img {
-  image-rendering: optimizeQuality;
-}
-
-.preview-attachment {
-  font-weight: bold;
-}
-
-/* For moz-icons */
-.attachmentThumb img.mime-icon {
-  height: auto;
-  width: 48px;
-}
-
-/* For thumbnails */
-.attachmentThumb img.resize-me {
-  max-width: 120px;
-  max-height: 80px;
-}
-
-.attachActions {
-  display: inline-block;
-  margin-top: 0.5em;
-  font-size: 150%;
-}
-
-.view-all {
-  font-weight: bold;
-}
-
-.filename,
-.filesize {
-  display: block;
-}
-
-.filename {
-  font-weight: bold;
-}
-
-.filesize .messageFooter {
-  padding: 2px 10px;
 }
 
 .footerActions {

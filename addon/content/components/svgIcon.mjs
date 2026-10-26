@@ -15,6 +15,7 @@ export class SvgIcon extends HTMLElement {
       let doc = parser.parseFromString(
         `
         <template>
+          <link rel="stylesheet" href="../content/components/message/iconLinks.css?v=1" />
           <link rel="stylesheet" href="../content/conversation.css">
           <svg
             aria-hidden="false"

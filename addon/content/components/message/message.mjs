@@ -4,7 +4,6 @@
 
 import React from "react";
 import PropTypes from "prop-types";
-import { Attachments } from "./attachments.mjs";
 import { messageActions } from "../../reducer/reducerMessages.mjs";
 import { MessageDetails } from "./messageDetails.mjs";
 import { MessageHeader } from "./messageHeader.mjs";
@@ -408,11 +407,10 @@ export class Message extends React.PureComponent {
         ),
         this.props.message.expanded &&
           !!this.props.message.attachments.length &&
-          React.createElement(Attachments, {
+          React.createElement("conv-attachment-list", {
             dispatch: this.props.dispatch,
-            attachments: this.props.message.attachments,
-            attachmentsPlural: this.props.message.attachmentsPlural,
-            id: this.props.message.id,
+            msgid: this.props.message.id,
+            attachments: JSON.stringify(this.props.message.attachments),
           })
       ),
       this.props.message.expanded &&

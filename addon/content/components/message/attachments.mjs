@@ -2,8 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import React from "react";
 import { attachmentActions } from "../../reducer/reducerAttachments.mjs";
+import { messageUtils } from "../../reducer/messageUtils.mjs";
+
+/**
+ * @typedef {import("../../reducer/messageEnricher.mjs").MsgAttachment} MsgAttachment
+ */
 
 const ICON_MAPPING = new Map([
   ["application/msword", "x-office-document"],
@@ -38,8 +42,6 @@ const FALLBACK_ICON_MAPPING = new Map([
  */
 class AttachmentMoreMenu extends HTMLElement {
   static observedAttributes = ["msgid", "filename", "partname"];
-
-  static dispatch;
 
   static get fragment() {
     if (!this._template) {
@@ -88,6 +90,10 @@ class AttachmentMoreMenu extends HTMLElement {
     }
   }
 
+  disconnectedCallback() {
+    this.#connected = false;
+  }
+
   /**
    * Handles an attribute change.
    *
@@ -130,37 +136,430 @@ customElements.define("attachment-more-menu", AttachmentMoreMenu);
 
 /**
  * Handles display of an individual attachment.
- *
- * @param {object} options
- * @param {string} options.anchor
- * @param {Function} options.dispatch
- * @param {string} options.contentType
- * @param {string} options.formattedSize
- * @param {string} options.name
- * @param {number} options.size
- * @param {string} options.partName
- * @param {number} options.id
  */
-function Attachment({
-  anchor,
-  dispatch,
-  contentType,
-  formattedSize,
-  name,
-  size,
-  partName,
-  id,
-}) {
-  let [displayMenu, setDisplayMenu] = React.useState(false);
+class Attachment extends HTMLElement {
+  static observedAttributes = ["details"];
 
-  function preview() {
-    dispatch(
+  static get fragment() {
+    if (!this.#template) {
+      let parser = new DOMParser();
+
+      let doc = parser.parseFromString(
+        `
+        <template>
+          <link rel="stylesheet" href="../content/components/message/tooltip.css?v=1" />
+          <link rel="stylesheet" href="../content/components/message/iconLinks.css?v=1" />
+          <link rel="stylesheet" href="../content/components/message/attachments.css?v=1" />
+          <div class="attachmentWrapper">
+            <div class="attachmentThumb" draggable="false">
+              <img></img>
+            </div>
+            <div class="attachmentInfo align">
+              <span class="filename"></span>
+              <span class="filesize"></span>
+              <div class="attachActions" hidden>
+                <a class="icon-link preview-attachment" hidden>
+                  <svg-icon hash="visibility"></svg-icon>
+                </a>
+                <a class="icon-link download-attachment">
+                  <svg-icon hash="file_download"></svg-icon>
+                </a>
+                <a class="icon-link open-attachment">
+                  <svg-icon hash="search"></svg-icon>
+                </a>
+                <span class="attachmentsDropDown">
+                  <a class="icon-link more-attachment">
+                    <svg-icon hash="more_vert"></svg-icon>
+                  </a>
+                  <attachment-more-menu class="tooltip hidden"></attachment-more-menu>
+                </span>
+              </div>
+            </div>
+          </div>
+        </template>
+        `,
+        "text/html"
+      );
+      this.#template = document.importNode(doc.querySelector("template"), true);
+    }
+    return this.#template.content.cloneNode(true);
+  }
+
+  connectedCallback() {
+    this.#connected = true;
+    this.attachShadow({ mode: "open" });
+    this.shadowRoot.appendChild(Attachment.fragment);
+
+    this.className = "attachment";
+
+    this.shadowRoot
+      .querySelector(".preview-attachment")
+      .setAttribute(
+        "title",
+        browser.i18n.getMessage("attachments.preview.tooltip")
+      );
+    this.shadowRoot
+      .querySelector(".download-attachment")
+      .setAttribute(
+        "title",
+        browser.i18n.getMessage("attachments.download.tooltip")
+      );
+    this.shadowRoot
+      .querySelector(".open-attachment")
+      .setAttribute(
+        "title",
+        browser.i18n.getMessage("attachments.open.tooltip")
+      );
+    this.shadowRoot
+      .querySelector(".more-attachment")
+      .setAttribute(
+        "title",
+        browser.i18n.getMessage("message.moreMenu.tooltip")
+      );
+
+    this.#attachmentImageClickListener = this.#attachmentImageClick.bind(this);
+    this.shadowRoot
+      .querySelector(".attachmentThumb")
+      .addEventListener("click", this.#attachmentImageClickListener);
+    this.#previewClickListener = this.#previewAttachment.bind(this);
+    this.shadowRoot
+      .querySelector(".preview-attachment")
+      .addEventListener("click", this.#previewClickListener);
+    this.#openClickListener = this.#openAttachment.bind(this);
+    this.shadowRoot
+      .querySelector(".open-attachment")
+      .addEventListener("click", this.#openClickListener);
+    this.#downloadClickListener = this.#downloadAttachment.bind(this);
+    this.shadowRoot
+      .querySelector(".download-attachment")
+      .addEventListener("click", this.#downloadClickListener);
+    this.#displayMoreMenuListener = this.#displayMoreMenu.bind(this);
+    this.shadowRoot
+      .querySelector(".attachmentsDropDown")
+      .addEventListener("click", this.#displayMoreMenuListener);
+
+    for (let attr of Attachment.observedAttributes) {
+      this.attributeChangedCallback(attr, null, this.getAttribute(attr));
+    }
+  }
+
+  disconnectedCallback() {
+    this.#connected = false;
+    if (this.#attachmentImageClickListener) {
+      this.shadowRoot
+        .querySelector(".attachmentThumb")
+        .removeEventListener("click", this.#attachmentImageClickListener);
+      this.shadowRoot
+        .querySelector(".preview-attachment")
+        .removeEventListener("click", this.#previewClickListener);
+      this.#openClickListener = this.#openAttachment.bind(this);
+      this.shadowRoot
+        .querySelector(".download-attachment")
+        .removeEventListener("click", this.#openClickListener);
+      this.#downloadClickListener = this.#downloadAttachment.bind(this);
+      this.shadowRoot
+        .querySelector(".open-attachment")
+        .removeEventListener("click", this.#downloadClickListener);
+      this.shadowRoot
+        .querySelector(".attachmentsDropDown")
+        .removeEventListener("click", this.#displayMoreMenu);
+      this.#attachmentImageClickListener = null;
+      this.#previewClickListener = null;
+      this.#openClickListener = null;
+      this.#downloadClickListener = null;
+      this.#displayMoreMenuListener = null;
+    }
+  }
+
+  /**
+   * Handles an attribute change.
+   *
+   * @param {string} name
+   * @param {string} oldValue
+   * @param {string} newValue
+   */
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (!this.#connected) {
+      return;
+    }
+    switch (name) {
+      case "details":
+        this.#extractDetails(newValue);
+        this.#updateDetails();
+        this.#displayImage();
+        this.#setupButtons();
+        break;
+    }
+  }
+
+  /**
+   * Extracts the message information from the details attribute.
+   *
+   * @param {string} details
+   */
+  #extractDetails(details) {
+    let [msgId, index] = details.split(",");
+    let message = messageUtils.store
+      .getState()
+      .messages.msgData.find((msg) => msg.id == msgId);
+    if (!message) {
+      console.warn(`Message ${msgId} not found for attachment data`);
+      return;
+    }
+    this.#msgId = parseInt(msgId);
+    this.#attachmentDetails = message.attachments[index];
+    this.#isDeleted =
+      this.#attachmentDetails.contentType == "text/x-moz-deleted";
+    this.#isImage = this.#attachmentDetails.contentType.startsWith("image/");
+  }
+
+  /**
+   * Handles updating the general details.
+   */
+  #updateDetails() {
+    if (!this.#attachmentDetails) {
+      return;
+    }
+    this.shadowRoot.querySelector(".filesize").textContent =
+      this.#attachmentDetails.formattedSize;
+    this.shadowRoot.querySelector(".filename").textContent =
+      this.#attachmentDetails.name;
+
+    let moreMenu = this.shadowRoot.querySelector("attachment-more-menu");
+    moreMenu.setAttribute("msgId", this.#msgId.toString());
+    moreMenu.setAttribute("filename", this.#attachmentDetails.name);
+    moreMenu.setAttribute("partname", this.#attachmentDetails.partName);
+  }
+
+  /**
+   * Handles displaying the image.
+   */
+  #displayImage() {
+    if (!this.#attachmentDetails) {
+      return;
+    }
+
+    let contentType = this.#attachmentDetails.contentType;
+    let thumb = this.shadowRoot.querySelector(".attachmentThumb");
+    let image = thumb.querySelector("img");
+    if (image.src.startsWith("blob")) {
+      URL.revokeObjectURL(image.src);
+    }
+    if (contentType == "text/x-moz-deleted") {
+      thumb.classList.add("deleted");
+      image.className = "mime-icon";
+      image.src = "../content/icons/" + this.#iconForMimeType(contentType);
+      image.title = this.#attachmentDetails.name;
+      return;
+    }
+
+    if (!contentType.startsWith("image")) {
+      thumb.classList.remove("deleted");
+      image.className = "mime-icon";
+      image.src = "../content/icons/" + this.#iconForMimeType(contentType);
+      image.title = browser.i18n.getMessage("attachments.open.tooltip");
+      return;
+    }
+
+    thumb.classList.remove("deleted");
+    image.title = browser.i18n.getMessage("attachments.viewAttachment.tooltip");
+    // Blank out the image, e.g. for when changing between messages.
+    image.src = "";
+
+    (async () => {
+      let msgId = this.#msgId;
+      let partName = this.#attachmentDetails.partName;
+      if (!msgId || !partName) {
+        return;
+      }
+      let file = await browser.messages.getAttachmentFile(msgId, partName);
+
+      // TODO: Set id, partname & contentType all at the same time to avoid multiple redraws.
+      // Could we just set id & part number & get details from store?
+      if (
+        !file ||
+        this.#msgId != msgId ||
+        this.#attachmentDetails.partName != partName
+      ) {
+        return;
+      }
+      image.src = URL.createObjectURL(file);
+      image.className = "resize-me";
+    })().catch(console.error);
+  }
+
+  /**
+   * Handles setting up the buttons.
+   */
+  #setupButtons() {
+    if (!this.#attachmentDetails) {
+      return;
+    }
+
+    if (this.#isDeleted) {
+      this.shadowRoot
+        .querySelector(".attachmentThumb")
+        .classList.add("deleted");
+      this.shadowRoot
+        .querySelector(".attachmentThumb > img")
+        .setAttribute(
+          "title",
+          browser.i18n.getMessage("attachments.open.tooltip")
+        );
+      this.shadowRoot.querySelector(".attachActions").classList.add("hidden");
+      return;
+    }
+
+    let imgTitle = this.#isImage
+      ? browser.i18n.getMessage("attachments.viewAttachment.tooltip")
+      : browser.i18n.getMessage("attachments.open.tooltip");
+
+    this.shadowRoot
+      .querySelector(".attachmentThumb")
+      .classList.remove("deleted");
+    this.shadowRoot
+      .querySelector(".attachmentThumb > img")
+      .setAttribute("title", imgTitle);
+    let previewAttachmentButton = this.shadowRoot.querySelector(
+      ".preview-attachment"
+    );
+    if (this.#isImage) {
+      previewAttachmentButton.classList.remove("hidden");
+    } else {
+      previewAttachmentButton.classList.add("hidden");
+    }
+    this.shadowRoot.querySelector(".attachActions").classList.remove("hidden");
+  }
+
+  /**
+   * Returns the name of the icon for the mimeType.
+   *
+   * @param {string} mimeType
+   * @returns {string}
+   */
+  #iconForMimeType(mimeType) {
+    if (ICON_MAPPING.has(mimeType)) {
+      return ICON_MAPPING.get(mimeType) + ".svg";
+    }
+    let split = mimeType.split("/");
+    if (split.length && FALLBACK_ICON_MAPPING.has(split[0] + "/")) {
+      return FALLBACK_ICON_MAPPING.get(split[0] + "/") + ".svg";
+    }
+    return "gtk-file.png";
+  }
+
+  /**
+   * Handles clicking on the image thumb.
+   *
+   * @param {Event} event
+   */
+  #attachmentImageClick(event) {
+    if (this.#isDeleted) {
+      return;
+    }
+
+    this.#isImage
+      ? this.#previewAttachment(event)
+      : this.#openAttachment(event);
+  }
+
+  /**
+   * Handles clicking on preview attachment.
+   *
+   * @param {Event} event
+   */
+  #previewAttachment(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    messageUtils.store.dispatch(
       attachmentActions.previewAttachment({
-        name,
-        id,
-        partName,
+        id: this.#msgId,
+        partName: this.#attachmentDetails.partName,
       })
     );
+  }
+
+  /**
+   * Handles clicking on open attachment.
+   *
+   * @param {Event} event
+   */
+  #openAttachment(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    messageUtils.store.dispatch(
+      attachmentActions.openAttachment({
+        id: this.#msgId,
+        partName: this.#attachmentDetails.partName,
+      })
+    );
+  }
+
+  /**
+   * Handles clicking on download attachment.
+   *
+   * @param {Event} event
+   */
+  #downloadAttachment(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    messageUtils.store.dispatch(
+      attachmentActions.downloadAttachment({
+        id: this.#msgId,
+        partName: this.#attachmentDetails.partName,
+      })
+    );
+  }
+
+  /**
+   * Handles displaying the more menu.
+   *
+   * @param {Event} event
+   */
+  #displayMoreMenu(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.shadowRoot
+      .querySelector("attachment-more-menu")
+      .classList.remove("hidden");
+
+    if (!this.#clickOrBlurListener) {
+      this.#clickOrBlurListener = this.#clickOrBlur.bind(this);
+      document.addEventListener("click", this.#clickOrBlurListener);
+      document.addEventListener("blur", this.#clickOrBlurListener);
+      this.#keyListener = this.#keyPress.bind(this);
+      document.addEventListener("keypress", this.#keyListener);
+    }
+  }
+
+  /**
+   * Handles clearing the more menu on click or blur.
+   *
+   * @param {Event} event
+   */
+  #clickOrBlur(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.shadowRoot
+      .querySelector("attachment-more-menu")
+      .classList.add("hidden");
+
+    document.removeEventListener("click", this.#clickOrBlurListener);
+    document.removeEventListener("blur", this.#clickOrBlurListener);
+    document.removeEventListener("keypress", this.#keyListener);
+    this.#clickOrBlurListener = null;
+    this.#keyListener = null;
+  }
+
+  /**
+   * Handles clearing the more menu when escape is pressed.
+   *
+   * @param {KeyboardEvent} event
+   */
+  #keyPress(event) {
+    if (event.key == "Escape") {
+      this.#clickOrBlur(event);
+    }
   }
 
   // TODO: Fix drag n drop of attachments.
@@ -190,248 +589,205 @@ function Attachment({
   //   event.stopPropagation();
   // }
 
-  function downloadAttachment() {
-    dispatch(
-      attachmentActions.downloadAttachment({
-        id,
-        partName,
-      })
-    );
-  }
+  /** @type {?(event) => {}} */
+  #displayMoreMenuListener = null;
+  /** @type {?(event) => {}} */
+  #attachmentImageClickListener = null;
+  /** @type {?(event) => {}} */
+  #previewClickListener = null;
+  /** @type {?(event) => {}} */
+  #openClickListener = null;
+  /** @type {?(event) => {}} */
+  #downloadClickListener = null;
+  /** @type {?(event) => {}} */
+  #clickOrBlurListener = null;
+  /** @type {?(event) => {}} */
+  #keyListener = null;
 
-  function openAttachment() {
-    dispatch(
-      attachmentActions.openAttachment({
-        id,
-        partName,
-      })
-    );
-  }
+  /** @type {HTMLTemplateElement} */
+  static #template;
 
-  React.useEffect(() => {
-    function clickOrBlurListener(event) {
-      clearMenu();
-    }
-    function keyListener(event) {
-      if (event.key == "Escape") {
-        clearMenu();
-      }
-    }
-    if (displayMenu) {
-      document.addEventListener("click", clickOrBlurListener);
-      document.addEventListener("keypress", keyListener);
-      document.addEventListener("blur", clickOrBlurListener);
-    }
-    return () => {
-      document.removeEventListener("click", clickOrBlurListener);
-      document.removeEventListener("keypress", keyListener);
-      document.removeEventListener("blur", clickOrBlurListener);
-    };
-  }, [displayMenu]);
+  #connected = false;
 
-  function handleDisplayMenu(event) {
-    event.preventDefault();
-    event.stopPropagation();
-    setDisplayMenu(!displayMenu);
-  }
-
-  function clearMenu() {
-    setDisplayMenu(false);
-  }
-
-  function iconForMimeType(mimeType) {
-    if (ICON_MAPPING.has(mimeType)) {
-      return ICON_MAPPING.get(mimeType) + ".svg";
-    }
-    let split = mimeType.split("/");
-    if (split.length && FALLBACK_ICON_MAPPING.has(split[0] + "/")) {
-      return FALLBACK_ICON_MAPPING.get(split[0] + "/") + ".svg";
-    }
-    return "gtk-file.png";
-  }
-
-  let isDeleted = contentType == "text/x-moz-deleted";
-
-  let isImage = contentType.startsWith("image/");
-  let imgTitle = isImage
-    ? browser.i18n.getMessage("attachments.viewAttachment.tooltip")
-    : browser.i18n.getMessage("attachments.open.tooltip");
-
-  let [thumb, setThumb] = React.useState(null);
-  let [imgClass, setImgClass] = React.useState(null);
-  React.useEffect(() => {
-    if (isImage) {
-      // TODO: Can we load images separately and make them available later,
-      // so that we're not relying on having the url here. This would
-      // mean we can use browser.messages.listAttachments.
-      (async () => {
-        let file = await browser.messages.getAttachmentFile(id, partName);
-        setThumb(URL.createObjectURL(file));
-        setImgClass("resize-me");
-      })();
-    } else {
-      setThumb("../content/icons/" + iconForMimeType(contentType));
-      setImgClass("mime-icon");
-    }
-  }, [id, contentType, partName]);
-
-  // TODO: Drag n drop
-  // onDragStart={this.onDragStart}
-  return React.createElement(
-    "li",
-    { className: "attachment" },
-    isDeleted &&
-      React.createElement(
-        "div",
-        { className: "attachmentThumb deleted", draggable: "false" },
-        React.createElement("img", {
-          className: imgClass,
-          src: thumb,
-          title: name,
-        })
-      ),
-    !isDeleted &&
-      React.createElement(
-        "div",
-        {
-          className: "attachmentThumb",
-          draggable: "false",
-          onClick: isImage ? preview : openAttachment,
-        },
-        React.createElement("img", {
-          className: imgClass,
-          src: thumb,
-          title: imgTitle,
-        })
-      ),
-    React.createElement(
-      "div",
-      { className: "attachmentInfo align" },
-      React.createElement("span", { className: "filename" }, name),
-      React.createElement("span", { className: "filesize" }, formattedSize),
-      !isDeleted &&
-        React.createElement(
-          "div",
-          { className: "attachActions" },
-          isImage &&
-            React.createElement(
-              "a",
-              {
-                className: "icon-link preview-attachment",
-                title: browser.i18n.getMessage("attachments.preview.tooltip"),
-                onClick: preview,
-              },
-              React.createElement("svg-icon", { hash: "visibility" })
-            ),
-          React.createElement(
-            "a",
-            {
-              className: "icon-link download-attachment",
-              title: browser.i18n.getMessage("attachments.download.tooltip"),
-              onClick: downloadAttachment,
-            },
-            React.createElement("svg-icon", { hash: "file_download" })
-          ),
-          React.createElement(
-            "a",
-            {
-              className: "icon-link open-attachment",
-              title: browser.i18n.getMessage("attachments.open.tooltip"),
-              onClick: openAttachment,
-            },
-            React.createElement("svg-icon", { hash: "search" })
-          ),
-          React.createElement(
-            "span",
-            { className: "attachmentsDropDown" },
-            React.createElement(
-              "a",
-              {
-                className: "icon-link more-attachment",
-                title: browser.i18n.getMessage("attachments.moreMenu.tooltip"),
-                onClick: handleDisplayMenu,
-              },
-              React.createElement("svg-icon", { hash: "more_vert" })
-            ),
-            displayMenu &&
-              React.createElement("attachment-more-menu", {
-                className: "tooltip",
-                msgid: id,
-                filename: name,
-                partname: partName,
-              })
-          )
-        )
-    )
-  );
+  /** @type {number} */
+  #msgId;
+  /** @type {?MsgAttachment} */
+  #attachmentDetails = null;
+  #isImage = false;
+  #isDeleted = false;
 }
+customElements.define("conv-attachment", Attachment);
 
 /**
  * Handles display of attachments within a message, including options that
  * apply to all attachments.
- *
- * @param {object} options
- * @param {Function} options.dispatch
- * @param {object[]} options.attachments
- * @param {string} options.attachmentsPlural
- * @param {number} options.id
  */
-export function Attachments({ dispatch, attachments, attachmentsPlural, id }) {
-  function showGalleryView() {
-    dispatch(attachmentActions.showGalleryView({ id }));
+class AttachmentList extends HTMLElement {
+  static observedAttributes = ["msgid", "attachments"];
+
+  static get fragment() {
+    if (!this.#template) {
+      let parser = new DOMParser();
+
+      let doc = parser.parseFromString(
+        `
+        <template>
+          <link rel="stylesheet" href="../content/components/message/iconLinks.css?v=1" />
+          <link rel="stylesheet" href="../content/components/message/attachments.css?v=1" />
+          <ul class="attachments">
+            <div class="attachHeader">
+              &nbsp;
+              <a class="icon-link download-all">
+                <svg-icon hash="file_download"></svg-icon> 
+              </a>
+              <a class="icon-link view-all">
+                <svg-icon hash="photo_library"></svg-icon> 
+              </a>
+            </div>
+          </ul>
+        </template>
+        `,
+        "text/html"
+      );
+      this.#template = document.importNode(doc.querySelector("template"), true);
+    }
+    return this.#template.content.cloneNode(true);
   }
 
-  function downloadAll() {
-    dispatch(
+  connectedCallback() {
+    this.#connected = true;
+    this.attachShadow({ mode: "open" });
+    this.shadowRoot.appendChild(AttachmentList.fragment);
+
+    for (let attr of AttachmentList.observedAttributes) {
+      this.attributeChangedCallback(attr, null, this.getAttribute(attr));
+    }
+
+    this.#downloadAllListener = this.#downloadAll.bind(this);
+    this.shadowRoot
+      .querySelector(".download-all")
+      .addEventListener("click", this.#downloadAllListener);
+    this.#viewAllListener = this.#viewAll.bind(this);
+    this.shadowRoot
+      .querySelector(".view-all")
+      .addEventListener("click", this.#viewAllListener);
+  }
+
+  disconnectedCallback() {
+    this.#connected = false;
+    if (this.#downloadAllListener) {
+      this.shadowRoot
+        .querySelector(".download-all")
+        .removeEventListener("click", this.#downloadAllListener);
+      this.#downloadAllListener = null;
+      this.shadowRoot
+        .querySelector(".view-all")
+        .removeEventListener("click", this.#viewAllListener);
+      this.#viewAllListener = null;
+    }
+  }
+
+  /**
+   * Handles an attribute change.
+   *
+   * @param {string} name
+   * @param {string} oldValue
+   * @param {string} newValue
+   */
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (!this.#connected) {
+      return;
+    }
+    switch (name) {
+      case "msgid":
+        this.#msgId = parseInt(newValue);
+        this.#updateView();
+        break;
+      case "attachments":
+        this.#attachments = JSON.parse(newValue);
+        this.#updateView();
+        break;
+    }
+  }
+
+  #updateView() {
+    if (!this.#attachments) {
+      return;
+    }
+
+    let message = messageUtils.store
+      .getState()
+      .messages.msgData.find((msg) => msg.id == this.#msgId);
+    this.shadowRoot.querySelector(".attachHeader").firstChild.textContent =
+      message.attachmentsPlural;
+    this.shadowRoot
+      .querySelector(".view-all")
+      .classList.toggle(
+        "hidden",
+        !this.#attachments.some((a) => a.contentType.startsWith("image"))
+      );
+
+    let attachmentElements =
+      this.shadowRoot.querySelectorAll("conv-attachment");
+
+    let attachmentsWrapper = this.shadowRoot.querySelector(".attachments");
+    for (let i = 0; i < this.#attachments.length; i++) {
+      if (attachmentElements.length > i) {
+        let element = attachmentElements[i];
+        element.setAttribute("details", `${this.#msgId},${i}`);
+      } else {
+        let element = document.createElement("conv-attachment");
+        element.setAttribute("details", `${this.#msgId},${i}`);
+        attachmentsWrapper.append(element);
+      }
+    }
+    for (
+      let i = attachmentElements.length - 1;
+      i >= this.#attachments.length;
+      i--
+    ) {
+      attachmentElements[i].remove();
+    }
+  }
+
+  /**
+   * Handles the download all button action.
+   */
+  #downloadAll() {
+    let message = messageUtils.store
+      .getState()
+      .messages.msgData.find((msg) => msg.id == this.#msgId);
+    messageUtils.store.dispatch(
       attachmentActions.downloadAll({
-        id,
-        partNames: attachments.map((a) => a.partName),
+        id: this.#msgId,
+        partNames: message.attachments.map((a) => a.partName),
       })
     );
   }
 
-  const showGalleryLink = attachments.some((a) =>
-    a.contentType.startsWith("image/")
-  );
-  return React.createElement(
-    "ul",
-    { className: "attachments" },
-    React.createElement(
-      "div",
-      { className: "attachHeader" },
-      attachmentsPlural,
-      React.createElement(
-        "a",
-        {
-          className: "icon-link download-all",
-          onClick: downloadAll,
-          title: browser.i18n.getMessage("attachments.downloadAll.tooltip"),
-        },
-        React.createElement("svg-icon", { hash: "file_download" })
-      ),
-      showGalleryLink &&
-        React.createElement(
-          "a",
-          {
-            onClick: showGalleryView,
-            className: "icon-link view-all",
-            title: browser.i18n.getMessage("attachments.gallery.tooltip"),
-          },
-          React.createElement("svg-icon", { hash: "photo_library" })
-        )
-    ),
-    attachments.map((attachment) =>
-      React.createElement(Attachment, {
-        anchor: attachment.anchor,
-        dispatch,
-        key: attachment.anchor,
-        contentType: attachment.contentType,
-        formattedSize: attachment.formattedSize,
-        id,
-        name: attachment.name,
-        partName: attachment.partName,
-        size: attachment.size,
+  /**
+   * Handles the view all button action
+   */
+  #viewAll() {
+    messageUtils.store.dispatch(
+      attachmentActions.showGalleryView({
+        id: this.#msgId,
       })
-    )
-  );
+    );
+  }
+
+  #connected = false;
+  /** @type {number} */
+  #msgId;
+  /** @type {MsgAttachment[]} */
+  #attachments;
+
+  /** @type {(Event) => void} */
+  #downloadAllListener = null;
+  /** @type {(Event) => void} */
+  #viewAllListener = null;
+
+  /** @type {HTMLTemplateElement} */
+  static #template;
 }
+customElements.define("conv-attachment-list", AttachmentList);

@@ -3,7 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 export const attachmentActions = {
-  previewAttachment({ id, name, partName }) {
+  previewAttachment({ id, partName }) {
     return async (dispatch, getState) => {
       let msgUri = await browser.conversations.getMessageUriForId(id);
       let searchParams = new URLSearchParams({

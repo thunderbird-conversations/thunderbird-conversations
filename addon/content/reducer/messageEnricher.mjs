@@ -4,6 +4,17 @@
 
 import { messageUtils } from "./messageUtils.mjs";
 
+/**
+ * @typedef {object} MsgAttachment
+ *   A message attachment record.
+ * @property {number} size
+ * @property {string} contentType
+ * @property {string} formattedSize
+ * @property {string} name
+ * @property {string} partName
+ * @property {string} anchor
+ */
+
 const RE_BZ_BUG_LINK = /^https:\/\/.*?\/show_bug.cgi\?id=[0-9]*/;
 const RE_BZ_COMMENT = /^--- Comment #\d+ from .* \d{4}.*? ---([\s\S]*)/m;
 const RE_LIST_POST = /<mailto:([^>]+)>/;
@@ -17,7 +28,7 @@ const kExpandAuto = 4;
 const kSnippetLength = 700;
 
 /**
- * @typedef FullMessageDetails
+ * @typedef {object} FullMessageDetails
  * @property {number} id
  * @property {number} initialPosition
  * @property {string} type
@@ -594,6 +605,7 @@ export class MessageEnricher {
     }
 
     let l = attachments.length;
+    /** @type {MsgAttachment[]} */
     let newAttachments = [];
 
     for (let i = 0; i < l; i++) {

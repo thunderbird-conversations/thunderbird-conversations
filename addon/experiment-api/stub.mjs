@@ -101,6 +101,7 @@ document.addEventListener(
     let { ContactDetail } =
       await import("../content/components/contactDetail.mjs");
     ContactDetail.dispatch = storeUtils.store.dispatch;
+    await import("../content/components/message/attachments.mjs");
     await import("../content/components/message/messageActionButton.mjs");
     await import("../content/components/message/messageHeaderOptions.mjs");
     await import("../content/components/message/messageTags.mjs");
