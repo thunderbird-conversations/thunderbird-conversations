@@ -441,8 +441,13 @@ export const messageActions = {
         );
         msgs = msgs.map((m) => m.id);
       }
+      // Thunderbird forwards `isUserAction` as the `allowUndo` argument of
+      // `nsIMsgFolder.deleteMessages`. That is what lets a same-server online
+      // IMAP delete do the local move instead of waiting for the round-trip to
+      // the server, and it is also what puts an entry in Edit > Undo. See
+      // https://github.com/thunderbird-conversations/thunderbird-conversations/issues/2469
       try {
-        await browser.messages.delete(msgs);
+        await browser.messages.delete(msgs, { isUserAction: true });
       } catch (ex) {
         console.error(ex);
       }

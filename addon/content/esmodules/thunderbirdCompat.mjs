@@ -199,6 +199,13 @@ if (!browser.tabs) {
         id: "135246",
       };
     },
+    async query(queryInfo) {
+      return [
+        {
+          id: "135246",
+        },
+      ];
+    },
     async remove() {},
   };
 }
@@ -480,6 +487,8 @@ if (!browser.messages) {
       };
     },
     async update(id) {},
+    async delete(ids, options) {},
+    async archive(ids) {},
   };
 }
 
