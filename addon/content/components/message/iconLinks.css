@@ -1,0 +1,24 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
+
+.icon {
+  display: inline-block;
+  fill: currentColor;
+  height: 1.5em;
+  vertical-align: -0.4em;
+  pointer-events: none;
+}
+.icon.active {
+  fill: #3079e0;
+}
+
+.icon-link {
+  display: inline-block;
+  color: var(--dull-foreground-color);
+}
+
+.icon-link:focus,
+.icon-link:hover {
+  color: -moz-CellHighlight;
+}

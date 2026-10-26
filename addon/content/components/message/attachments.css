@@ -1,0 +1,118 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
+
+.hidden {
+  display: none !important;
+}
+
+.attachments {
+  padding: 10px 0 0 0;
+  margin: 0 0 18px 0;
+}
+
+.attachHeader {
+  display: inline;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-color);
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+.attachmentsDropDown {
+  position: relative;
+}
+
+/** Override tooltip.css */
+.arrow {
+  left: 0.5em;
+  right: auto;
+}
+
+html[dir="rtl"] .arrow {
+  right: 0.5em;
+  left: auto;
+}
+
+.tooltip {
+  min-width: 15.2em;
+  font-size: 1.2rem;
+  left: -1px;
+  right: auto;
+  top: 2.6rem;
+  line-height: 1.8;
+}
+
+html[dir="rtl"] .tooltip {
+  left: auto;
+  right: 1px;
+}
+/** End override tooltip.css */
+
+.attachmentWrapper {
+  display: flex;
+  flex-direction: row;
+  margin: 10px 0 0 0;
+  width: 100%;
+  list-style-type: none;
+}
+
+.attachmentThumb {
+  width: 130px;
+  padding: 4px;
+  border: 1px solid var(--border-color);
+  background-color: #fff;
+  background-image: linear-gradient(to bottom, #fff 0%, #f2f2f2 100%);
+  margin: 0 20px 0 0;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  line-height: 0; /* Needed, otherwise there's an extra padding at the bottom... */
+  cursor: pointer;
+}
+
+.attachmentThumb.deleted {
+  cursor: auto;
+}
+
+.attachmentThumb img {
+  image-rendering: optimizeQuality;
+}
+
+.preview-attachment {
+  font-weight: bold;
+}
+
+/* For moz-icons */
+.attachmentThumb img.mime-icon {
+  height: auto;
+  width: 48px;
+}
+
+/* For thumbnails */
+.attachmentThumb img.resize-me {
+  max-width: 120px;
+  max-height: 80px;
+}
+
+.attachActions {
+  display: inline-block;
+  margin-top: 0.5em;
+  font-size: 150%;
+}
+
+.view-all {
+  font-weight: bold;
+}
+
+.filename,
+.filesize {
+  display: block;
+}
+
+.filename {
+  font-weight: bold;
+}
