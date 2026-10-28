@@ -64,6 +64,16 @@
     "description": "Options - description for if to show friendly dates."
   },
 
+  "options.show_own_name_title": {
+    "message": "Show my name instead of \"Me\"",
+    "description": "Options - title for if to show the user's own name instead of \"Me\"."
+  },
+
+  "options.show_own_name_desc": {
+    "message": "For messages from or to one of your accounts, show the account's name instead of \"Me\".",
+    "description": "Options - description for if to show the user's own name instead of \"Me\"."
+  },
+
   "options.tweak_chrome_title": {
     "message": "Tweak chrome fonts",
     "description": "Options - title for tweaking chrome fonts."

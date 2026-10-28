@@ -62,6 +62,14 @@ const PREFS_INFO = [
   },
   {
     props: {
+      title: "options.show_own_name_title",
+      desc: "options.show_own_name_desc",
+      name: "show_own_name",
+    },
+    component: "binary-option",
+  },
+  {
+    props: {
       title: "options.tweak_chrome_title",
       desc: "options.tweak_chrome_desc",
       name: "tweak_chrome",

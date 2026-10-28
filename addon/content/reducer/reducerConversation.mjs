@@ -188,7 +188,10 @@ export const conversationActions = {
 
         // The messages inside `msgData` don't come with filled in `to`/`from`/etc.
         // fields. We need to fill them in ourselves.
-        await mergeContactDetails(enrichedMsgs);
+        await mergeContactDetails(
+          enrichedMsgs,
+          currentState.summary.prefs.showOwnName
+        );
 
         summary.loading = false;
         summary.subject = enrichedMsgs[enrichedMsgs.length - 1]?.subject;
@@ -274,7 +277,10 @@ export const conversationActions = {
 
       // The messages inside `msgData` don't come with filled in `to`/`from`/ect. fields.
       // We need to fill them in ourselves.
-      await mergeContactDetails(enrichedMsgs);
+      await mergeContactDetails(
+        enrichedMsgs,
+        currentState.summary.prefs.showOwnName
+      );
 
       await dispatch(
         messageActions.addMessages({

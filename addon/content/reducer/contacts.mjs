@@ -19,6 +19,8 @@ import { messageActions } from "./reducerMessages.mjs";
  *   The name from the email address.
  * @param {boolean} root0.showCondensed
  *   Whether or not to show condensed names.
+ * @param {boolean} root0.showOwnName
+ *   Whether to show the name of the user's own identities instead of "Me".
  */
 async function enrichWithDisplayData({
   contact = {},
@@ -26,10 +28,11 @@ async function enrichWithDisplayData({
   field,
   nameFromEmail,
   showCondensed,
+  showOwnName,
 }) {
   // `name` is the only attribute that depend on `position`
   let name = contact.name || nameFromEmail || email;
-  if (contact.identityId !== undefined) {
+  if (contact.identityId !== undefined && !showOwnName) {
     name =
       field === "from"
         ? browser.i18n.getMessage("message.meFromMeToSomeone")
@@ -56,8 +59,10 @@ async function enrichWithDisplayData({
  * message object itself.
  *
  * @param {object[]} msgData
+ * @param {boolean} [showOwnName]
+ *   Whether to show the name of the user's own identities instead of "Me".
  */
-export async function mergeContactDetails(msgData) {
+export async function mergeContactDetails(msgData, showOwnName = false) {
   let showCondensed = await browser.conversations.getCorePref(
     "mail.showCondensedAddresses"
   );
@@ -139,6 +144,7 @@ export async function mergeContactDetails(msgData) {
             field,
             nameFromEmail: name,
             showCondensed,
+            showOwnName,
           });
 
           return data;

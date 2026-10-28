@@ -8,6 +8,7 @@ export const kPrefDefaults = {
   hide_quote_length: 5,
   expand_who: 4, // kExpandAuto
   no_friendly_date: false,
+  show_own_name: false,
   uninstall_infos: "{}",
   logging_enabled: false,
   tweak_bodies: true,
