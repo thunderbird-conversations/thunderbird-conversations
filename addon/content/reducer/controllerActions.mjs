@@ -524,6 +524,7 @@ async function setupUserPreferences(dispatch, getState) {
         noFriendlyDate: newPrefs.preferences?.no_friendly_date ?? false,
         operateOnConversations:
           newPrefs.preferences?.operate_on_conversations ?? false,
+        showMessageId: newPrefs.preferences?.show_message_id ?? false,
         tweakBodies: newPrefs.preferences?.tweak_bodies ?? true,
         tweakChrome: newPrefs.preferences?.tweak_chrome ?? true,
       })

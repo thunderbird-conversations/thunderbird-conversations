@@ -102,6 +102,14 @@ const PREFS_INFO = [
   },
   {
     props: {
+      title: "options.show_message_id_title",
+      desc: "options.show_message_id_desc",
+      name: "show_message_id",
+    },
+    component: "binary-option",
+  },
+  {
+    props: {
       title: "options.disable_between_column_title",
       desc: "options.disable_between_column_desc",
       name: "disableBetweenColumn",

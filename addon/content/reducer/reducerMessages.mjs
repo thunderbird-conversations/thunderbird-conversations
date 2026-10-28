@@ -603,6 +603,9 @@ export const messageActions = {
           "user-agent",
           "reply-to",
         ];
+        if (getState().summary.prefs.showMessageId) {
+          interestingHeaders.push("message-id");
+        }
         for (const h of interestingHeaders) {
           if (h in msg.headers) {
             let key = h;

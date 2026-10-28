@@ -37,6 +37,7 @@ export const initialSummary = {
     loggingEnabled: false,
     noFriendlyDate: false,
     operateOnConversations: false,
+    showMessageId: false,
     tweakBodies: true,
     tweakChrome: true,
   },

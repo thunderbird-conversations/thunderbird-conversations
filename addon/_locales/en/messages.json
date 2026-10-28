@@ -114,6 +114,16 @@
     "description": "Options - description for hiding the quick reply display."
   },
 
+  "options.show_message_id_title": {
+    "message": "Show the Message-ID",
+    "description": "Options - title for showing the Message-ID header in the message details."
+  },
+
+  "options.show_message_id_desc": {
+    "message": "Include the Message-ID header in the details shown when you click the details button of a message.",
+    "description": "Options - description for showing the Message-ID header in the message details."
+  },
+
   "options.disable_between_column_title": {
     "message": "Disable Between Column",
     "description": "Options - title for disabling the between column."
