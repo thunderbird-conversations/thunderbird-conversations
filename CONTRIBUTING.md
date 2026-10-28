@@ -1,6 +1,12 @@
-# Contributing to the Conversations For Thunderbird project
+# Contributing Terms
 
-We love pull requests from everyone.
+While this project welcomes contributions and new contributors, We insist that any contributions larger than a few lines - in particular new features or any significant rearchitecting or reorganization of the codebase - must begin with a discussion in the issue tracker that establishes the goals, scope, constraints and testing required for that change to be accepted.
+
+Because generating code is so much easier than understanding, debugging and maintaining that code over the long term, large contributions offered before we have a reasonable consensus about success conditions and acceptance criteria will be rejected without further review.
+
+Please also see the [Maintenance Terms](MAINTENANCE-TERMS.md).
+
+# Contributing to the Conversations For Thunderbird project
 
 - Fork the repository.
 - Follow the instructions in the [Development doc](docs/Development.md) to clone, just use the newly clone repository URL for your clone.
