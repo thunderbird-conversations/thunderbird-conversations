@@ -159,7 +159,10 @@ export class ActionButton extends HTMLElement {
         browser.messages.archive([msgId]).catch(console.error);
         break;
       case "delete":
-        browser.messages.delete([msgId]).catch(console.error);
+        // For `isUserAction`, see `deleteConversation` in reducerMessages.mjs.
+        browser.messages
+          .delete([msgId], { isUserAction: true })
+          .catch(console.error);
         break;
       case "classic":
         browser.messageDisplay.open({ messageId: msgId }).catch(console.error);
