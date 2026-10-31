@@ -380,34 +380,92 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
         async downloadAllAttachments({ winId, tabId, msgId, partNames }) {
           let msgHdr = context.extension.messageManager.get(msgId);
 
-          let tabObject = context.extension.tabManager.get(tabId);
-          let contentWin = (
-            tabObject.nativeTab.chromeBrowser ?? tabObject.nativeTab.browser
-          ).contentWindow;
+          // Thunderbird 140 & 141 support
+          if (Services.vc.compare(Services.appinfo.version, "142.0a1") < 1) {
+            let { win } = getWinBrowserFromIds(context, winId, tabId);
+            let attachments = await new Promise((resolve) => {
+              lazy.MsgHdrToMimeMessage(
+                msgHdr,
+                null,
+                async (aMsgHdr, aMimeMsg) => {
+                  if (!aMimeMsg) {
+                    return;
+                  }
+                  resolve(aMimeMsg.allUserAttachments);
+                }
+              );
+            });
+            let msgUri = msgHdrGetUri(msgHdr);
+            let attachMessenger = Cc["@mozilla.org/messenger;1"].createInstance(
+              Ci.nsIMessenger
+            );
+            attachMessenger.setWindow(
+              win,
+              Cc["@mozilla.org/messenger/msgwindow;1"].createInstance(
+                Ci.nsIMsgWindow
+              )
+            );
 
-          let allAttachments = await findAllAttachments(msgHdr, partNames);
-          let finalAttachmentInfo = [];
-          for (let attachment of allAttachments) {
-            // Exclude attachment which are 1) deleted, or 2) detached with missing
-            // external files, unless copying urls.
-            if (
-              attachment.contentType == "text/x-moz-deleted" ||
-              attachment.url?.startsWith("file://") ||
-              !partNames.includes(attachment.partName)
-            ) {
-              continue;
+            // Taken from HandleMultipleAttachments
+            // https://searchfox.org/comm-central/rev/9548311ac3161a8801fa61785c7185eb278b5bbb/mail/base/content/msgHdrView.js#2154
+
+            let contentTypeArray = [];
+            let urlArray = [];
+            let displayNameArray = [];
+            let messageUriArray = [];
+
+            for (let [i, attachment] of attachments.entries()) {
+              // Exclude attachment which are 1) deleted, or 2) detached with missing
+              // external files, unless copying urls.
+              if (
+                attachment.contentType == "text/x-moz-deleted" ||
+                attachment.url?.startsWith("file://")
+              ) {
+                continue;
+              }
+
+              contentTypeArray[i] = attachment.contentType;
+              urlArray[i] = attachment.url;
+              displayNameArray[i] = encodeURI(attachment.name);
+              messageUriArray[i] = msgUri;
             }
 
-            finalAttachmentInfo.push(getAttachmentInfo(msgHdr, attachment));
+            attachMessenger.saveAllAttachments(
+              contentTypeArray,
+              urlArray,
+              displayNameArray,
+              messageUriArray
+            );
+          } else {
+            let tabObject = context.extension.tabManager.get(tabId);
+            let contentWin = (
+              tabObject.nativeTab.chromeBrowser ?? tabObject.nativeTab.browser
+            ).contentWindow;
+
+            let allAttachments = await findAllAttachments(msgHdr, partNames);
+            let finalAttachmentInfo = [];
+            for (let attachment of allAttachments) {
+              // Exclude attachment which are 1) deleted, or 2) detached with missing
+              // external files, unless copying urls.
+              if (
+                attachment.contentType == "text/x-moz-deleted" ||
+                attachment.url?.startsWith("file://") ||
+                !partNames.includes(attachment.partName)
+              ) {
+                continue;
+              }
+
+              finalAttachmentInfo.push(getAttachmentInfo(msgHdr, attachment));
+            }
+            if (!findAllAttachments) {
+              console.warn("No attachments found to save after filtering");
+              return;
+            }
+            lazy.AttachmentInfo.saveAttachments(
+              finalAttachmentInfo,
+              contentWin.browsingContext
+            );
           }
-          if (!findAllAttachments) {
-            console.warn("No attachments found to save after filtering");
-            return;
-          }
-          lazy.AttachmentInfo.saveAttachments(
-            finalAttachmentInfo,
-            contentWin.browsingContext
-          );
         },
         async downloadAttachment({ winId, tabId, msgId, partName }) {
           let msgHdr = context.extension.messageManager.get(msgId);
@@ -432,7 +490,24 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           let attachment = await findAttachment(msgHdr, partName);
 
           let attachmentInfo = getAttachmentInfo(msgHdr, attachment);
-          attachmentInfo.detachFromMessage(win.browsingContext);
+          if ("detachFromMessage" in attachmentInfo) {
+            attachmentInfo.detachFromMessage(win.browsingContext);
+          } else {
+            // Supports Thunderbird 141 and earlier.
+
+            // Unfortunately, we still need a messenger with a msgWindow for
+            // this to work.
+            let attachMessenger = Cc["@mozilla.org/messenger;1"].createInstance(
+              Ci.nsIMessenger
+            );
+            attachMessenger.setWindow(
+              win,
+              Cc["@mozilla.org/messenger/msgwindow;1"].createInstance(
+                Ci.nsIMsgWindow
+              )
+            );
+            attachmentInfo.detach(attachMessenger, true);
+          }
         },
         async makeFriendlyDateAgo(date) {
           return lazy.makeFriendlyDateAgo(new Date(date));
@@ -534,7 +609,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
               "@mozilla.org/messengercompose/quoting;1"
             ].createInstance(Ci.nsIMsgQuote);
             try {
-              // @backward-compat For Thunderbird 156 & earlier compatibility.
+              // For Thunderbird 156 & earlier compatibility.
               quoter.quoteMessage(
                 msgUri,
                 false,
@@ -608,8 +683,11 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
         },
         async fireLoadCompleted({ winId, tabId }) {
           let { msgBrowser } = getWinBrowserFromIds(context, winId, tabId);
-          msgBrowser.documentGlobal.dispatchEvent(
-            new msgBrowser.documentGlobal.CustomEvent("MsgsLoaded", {
+          // Thunderbird compatibility with pre-152, where ownerGlobal was changed to
+          // documentGlobal.
+          let docGlobal = msgBrowser.documentGlobal ?? msgBrowser.ownerGlobal;
+          docGlobal.dispatchEvent(
+            new docGlobal.CustomEvent("MsgsLoaded", {
               bubbles: true,
             })
           );

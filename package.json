@@ -10,7 +10,7 @@
     "url": "https://github.com/thunderbird-conversations/thunderbird-conversations/issues"
   },
   "engines": {
-    "thunderbird": ">=153.0a1"
+    "thunderbird": ">=128.0a1"
   },
   "private": true,
   "type": "module",
