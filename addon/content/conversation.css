@@ -495,49 +495,6 @@ html[dir="rtl"] .dropDown .arrow {
   cursor: pointer;
 }
 
-.notificationBar {
-  padding: 10px;
-  margin: 0 0 10px 0;
-  border-width: 1px 0;
-  border-style: solid;
-  border-color: var(--border-color);
-  background-color: var(--notification-bar-background-color);
-  color: var(--notification-bar-foreground-color);
-}
-
-.openpgpBar {
-  background-color: rgb(215, 0, 34);
-  color: white;
-}
-
-.phishingBar {
-  background-color: #ed6666;
-}
-
-.notificationBar button {
-  padding: 0 5px;
-  margin: 0 3px 0 0;
-}
-
-.notificationBar a {
-  text-decoration: underline;
-  font-weight: bold;
-  color: var(--notification-bar-foreground-color);
-  cursor: pointer;
-}
-
-.notificationBar > svg-icon::part(svg) {
-  font-size: 1.8em;
-}
-
-.openpgpBar > svg-icon::part(svg) {
-  font-size: 1em;
-}
-
-.calendarImipButton {
-  float: inline-end;
-}
-
 .detailsLine {
   font-size: 1.1rem;
   padding: 0 10px;

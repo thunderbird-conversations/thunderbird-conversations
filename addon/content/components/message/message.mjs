@@ -350,7 +350,7 @@ export class Message extends React.PureComponent {
           hasRemoteContent: this.props.message.hasRemoteContent,
           isPhishing: this.props.message.isPhishing,
           isOutbox: this.props.message.isOutbox,
-          id: this.props.message.id,
+          msgid: this.props.message.id,
           realFrom: this.props.message.realFrom,
         }),
       React.createElement(

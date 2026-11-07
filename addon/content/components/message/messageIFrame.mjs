@@ -647,7 +647,7 @@ export class MessageIFrame extends React.Component {
         // this intended frame... maybe. iframeNames don't seem to get refreshed
         // because we cache the listeners. Maybe need something more generic
         // especially when switching messages.
-        id: this.props.id,
+        msgId: this.props.id,
         hasRemoteContent: true,
       })
     );

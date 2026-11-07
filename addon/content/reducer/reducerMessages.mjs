@@ -477,23 +477,23 @@ export const messageActions = {
       }
     };
   },
-  showRemoteContent({ id }) {
+  showRemoteContent({ msgId }) {
     return async (dispatch) => {
-      await browser.conversations.showRemoteContent(id);
+      await browser.conversations.showRemoteContent(msgId);
       await dispatch(
         messagesSlice.actions.setHasRemoteContent({
-          id,
+          msgId,
           hasRemoteContent: false,
         })
       );
     };
   },
-  alwaysShowRemoteContent({ id, realFrom }) {
+  alwaysShowRemoteContent({ msgId, realFrom }) {
     return async (dispatch) => {
       await browser.conversations.alwaysShowRemoteContent(realFrom);
       await dispatch(
         messagesSlice.actions.setHasRemoteContent({
-          id,
+          msgId,
           hasRemoteContent: false,
         })
       );
@@ -735,7 +735,7 @@ export const messagesSlice = RTK.createSlice({
       };
     },
     setHasRemoteContent(state, { payload }) {
-      return modifyOnlyMsg(state, payload.id, (msg) => ({
+      return modifyOnlyMsg(state, payload.msgId, (msg) => ({
         ...msg,
         hasRemoteContent: payload.hasRemoteContent,
       }));

@@ -4,84 +4,131 @@
 
 import React from "react";
 import { messageActions } from "../../reducer/reducerMessages.mjs";
+import { SvgIcon } from "../svgIcon.mjs";
+import { messageUtils } from "../../reducer/messageUtils.mjs";
 
 /**
- * Handles display of the remote content notification.
- *
- * @param {object} options
- * @param {Function} options.dispatch
- * @param {number} options.id
- * @param {string} options.realFrom
+ * A generic handler for notifications.
  */
-function RemoteContentNotification({ dispatch, id, realFrom }) {
-  function onShowRemote() {
-    dispatch(messageActions.showRemoteContent({ id }));
+class GenericNotification extends HTMLElement {
+  static observedAttributes = ["msgid"];
+
+  connectedCallback() {
+    this.connected = true;
+    this.attachShadow({ mode: "open" });
+
+    let css = document.createElement("link");
+    css.rel = "stylesheet";
+    css.href = "../content/components/message/messageNotification.css";
+    this.shadowRoot.appendChild(css);
+
+    let wrapper = document.createElement("div");
+    wrapper.classList.add("notificationBar");
+
+    this.#icon = /** @type {SvgIcon} */ (document.createElement("svg-icon"));
+    wrapper.appendChild(this.#icon);
+
+    this.#notificationTextNode = document.createTextNode("");
+    wrapper.appendChild(this.#notificationTextNode);
+    wrapper.appendChild(document.createTextNode(" "));
+
+    this.#buttonWrapper = document.createElement("span");
+    this.#buttonWrapper.className = "button-wrapper";
+    wrapper.appendChild(this.#buttonWrapper);
+
+    this.#wrapper = wrapper;
+    this.#applyProperties();
+
+    this.shadowRoot.appendChild(wrapper);
+
+    if (this.hasAttribute("msgid")) {
+      this.#applyProperties();
+    }
   }
 
-  function onAlwaysShowRemote() {
-    dispatch(messageActions.alwaysShowRemoteContent({ id, realFrom }));
+  disconnectedCallback() {
+    this.connected = false;
+    this.#notificationTextNode = null;
+    this.#buttonWrapper = null;
+    this.#icon = null;
   }
 
-  return React.createElement(
-    "div",
-    { className: "remoteContent notificationBar" },
-    browser.i18n.getMessage("notification.remoteContentBlockedMsg") + " ",
-    React.createElement(
-      "span",
-      { className: "show-remote-content" },
-      React.createElement(
-        "a",
-        { className: "link", onClick: onShowRemote },
+  /**
+   * @typedef {object} NotificationButton
+   * @property {"a" | "button"} type
+   * @property {string} id
+   * @property {string} title
+   */
 
-        browser.i18n.getMessage("notification.showRemote")
-      ),
-      " - "
-    ),
-    React.createElement(
-      "span",
-      { className: "always-display" },
-      React.createElement(
-        "a",
-        { className: "link", onClick: onAlwaysShowRemote },
+  /**
+   * @typedef {object} NotificationProperties
+   * @property {string} className
+   * @property {string} notificationText
+   * @property {string} iconName
+   * @property {NotificationButton[]} buttons
+   * @property {(event: Event) => void} listener
+   */
 
-        browser.i18n.getMessage("notification.alwaysShowRemote", [realFrom])
-      )
-    )
-  );
-}
+  /**
+   * Gets the properties for this notification.
+   *
+   * @returns {?NotificationProperties}
+   */
+  getProperties() {
+    return null;
+  }
 
-RemoteContentNotification.propTypes = {};
+  #applyProperties() {
+    let properties = this.getProperties();
+    let { className, notificationText, iconName, buttons, listener } =
+      properties;
+    this.#wrapper.classList.value = "notificationBar " + className;
+    this.#notificationTextNode.textContent = notificationText;
+    this.#icon.setAttribute("hash", iconName);
 
-/**
- * A generic handler for single-button notifications.
- *
- * @param {object} options
- * @param {string} options.barClassName
- * @param {string} options.buttonClassName
- * @param {Function} options.onButtonClick
- * @param {string} options.buttonTitle
- * @param {string} options.iconName
- * @param {string} options.notificationText
- */
-function GenericSingleButtonNotification({
-  barClassName,
-  buttonClassName,
-  onButtonClick,
-  buttonTitle,
-  iconName,
-  notificationText,
-}) {
-  return React.createElement(
-    "div",
-    { className: barClassName + " notificationBar" },
-    React.createElement("svg-icon", { hash: iconName }),
-    notificationText + " ",
-    React.createElement(
-      "span",
-      { className: buttonClassName },
-      React.createElement("a", { onClick: onButtonClick }, buttonTitle)
-    )
-  );
+    while (this.#buttonWrapper.firstChild) {
+      this.#buttonWrapper.lastChild.remove();
+    }
+    for (let [i, { type, id, title }] of buttons.entries()) {
+      let button = document.createElement(type);
+      button.setAttribute("id", id);
+      if (type == "a") {
+        button.appendChild(document.createTextNode(title));
+      } else {
+        button.title = title;
+      }
+      button.addEventListener("click", listener);
+
+      this.#buttonWrapper.appendChild(button);
+      if (i < buttons.length - 1) {
+        this.#buttonWrapper.appendChild(document.createTextNode(" - "));
+      }
+    }
+  }
+
+  /**
+   * Handles an attribute change.
+   *
+   * @param {string} name
+   * @param {string} oldValue
+   * @param {string} newValue
+   */
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (!this.connected) {
+      return;
+    }
+    this.#applyProperties();
+  }
+
+  /** @type {?HTMLDivElement} */
+  #wrapper = null;
+  /** @type {?SvgIcon} */
+  #icon = null;
+  /** @type {?HTMLSpanElement} */
+  #buttonWrapper = null;
+  /** @type {?Text} */
+  #notificationTextNode = null;
+  connected = false;
 }
 
 /**
@@ -139,68 +186,146 @@ function GenericMultiButtonNotification({
 
 /**
  * Handles display of the junk notification bar.
- *
- * @param {object} options
- * @param {Function} options.dispatch
- * @param {number} options.id
  */
-function JunkNotification({ dispatch, id }) {
-  function onClick() {
-    dispatch(messageActions.markAsJunk({ isJunk: false, id }));
+class JunkNotification extends GenericNotification {
+  getProperties() {
+    return {
+      className: "junkBar",
+      notificationText: browser.i18n.getMessage("notification.junkMsg"),
+      iconName: "whatshot",
+      buttons: [
+        {
+          type: /** @type {"a"|"button"} */ ("a"),
+          id: "notJunk",
+          title: browser.i18n.getMessage("notification.notJunk"),
+        },
+      ],
+      listener: () =>
+        messageUtils.store.dispatch(
+          messageActions.markAsJunk({
+            isJunk: false,
+            id: this.getAttribute("msgid"),
+          })
+        ),
+    };
   }
-
-  return React.createElement(GenericSingleButtonNotification, {
-    barClassName: "junkBar",
-    buttonClassName: "notJunk",
-    buttonTitle: browser.i18n.getMessage("notification.notJunk"),
-    iconName: "whatshot",
-    notificationText: browser.i18n.getMessage("notification.junkMsg"),
-    onButtonClick: onClick,
-  });
 }
+customElements.define("junk-notification", JunkNotification);
 
 /**
- * Handles display of the outbox notification bar for sending unsent messages.
- *
- * @param {object} options
- * @param {Function} options.dispatch
+ * Handles display of the outbox notification bar.
  */
-function OutboxNotification({ dispatch }) {
-  function onClick() {
-    dispatch(messageActions.sendUnsent());
+class OutboxNotification extends GenericNotification {
+  getProperties() {
+    return {
+      className: "outboxBar",
+      notificationText: browser.i18n.getMessage("notification.isOutboxMsg"),
+      iconName: "inbox",
+      buttons: [
+        {
+          type: /** @type {"a"|"button"} */ ("a"),
+          id: "sendUnsent",
+          title: browser.i18n.getMessage("notification.sendUnsent"),
+        },
+      ],
+      listener: () => messageUtils.store.dispatch(messageActions.sendUnsent()),
+    };
   }
-
-  return React.createElement(GenericSingleButtonNotification, {
-    barClassName: "outboxBar",
-    buttonClassName: "sendUnsent",
-    buttonTitle: browser.i18n.getMessage("notification.sendUnsent"),
-    iconName: "inbox",
-    notificationText: browser.i18n.getMessage("notification.isOutboxMsg"),
-    onButtonClick: onClick,
-  });
 }
+customElements.define("outbox-notification", OutboxNotification);
 
 /**
- * Handles display of the phishing notification bar.
- *
- * @param {object} options
- * @param {Function} options.dispatch
- * @param {number} options.id
+ * Handles display of the outbox notification bar.
  */
-function PhishingNotification({ dispatch, id }) {
-  function onClick() {
-    dispatch(messageActions.ignorePhishing({ id }));
+class PhishingNotification extends GenericNotification {
+  getProperties() {
+    return {
+      className: "phishingBar",
+      notificationText: browser.i18n.getMessage("notification.scamMsg"),
+      iconName: "warning",
+      buttons: [
+        {
+          type: /** @type {"a"|"button"} */ ("a"),
+          id: "ignoreWarning",
+          title: browser.i18n.getMessage("notification.ignoreScamWarning"),
+        },
+      ],
+      /** @type {(event: Event) => void} */
+      listener: (event) => {
+        messageUtils.store.dispatch(
+          messageActions.ignorePhishing({
+            id: /** @type {PhishingNotification} */ (event.target).getAttribute(
+              "msgid"
+            ),
+          })
+        );
+      },
+    };
   }
-
-  return React.createElement(GenericSingleButtonNotification, {
-    barClassName: "phishingBar",
-    buttonClassName: "ignore-warning",
-    buttonTitle: browser.i18n.getMessage("notification.ignoreScamWarning"),
-    iconName: "warning",
-    notificationText: browser.i18n.getMessage("notification.scamMsg"),
-    onButtonClick: onClick,
-  });
 }
+customElements.define("phishing-notification", PhishingNotification);
+
+/**
+ * Handles display of the remote content notification.
+ */
+class RemoteContentNotification extends GenericNotification {
+  getProperties() {
+    /** @type {number} */
+    let msgId;
+    try {
+      msgId = parseInt(this.getAttribute("msgid"));
+    } catch {
+      return null;
+    }
+
+    let message = messageUtils.store
+      .getState()
+      .messages.msgData.find((msg) => msg.id == msgId);
+    if (!message) {
+      return null;
+    }
+    let realFrom = message?.realFrom;
+
+    return {
+      className: "remoteContent",
+      notificationText: browser.i18n.getMessage(
+        "notification.remoteContentBlockedMsg"
+      ),
+      iconName: "cloud_download",
+      buttons: [
+        {
+          type: /** @type {"a"|"button"} */ ("a"),
+          id: "showRemote",
+          title: browser.i18n.getMessage("notification.showRemote"),
+        },
+        {
+          type: /** @type {"a"|"button"} */ ("a"),
+          id: "alwaysShowRemote",
+          title: browser.i18n.getMessage("notification.alwaysShowRemote", [
+            realFrom,
+          ]),
+        },
+      ],
+      /** @type {(event: Event) => void} */
+      listener: (event) => {
+        if (!(event.target instanceof Element)) {
+          return;
+        }
+        let targetId = event.target.getAttribute("id");
+        if (targetId == "showRemote") {
+          messageUtils.store.dispatch(
+            messageActions.showRemoteContent({ msgId })
+          );
+        } else {
+          messageUtils.store.dispatch(
+            messageActions.alwaysShowRemoteContent({ msgId, realFrom })
+          );
+        }
+      },
+    };
+  }
+}
+customElements.define("remote-content-notification", RemoteContentNotification);
 
 /**
  * Handles display of message notification bars for a message.
@@ -212,7 +337,7 @@ function PhishingNotification({ dispatch, id }) {
  * @param {boolean} options.hasRemoteContent
  * @param {boolean} options.isPhishing
  * @param {boolean} options.isOutbox
- * @param {number} options.id
+ * @param {number} options.msgid
  * @param {string} options.realFrom
  */
 export function MessageNotification({
@@ -222,24 +347,23 @@ export function MessageNotification({
   hasRemoteContent,
   isPhishing,
   isOutbox,
-  id,
+  msgid,
   realFrom,
 }) {
   if (isPhishing) {
-    return React.createElement(PhishingNotification, { dispatch, id });
+    return React.createElement("phishing-notification", { msgid });
   }
   if (hasRemoteContent) {
-    return React.createElement(RemoteContentNotification, {
-      dispatch,
-      id,
+    return React.createElement("remote-content-notification", {
+      msgid,
       realFrom,
     });
   }
   if (canUnJunk) {
-    return React.createElement(JunkNotification, { dispatch, id });
+    return React.createElement("junk-notification", { msgid });
   }
   if (isOutbox) {
-    return React.createElement(OutboxNotification, { dispatch });
+    return React.createElement("outbox-notification", { msgid });
   }
   if (extraNotifications && extraNotifications.length) {
     // Only display the first notification.
@@ -249,7 +373,7 @@ export function MessageNotification({
       buttons: notification.buttons || [],
       iconName: notification.iconName,
       dispatch,
-      id,
+      id: msgid,
       notificationText: notification.label,
       type: notification.type,
     });
