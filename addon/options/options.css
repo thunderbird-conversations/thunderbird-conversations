@@ -14,21 +14,21 @@ body {
 }
 
 .prefSectionContent {
+  border-bottom: 1px solid grey;
   display: grid;
-  grid-template-columns: 50% 50%;
+  grid-template-columns: 1fr 1fr;
+  gap: 1em;
 }
 
 .inputWrapper {
   align-content: center;
-  margin-left: 1em;
-  margin-right: auto;
 }
 
 .inputWrapper,
 .descriptionWrapper {
   padding: 0.5em 1em;
-  border-bottom: 1px solid grey;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .inputWrapper > input[type="number"] {
