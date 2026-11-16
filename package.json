@@ -17,13 +17,13 @@
   "dependencies": {
     "html-webpack-plugin": "5.6.8",
     "prop-types": "15.8.1",
-    "@reduxjs/toolkit": "2.13.0",
+    "@reduxjs/toolkit": "2.14.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "react-redux": "9.3.0",
+    "react-redux": "9.3.1",
     "redux": "5.0.1",
     "webpack": "5.112.2",
-    "webpack-cli": "7.2.3"
+    "webpack-cli": "7.3.1"
   },
   "devDependencies": {
     "@eslint-react/eslint-plugin": "5.28.8",
