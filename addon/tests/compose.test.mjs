@@ -84,6 +84,62 @@ describe("Compose full page tests", () => {
     });
   });
 
+  it("Ctrl+Enter sends the message", async (t) => {
+    let composeWidget = dom.window.document.querySelector("compose-widget");
+
+    for (let inputBox of composeWidget.shadowRoot.querySelectorAll(
+      "text-box"
+    )) {
+      const name = inputBox.className;
+      if (name != "from") {
+        inputBox.value = name;
+      }
+    }
+    let textArea = composeWidget.shadowRoot.querySelector(".body");
+    textArea.value = "body";
+
+    // Dispatch from the body field host: the event bubbles up to the
+    // compose-widget, the same path a real keydown takes from the nested
+    // editor (jsdom here has no inner shadow root for text-area).
+    textArea.dispatchEvent(
+      new dom.window.KeyboardEvent("keydown", {
+        key: "Enter",
+        ctrlKey: true,
+        bubbles: true,
+        composed: true,
+      })
+    );
+
+    await t.waitFor(() => {
+      if (!mockedSend.mock.calls.length) {
+        throw new Error("Not got one yet");
+      }
+    });
+
+    assert.deepEqual(mockedSend.mock.calls[0].arguments[0], {
+      originalMsgId: undefined,
+      from: "id3",
+      to: "to",
+      subject: "subject",
+      body: "body",
+    });
+  });
+
+  it("Plain Enter does not send the message", async () => {
+    let composeWidget = dom.window.document.querySelector("compose-widget");
+    let textArea = composeWidget.shadowRoot.querySelector(".body");
+    textArea.dispatchEvent(
+      new dom.window.KeyboardEvent("keydown", {
+        key: "Enter",
+        bubbles: true,
+        composed: true,
+      })
+    );
+
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    assert.equal(mockedSend.mock.calls.length, 0);
+  });
+
   it("Modifying a field prevents closing the window", async () => {
     let composeWidget = dom.window.document.querySelector("compose-widget");
     let inputBox = composeWidget.shadowRoot.querySelector(".to");

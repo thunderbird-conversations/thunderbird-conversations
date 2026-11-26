@@ -66,6 +66,19 @@ class ComposeWidget extends HTMLElement {
     sendBtn.addEventListener("click", () => {
       this.#sendMsg().catch(console.error);
     });
+    // Ctrl+Enter (Cmd+Enter on macOS) sends the message, matching
+    // Thunderbird's built-in compose shortcut. Keydown events from the
+    // nested To/Subject/Body fields bubble up here as composed events.
+    this.addEventListener("keydown", (event) => {
+      const isAccel = window.navigator.platform.includes("Mac")
+        ? event.metaKey
+        : event.ctrlKey;
+      if (isAccel && event.key == "Enter") {
+        event.preventDefault();
+        event.stopPropagation();
+        this.#sendMsg().catch(console.error);
+      }
+    });
     let sendStatus = /** @type {HTMLDivElement} */ (
       this.shadowRoot.querySelector(".sendStatus")
     );
